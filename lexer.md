@@ -1,7 +1,5 @@
 # Lexer Ideas
 
-## Tokens
-
 Invalid characters in source:
 - '\0' null character
 - '\a' alert/bell
@@ -9,6 +7,8 @@ Invalid characters in source:
 - '\f' form feed
 - '\v' vertical tab
 - ('\r' not part of a '\r\n' pair)
+
+## Tokens
 
 ### Spaces
 Sequence of ' ' or '\t'.  Only serve to separate tokens.
