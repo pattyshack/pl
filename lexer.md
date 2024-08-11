@@ -10,7 +10,7 @@ Invalid characters in source:
 
 TODO: improve non-ascii unicode handling
 
-## Raw Tokens
+## Tokens
 
 ### Spaces
 Sequence of ' ' or '\t'.  Only serve to separate tokens.  Spaces are ignored by multi-staged lexing.
@@ -37,6 +37,10 @@ nested scope block comment
 */
 */
 ```
+
+### Boolean Literals
+- true
+- false
 
 ### Integer Literals
 - decimal: 0|\[1-9\](\_?\[0-9\])*
@@ -69,15 +73,38 @@ Special escaped characters
 \t horizontal tab
 \v vertical tab
 \\ backslash
-\' single quote (only within rune literals)
+\' single quote
 \" double quote (only within string literals)
 ```
 
-### String Literals
+### String Literal
+Strings are sequence of characters surrounded by matching pair of string delimiter.  Valid delimiters are ", """, \`, and \`\`\`.  There are two forms: interpreted vs. raw string.  Raw strings are prefixed by `r`.  Raw string does not interpret escape character sequence, whereas interpreted string does.
 
-TODO
+In all cases, string may span multiple lines, i.e., contain unescaped newline '\n'.  Escaped carriage return sequence "\\\\r" is preserved by interpreted string but unescaped carriage return '\r' is discarded from all string.
+
+```
+"escaped tab \t"
+
+`string can span
+multiple lines`
+
+"""string can use " without escaping because of the triple-quote delimiter"""  // similarly for backticks, etc.
+
+r"raw string\n" == "raw string\\n"
+
+r"""multi-line
+raw string with "
+character"""
+
+r`can use " """ with backtick delimiter`
+
+Note: no example for triple-backticks cuz github's markdown can't escape triple-backticks correctly
+```
 
 ### Other potential literals?
 
 Complex / Imaginary number
 - probably not worth supporting as language feature.  just provide a std lib.  typed tuple with polymorphic operator maybe a good alternative.
+
+### Literal Types
+- Don't add built-in types into parser / lexer.  Specify "built-in" types as compiler schema, the types would provide api to determine how literal are converted to typed values.  A default type must be specified as part of the schema (for example, a integer literal can be an int, int16, int64. by default it should be an int)
