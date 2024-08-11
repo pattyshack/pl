@@ -1,5 +1,11 @@
 # Lexer Ideas
 
+TODO: improve non-ascii unicode handling
+
+## Raw Tokens
+All byte sequences are tokenizable to the following tokens.  Unexpected characters, and other lex errors such as missing string end delimiter, are captured by lex error tokens rather than lexer returning an error.
+
+### Lex Error Token
 Invalid characters in source:
 - '\0' null character
 - '\a' alert/bell
@@ -7,10 +13,6 @@ Invalid characters in source:
 - '\f' form feed
 - '\v' vertical tab
 - ('\r' not part of a '\r\n' pair)
-
-TODO: improve non-ascii unicode handling
-
-## Tokens
 
 ### Spaces
 Sequence of ' ' or '\t'.  Only serve to separate tokens.  Spaces are ignored by multi-staged lexing.
