@@ -8,6 +8,8 @@ Invalid characters in source:
 - '\v' vertical tab
 - ('\r' not part of a '\r\n' pair)
 
+TODO: improve non-ascii unicode handling
+
 ## Raw Tokens
 
 ### Spaces
@@ -35,3 +37,47 @@ nested scope block comment
 */
 */
 ```
+
+### Integer Literals
+- decimal: 0|\[1-9\](\_?\[0-9\])*
+- binary: 0\[bB\](\_?[01])+
+- octal: 0\[oO\]?(\_?\[0-7\])+
+- hexadecimal: 0\[xX\](\_?[0-9a-fA-F])+
+
+### Float Literals
+- (decimal integer)\\.(\[0-9\](\_?\[0-9\])*)?(\[eE\]\[+-\]?(decimal integer))?
+- (decimal integer)\[eE\]\[+-\]?(decimal integer)
+- \\.\[0-9\](\_?\[0-9\])*(\[eE\]\[+-\]?(decimal integer))?
+
+XXX: support hex float representation?
+
+### Rune Literals
+- '(non-escaped unicode char)'
+- '(escaped char)'
+- 1 byte oct rune '\\[0-8]{3}'
+- 1 byte hex rune '\\x[0-9a-fA-F]{2}'
+- 2 byte hex rune: '\\u[0-9a-fA-F]{4}'
+- 4 byte hex rune: '\\U\[0-9a-fA-F\]{8}'
+
+Special escaped characters
+```
+\a alert
+\b backspace
+\f form feed
+\n newline
+\r carriage return
+\t horizontal tab
+\v vertical tab
+\\ backslash
+\' single quote (only within rune literals)
+\" double quote (only within string literals)
+```
+
+### String Literals
+
+TODO
+
+### Other potential literals?
+
+Complex / Imaginary number
+- probably not worth supporting as language feature.  just provide a std lib.  typed tuple with polymorphic operator maybe a good alternative.
