@@ -7,12 +7,7 @@ All byte sequences are tokenizable to the following tokens.  Unexpected characte
 
 ### Lex Error Token
 Invalid characters in source:
-- '\0' null character
-- '\a' alert/bell
-- '\b' backspace
-- '\f' form feed
-- '\v' vertical tab
-- ('\r' not part of a '\r\n' pair)
+- non-printing ascii characters except '\t', '\n', (and '\r' when paired with '\n').  i.e., [0,32) + {127 DEL} - {9 '\t', 10 '\n'} - {13 '\r' when paried with 10 '\n'}
 
 ### Spaces
 Sequence of ' ' or '\t'.  Only serve to separate tokens.  Spaces are ignored by multi-staged lexing.
