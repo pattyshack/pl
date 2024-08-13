@@ -1,0 +1,34 @@
+%token SPACES // [ \t]+
+%token NEWLINES // (\n|\r\n)+
+%token COMMENT // //-style or /**/-style comment
+%token BOOL_LITERAL INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
+%token LEX_ERROR
+
+%type literal
+%type expression
+
+%type lex_internal_tokens
+
+%start expression lex_internal_tokens
+
+expression ->
+  literal: literal |
+  lex_error: LEX_ERROR
+
+literal ->
+  bool: BOOL_LITERAL |
+  integer: INTEGER_LITERAL |
+  float: FLOAT_LITERAL |
+  rune: RUNE_LITERAL |
+  string: STRING_LITERAL
+
+// Note: auxillary tokens that are consumed by the lexer internally
+lex_internal_tokens ->
+  spaces: SPACES |
+  newlines: NEWLINES |
+  comment: COMMENT
+
+%%lang_specs{
+go:
+  package: parser
+}%%
