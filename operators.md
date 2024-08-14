@@ -23,11 +23,11 @@ XXX: should we allow other types to auto convert to / behave like bool? probably
 >=  greater or equal
 ```
 
-implementing Comparable enables == and != operator usage.
+implementing Comparable interface enables == and != operator usage.
 - the Comparable interface only implments equal, != is implicit defined.
 - Comparable operation must be commutative, `a == b` eqv. `b == a`
 
-implementing Ordered enables, <, <=, >, >= operator usage
+implementing Ordered interface enables, <, <=, >, >= operator usage
 - the Ordered interface only implments less and lessOrEqual, > and >= are implicit defined.
 - < and <= must be associative, `a < b < c` eqv. `(a < b) < c` eqv. `a < (b < c)`
 - <= must be reflexive, `x <= x` is true
