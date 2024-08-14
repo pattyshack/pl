@@ -45,3 +45,26 @@ custom behavior:
 allow python style lazy eval chained comparison, e.g.,
 - `1 < x < y <= 10` eqv to `{x_val := eval x expression;  1 < x_val && { y_val := eval y expression; x_val < y_val && y_val <= 10}}`
 - 32 > char < 127  // non-printable ascii character
+
+\<operation\>= - operation assignment always yield unit
+
++=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>= ++, --, etc are statements with unit as return value
+
+
+### Arithmetic operations
+```
++     sum
+-     different
+*     product
+\     quotient
+%     remainder
+~     bitwise negation
+&     bitwise and
+|     bitwise or
+^     bitwise xor
+<<    bitwise left shift
+>>    bitwsie right shift
+```
+a type implementing a operator interface enable that operator for the type.  TODO: need to figure out the op interface, in particular, how to specify arithmetic relationships such as commutativity `a + b == b + a`  associativity `(a + b) + c == a + (b + c)` (distributive property, `a * (b + c) == a * b + a * c`, is harder to deal with since it involves multiple ops, but probably is not needed)
+
+`<arithmetic operations>=` op assignment statements, including `++` / `--`. , always yield unit.  not usable directly inside another expression (but can be use in a nest expr block)
