@@ -12,3 +12,36 @@ not    not               !p      is "not p"
 - compiler should have a built-in bool primitive type for control flow purpose
 
 XXX: should we allow other types to auto convert to / behave like bool? probably not.
+
+### Comparison operations
+```
+==  equal
+!=  not equal 
+<   less
+<=  less or equal
+>   greater
+>=  greater or equal
+```
+
+implementing Comparable enables == and != operator usage.
+- the Comparable interface only implments equal, != is implicit defined.
+- Comparable operation must be commutative, `a == b` eqv. `b == a`
+
+implementing Ordered enables, <, <=, >, >= operator usage
+- the Ordered interface only implments less and lessOrEqual, > and >= are implicit defined.
+- < and <= must be associative, `a < b < c` eqv. `(a < b) < c` eqv. `a < (b < c)`
+- <= must be reflexive, `x <= x` is true
+
+default behavior:
+- since basic types such as int, float, etc. are not built into the language, basic types are comparable/ordered if the basic type implement Comparable/Ordered interface.
+- interface of the same type are comparable.  return true if two interfaces refers to the same object.
+- structs of the same type are comparable/ordered if all fields are comparable/ordered.  Fields are compared in source order.
+- arrays are comparable if array element type is comparable/ordered.  The array is lexicographically ordered
+- enum are comparable/ordered if enum data types are comparable / ordered.  enum type are first ordered by enum source order, follow by enum's data order
+
+custom behavior:
+- a type that implement Comparable / Ordered overrides default behavior.  non-homogeneous type comparison is allowed by parametric polymorphism as long as the operator is uniquely implemented by one of the type (not by both types).  the compiler may reorder terms while perserving expression eval order.  e.g., suppose type2 implements Ordered `type2.Less(type1)`, the compiler may rewrite `type1_expr > type2_expr` as `{t1_val := type1_expr; t2_val := type2_expr; t2_val < v1_val}`
+
+allow python style lazy eval chained comparison, e.g.,
+- `1 < x < y <= 10` eqv to `{x_val := eval x expression;  1 < x_val && { y_val := eval y expression; x_val < y_val && y_val <= 10}}`
+- 32 > char < 127  // non-printable ascii character
