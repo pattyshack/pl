@@ -1,6 +1,5 @@
 # Lexer Ideas
 
-TODO: improve non-ascii unicode handling
 
 ## Raw Tokens
 All byte sequences are tokenizable to the following tokens.  Unexpected characters, and other lex errors such as missing string end delimiter, are captured by lex error tokens rather than lexer returning an error.
@@ -109,3 +108,66 @@ Complex / Imaginary number
 
 ### Literal Types
 - Don't add built-in types into parser / lexer.  Specify "built-in" types as compiler schema, the types would provide api to determine how literal are converted to typed values.  A default type must be specified as part of the schema (for example, a integer literal can be an int, int16, int64. by default it should be an int)
+
+### Identifier
+
+TODO: improve non-ascii unicode handling
+```
+letter = [_a-zA-Z] | {non-ascii rune}
+
+identifer = letter (letter | [0-9])*
+```
+
+### Keywords
+```
+package
+import
+
+type
+struct
+enum
+
+func
+return
+
+and
+or
+not
+
+if
+else
+
+match
+case
+
+for
+continue
+break
+
+// "go"?
+```
+
+### Operators and punctuations
+```
++     +=    ++
+-     -=    --
+*     *=
+\     \=
+%     %=
+~     ~=
+&     &=
+|     |=
+^     ^=
+<<    <<=
+>>    >>=
+==    !=
+<     <=
+>     >=
+(     )
+[     ]
+{     }
+=
+.
+,
+;
+```
