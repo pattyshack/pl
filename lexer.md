@@ -15,7 +15,11 @@ Sequence of ' ' or '\t'.  Only serve to separate tokens.  Spaces are ignored by 
 ### Newlines
 Sequence of '\n' or '\r\n'.  Serve to separate tokens and may terminate a statement.
 
-XXX: go explicitly inserts ';' to terminate statement.  maybe make lexer smarter and conditionally remove newlines instead.
+go explicitly inserts ';' to terminate statement.  we'll conditionally emit newline the same way. newline is emitted if the line's final token is 
+1. an identifier
+2. a literal
+3. one of the keywords: `break`, `continue`, `fallthrough`, or `return`
+4. one of: `++`, `--`, `)`, `}`, or `]`
 
 ### Comment
 Raw comments are folded into other tokens via multi-staged lexing.
