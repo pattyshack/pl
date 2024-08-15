@@ -175,3 +175,45 @@ break
 
 // unused: \ @ # $ ?
 ```
+
+### Label
+Structured goto label for `return` / `break` / `continue` statements.
+
+```
+<identifier>@    label declaration
+
+@<identifier>    return to label
+```
+
+e.g.,
+```
+for ... {
+  if ... {
+    break
+  }
+}
+
+is equivalent to
+
+loop@ for ... {
+  if ... {
+    return @loop // can also use "break @loop"
+  }
+}
+```
+
+```
+for ... {
+  if ... {
+    continue
+  }
+}
+
+is equivalent to
+
+for ... curr_iter@{
+  if ... {
+    return @curr_iter // can also use "continus @next_iter"
+  }
+}
+```
