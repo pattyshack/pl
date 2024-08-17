@@ -1,20 +1,47 @@
-# Types
+# Type ideas
 
-## Named Tuple
+## struct
+
+A struct define an interface signature and optionally concrete implementation.  The interface is generalized to allow fields as well as trait method definitions.
+
+struct may extend other struct signatures.  the extended struct "inherit" the parent signature's fields and method declarations/definitions.
+
+how to deal with "multi-inheritance" conflict?
+- field declarations must be identically typed
+- allow duplicated method declaration if one signature is a subtype of the another signature (contravariant parameter, covariant return type).  supertype declaration / definition is used
+- struct must manually implement method if there are multiple indentically typed parent method definitions
+- compile error otherwise
 
 ```
-()  // implicit tuple type declaration.  Can be used when the context is unambiguous
-tuple() // explicit tuple type declaration.  Can be used anywhere.
+// implicit struct type declaration.  Can be used when the context is unambiguous
+(<struct declaration>*)
+
+// explicit struct type declaration.  Can be used anywhere.
+struct <generic parameters>* [extends <comma seperated signature list>]* (
+  // all declarations outside the concrete implementation scope is part of the interface signature
+
+  <field or method declaration / definition>*
+
+  // specific field needed by the concrete implementation.  may optionally declare/define helper methods
+  // fields / methods from the outer scope as well fields / methods from the extends signatures are automatically part of the concrete implementation.
+  implementation (
+    <field or method declaration / definition>*
+  )
+)
+
+<struct type> refers to the interface whereas !<struct type> refers to the concrete implementation of the struct type
 ```
 
-anonymous tuple type definition within a function body must use the explicit form. e.g.,
+interface signatures are unordered, but are ordered for the concrete implementation (ordered by parent decl, then interface decl, then implementation decl.  dups removed)
+
+anonymous struct type definition within a function body must use the explicit form. e.g.,
 ```
 func blah(i int, f float) (int, float) {
-  tuple(int, float)(i, f)
+  struct(int, float)(i, f)
 }
 ```
 
-all tuple fields are named, either implicitly or explicitly.  explicitly named fields must be uniquely named, whereas implicitly named field, which takes on the type's name, may be ambiguous as long as the fields are only accessed via pattern matching (error otherwise).
+all struct fields are named, either implicitly or explicitly.  explicitly named fields must be uniquely named, whereas implicitly named field, which takes on the type's name, may be ambiguous as long as the fields are only accessed via pattern matching (error otherwise).
 
 ```
 (int, float, third string) // implicitly named first field as int, second as float, third as third
@@ -22,12 +49,10 @@ all tuple fields are named, either implicitly or explicitly.  explicitly named f
 
 support go style embedded field promotion
 
-tuple initialization: allow both positional and associative name mapping by default, which assigns the value to the corresponding fields.  positional and associative mapping intialization are operators and can be override (to support vectors / maps).  need option to disallow operators (vector shouldn't support map style initialization, etc)
+struct initialization: allow both positional and associative name mapping by default, which assigns the value to the corresponding fields.  positional and associative mapping intialization are operators and can be override (to support vectors / maps).  need option to disallow operators (vector shouldn't support map style initialization, etc)
 
-idea?: tuples are unordered.  tuple A is equivalent to tuple B if all of B's fields / methods B unambiguously maps to fields in fields / methods of A.  a named field of callable type in A equivalent to B's method if it has the same name and the method signature is a subtype of the callable's type.
+idea?: structs are unordered.  struct A is equivalent to struct B if all of B's fields / methods B unambiguously maps to fields in fields / methods of A.  a named field of callable type in A equivalent to B's method if it has the same name and the method signature is a subtype of the callable's type.
 
 comma separator only needed for declaring multiple fields on the same line.  newline acts as implicit separator.
 
-method can be defined in tuple body, or declare using semicolon / decfined outside of tuple body
-
-tupe signature is also behave as interface signature
+method can be defined in struct body, or declare without body / defined outside of struct body
