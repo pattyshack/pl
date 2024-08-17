@@ -1,5 +1,9 @@
 # Type ideas
 
+## proloaded "primitive" types
+
+no primitive types built into the parser. hardcode some primitive types post-parsing for now / switch to schema/config based preloading later
+
 ## struct
 
 A struct define an interface signature and optionally concrete implementation.  The interface is generalized to allow fields as well as trait method definitions.
