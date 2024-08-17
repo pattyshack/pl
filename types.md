@@ -23,6 +23,7 @@ how to deal with "multi-inheritance" conflict?
 // explicit struct type declaration.  Can be used anywhere.
 struct <generic parameters>* [extends <comma seperated signature list>]* (
   // all declarations outside the concrete implementation scope is part of the interface signature
+  // helper methods need not be declared
 
   <field or method declaration / definition>*
 
@@ -60,3 +61,6 @@ idea?: structs are unordered.  struct A is equivalent to struct B if all of B's 
 comma separator only needed for declaring multiple fields on the same line.  newline acts as implicit separator.
 
 method can be defined in struct body, or declare without body / defined outside of struct body
+
+
+method signature need a way to specify constraint on self: pass by value, or pass by reference, or don't care
