@@ -196,33 +196,42 @@ Structured goto label for `return` / `break` / `continue` statements.
 
 e.g.,
 ```
-for ... {
-  if ... {
-    break
+outer@ for ... {
+  for ... {
+    if ... {
+      break @outer  // break ensures the label refers to a loop
+    }
   }
 }
 
 is equivalent to
 
-loop@ for ... {
-  if ... {
-    return @loop // can also use "break @loop"
+outer@ for ... {
+  for ... {
+    if ... {
+      return @outer  // can jump to any valid label
+    }
   }
 }
 ```
 
 ```
-for ... {
-  if ... {
-    continue
+
+outer@ for ... {
+  for ... {
+    if ... {
+      continue @outer  // continue ensures the label refers to a loop
+    }
   }
 }
 
 is equivalent to
 
-for ... curr_iter@{
-  if ... {
-    return @curr_iter // can also use "continus @next_iter"
+for ... outer@{
+  for ... {
+    if ... {
+      return @outer  // can jump to any valid label
+    }
   }
 }
 ```
