@@ -149,6 +149,15 @@ break
 
 ### Operators and punctuations
 ```
+// ` string
+// @ label
+// ( ) struct
+// _ identifier
+// [ ] array, index
+// { } expr block
+// ' rune
+// " string
+
 +     +=    ++
 -     -=    --
 *     *=
