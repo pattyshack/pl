@@ -1,19 +1,34 @@
 %token SPACES // [ \t]+
 %token NEWLINES // (\n|\r\n)+
+
 %token COMMENT // //-style or /**/-style comment
+
 %token BOOL_LITERAL INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
+
+%token LBRACE RBRACE
+%token DOT SEMICOLON
+
+%token IDENTIFIER
+%token IF ELSE MATCH CASE FOR
+%token RETURN BREAK CONTINUE
+
+%token LABEL_DECL JUMP_LABEL
+
 %token LEX_ERROR
 
+%type optional_label_decl optional_jump_label
+
 %type literal
-%type expression
+%type expression optional_expression
+%type control_flow sequence sequence_body if_branch match_branch loop
+
+%type jump_type
+%type statement statement_body
+%type statements
 
 %type lex_internal_tokens
 
 %start expression lex_internal_tokens
-
-expression ->
-  literal: literal |
-  lex_error: LEX_ERROR
 
 literal ->
   bool: BOOL_LITERAL |
@@ -22,10 +37,67 @@ literal ->
   rune: RUNE_LITERAL |
   string: STRING_LITERAL
 
+// TODO
+expression ->
+  literal: literal |
+  variable: IDENTIFIER |
+  accessor: expression DOT IDENTIFIER |
+  control_flow: control_flow |
+  lex_error: LEX_ERROR
+
+optional_label_decl ->
+  labelled: LABEL_DECL |
+  unlabelled:
+
+optional_jump_label ->
+  labelled: JUMP_LABEL |
+  unlabelled:
+
+optional_expression ->
+  expression: expression |
+  nil:
+
+jump_type ->
+  return: RETURN |
+  break: BREAK |
+  continue: CONTINUE
+
+statement_body ->
+  expression: expression |
+  jump: jump_type optional_jump_label optional_expression
+
+statement ->
+  implicit: statement_body NEWLINES |
+  explicit: statement_body SEMICOLON
+
+statements ->
+  empty_list: |
+  add: statements statement
+
+sequence_body -> LBRACE statements RBRACE
+sequence -> optional_label_decl sequence_body
+
+
+if_branch ->
+  no_else: IF expression sequence |
+  if_else: IF expression sequence ELSE sequence |
+  multi_if_else: IF expression sequence ELSE if_branch
+
+// TODO
+match_branch -> MATCH CASE
+
+// TDOO
+loop -> FOR
+
+control_flow ->
+  sequence: sequence |
+  if_branch: optional_label_decl if_branch |
+  match_branch: optional_label_decl match_branch |
+  loop: optional_label_decl loop
+
 // Note: auxillary tokens that are consumed by the lexer internally
 lex_internal_tokens ->
   spaces: SPACES |
-  newlines: NEWLINES |
   comment: COMMENT
 
 %%lang_specs{
