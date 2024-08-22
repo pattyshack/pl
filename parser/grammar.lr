@@ -5,7 +5,7 @@
 
 %token BOOL_LITERAL INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
 
-%token LBRACE RBRACE
+%token LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
 %token DOT SEMICOLON
 
 %token IDENTIFIER
@@ -19,20 +19,38 @@
 %token BIT_NEG_ASSIGN BIT_AND_ASSIGN BIT_OR_ASSIGN BIT_XOR_ASSIGN
 %token BIT_LSHIFT_ASSIGN BIT_RSHIFT_ASSIGN
 
+%token NOT AND OR
+%token ADD SUB MUL DIV MOD
+%token BIT_NEG BIT_AND BIT_XOR BIT_OR BIT_LSHIFT BIT_RSHIFT
+%token EQUAL NOT_EQUAL LESS LESS_OR_EQUAL GREATER GREATER_OR_EQUAL
+
 %token LEX_ERROR
 
 %type optional_label_decl optional_jump_label
 
 %type literal
+
 %type expression optional_expression
-%type control_flow sequence sequence_body if_branch match_branch loop
+%type block block_body if_branch match_branch loop
+
+// expression in decreasing precedence
+%type atom_expr access_expr
+%type unary_expr
+%type mul_expr add_expr cmp_expr and_expr or_expr
 
 %type jump_type
 %type statement statement_body
 %type statements
 
+%type unary_op  // - ~ not
+%type mul_op // * / % & << >>
+%type add_op // + - | ^
+%type cmp_op // == != < <= > >=
+
 %type op_one_assign  // ++ --
 %type binary_op_assign // += -= etc.
+
+%type argument_list
 
 %type lex_internal_tokens
 
@@ -45,13 +63,80 @@ literal ->
   rune: RUNE_LITERAL |
   string: STRING_LITERAL
 
+// TODO anonymous func expression
+atom_expr ->
+  literal: literal |
+  identifier: IDENTIFIER |
+  block: block |
+  lex_error: LEX_ERROR
+
+// TODO
+argument_list ->
+
+access_expr ->
+  expr: atom_expr |
+  access: access_expr DOT IDENTIFIER |
+  call: access_expr LPAREN argument_list RPAREN |
+  // TODO allow ranged lookup? e.g., x[:]
+  index: access_expr LBRACKET expression RBRACKET
+
+unary_op ->
+  not: NOT |
+  neg: BIT_NEG |
+  sub: SUB
+
+unary_expr ->
+  expr: access_expr |
+  op: unary_op unary_expr
+
+mul_op ->
+  mul: MUL |
+  div: DIV |
+  mod: MOD |
+  bit_and: BIT_AND |
+  bit_lshift: BIT_LSHIFT |
+  bit_rshift: BIT_RSHIFT
+
+mul_expr ->
+  expr: unary_expr |
+  op: mul_expr mul_op unary_expr
+
+add_op ->
+  add: ADD |
+  sub: SUB |
+  bit_or: BIT_OR |
+  bit_xor: BIT_XOR
+
+add_expr ->
+  expr: mul_expr |
+  op: add_expr add_op mul_expr
+
+cmp_op ->
+  equal: EQUAL |
+  not_equal: NOT_EQUAL |
+  less: LESS |
+  less_or_equal: LESS_OR_EQUAL |
+  greater: GREATER |
+  greater_or_equal: GREATER_OR_EQUAL
+
+cmp_expr ->
+  expr: add_expr |
+  op: cmp_expr cmp_op add_expr
+
+and_expr ->
+  expr: cmp_expr |
+  op: and_expr AND cmp_expr
+
+or_expr ->
+  expr: and_expr |
+  op: or_expr OR and_expr
+
 // TODO
 expression ->
-  literal: literal |
-  variable: IDENTIFIER |
-  accessor: expression DOT IDENTIFIER |
-  control_flow: control_flow |
-  lex_error: LEX_ERROR
+  expr: or_expr |
+  if_branch: optional_label_decl if_branch |
+  match_branch: optional_label_decl match_branch |
+  loop: optional_label_decl loop
 
 optional_label_decl ->
   labelled: LABEL_DECL |
@@ -101,25 +186,19 @@ statements ->
   empty_list: |
   add: statements statement
 
-sequence_body -> LBRACE statements RBRACE
-sequence -> optional_label_decl sequence_body
+block_body -> LBRACE statements RBRACE
+block -> optional_label_decl block_body
 
 if_branch ->
-  no_else: IF expression sequence |
-  if_else: IF expression sequence ELSE sequence |
-  multi_if_else: IF expression sequence ELSE if_branch
+  no_else: IF expression block |
+  if_else: IF expression block ELSE block |
+  multi_if_else: IF expression block ELSE if_branch
 
 // TODO
 match_branch -> MATCH CASE
 
 // TDOO
 loop -> FOR
-
-control_flow ->
-  sequence: sequence |
-  if_branch: optional_label_decl if_branch |
-  match_branch: optional_label_decl match_branch |
-  loop: optional_label_decl loop
 
 // Note: auxillary tokens that are consumed by the lexer internally
 lex_internal_tokens ->
