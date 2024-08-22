@@ -12,7 +12,7 @@
 %token IF ELSE MATCH CASE DEFAULT FOR
 %token RETURN BREAK CONTINUE
 
-%token FUNC
+%token FUNC ASYNC
 
 %token LABEL_DECL JUMP_LABEL
 
@@ -37,6 +37,8 @@
 %type sequence_expr if_expr match_expr loop_expr
 
 %type anonymous_func_expr implicit_struct_expr
+
+%type call_expr
 
 // expression in decreasing precedence
 %type atom_expr access_expr
@@ -68,6 +70,9 @@ literal ->
   RUNE_LITERAL |
   STRING_LITERAL
 
+// TODO switch to regular method def.  post-parse analysis pass should check
+// for function def rather than method def (no "self")
+//
 // TODO parameter type list / return type
 anonymous_func_expr -> FUNC LPAREN RPAREN block_body
 
@@ -88,10 +93,12 @@ atom_expr ->
 // TODO
 argument_list ->
 
+call_expr -> access_expr LPAREN argument_list RPAREN
+
 access_expr ->
   atom_expr |
   access: access_expr DOT IDENTIFIER |
-  call: access_expr LPAREN argument_list RPAREN |
+  call_expr |
   // TODO allow ranged lookup? e.g., x[:]
   index: access_expr LBRACKET expression RBRACKET
 
@@ -180,7 +187,15 @@ binary_op_assign ->
 
 statement_body ->
   expression |
+
+  async: ASYNC call_expr |  // returns an await handler
+  // - compiler should optimize away the await handler if it's not used.
+
   jump: jump_type optional_jump_label optional_expression |
+
+  // TODO assignment. something like
+  // let <variable pattern> = [optional ASYNC] expression
+
   // NOTE: both op_one_assign and binary_op_assign can only operate on
   // proper address values.  Additional checks are applied during reduction or
   // post parse analysis.
