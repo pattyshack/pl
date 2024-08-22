@@ -14,6 +14,11 @@
 
 %token LABEL_DECL JUMP_LABEL
 
+%token ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
+%token ADD_ONE_ASSIGN SUB_ONE_ASSIGN
+%token BIT_NEG_ASSIGN BIT_AND_ASSIGN BIT_OR_ASSIGN BIT_XOR_ASSIGN
+%token BIT_LSHIFT_ASSIGN BIT_RSHIFT_ASSIGN
+
 %token LEX_ERROR
 
 %type optional_label_decl optional_jump_label
@@ -25,6 +30,9 @@
 %type jump_type
 %type statement statement_body
 %type statements
+
+%type op_one_assign  // ++ --
+%type binary_op_assign // += -= etc.
 
 %type lex_internal_tokens
 
@@ -62,9 +70,28 @@ jump_type ->
   break: BREAK |
   continue: CONTINUE
 
+op_one_assign ->
+  add_one: ADD_ONE_ASSIGN |
+  sub_one: SUB_ONE_ASSIGN
+
+binary_op_assign ->
+  add: ADD_ASSIGN |
+  sub: SUB_ASSIGN |
+  mul: MUL_ASSIGN |
+  div: DIV_ASSIGN |
+  mod: MOD_ASSIGN |
+  bit_neg: BIT_NEG_ASSIGN |
+  bit_and: BIT_AND_ASSIGN |
+  bit_or: BIT_OR_ASSIGN |
+  bit_xor: BIT_XOR_ASSIGN |
+  bit_lshift: BIT_LSHIFT_ASSIGN |
+  bit_rshift: BIT_RSHIFT_ASSIGN
+
 statement_body ->
   expression: expression |
-  jump: jump_type optional_jump_label optional_expression
+  jump: jump_type optional_jump_label optional_expression |
+  op_one_assign: expression op_one_assign |
+  binary_op_assign: expression binary_op_assign expression
 
 statement ->
   implicit: statement_body NEWLINES |
@@ -76,7 +103,6 @@ statements ->
 
 sequence_body -> LBRACE statements RBRACE
 sequence -> optional_label_decl sequence_body
-
 
 if_branch ->
   no_else: IF expression sequence |
