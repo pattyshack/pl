@@ -31,7 +31,7 @@
 %type literal
 
 %type expression optional_expression
-%type block block_body if_branch match_branch loop
+%type block_body block_expr if_expr match_expr loop_expr
 
 // expression in decreasing precedence
 %type atom_expr access_expr
@@ -67,7 +67,7 @@ literal ->
 atom_expr ->
   literal: literal |
   identifier: IDENTIFIER |
-  block: block |
+  block_expr: block_expr |
   lex_error: LEX_ERROR
 
 // TODO
@@ -131,17 +131,6 @@ or_expr ->
   expr: and_expr |
   op: or_expr OR and_expr
 
-// TODO
-expression ->
-  expr: or_expr |
-  if_branch: optional_label_decl if_branch |
-  match_branch: optional_label_decl match_branch |
-  loop: optional_label_decl loop
-
-optional_label_decl ->
-  labelled: LABEL_DECL |
-  unlabelled:
-
 optional_jump_label ->
   labelled: JUMP_LABEL |
   unlabelled:
@@ -186,19 +175,35 @@ statements ->
   empty_list: |
   add: statements statement
 
-block_body -> LBRACE statements RBRACE
-block -> optional_label_decl block_body
+optional_label_decl ->
+  labelled: LABEL_DECL |
+  unlabelled:
 
-if_branch ->
-  no_else: IF expression block |
-  if_else: IF expression block ELSE block |
-  multi_if_else: IF expression block ELSE if_branch
+block_body -> LBRACE statements RBRACE
+block_expr -> optional_label_decl block_body
+
+// NOTE: label is applied to the entire if expression rather than individual
+// branches.
+if_expr ->
+  no_else: IF or_expr block_body |
+  if_else: IF or_expr block_body ELSE block_body |
+  multi_if_else: IF or_expr block_body ELSE if_expr
 
 // TODO
-match_branch -> MATCH CASE
+match_expr -> MATCH CASE
 
-// TDOO
-loop -> FOR
+loop_expr ->
+  infinite: FOR block_expr |
+  while: FOR or_expr block_expr
+  // TODO: FOR <init list> SEMICOLON or_expr SEMICOLON or_expr block_expr
+  // TODO FOR <variable pattern> IN or_expr block_expr
+
+// TODO
+expression ->
+  sequence_expr: or_expr |
+  if_expr: optional_label_decl if_expr |
+  match_expr: optional_label_decl match_expr |
+  loop_expr: optional_label_decl loop_expr
 
 // Note: auxillary tokens that are consumed by the lexer internally
 lex_internal_tokens ->
