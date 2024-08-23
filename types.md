@@ -76,14 +76,14 @@ enum type
 - "?" operator macro can operator on any enum type, rather than just result and option.  returns the value if it is the default value
 
 ```
-type1|type2|type3
+type1|name2 type2|type3
 ```
 
 is implicitly
 ```
 enum(
-  type1(type1),
-  type2(type2),
-  type3(type3)
+  type1(type1),  // implicitly named
+  name2(type2),  // explicitly named
+  type3(type3),  // implicitly named
 )
 ```
