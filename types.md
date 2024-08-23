@@ -76,7 +76,7 @@ enum type
 - "?" operator macro can operator on any enum type, rather than just result and option.  returns the value if it is the default value
 
 ```
-type1|name2 type2|type3
+type1|name2: type2|type3
 ```
 
 is implicitly
