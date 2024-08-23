@@ -2,9 +2,11 @@
 
 ## proloaded "primitive" types
 
-no primitive types built into the parser. hardcode some primitive types post-parsing for now / switch to schema/config based preloading later
+no primitive types built into the parser. hardcode some primitive types post-parsing for now / switch to schema/config based preloading later.  primitive types are just struct.
 
 ## struct
+
+PROBABLY NOT A GOOD IDEA TO BAKE INTERFACE INTO STRUCT.  REDO THIS WHOLE SECTIOn
 
 A struct define an interface signature and optionally concrete implementation.  The interface is generalized to allow fields as well as trait method definitions.
 
@@ -64,3 +66,24 @@ method can be defined in struct body, or declare without body / defined outside 
 
 
 method signature need a way to specify constraint on self: pass by value, or pass by reference, or don't care
+
+====
+
+enum type
+- enum value can have data
+- if all enum values exposes the same (or eqv?) method signature, the method is directly acessible via the enum type (don't need to manually match the enum value before call the method)
+- allow a default enum value
+- "?" operator macro can operator on any enum type, rather than just result and option.  returns the value if it is the default value
+
+```
+type1|type2|type3
+```
+
+is implicitly
+```
+enum(
+  type1(type1),
+  type2(type2),
+  type3(type3)
+)
+```
