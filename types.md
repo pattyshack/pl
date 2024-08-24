@@ -155,3 +155,9 @@ trait{
 // use [] for set operator precedence, since () is reserved for struct
 <trait3> * [<trait1> + <trait2>]
 ```
+
+```
+Unit // alias for ()
+Any  // alias for trait{}
+Never // a special trait that's never implementable.  used for type checking only (for jump statements, non-returning functions such as panic, etc.)
+```
