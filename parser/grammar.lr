@@ -6,7 +6,7 @@
 %token BOOL_LITERAL INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
 
 %token LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
-%token DOT SEMICOLON
+%token DOT SEMICOLON COMMA
 
 %token IDENTIFIER
 %token IF ELSE MATCH CASE DEFAULT FOR
@@ -32,7 +32,7 @@
 
 %type literal
 
-%type expression optional_expression
+%type expression
 %type block_body block_expr
 %type sequence_expr if_expr match_expr loop_expr
 
@@ -58,6 +58,7 @@
 %type binary_op_assign // += -= etc.
 
 %type argument_list
+%type expression_or_implicit_struct optional_expression_or_implicit_struct
 
 %type lex_internal_tokens
 
@@ -159,8 +160,8 @@ optional_jump_label ->
   JUMP_LABEL |
   unlabelled:
 
-optional_expression ->
-  expression |
+optional_expression_or_implicit_struct ->
+  expression_or_implicit_struct |
   nil:
 
 jump_type ->
@@ -185,13 +186,17 @@ binary_op_assign ->
   BIT_LSHIFT_ASSIGN |
   BIT_RSHIFT_ASSIGN
 
-statement_body ->
+expression_or_implicit_struct ->
   expression |
+  implicit_struct: expression_or_implicit_struct COMMA expression
+
+statement_body ->
+  expression_or_implicit_struct |
 
   async: ASYNC call_expr |  // returns an await handler
   // - compiler should optimize away the await handler if it's not used.
 
-  jump: jump_type optional_jump_label optional_expression |
+  jump: jump_type optional_jump_label optional_expression_or_implicit_struct |
 
   // TODO assignment. something like
   // let <variable pattern> = [optional ASYNC] expression
