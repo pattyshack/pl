@@ -7,7 +7,7 @@ no primitive types built into the parser. hardcode some primitive types post-par
 ## struct
 
 
-syntactic sugar (only in func args list or lookup index)?
+syntactic sugar for data only tuples (primarily intended for used within func args list or lookup index)?
 ```
 expr1:expr2:expr3 -> (expr1, expr2, expr3)
 
