@@ -129,8 +129,9 @@ func Foo(x <trait>) OtherType
 also implies
 ```
 func Foo$[T: <trait>](x T) OtherType
+Foo$[<trait>]
 ```
-only applicable to parameters, not return value.  the first version is needed for reflection, the compiler use the latter whenever concrete type is known
+only applicable to parameters, not return value.  the compiler use concrete implementation whenever possible.  the compiler still need to emit `Foo$[<trait>]` for reflection?.
 
 
 trait algebra (maybe too complex to be useful?)
