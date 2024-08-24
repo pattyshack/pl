@@ -6,6 +6,7 @@ no primitive types built into the parser. hardcode some primitive types post-par
 
 ## struct
 
+array also behave like normal opaque struct must pass with immut / mut ref
 
 syntactic sugar for data only tuples (primarily intended for used within func args list or lookup index)?
 ```
