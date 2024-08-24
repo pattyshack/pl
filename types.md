@@ -131,3 +131,26 @@ also implies
 func Foo$[T: <trait>](x T) OtherType
 ```
 only applicable to parameters, not return value.  the first version is needed for reflection, the compiler use the latter whenever concrete type is known
+
+
+trait algebra (maybe too complex to be useful?)
+```
+// trait set intersection
+<trait1> * <trait2>
+
+// trait set union
+<trait1> + <trait2>
+
+// eqv to
+
+trait{
+  <trait1>
+  <trait2>
+}
+
+// trait set difference
+<trait1> - <trait2>
+
+// use [] for set operator precedence, since () is reserved for struct
+<trait3> * [<trait1> + <trait2>]
+```
