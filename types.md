@@ -161,3 +161,18 @@ Unit // alias for ()
 Any  // alias for trait{}
 Never // a special trait that's never implementable.  used for type checking only (for jump statements, non-returning functions such as panic, etc.)
 ```
+
+===
+
+func type
+
+```
+func Blah(...) <block body>
+```
+is syntactic sugar to
+```
+func Blah(...) () {
+  _ = <block body>
+  ()
+}
+```
