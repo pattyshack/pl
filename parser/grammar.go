@@ -520,25 +520,28 @@ type Reducer interface {
 	// 339:2: implicit_func_type -> inferred: ...
 	InferredToImplicitFuncType(Lparen_ *GenericSymbol, Parameters_ *GenericSymbol, Rparen_ *GenericSymbol, Question_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 341:22: explicit_func_type -> ...
+	// 340:2: implicit_func_type -> implicit_unit: ...
+	ImplicitUnitToImplicitFuncType(Lparen_ *GenericSymbol, Parameters_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
+
+	// 342:22: explicit_func_type -> ...
 	ToExplicitFuncType(Func_ *GenericSymbol, ImplicitFuncType_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 344:2: optional_receiver -> receiver: ...
+	// 345:2: optional_receiver -> receiver: ...
 	ReceiverToOptionalReceiver(Lparen_ *GenericSymbol, ParameterDecl_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 345:2: optional_receiver -> nil: ...
+	// 346:2: optional_receiver -> nil: ...
 	NilToOptionalReceiver() (*GenericSymbol, error)
 
-	// 348:2: func_decl -> ...
+	// 349:2: func_decl -> ...
 	ToFuncDecl(Func_ *GenericSymbol, OptionalReceiver_ *GenericSymbol, Identifier_ *GenericSymbol, OptionalGenericParameters_ *GenericSymbol, ImplicitFuncType_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 350:12: func_def -> ...
+	// 351:12: func_def -> ...
 	ToFuncDef(FuncDecl_ *GenericSymbol, BlockBody_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 354:2: lex_internal_tokens -> SPACES: ...
+	// 355:2: lex_internal_tokens -> SPACES: ...
 	SpacesToLexInternalTokens(Spaces_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 355:2: lex_internal_tokens -> COMMENT: ...
+	// 356:2: lex_internal_tokens -> COMMENT: ...
 	CommentToLexInternalTokens(Comment_ *GenericSymbol) (*GenericSymbol, error)
 }
 
@@ -1205,13 +1208,14 @@ const (
 	_ReduceOptionalVarargToParameters                                     = _ReduceType(131)
 	_ReduceTypedToImplicitFuncType                                        = _ReduceType(132)
 	_ReduceInferredToImplicitFuncType                                     = _ReduceType(133)
-	_ReduceToExplicitFuncType                                             = _ReduceType(134)
-	_ReduceReceiverToOptionalReceiver                                     = _ReduceType(135)
-	_ReduceNilToOptionalReceiver                                          = _ReduceType(136)
-	_ReduceToFuncDecl                                                     = _ReduceType(137)
-	_ReduceToFuncDef                                                      = _ReduceType(138)
-	_ReduceSpacesToLexInternalTokens                                      = _ReduceType(139)
-	_ReduceCommentToLexInternalTokens                                     = _ReduceType(140)
+	_ReduceImplicitUnitToImplicitFuncType                                 = _ReduceType(134)
+	_ReduceToExplicitFuncType                                             = _ReduceType(135)
+	_ReduceReceiverToOptionalReceiver                                     = _ReduceType(136)
+	_ReduceNilToOptionalReceiver                                          = _ReduceType(137)
+	_ReduceToFuncDecl                                                     = _ReduceType(138)
+	_ReduceToFuncDef                                                      = _ReduceType(139)
+	_ReduceSpacesToLexInternalTokens                                      = _ReduceType(140)
+	_ReduceCommentToLexInternalTokens                                     = _ReduceType(141)
 )
 
 func (i _ReduceType) String() string {
@@ -1482,6 +1486,8 @@ func (i _ReduceType) String() string {
 		return "TypedToImplicitFuncType"
 	case _ReduceInferredToImplicitFuncType:
 		return "InferredToImplicitFuncType"
+	case _ReduceImplicitUnitToImplicitFuncType:
+		return "ImplicitUnitToImplicitFuncType"
 	case _ReduceToExplicitFuncType:
 		return "ToExplicitFuncType"
 	case _ReduceReceiverToOptionalReceiver:
@@ -2474,6 +2480,11 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = ImplicitFuncTypeType
 		symbol.Generic_, err = reducer.InferredToImplicitFuncType(args[0].Generic_, args[1].Generic_, args[2].Generic_, args[3].Generic_)
+	case _ReduceImplicitUnitToImplicitFuncType:
+		args := stack[len(stack)-3:]
+		stack = stack[:len(stack)-3]
+		symbol.SymbolId_ = ImplicitFuncTypeType
+		symbol.Generic_, err = reducer.ImplicitUnitToImplicitFuncType(args[0].Generic_, args[1].Generic_, args[2].Generic_)
 	case _ReduceToExplicitFuncType:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
@@ -2882,6 +2893,7 @@ var (
 	_ReduceOptionalVarargToParametersAction                                     = &_Action{_ReduceAction, 0, _ReduceOptionalVarargToParameters}
 	_ReduceTypedToImplicitFuncTypeAction                                        = &_Action{_ReduceAction, 0, _ReduceTypedToImplicitFuncType}
 	_ReduceInferredToImplicitFuncTypeAction                                     = &_Action{_ReduceAction, 0, _ReduceInferredToImplicitFuncType}
+	_ReduceImplicitUnitToImplicitFuncTypeAction                                 = &_Action{_ReduceAction, 0, _ReduceImplicitUnitToImplicitFuncType}
 	_ReduceToExplicitFuncTypeAction                                             = &_Action{_ReduceAction, 0, _ReduceToExplicitFuncType}
 	_ReduceReceiverToOptionalReceiverAction                                     = &_Action{_ReduceAction, 0, _ReduceReceiverToOptionalReceiver}
 	_ReduceNilToOptionalReceiverAction                                          = &_Action{_ReduceAction, 0, _ReduceNilToOptionalReceiver}
@@ -3788,6 +3800,7 @@ var _ActionTable = _ActionTableType{
 	{_State152, _WildcardMarker}:                        _ReduceAddToStatementsAction,
 	{_State154, _WildcardMarker}:                        _ReduceImplicitToVarargAction,
 	{_State156, RparenToken}:                            _ReduceNilToOptionalVarargAction,
+	{_State157, LbraceToken}:                            _ReduceImplicitUnitToImplicitFuncTypeAction,
 	{_State158, RparenToken}:                            _ReduceVararg2ToOptionalVarargAction,
 	{_State160, _WildcardMarker}:                        _ReduceIndexToAccessExprAction,
 	{_State161, _WildcardMarker}:                        _ReduceConcreteToCallExprAction,
@@ -4386,6 +4399,7 @@ Parser Debug States:
     Kernel Items:
       implicit_func_type: LPAREN.parameters RPAREN value_type
       implicit_func_type: LPAREN.parameters RPAREN QUESTION
+      implicit_func_type: LPAREN.parameters RPAREN
     Reduce:
       RPAREN -> [optional_vararg]
     Goto:
@@ -5238,6 +5252,7 @@ Parser Debug States:
     Kernel Items:
       implicit_func_type: LPAREN parameters.RPAREN value_type
       implicit_func_type: LPAREN parameters.RPAREN QUESTION
+      implicit_func_type: LPAREN parameters.RPAREN
     Reduce:
       (nil)
     Goto:
@@ -5708,8 +5723,9 @@ Parser Debug States:
     Kernel Items:
       implicit_func_type: LPAREN parameters RPAREN.value_type
       implicit_func_type: LPAREN parameters RPAREN.QUESTION
+      implicit_func_type: LPAREN parameters RPAREN., LBRACE
     Reduce:
-      (nil)
+      LBRACE -> [implicit_func_type]
     Goto:
       LPAREN -> State 56
       QUESTION -> State 197
@@ -6256,7 +6272,7 @@ Parser Debug States:
 
 Number of states: 208
 Number of shift actions: 775
-Number of reduce actions: 172
+Number of reduce actions: 173
 Number of shift/reduce conflicts: 0
 Number of reduce/reduce conflicts: 0
 */

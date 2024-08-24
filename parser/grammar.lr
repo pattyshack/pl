@@ -336,7 +336,8 @@ parameters ->
 
 implicit_func_type ->
   typed: LPAREN parameters RPAREN value_type |
-  inferred: LPAREN parameters RPAREN QUESTION
+  inferred: LPAREN parameters RPAREN QUESTION |
+  implicit_unit: LPAREN parameters RPAREN
 
 explicit_func_type -> FUNC implicit_func_type
 
