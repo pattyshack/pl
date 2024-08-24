@@ -6,6 +6,13 @@ no primitive types built into the parser. hardcode some primitive types post-par
 
 ## struct
 
+
+syntactic sugar
+```
+expr1:expr2:expr3 -> (expr1, expr2, expr3)
+```
+
+
 PROBABLY NOT A GOOD IDEA TO BAKE INTERFACE INTO STRUCT.  REDO THIS WHOLE SECTIOn
 
 A struct define an interface signature and optionally concrete implementation.  The interface is generalized to allow fields as well as trait method definitions.
