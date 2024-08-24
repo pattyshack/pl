@@ -81,6 +81,16 @@ method can be defined in struct body, or declare without body / defined outside 
 
 method signature need a way to specify constraint on self: pass by value, or pass by reference, or don't care
 
+```
+type MyType Int
+```
+
+is shorthand for 
+
+```
+type MyType struct(Int)
+```
+
 ====
 
 enum type
