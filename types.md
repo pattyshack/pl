@@ -108,15 +108,16 @@ enum(
 trait
 
 ```
-!<struct type> - a trait type from struct/enum type that include all of struct/enum's public method signature (without the implementation)
+!<struct type> - a trait type from struct/enum/trait type that captures all of struct/enum/trait's public method signature (without the implementation)
+!!<struct type> - a trait type from struct/enum/trait type that captures all of struct/enum/trait's public method signature (without the implementation) as well as public fields
 ```
 
 
 ```
-func Foo(x !MyType) OtherType
+func Foo(x <trait>) OtherType
 ```
-is short hand for
+also implies
 ```
-func Foo$[T: MyType|!MyType](x T) OtherType
+func Foo$[T: <trait>](x T) OtherType
 ```
-with no performance penalty for MyType
+only applicable to parameters, not return value.  the first version is needed for reflection, the compiler use the latter whenever concrete type is known
