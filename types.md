@@ -108,6 +108,15 @@ enum(
 trait
 
 ```
-!<struct type> - create a trait type from struct / enum type that include all of struct's public method signature
-!!<struct type> - create a trait type from struct type that include all of struct's public method and field signature
+!<struct type> - a trait type from struct/enum type that include all of struct/enum's public method signature (without the implementation)
 ```
+
+
+```
+func Foo(x !MyType) OtherType
+```
+is short hand for
+```
+func Foo$[T: MyType|!MyType](x T) OtherType
+```
+with no performance penalty for MyType
