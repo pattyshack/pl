@@ -11,7 +11,10 @@ syntactic sugar (only in func args list or lookup index)?
 ```
 expr1:expr2:expr3 -> (expr1, expr2, expr3)
 
-: -> ()
+: -> ((), ())
+<expr>: -> (<expr>, ())
+:<expr> -> ((), <expr>)
+:: -> ((), (), ())
 
 ```
 
