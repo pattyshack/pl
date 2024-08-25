@@ -118,7 +118,7 @@ enum(
 trait
 
 ```
-!<struct type> - a trait type from struct/enum/trait type that captures all of struct/enum/trait's public method signature (without the implementation)
+!<struct type> - a trait type from struct/enum/trait type that captures all of struct/enum/trait's public method signature (without the implementation).  this is eqv to ~<interface> in golang
 !!<struct type> - a trait type from struct/enum/trait type that captures all of struct/enum/trait's public method signature (without the implementation) as well as public fields
 ```
 
@@ -137,10 +137,10 @@ only applicable to parameters, not return value.  the compiler use concrete impl
 trait algebra (maybe too complex to be useful?)
 ```
 // trait set intersection
-<trait1> * <trait2>
+<trait1> & <trait2>
 
 // trait set union
-<trait1> + <trait2>
+<trait1> | <trait2>
 
 // eqv to
 
@@ -153,7 +153,7 @@ trait{
 <trait1> - <trait2>
 
 // use [] for set operator precedence, since () is reserved for struct
-<trait3> * [<trait1> + <trait2>]
+<trait3> & [<trait1> | <trait2>]
 ```
 
 ```
