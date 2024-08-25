@@ -151,12 +151,13 @@ break
 ```
 // ` string
 // @ label
-// ( ) struct
+// ( ) struct / call argument
 // _ identifier
 // [ ] array, index
 // { } expr block
 // ' rune
 // " string
+// $[ ] generic parameters
 
 +     +=    ++
 -     -=    --
