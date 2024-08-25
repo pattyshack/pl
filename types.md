@@ -118,7 +118,7 @@ enum(
 trait
 
 ```
-!<struct type> - a trait type from struct/enum/trait type that captures all of struct/enum/trait's public method signature (without the implementation).  this is eqv to ~<interface> in golang
+!<struct type> - a trait type from struct/enum/trait type that captures all of struct/enum/trait's public method signature (without the implementation).  !int is eqv to interface{~int} in golang
 !!<struct type> - a trait type from struct/enum/trait type that captures all of struct/enum/trait's public method signature (without the implementation) as well as public fields
 ```
 
