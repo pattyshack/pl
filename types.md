@@ -134,10 +134,10 @@ Foo$[<trait>]
 only applicable to parameters, not return value.  the compiler use concrete implementation whenever possible.  the compiler still need to emit `Foo$[<trait>]` for reflection?.
 
 
-trait algebra (maybe too complex to be useful?)
+trait algebra.  NOTE: THE NOTATION IS THE EXACT OPPOSITE OF GOLANG'S GENERIC CONSTRAINTS
 ```
 // trait set intersection
-<trait1> & <trait2>
+<trait1> & <trait2>  // !int&!float is eqv to interface{~int|~float} in golang
 
 // trait set union
 <trait1> | <trait2>
