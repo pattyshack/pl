@@ -82,6 +82,7 @@
 
 %type type_decl
 %type value_type atom_type traitable_type trait_intersect_type trait_union_type
+%type func_type
 %type explicit_struct_type implicit_struct_type trait_type
 %type explicit_enum_type
 
@@ -365,9 +366,13 @@ trait_type -> TRAIT implicit_struct_type
 // TODO
 explicit_enum_type -> ENUM LPAREN /* TODO */ RPAREN
 
-value_type ->
+func_type ->
   trait_union_type |
-  implicit_enum: value_type OR trait_union_type
+  explicit_func_type
+
+value_type ->
+  func_type |
+  implicit_enum: value_type OR func_type
 
 type_decl ->
   definition: TYPE IDENTIFIER optional_generic_parameter_decl value_type |
@@ -401,7 +406,7 @@ parameters ->
   optional_vararg
 
 implicit_func_type ->
-  typed: LPAREN parameters RPAREN value_type |
+  typed: LPAREN parameters RPAREN func_type |
   inferred: LPAREN parameters RPAREN QUESTION |
   implicit_unit: LPAREN parameters RPAREN
 
