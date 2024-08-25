@@ -14,7 +14,7 @@
 
 %token UNSAFE
 
-%token TYPE STRUCT ENUM
+%token TYPE STRUCT ENUM TRAIT
 %token FUNC ASYNC
 
 %token LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
@@ -80,7 +80,7 @@
 
 %type type_decl
 %type value_type atom_type traitable_type trait_intersect_type trait_union_type
-%type explicit_struct_type implicit_struct_type
+%type explicit_struct_type implicit_struct_type trait_type
 %type explicit_enum_type
 
 %type func_def func_decl implicit_func_type explicit_func_type
@@ -306,7 +306,8 @@ atom_type ->
   named: IDENTIFIER optional_generic_parameters |
   explicit_struct_type |
   implicit_struct_type |
-  explicit_enum_type
+  explicit_enum_type |
+  trait_type
 
 traitable_type ->
   atom_type |
@@ -325,8 +326,9 @@ trait_union_type ->
 // TODO
 implicit_struct_type -> LPAREN /* TODO */ RPAREN
 
-explicit_struct_type ->
-  STRUCT implicit_struct_type
+explicit_struct_type -> STRUCT implicit_struct_type
+
+trait_type -> TRAIT implicit_struct_type
 
 // TODO
 explicit_enum_type -> ENUM LPAREN /* TODO */ RPAREN
