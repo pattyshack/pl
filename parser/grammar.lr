@@ -73,6 +73,7 @@
 %type generic_arguments optional_generic_arguments optional_generic_binding
 
 %type field_decl parameter_decl
+%type field_decls optional_field_decls
 %type parameters non_empty_parameters vararg optional_vararg optional_receiver
 
 %type argument arguments optional_arguments
@@ -348,11 +349,11 @@ traitable_type ->
 
 trait_mul_type ->
   traitable_type |
-  intersect: trait_mul_type BIT_AND traitable_type
+  intersect: trait_mul_type MUL traitable_type
 
 trait_add_type ->
   trait_mul_type |
-  union: trait_add_type BIT_OR trait_mul_type |
+  union: trait_add_type ADD trait_mul_type |
 
   // This probably should be considered a mul type, but notation wise, it's
   // a add type.  Keeping this as an add type to keep precedence consistent
@@ -361,8 +362,20 @@ trait_add_type ->
 
 // XXX: how to deal with trait decl / impl?
 
-// TODO
-implicit_struct_type -> LPAREN /* TODO */ RPAREN
+field_decl ->
+  explicit: IDENTIFIER value_type |
+  implicit: value_type
+
+field_decls ->
+  field_decl |
+  implicit: field_decls NEWLINES field_decl |
+  explicit: field_decls COMMA field_decl
+
+optional_field_decls ->
+  field_decls |
+  nil:
+
+implicit_struct_type -> LPAREN optional_field_decls RPAREN
 
 // TODO declare implements ( interface list )
 explicit_struct_type -> STRUCT implicit_struct_type
@@ -374,6 +387,7 @@ explicit_enum_type -> ENUM LPAREN /* TODO */ RPAREN
 
 func_type ->
   trait_add_type |
+  reference: BIT_AND trait_add_type |
   explicit_func_type
 
 value_type ->
@@ -383,10 +397,6 @@ value_type ->
 type_decl ->
   definition: TYPE IDENTIFIER optional_generic_parameter_decl value_type |
   alias: TYPE IDENTIFIER EQUAL value_type
-
-field_decl ->
-  explicit: IDENTIFIER value_type |
-  implicit: value_type
 
 parameter_decl ->
   field_decl |
