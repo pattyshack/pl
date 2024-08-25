@@ -81,12 +81,12 @@
 %type lex_internal_tokens
 
 %type type_decl
-%type value_type atom_type traitable_type trait_intersect_type trait_union_type
+%type value_type atom_type traitable_type trait_mul_type trait_add_type
 %type func_type
 %type explicit_struct_type implicit_struct_type trait_type
 %type explicit_enum_type
 
-%type func_def func_decl implicit_func_type explicit_func_type
+%type func_def explicit_func_decl implicit_func_decl implicit_func_type explicit_func_type
 
 %type package_decl
 %type package_statement package_statement_body
@@ -174,7 +174,6 @@ prefix_unary_op ->
 prefix_unary_expr ->
   postfix_unary_expr |
   prefix_op: prefix_unary_op prefix_unary_expr
-
 
 mul_op ->
   MUL |
@@ -347,27 +346,34 @@ traitable_type ->
   method_interface: EXCLAIM atom_type |  // atom type's public method
   trait: EXCLAIM_EXCLAIM atom_type  // atom type's public method and field
 
-trait_intersect_type ->
+trait_mul_type ->
   traitable_type |
-  intersect: trait_intersect_type BIT_AND traitable_type |
-  difference: trait_intersect_type SUB traitable_type
+  intersect: trait_mul_type BIT_AND traitable_type
 
-trait_union_type ->
-  trait_intersect_type |
-  union: trait_union_type BIT_OR trait_intersect_type
+trait_add_type ->
+  trait_mul_type |
+  union: trait_add_type BIT_OR trait_mul_type |
+
+  // This probably should be considered a mul type, but notation wise, it's
+  // a add type.  Keeping this as an add type to keep precedence consistent
+  // with expression.
+  difference: trait_add_type SUB trait_mul_type
+
+// XXX: how to deal with trait decl / impl?
 
 // TODO
 implicit_struct_type -> LPAREN /* TODO */ RPAREN
 
+// TODO declare implements ( interface list )
 explicit_struct_type -> STRUCT implicit_struct_type
 
-trait_type -> TRAIT implicit_struct_type
+trait_type -> TRAIT LPAREN /* TODO */ RPAREN
 
 // TODO
 explicit_enum_type -> ENUM LPAREN /* TODO */ RPAREN
 
 func_type ->
-  trait_union_type |
+  trait_add_type |
   explicit_func_type
 
 value_type ->
@@ -416,10 +422,13 @@ optional_receiver ->
   receiver: LPAREN parameter_decl RPAREN |
   nil:
 
-func_decl ->
-  FUNC optional_receiver IDENTIFIER optional_generic_parameter_decl implicit_func_type
+implicit_func_decl ->
+  IDENTIFIER optional_generic_parameter_decl implicit_func_type
 
-func_def -> func_decl block_body
+explicit_func_decl ->
+  FUNC optional_receiver implicit_func_decl
+
+func_def -> explicit_func_decl block_body
 
 package_decl ->
   no_spec: PACKAGE IDENTIFIER |
