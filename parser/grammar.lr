@@ -68,12 +68,12 @@
 %type binary_op_assign // += -= etc.
 
 %type generic_parameters optional_generic_parameters
-%type generic_arguments
+%type generic_arguments optional_generic_arguments
 
 %type field_decl parameter_decl
 %type parameters non_empty_parameters vararg optional_vararg optional_receiver
 
-%type arguments
+%type argument arguments optional_arguments
 %type expression_or_implicit_struct optional_expression_or_implicit_struct
 
 %type lex_internal_tokens
@@ -119,15 +119,30 @@ atom_expr ->
   anonymous_struct_expr |
   LEX_ERROR
 
-// TODO
+// XXX allow named generic argument?
 generic_arguments ->
+  value_type |
+  add: generic_arguments COMMA value_type
 
-// TODO
+optional_generic_arguments ->
+  generic_arguments |
+  nil:
+
+// TODO, named arugments, associative ":" tuples
+argument ->
+  positional: expression
+
 arguments ->
+  argument |
+  add: arguments COMMA argument
+
+optional_arguments ->
+  arguments |
+  nil:
 
 call_expr ->
   concrete: access_expr LPAREN arguments RPAREN |
-  generic: access_expr DOLLAR_LBRACE generic_arguments RBRACE LPAREN arguments RPAREN
+  generic: access_expr DOLLAR_LBRACE optional_generic_arguments RBRACE LPAREN optional_arguments RPAREN
 
 access_expr ->
   atom_expr |
