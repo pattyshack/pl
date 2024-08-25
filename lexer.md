@@ -181,8 +181,10 @@ break
 ,
 :
 ;
+?
+$[
 
-// unused: \ @ # $ ?
+// unused: \ #
 ```
 
 ### Label
