@@ -3,20 +3,27 @@
 
 %token COMMENT // //-style or /**/-style comment
 
-%token BOOL_LITERAL INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
-
-%token LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
-%token GENERIC_LBRACE // $[
-%token DOT COMMA QUESTION SEMICOLON DOTDOTDOT
+%token INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
 
 %token IDENTIFIER
-%token IF ELSE MATCH CASE DEFAULT FOR
+%token TRUE FALSE
+%token IF ELSE SWITCH CASE DEFAULT FOR
 %token RETURN BREAK CONTINUE
+
+%token PACKAGE
+
+%token UNSAFE
 
 %token TYPE STRUCT ENUM
 %token FUNC ASYNC
 
-%token LABEL_DECL JUMP_LABEL
+%token LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
+%token DOT COMMA QUESTION SEMICOLON // COLON
+%token DOLLAR_LBRACE // $[
+%token DOTDOTDOT // ...
+
+%token LABEL_DECL // <identifier>@
+%token JUMP_LABEL // @<identifier>
 
 %token ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %token ADD_ONE_ASSIGN SUB_ONE_ASSIGN
@@ -36,7 +43,7 @@
 
 %type expression
 %type block_body block_expr
-%type sequence_expr if_expr match_expr loop_expr
+%type sequence_expr if_expr switch_expr loop_expr
 
 %type anonymous_func_expr anonymous_struct_expr
 
@@ -48,7 +55,7 @@
 %type mul_expr add_expr cmp_expr and_expr or_expr
 
 %type jump_type
-%type statement statement_body
+%type statement statement_body unsafe_statement
 %type statements
 
 %type unary_op  // - ~ not * &
@@ -62,7 +69,7 @@
 %type generic_parameters optional_generic_parameters
 %type generic_arguments
 
-%type parameter_decl
+%type field_decl parameter_decl
 %type parameters non_empty_parameters vararg optional_vararg optional_receiver
 
 %type arguments
@@ -77,10 +84,15 @@
 
 %type func_def func_decl implicit_func_type explicit_func_type
 
-%start type_decl func_def expression lex_internal_tokens
+%type package_decl
+%type package_statement package_statement_body
+%type package_statements
+
+%start package_decl type_decl func_def expression lex_internal_tokens
 
 literal ->
-  BOOL_LITERAL |
+  TRUE |
+  FALSE |
   INTEGER_LITERAL |
   FLOAT_LITERAL |
   RUNE_LITERAL |
@@ -114,7 +126,7 @@ arguments ->
 
 call_expr ->
   concrete: access_expr LPAREN arguments RPAREN |
-  generic: access_expr GENERIC_LBRACE generic_arguments RBRACE LPAREN arguments RPAREN
+  generic: access_expr DOLLAR_LBRACE generic_arguments RBRACE LPAREN arguments RPAREN
 
 access_expr ->
   atom_expr |
@@ -216,7 +228,13 @@ expression_or_implicit_struct ->
   expression |
   implicit_struct: expression_or_implicit_struct COMMA expression
 
+// escape hatch to get a basic compiler/transpiler running.
+// unsafe<go> "emit verbatim go source"
+unsafe_statement -> UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
+
 statement_body ->
+  unsafe_statement |
+
   expression_or_implicit_struct |
 
   async: ASYNC call_expr |  // returns an await handler
@@ -261,7 +279,7 @@ if_expr ->
   multi_if_else: IF sequence_expr block_body ELSE if_expr
 
 // TODO
-match_expr -> MATCH CASE DEFAULT
+switch_expr -> SWITCH CASE DEFAULT
 
 loop_expr ->
   infinite: FOR block_expr |
@@ -273,14 +291,14 @@ loop_expr ->
 expression ->
   sequence_expr |
   if_expr: optional_label_decl if_expr |
-  match_expr: optional_label_decl match_expr |
+  switch_expr: optional_label_decl switch_expr |
   loop_expr: optional_label_decl loop_expr
 
 // TODO
 generic_parameters ->
 
 optional_generic_parameters ->
-  generic: GENERIC_LBRACE generic_parameters RBRACE |
+  generic: DOLLAR_LBRACE generic_parameters RBRACE |
   nil:
 
 atom_type ->
@@ -310,9 +328,12 @@ type_decl ->
   definition: TYPE IDENTIFIER optional_generic_parameters value_type |
   alias: TYPE IDENTIFIER EQUAL value_type
 
-parameter_decl ->
+field_decl ->
   explicit: IDENTIFIER value_type |
-  implicit: value_type |
+  implicit: value_type
+
+parameter_decl ->
+  field_decl |
   inferred: IDENTIFIER QUESTION
 
 non_empty_parameters ->
@@ -349,6 +370,20 @@ func_decl ->
   FUNC optional_receiver IDENTIFIER optional_generic_parameters implicit_func_type
 
 func_def -> func_decl block_body
+
+package_decl ->
+  no_spec: PACKAGE IDENTIFIER |
+  with_spec: PACKAGE IDENTIFIER LPAREN package_statements RPAREN
+
+package_statement_body -> unsafe_statement
+
+package_statement ->
+  implicit: package_statement_body NEWLINES |
+  explicit: package_statement_body SEMICOLON
+
+package_statements ->
+  empty_list: |
+  add: package_statements package_statement
 
 // Note: auxillary tokens that are consumed by the lexer internally
 lex_internal_tokens ->
