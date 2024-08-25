@@ -19,7 +19,7 @@
 
 %token LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
 %token DOT COMMA QUESTION SEMICOLON // COLON
-%token DOLLAR_LBRACE // $[
+%token DOLLAR_LBRACKET // $[
 %token DOTDOTDOT // ...
 %token EXCLAIM EXCLAIM_EXCLAIM
 
@@ -67,8 +67,10 @@
 %type op_one_assign  // ++ --
 %type binary_op_assign // += -= etc.
 
+%type generic_parameter
 %type generic_parameters optional_generic_parameters
-%type generic_arguments optional_generic_arguments
+%type optional_generic_parameter_decl
+%type generic_arguments optional_generic_arguments optional_generic_binding
 
 %type field_decl parameter_decl
 %type parameters non_empty_parameters vararg optional_vararg optional_receiver
@@ -128,6 +130,10 @@ optional_generic_arguments ->
   generic_arguments |
   nil:
 
+optional_generic_binding ->
+  binding: DOLLAR_LBRACKET optional_generic_arguments RBRACKET |
+  nil:
+
 // TODO, named arugments, associative ":" tuples
 argument ->
   positional: expression
@@ -140,9 +146,7 @@ optional_arguments ->
   arguments |
   nil:
 
-call_expr ->
-  concrete: access_expr LPAREN arguments RPAREN |
-  generic: access_expr DOLLAR_LBRACE optional_generic_arguments RBRACE LPAREN optional_arguments RPAREN
+call_expr -> access_expr optional_generic_binding LPAREN optional_arguments RPAREN
 
 access_expr ->
   atom_expr |
@@ -314,15 +318,24 @@ expression ->
   switch_expr: optional_label_decl switch_expr |
   loop_expr: optional_label_decl loop_expr
 
-// TODO
+generic_parameter ->
+  unconstrained: IDENTIFIER |
+  constrained: IDENTIFIER value_type
+
 generic_parameters ->
+  generic_parameter |
+  add: generic_parameters COMMA generic_parameter
 
 optional_generic_parameters ->
-  generic: DOLLAR_LBRACE generic_parameters RBRACE |
+  generic_parameters |
+  nil:
+
+optional_generic_parameter_decl ->
+  generic: DOLLAR_LBRACKET optional_generic_parameters RBRACKET |
   nil:
 
 atom_type ->
-  named: IDENTIFIER optional_generic_parameters |
+  named: IDENTIFIER optional_generic_binding |
   explicit_struct_type |
   implicit_struct_type |
   explicit_enum_type |
@@ -357,7 +370,7 @@ value_type ->
   implicit_enum: value_type OR trait_union_type
 
 type_decl ->
-  definition: TYPE IDENTIFIER optional_generic_parameters value_type |
+  definition: TYPE IDENTIFIER optional_generic_parameter_decl value_type |
   alias: TYPE IDENTIFIER EQUAL value_type
 
 field_decl ->
@@ -399,7 +412,7 @@ optional_receiver ->
   nil:
 
 func_decl ->
-  FUNC optional_receiver IDENTIFIER optional_generic_parameters implicit_func_type
+  FUNC optional_receiver IDENTIFIER optional_generic_parameter_decl implicit_func_type
 
 func_def -> func_decl block_body
 
