@@ -162,6 +162,14 @@ Any  // alias for trait{}
 Never // a special trait that's never implementable.  used for type checking only (for jump statements, non-returning functions such as panic, etc.)
 ```
 
+generalized "method" signature
+
+```
+trait{
+  Foo(int) int  // This can be either a method, or a Foo callable object field.  The default trait implementation must be a method 
+}
+```
+
 ===
 
 func type
