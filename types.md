@@ -152,8 +152,8 @@ trait{
 // trait set difference
 <trait1> - <trait2>
 
-// use [] for set operator precedence, since () is reserved for struct
-<trait3> & [<trait1> | <trait2>]
+// use trait() for set operator precedence, since () is reserved for struct
+<trait3> & trait(<trait1> | <trait2>)
 ```
 
 ```
