@@ -21,6 +21,7 @@
 %token DOT COMMA QUESTION SEMICOLON // COLON
 %token DOLLAR_LBRACE // $[
 %token DOTDOTDOT // ...
+%token EXCLAIM EXCLAIM_EXCLAIM
 
 %token LABEL_DECL // <identifier>@
 %token JUMP_LABEL // @<identifier>
@@ -78,9 +79,9 @@
 %type lex_internal_tokens
 
 %type type_decl
-%type value_type atom_type
+%type value_type atom_type traitable_type trait_intersect_type trait_union_type
 %type explicit_struct_type implicit_struct_type
-%type explicit_enum_type implicit_enum_type
+%type explicit_enum_type
 
 %type func_def func_decl implicit_func_type explicit_func_type
 
@@ -307,6 +308,20 @@ atom_type ->
   implicit_struct_type |
   explicit_enum_type
 
+traitable_type ->
+  atom_type |
+  method_interface: EXCLAIM atom_type |  // atom type's public method
+  trait: EXCLAIM_EXCLAIM atom_type  // atom type's public method and field
+
+trait_intersect_type ->
+  traitable_type |
+  intersect: trait_intersect_type BIT_AND traitable_type |
+  difference: trait_intersect_type SUB traitable_type
+
+trait_union_type ->
+  trait_intersect_type |
+  union: trait_union_type BIT_OR trait_intersect_type
+
 // TODO
 implicit_struct_type -> LPAREN /* TODO */ RPAREN
 
@@ -316,13 +331,9 @@ explicit_struct_type ->
 // TODO
 explicit_enum_type -> ENUM LPAREN /* TODO */ RPAREN
 
-implicit_enum_type ->
-  pair: atom_type OR atom_type |
-  add: implicit_enum_type OR atom_type
-
 value_type ->
-  atom_type |
-  implicit_enum_type
+  trait_union_type |
+  implicit_enum: value_type OR trait_union_type
 
 type_decl ->
   definition: TYPE IDENTIFIER optional_generic_parameters value_type |
