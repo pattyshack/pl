@@ -111,7 +111,7 @@ Complex / Imaginary number
 
 ### Identifier
 
-TODO: improve non-ascii unicode handling
+TODO: improve non-ascii unicode handling (e.g., adopt golang or swift's identifier convention)
 ```
 letter = [_a-zA-Z] | {non-ascii rune}
 
