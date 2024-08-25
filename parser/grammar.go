@@ -467,10 +467,10 @@ type Reducer interface {
 	ToExplicitEnumType(Enum_ *GenericSymbol, Lparen_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 320:2: implicit_enum_type -> pair: ...
-	PairToImplicitEnumType(AtomType_ *GenericSymbol, BitOr_ *GenericSymbol, AtomType_2 *GenericSymbol) (*GenericSymbol, error)
+	PairToImplicitEnumType(AtomType_ *GenericSymbol, Or_ *GenericSymbol, AtomType_2 *GenericSymbol) (*GenericSymbol, error)
 
 	// 321:2: implicit_enum_type -> add: ...
-	AddToImplicitEnumType(ImplicitEnumType_ *GenericSymbol, BitOr_ *GenericSymbol, AtomType_ *GenericSymbol) (*GenericSymbol, error)
+	AddToImplicitEnumType(ImplicitEnumType_ *GenericSymbol, Or_ *GenericSymbol, AtomType_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 324:2: value_type -> atom_type: ...
 	AtomTypeToValueType(AtomType_ *GenericSymbol) (*GenericSymbol, error)
@@ -3592,8 +3592,8 @@ var _ActionTable = _ActionTableType{
 	{_State104, ExplicitEnumTypeType}:                   _GotoState106Action,
 	{_State104, ImplicitEnumTypeType}:                   _GotoState109Action,
 	{_State104, ValueTypeType}:                          _GotoState146Action,
-	{_State105, BitOrToken}:                             _GotoState147Action,
-	{_State109, BitOrToken}:                             _GotoState148Action,
+	{_State105, OrToken}:                                _GotoState147Action,
+	{_State109, OrToken}:                                _GotoState148Action,
 	{_State111, RparenToken}:                            _GotoState149Action,
 	{_State113, DollarLbraceToken}:                      _GotoState100Action,
 	{_State113, OptionalGenericParametersType}:          _GotoState150Action,
@@ -5394,12 +5394,12 @@ Parser Debug States:
 
   State 105:
     Kernel Items:
-      implicit_enum_type: atom_type.BIT_OR atom_type
+      implicit_enum_type: atom_type.OR atom_type
       value_type: atom_type., $
     Reduce:
       $ -> [value_type]
     Goto:
-      BIT_OR -> State 147
+      OR -> State 147
 
   State 106:
     Kernel Items:
@@ -5427,12 +5427,12 @@ Parser Debug States:
 
   State 109:
     Kernel Items:
-      implicit_enum_type: implicit_enum_type.BIT_OR atom_type
+      implicit_enum_type: implicit_enum_type.OR atom_type
       value_type: implicit_enum_type., $
     Reduce:
       $ -> [value_type]
     Goto:
-      BIT_OR -> State 148
+      OR -> State 148
 
   State 110:
     Kernel Items:
@@ -5844,7 +5844,7 @@ Parser Debug States:
 
   State 147:
     Kernel Items:
-      implicit_enum_type: atom_type BIT_OR.atom_type
+      implicit_enum_type: atom_type OR.atom_type
     Reduce:
       (nil)
     Goto:
@@ -5859,7 +5859,7 @@ Parser Debug States:
 
   State 148:
     Kernel Items:
-      implicit_enum_type: implicit_enum_type BIT_OR.atom_type
+      implicit_enum_type: implicit_enum_type OR.atom_type
     Reduce:
       (nil)
     Goto:
@@ -6230,7 +6230,7 @@ Parser Debug States:
 
   State 182:
     Kernel Items:
-      implicit_enum_type: atom_type BIT_OR atom_type., *
+      implicit_enum_type: atom_type OR atom_type., *
     Reduce:
       * -> [implicit_enum_type]
     Goto:
@@ -6238,7 +6238,7 @@ Parser Debug States:
 
   State 183:
     Kernel Items:
-      implicit_enum_type: implicit_enum_type BIT_OR atom_type., *
+      implicit_enum_type: implicit_enum_type OR atom_type., *
     Reduce:
       * -> [implicit_enum_type]
     Goto:

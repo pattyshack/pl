@@ -317,8 +317,8 @@ explicit_struct_type ->
 explicit_enum_type -> ENUM LPAREN /* TODO */ RPAREN
 
 implicit_enum_type ->
-  pair: atom_type BIT_OR atom_type |
-  add: implicit_enum_type BIT_OR atom_type
+  pair: atom_type OR atom_type |
+  add: implicit_enum_type OR atom_type
 
 value_type ->
   atom_type |
