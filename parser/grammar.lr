@@ -81,13 +81,13 @@
 %type type_def
 %type value_type atom_type traitable_type trait_mul_type trait_add_type
 
-%type explicit_enum_type implicit_enum_type
-%type field_def_or_list
-
 %type explicit_struct_def implicit_struct_def
 %type field_def
-%type field_defs optional_field_defs
+%type implicit_field_defs optional_implicit_field_defs
+%type explicit_field_defs optional_explicit_field_defs
 
+%type explicit_enum_def implicit_enum_def
+%type implicit_enum_value_defs explicit_enum_value_defs
 
 %type trait_def
 %type trait_property trait_properties optional_trait_properties
@@ -329,8 +329,8 @@ atom_type ->
   named: IDENTIFIER optional_generic_binding |
   explicit_struct_def |
   implicit_struct_def |
-  explicit_enum_type |
-  implicit_enum_type |
+  explicit_enum_def |
+  implicit_enum_def |
   trait_def |
   QUESTION
 
@@ -351,16 +351,6 @@ trait_add_type ->
   // a add type.  Keeping this as an add type to keep precedence consistent
   // with expression.
   difference: trait_add_type SUB trait_mul_type
-
-field_def_or_list ->
-  pair: field_def OR field_def |
-  add: field_def_or_list OR field_def
-
-// XXX: Should unify the syntax with explicit enum ?
-implicit_enum_type -> LPAREN field_def_or_list RPAREN
-
-// TODO
-explicit_enum_type -> ENUM LPAREN RPAREN
 
 value_type ->
   trait_add_type |
@@ -400,18 +390,47 @@ field_def ->
   explicit: IDENTIFIER value_type |
   implicit: value_type
 
-field_defs ->
+implicit_field_defs ->
   field_def |
-  implicit: field_defs NEWLINES field_def |
-  explicit: field_defs COMMA field_def
+  add: implicit_field_defs COMMA field_def
 
-optional_field_defs ->
-  field_defs |
+optional_implicit_field_defs ->
+  implicit_field_defs |
   nil:
 
-implicit_struct_def -> LPAREN optional_field_defs RPAREN
+implicit_struct_def -> LPAREN optional_implicit_field_defs RPAREN
 
-explicit_struct_def -> STRUCT implicit_struct_def
+explicit_field_defs ->
+  field_def |
+  implicit: explicit_field_defs NEWLINES field_def |
+  explicit: explicit_field_defs COMMA field_def
+
+optional_explicit_field_defs ->
+  explicit_field_defs |
+  nil:
+
+explicit_struct_def -> STRUCT LPAREN optional_explicit_field_defs RPAREN
+
+//
+// Explicit/Implicit enum definition
+//
+
+// NOTE: for now, enum value must have a data type.
+// XXX: maybe allow "_" for no data?
+
+implicit_enum_value_defs ->
+  pair: field_def OR field_def |
+  add: implicit_enum_value_defs OR field_def
+
+implicit_enum_def -> LPAREN implicit_enum_value_defs RPAREN
+
+explicit_enum_value_defs ->
+  explicit_pair: field_def OR field_def |
+  implicit_pair: field_def NEWLINES field_def |
+  explicit_add: implicit_enum_value_defs OR field_def |
+  implicit_add: implicit_enum_value_defs NEWLINES field_def
+
+explicit_enum_def -> ENUM LPAREN explicit_enum_value_defs RPAREN
 
 //
 // Trait definition
