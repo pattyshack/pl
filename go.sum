@@ -4,6 +4,10 @@ github.com/pattyshack/gt v0.0.0-20240813061145-b924174b971d h1:ZwenbgbNoFWnq5ax+
 github.com/pattyshack/gt v0.0.0-20240813061145-b924174b971d/go.mod h1:Gypv/PFXKmu4auYDN2OHH1LiW/l3zUeYK/kGpJGZQqg=
 github.com/pattyshack/gt v0.0.0-20240822073158-d668bbb44342 h1:JLYpmYa2hc0Hio0Pg5Fsiimz4B85QESfOBkVLOjp78M=
 github.com/pattyshack/gt v0.0.0-20240822073158-d668bbb44342/go.mod h1:Gypv/PFXKmu4auYDN2OHH1LiW/l3zUeYK/kGpJGZQqg=
+github.com/pattyshack/gt v0.0.0-20240826222822-081d314b7180 h1:gz5IvywKCQpplAk4zW9sqN5OBLoq48Y74s4DZsMFyQ4=
+github.com/pattyshack/gt v0.0.0-20240826222822-081d314b7180/go.mod h1:Gypv/PFXKmu4auYDN2OHH1LiW/l3zUeYK/kGpJGZQqg=
+github.com/pattyshack/gt v0.0.0-20240826224521-b154c42bab9c h1:aD4l1eMAoWCyEMFOYX25ZhUcgskm/I/3ThLAE5uSCkk=
+github.com/pattyshack/gt v0.0.0-20240826224521-b154c42bab9c/go.mod h1:Gypv/PFXKmu4auYDN2OHH1LiW/l3zUeYK/kGpJGZQqg=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=

@@ -14,17 +14,17 @@
 
 %token UNSAFE
 
-%token TYPE STRUCT ENUM TRAIT IMPLEMENTS
+%token TYPE IMPLEMENTS STRUCT ENUM TRAIT
 %token FUNC ASYNC
+
+%token LABEL_DECL // <identifier>@
+%token JUMP_LABEL // @<identifier>
 
 %token LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
 %token DOT COMMA QUESTION SEMICOLON COLON
 %token DOLLAR_LBRACKET // $[
 %token DOTDOTDOT // ...
 %token TILDE_TILDE
-
-%token LABEL_DECL // <identifier>@
-%token JUMP_LABEL // @<identifier>
 
 %token ASSIGN
 
@@ -40,87 +40,187 @@
 
 %token LEX_ERROR
 
-%type optional_label_decl optional_jump_label
-
-%type literal
-
-%type expression
-%type block_body block_expr
-%type sequence_expr if_expr switch_expr loop_expr
-
-%type anonymous_struct_expr
-
-%type call_expr
-
-// expression in decreasing precedence
-%type atom_expr access_expr
-%type postfix_unary_expr prefix_unary_expr
-%type mul_expr add_expr cmp_expr and_expr or_expr
-
-%type jump_type
-%type statement statement_body unsafe_statement
-%type statements
-
-%type prefix_unary_op  // - ~ not * &
-%type mul_op // * / % & << >>
-%type add_op // + - | ^
-%type cmp_op // == != < <= > >=
-
-%type op_one_assign  // ++ --
-%type binary_op_assign // += -= etc.
-
-%type generic_arguments optional_generic_arguments optional_generic_binding
-
-%type generic_parameter_def
-%type generic_parameter_defs optional_generic_parameter_defs
-%type optional_generic_parameters
-
-%type argument arguments optional_arguments
-%type colon_expressions optional_expression
-%type expression_or_implicit_struct optional_expression_or_implicit_struct
-
-%type lex_internal_tokens
-
-%type type_def
-%type value_type atom_type traitable_type trait_algebra_type
-
-%type explicit_struct_def implicit_struct_def
-%type field_def
-%type implicit_field_defs optional_implicit_field_defs
-%type explicit_field_defs optional_explicit_field_defs
-
-%type explicit_enum_def implicit_enum_def
-%type enum_value_def
-%type implicit_enum_value_defs explicit_enum_value_defs
-
-%type trait_def
-%type trait_property trait_properties optional_trait_properties
-
-%type func_type named_func_def method_signature anonymous_func_expr
-%type return_type
-%type parameter_decl
-%type parameter_decls optional_parameter_decls
-%type parameter_def
-%type parameter_defs optional_parameter_defs
-%type optional_receiver
-
-%type package_def
-%type package_statement package_statement_body
-%type package_statements
-
 %start package_def type_def trait_def named_func_def expression lex_internal_tokens
 
-literal ->
-  TRUE |
-  FALSE |
-  INTEGER_LITERAL |
-  FLOAT_LITERAL |
-  RUNE_LITERAL |
-  STRING_LITERAL
+//
+// Expressions ================================================================
+//
 
-anonymous_struct_expr ->
-  explicit: explicit_struct_def LPAREN arguments RPAREN |
-  implicit: LPAREN arguments RPAREN
+expression ->
+  if_expr: optional_label_decl if_expr |
+  switch_expr: optional_label_decl switch_expr |
+  loop_expr: optional_label_decl loop_expr |
+  sequence_expr
+
+optional_label_decl ->
+  LABEL_DECL |
+  unlabelled:
+
+//
+// If control flow expression
+//
+
+// NOTE: label is applied to the entire if expression rather than individual
+// branches.
+if_expr ->
+  no_else: IF sequence_expr block_body |
+  if_else: IF sequence_expr block_body ELSE block_body |
+  multi_if_else: IF sequence_expr block_body ELSE if_expr
+
+//
+// Switch control flow expression
+//
+
+// TODO
+switch_expr -> SWITCH sequence_expr LBRACE CASE DEFAULT RBRACE
+
+//
+// For control flow expression
+//
+
+loop_expr ->
+  infinite: FOR block_expr |
+  while: FOR sequence_expr block_expr
+  // TODO: FOR optional_assignment SEMICOLON sequence_expr SEMICOLON sequence_expr block_expr
+  // TODO FOR let_decl IN sequence_expr block_expr
+
+//
+// Block / sequence control flow expressions
+//
+
+sequence_expr -> or_expr
+
+block_expr -> optional_label_decl block_body
+
+block_body -> LBRACE statements RBRACE
+
+statements ->
+  empty_list: |
+  add: statements statement
+
+statement ->
+  implicit: statement_body NEWLINES |
+  explicit: statement_body SEMICOLON
+
+statement_body ->
+  unsafe_statement |
+
+  expression_or_implicit_struct: expressions |
+
+  async: ASYNC call_expr |  // returns an await handler
+  // - compiler should optimize away the await handler if it's not used.
+
+  jump_statement |
+
+  // TODO assignment. something like
+  // var <variable pattern> = [optional ASYNC] expression
+  //
+  // var fixed x = 5
+  // x is not reassignable after initial assignment.
+  // if x behaves like a constant if the object reference is immutable, and no
+  // field are publically accessible.
+
+  // NOTE: assignment can only operate on proper address values.  Additional
+  // checks are applied during post analysis.
+  unary_op_assign_statement: access_expr unary_op_assign |
+  binary_op_assign_statement: access_expr binary_op_assign expression
+
+//
+// Assign statements
+//
+
+unary_op_assign ->
+  ADD_ONE_ASSIGN |
+  SUB_ONE_ASSIGN
+
+binary_op_assign ->
+  ADD_ASSIGN |
+  SUB_ASSIGN |
+  MUL_ASSIGN |
+  DIV_ASSIGN |
+  MOD_ASSIGN |
+  BIT_NEG_ASSIGN |
+  BIT_AND_ASSIGN |
+  BIT_OR_ASSIGN |
+  BIT_XOR_ASSIGN |
+  BIT_LSHIFT_ASSIGN |
+  BIT_RSHIFT_ASSIGN
+
+//
+// Unsafe statement
+//
+
+// escape hatch to get a basic compiler/transpiler running.
+// unsafe<go> "emit verbatim go source"
+unsafe_statement -> UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
+
+//
+// Jump statement
+//
+
+jump_statement ->
+  jump_type optional_jump_label optional_expressions
+
+jump_type ->
+  RETURN |
+  BREAK |
+  CONTINUE
+
+optional_jump_label ->
+  JUMP_LABEL |
+  unlabelled:
+
+expressions ->
+  expression |
+  add: expressions COMMA expression
+
+optional_expressions ->
+  expressions |
+  nil:
+
+//
+// Call expression
+//
+
+call_expr -> access_expr optional_generic_binding LPAREN optional_arguments RPAREN
+
+optional_generic_binding ->
+  binding: DOLLAR_LBRACKET optional_generic_arguments RBRACKET |
+  nil:
+
+optional_generic_arguments ->
+  generic_arguments |
+  nil:
+
+// XXX allow named generic argument?
+generic_arguments ->
+  value_type |
+  add: generic_arguments COMMA value_type
+
+optional_arguments ->
+  arguments |
+  nil:
+
+arguments ->
+  argument |
+  add: arguments COMMA argument
+
+argument ->
+  positional: expression |
+  named: IDENTIFIER ASSIGN expression |
+  colon_expressions
+
+colon_expressions ->
+  pair: optional_expression COLON optional_expression |
+  add: colon_expressions COLON optional_expression
+
+optional_expression ->
+  expression |
+  nil:
+
+//
+// Simple expressions (in decreasing order precedence)
+//
 
 // TODO cast
 // TODO type isa check
@@ -133,41 +233,17 @@ atom_expr ->
   anonymous_struct_expr |
   LEX_ERROR
 
-// XXX allow named generic argument?
-generic_arguments ->
-  value_type |
-  add: generic_arguments COMMA value_type
+literal ->
+  TRUE |
+  FALSE |
+  INTEGER_LITERAL |
+  FLOAT_LITERAL |
+  RUNE_LITERAL |
+  STRING_LITERAL
 
-optional_generic_arguments ->
-  generic_arguments |
-  nil:
-
-optional_generic_binding ->
-  binding: DOLLAR_LBRACKET optional_generic_arguments RBRACKET |
-  nil:
-
-optional_expression ->
-  expression |
-  nil:
-
-colon_expressions ->
-  pair: optional_expression COLON optional_expression |
-  add: colon_expressions COLON optional_expression
-
-argument ->
-  positional: expression |
-  named: IDENTIFIER ASSIGN expression |
-  colon_expressions
-
-arguments ->
-  argument |
-  add: arguments COMMA argument
-
-optional_arguments ->
-  arguments |
-  nil:
-
-call_expr -> access_expr optional_generic_binding LPAREN optional_arguments RPAREN
+anonymous_struct_expr ->
+  explicit: explicit_struct_def LPAREN arguments RPAREN |
+  implicit: LPAREN arguments RPAREN
 
 access_expr ->
   atom_expr |
@@ -236,109 +312,8 @@ or_expr ->
   and_expr |
   op: or_expr OR and_expr
 
-sequence_expr -> or_expr
-
-optional_jump_label ->
-  JUMP_LABEL |
-  unlabelled:
-
-optional_expression_or_implicit_struct ->
-  expression_or_implicit_struct |
-  nil:
-
-jump_type ->
-  RETURN |
-  BREAK |
-  CONTINUE
-
-op_one_assign ->
-  ADD_ONE_ASSIGN |
-  SUB_ONE_ASSIGN
-
-binary_op_assign ->
-  ADD_ASSIGN |
-  SUB_ASSIGN |
-  MUL_ASSIGN |
-  DIV_ASSIGN |
-  MOD_ASSIGN |
-  BIT_NEG_ASSIGN |
-  BIT_AND_ASSIGN |
-  BIT_OR_ASSIGN |
-  BIT_XOR_ASSIGN |
-  BIT_LSHIFT_ASSIGN |
-  BIT_RSHIFT_ASSIGN
-
-expression_or_implicit_struct ->
-  expression |
-  implicit_struct: expression_or_implicit_struct COMMA expression
-
-// escape hatch to get a basic compiler/transpiler running.
-// unsafe<go> "emit verbatim go source"
-unsafe_statement -> UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
-
-statement_body ->
-  unsafe_statement |
-
-  expression_or_implicit_struct |
-
-  async: ASYNC call_expr |  // returns an await handler
-  // - compiler should optimize away the await handler if it's not used.
-
-  jump: jump_type optional_jump_label optional_expression_or_implicit_struct |
-
-  // TODO assignment. something like
-  // var <variable pattern> = [optional ASYNC] expression
-  //
-  // var fixed x = 5
-  // x is not reassignable after initial assignment.
-  // if x behaves like a constant if the object reference is immutable, and no
-  // field are publically accessible.
-
-  // NOTE: both op_one_assign and binary_op_assign can only operate on
-  // proper address values.  Additional checks are applied during reduction or
-  // post parse analysis.
-  op_one_assign: access_expr op_one_assign |
-  binary_op_assign: access_expr binary_op_assign expression
-
-statement ->
-  implicit: statement_body NEWLINES |
-  explicit: statement_body SEMICOLON
-
-statements ->
-  empty_list: |
-  add: statements statement
-
-optional_label_decl ->
-  LABEL_DECL |
-  unlabelled:
-
-block_body -> LBRACE statements RBRACE
-block_expr -> optional_label_decl block_body
-
-// NOTE: label is applied to the entire if expression rather than individual
-// branches.
-if_expr ->
-  no_else: IF sequence_expr block_body |
-  if_else: IF sequence_expr block_body ELSE block_body |
-  multi_if_else: IF sequence_expr block_body ELSE if_expr
-
-// TODO
-switch_expr -> SWITCH sequence_expr LBRACE CASE DEFAULT RBRACE
-
-loop_expr ->
-  infinite: FOR block_expr |
-  while: FOR sequence_expr block_expr
-  // TODO: FOR optional_assignment SEMICOLON sequence_expr SEMICOLON sequence_expr block_expr
-  // TODO FOR let_decl IN sequence_expr block_expr
-
-expression ->
-  sequence_expr |
-  if_expr: optional_label_decl if_expr |
-  switch_expr: optional_label_decl switch_expr |
-  loop_expr: optional_label_decl loop_expr
-
 //
-// Type declarations and definitions
+// Types ======================================================================
 //
 
 atom_type ->
@@ -376,6 +351,7 @@ type_def ->
 // Generic parameter definition
 //
 
+// XXX: allow default generic parameter value?
 generic_parameter_def ->
   unconstrained: IDENTIFIER |
   constrained: IDENTIFIER value_type
@@ -521,7 +497,7 @@ anonymous_func_expr ->
   FUNC LPAREN optional_parameter_defs RPAREN return_type block_body
 
 //
-// Package definition
+// Package definition =========================================================
 //
 
 package_def ->
