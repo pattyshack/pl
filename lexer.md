@@ -101,6 +101,26 @@ r`can use " """ with backtick delimiter`
 Note: no example for triple-backticks cuz github's markdown can't escape triple-backticks correctly
 ```
 
+XXX: maybe adopt swift-style string literal instead?  In particular, multi-line leading space triming.
+```
+// The whitespace before the closing quotation marks tells the compiler what whitespace
+// to ignore before all of the other lines.
+
+abc = """
+    My string
+      line 2
+    ""
+
+// is eqv to
+
+asdf = """
+My string
+  line 2
+"""
+
+// also eqv to "My string\n  line 2"
+```
+
 ### Other potential literals?
 
 Complex / Imaginary number
