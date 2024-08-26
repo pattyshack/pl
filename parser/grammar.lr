@@ -82,7 +82,7 @@
 %type lex_internal_tokens
 
 %type type_def
-%type value_type atom_type traitable_type trait_mul_type trait_add_type
+%type value_type atom_type traitable_type trait_algebra_type
 
 %type explicit_struct_def implicit_struct_def
 %type field_def
@@ -323,7 +323,7 @@ if_expr ->
   multi_if_else: IF sequence_expr block_body ELSE if_expr
 
 // TODO
-switch_expr -> SWITCH LBRACE CASE DEFAULT RBRACE
+switch_expr -> SWITCH sequence_expr LBRACE CASE DEFAULT RBRACE
 
 loop_expr ->
   infinite: FOR block_expr |
@@ -337,6 +337,10 @@ expression ->
   switch_expr: optional_label_decl switch_expr |
   loop_expr: optional_label_decl loop_expr
 
+//
+// Type declarations and definitions
+//
+
 atom_type ->
   named: IDENTIFIER optional_generic_binding |
   explicit_struct_def |
@@ -347,26 +351,20 @@ atom_type ->
 
 traitable_type ->
   atom_type |
-  method_interface: BIT_NEG atom_type |  // atom type's public method
-  trait: TILDE_TILDE atom_type  // atom type's public method and field
+  public_methods_trait: BIT_NEG atom_type |  // atom type's public methods
+  public_trait: TILDE_TILDE atom_type  // atom type's public methods and fields
 
-trait_mul_type ->
+// NOTE: use explicit trait() to specify op precedence e.g., trait(A+B) * C
+trait_algebra_type ->
   traitable_type |
-  intersect: trait_mul_type MUL traitable_type
-
-trait_add_type ->
-  trait_mul_type |
-  union: trait_add_type ADD trait_mul_type |
-
-  // This probably should be considered a mul type, but notation wise, it's
-  // a add type.  Keeping this as an add type to keep precedence consistent
-  // with expression.
-  difference: trait_add_type SUB trait_mul_type
+  intersect: trait_algebra_type MUL traitable_type |
+  union: trait_algebra_type ADD traitable_type |
+  difference: trait_algebra_type SUB traitable_type
 
 value_type ->
   inferred: QUESTION |
-  trait_add_type |
-  reference: BIT_AND trait_add_type |
+  trait_algebra_type |
+  reference: BIT_AND trait_algebra_type |
   func_type
 
 type_def ->
