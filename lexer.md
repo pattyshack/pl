@@ -109,6 +109,8 @@ XXX: maybe adopt swift-style string literal instead?  In particular, multi-line 
 abc = """
     My string
       line 2
+        line \
+    3
     ""
 
 // is eqv to
@@ -116,9 +118,19 @@ abc = """
 asdf = """
 My string
   line 2
+    line \
+3
 """
 
-// also eqv to "My string\n  line 2"
+// is eqv to
+
+xyz = """
+My string
+  line 2
+    line 3
+"""
+
+// also eqv to "My string\n  line 2\n    line 3"
 ```
 
 ### Other potential literals?
