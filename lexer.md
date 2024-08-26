@@ -188,6 +188,8 @@ $[
 // unused: \ #
 ```
 
+XXX: consider adding overflow guard to arithmetic operators, and adding swift style overflow-able arithmetic operator &* &+ &-
+
 ### Label
 Structured goto label for `return` / `break` / `continue` statements.
 
