@@ -26,6 +26,8 @@
 %token LABEL_DECL // <identifier>@
 %token JUMP_LABEL // @<identifier>
 
+%token ASSIGN
+
 %token ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %token ADD_ONE_ASSIGN SUB_ONE_ASSIGN
 %token BIT_NEG_ASSIGN BIT_AND_ASSIGN BIT_OR_ASSIGN BIT_XOR_ASSIGN
@@ -87,6 +89,7 @@
 %type explicit_field_defs optional_explicit_field_defs
 
 %type explicit_enum_def implicit_enum_def
+%type enum_value_def
 %type implicit_enum_value_defs explicit_enum_value_defs
 
 %type trait_def
@@ -418,17 +421,21 @@ explicit_struct_def -> STRUCT LPAREN optional_explicit_field_defs RPAREN
 // NOTE: for now, enum value must have a data type.
 // XXX: maybe allow "_" for no data?
 
+enum_value_def ->
+  field_def |
+  default: field_def ASSIGN DEFAULT
+
 implicit_enum_value_defs ->
-  pair: field_def OR field_def |
-  add: implicit_enum_value_defs OR field_def
+  pair: enum_value_def OR enum_value_def |
+  add: implicit_enum_value_defs OR enum_value_def
 
 implicit_enum_def -> LPAREN implicit_enum_value_defs RPAREN
 
 explicit_enum_value_defs ->
-  explicit_pair: field_def OR field_def |
-  implicit_pair: field_def NEWLINES field_def |
-  explicit_add: implicit_enum_value_defs OR field_def |
-  implicit_add: implicit_enum_value_defs NEWLINES field_def
+  explicit_pair: enum_value_def OR enum_value_def |
+  implicit_pair: enum_value_def NEWLINES enum_value_def |
+  explicit_add: implicit_enum_value_defs OR enum_value_def |
+  implicit_add: implicit_enum_value_defs NEWLINES enum_value_def
 
 explicit_enum_def -> ENUM LPAREN explicit_enum_value_defs RPAREN
 
