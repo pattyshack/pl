@@ -14,7 +14,7 @@
 
 %token UNSAFE
 
-%token TYPE STRUCT ENUM TRAIT
+%token TYPE STRUCT ENUM TRAIT IMPLEMENTS
 %token FUNC ASYNC
 
 %token LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
@@ -69,9 +69,6 @@
 
 %type generic_arguments optional_generic_arguments optional_generic_binding
 
-%type field_def
-%type field_defs optional_field_defs
-
 %type generic_parameter_def
 %type generic_parameter_defs optional_generic_parameter_defs
 %type optional_generic_parameters
@@ -83,10 +80,14 @@
 
 %type type_def
 %type value_type atom_type traitable_type trait_mul_type trait_add_type
-%type explicit_struct_type implicit_struct_type
 
 %type explicit_enum_type implicit_enum_type
 %type field_def_or_list
+
+%type explicit_struct_def implicit_struct_def
+%type field_def
+%type field_defs optional_field_defs
+
 
 %type trait_def
 %type trait_property trait_properties optional_trait_properties
@@ -114,9 +115,7 @@ literal ->
   STRING_LITERAL
 
 anonymous_struct_expr ->
-  // post parse analysis should ensure there are no generic parameters in
-  // struct def
-  explicit: explicit_struct_type LPAREN arguments RPAREN |
+  explicit: explicit_struct_def LPAREN arguments RPAREN |
   implicit: LPAREN arguments RPAREN
 
 // TODO cast
@@ -328,8 +327,8 @@ expression ->
 
 atom_type ->
   named: IDENTIFIER optional_generic_binding |
-  explicit_struct_type |
-  implicit_struct_type |
+  explicit_struct_def |
+  implicit_struct_def |
   explicit_enum_type |
   implicit_enum_type |
   trait_def |
@@ -360,9 +359,6 @@ field_def_or_list ->
 // XXX: Should unify the syntax with explicit enum ?
 implicit_enum_type -> LPAREN field_def_or_list RPAREN
 
-// TODO declare implements ( interface list )
-explicit_struct_type -> STRUCT implicit_struct_type
-
 // TODO
 explicit_enum_type -> ENUM LPAREN RPAREN
 
@@ -373,6 +369,7 @@ value_type ->
 
 type_def ->
   definition: TYPE IDENTIFIER optional_generic_parameters value_type |
+  constrained_def: TYPE IDENTIFIER optional_generic_parameters value_type IMPLEMENTS value_type |
   alias: TYPE IDENTIFIER EQUAL value_type
 
 //
@@ -412,7 +409,9 @@ optional_field_defs ->
   field_defs |
   nil:
 
-implicit_struct_type -> LPAREN optional_field_defs RPAREN
+implicit_struct_def -> LPAREN optional_field_defs RPAREN
+
+explicit_struct_def -> STRUCT implicit_struct_def
 
 //
 // Trait definition
