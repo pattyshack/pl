@@ -18,7 +18,7 @@
 %token FUNC ASYNC
 
 %token LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
-%token DOT COMMA QUESTION SEMICOLON // COLON
+%token DOT COMMA QUESTION SEMICOLON COLON
 %token DOLLAR_LBRACKET // $[
 %token DOTDOTDOT // ...
 %token TILDE_TILDE
@@ -76,6 +76,7 @@
 %type optional_generic_parameters
 
 %type argument arguments optional_arguments
+%type colon_expressions optional_expression
 %type expression_or_implicit_struct optional_expression_or_implicit_struct
 
 %type lex_internal_tokens
@@ -145,9 +146,18 @@ optional_generic_binding ->
   binding: DOLLAR_LBRACKET optional_generic_arguments RBRACKET |
   nil:
 
-// TODO, named arugments, associative ":" tuples
+optional_expression ->
+  expression |
+  nil:
+
+colon_expressions ->
+  pair: optional_expression COLON optional_expression |
+  add: colon_expressions COLON optional_expression
+
 argument ->
-  positional: expression
+  positional: expression |
+  named: IDENTIFIER ASSIGN expression |
+  colon_expressions
 
 arguments ->
   argument |
@@ -163,8 +173,7 @@ access_expr ->
   atom_expr |
   access: access_expr DOT IDENTIFIER |
   call_expr |
-  // TODO allow ranged lookup? e.g., x[:]
-  index: access_expr LBRACKET expression RBRACKET
+  index: access_expr LBRACKET argument RBRACKET
 
 postfix_unary_expr ->
   access_expr |
