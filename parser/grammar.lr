@@ -21,7 +21,7 @@
 %token DOT COMMA QUESTION SEMICOLON // COLON
 %token DOLLAR_LBRACKET // $[
 %token DOTDOTDOT // ...
-%token EXCLAIM EXCLAIM_EXCLAIM
+%token TILDE_TILDE
 
 %token LABEL_DECL // <identifier>@
 %token JUMP_LABEL // @<identifier>
@@ -336,8 +336,8 @@ atom_type ->
 
 traitable_type ->
   atom_type |
-  method_interface: EXCLAIM atom_type |  // atom type's public method
-  trait: EXCLAIM_EXCLAIM atom_type  // atom type's public method and field
+  method_interface: BIT_NEG atom_type |  // atom type's public method
+  trait: TILDE_TILDE atom_type  // atom type's public method and field
 
 trait_mul_type ->
   traitable_type |

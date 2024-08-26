@@ -51,44 +51,43 @@ const (
 	SemicolonToken       = SymbolId(293)
 	DollarLbracketToken  = SymbolId(294)
 	DotdotdotToken       = SymbolId(295)
-	ExclaimToken         = SymbolId(296)
-	ExclaimExclaimToken  = SymbolId(297)
-	LabelDeclToken       = SymbolId(298)
-	JumpLabelToken       = SymbolId(299)
-	AddAssignToken       = SymbolId(300)
-	SubAssignToken       = SymbolId(301)
-	MulAssignToken       = SymbolId(302)
-	DivAssignToken       = SymbolId(303)
-	ModAssignToken       = SymbolId(304)
-	AddOneAssignToken    = SymbolId(305)
-	SubOneAssignToken    = SymbolId(306)
-	BitNegAssignToken    = SymbolId(307)
-	BitAndAssignToken    = SymbolId(308)
-	BitOrAssignToken     = SymbolId(309)
-	BitXorAssignToken    = SymbolId(310)
-	BitLshiftAssignToken = SymbolId(311)
-	BitRshiftAssignToken = SymbolId(312)
-	NotToken             = SymbolId(313)
-	AndToken             = SymbolId(314)
-	OrToken              = SymbolId(315)
-	AddToken             = SymbolId(316)
-	SubToken             = SymbolId(317)
-	MulToken             = SymbolId(318)
-	DivToken             = SymbolId(319)
-	ModToken             = SymbolId(320)
-	BitNegToken          = SymbolId(321)
-	BitAndToken          = SymbolId(322)
-	BitXorToken          = SymbolId(323)
-	BitOrToken           = SymbolId(324)
-	BitLshiftToken       = SymbolId(325)
-	BitRshiftToken       = SymbolId(326)
-	EqualToken           = SymbolId(327)
-	NotEqualToken        = SymbolId(328)
-	LessToken            = SymbolId(329)
-	LessOrEqualToken     = SymbolId(330)
-	GreaterToken         = SymbolId(331)
-	GreaterOrEqualToken  = SymbolId(332)
-	LexErrorToken        = SymbolId(333)
+	TildeTildeToken      = SymbolId(296)
+	LabelDeclToken       = SymbolId(297)
+	JumpLabelToken       = SymbolId(298)
+	AddAssignToken       = SymbolId(299)
+	SubAssignToken       = SymbolId(300)
+	MulAssignToken       = SymbolId(301)
+	DivAssignToken       = SymbolId(302)
+	ModAssignToken       = SymbolId(303)
+	AddOneAssignToken    = SymbolId(304)
+	SubOneAssignToken    = SymbolId(305)
+	BitNegAssignToken    = SymbolId(306)
+	BitAndAssignToken    = SymbolId(307)
+	BitOrAssignToken     = SymbolId(308)
+	BitXorAssignToken    = SymbolId(309)
+	BitLshiftAssignToken = SymbolId(310)
+	BitRshiftAssignToken = SymbolId(311)
+	NotToken             = SymbolId(312)
+	AndToken             = SymbolId(313)
+	OrToken              = SymbolId(314)
+	AddToken             = SymbolId(315)
+	SubToken             = SymbolId(316)
+	MulToken             = SymbolId(317)
+	DivToken             = SymbolId(318)
+	ModToken             = SymbolId(319)
+	BitNegToken          = SymbolId(320)
+	BitAndToken          = SymbolId(321)
+	BitXorToken          = SymbolId(322)
+	BitOrToken           = SymbolId(323)
+	BitLshiftToken       = SymbolId(324)
+	BitRshiftToken       = SymbolId(325)
+	EqualToken           = SymbolId(326)
+	NotEqualToken        = SymbolId(327)
+	LessToken            = SymbolId(328)
+	LessOrEqualToken     = SymbolId(329)
+	GreaterToken         = SymbolId(330)
+	GreaterOrEqualToken  = SymbolId(331)
+	LexErrorToken        = SymbolId(332)
 )
 
 type Location struct {
@@ -492,10 +491,10 @@ type Reducer interface {
 	AtomTypeToTraitableType(AtomType_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 339:2: traitable_type -> method_interface: ...
-	MethodInterfaceToTraitableType(Exclaim_ *GenericSymbol, AtomType_ *GenericSymbol) (*GenericSymbol, error)
+	MethodInterfaceToTraitableType(BitNeg_ *GenericSymbol, AtomType_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 340:2: traitable_type -> trait: ...
-	TraitToTraitableType(ExclaimExclaim_ *GenericSymbol, AtomType_ *GenericSymbol) (*GenericSymbol, error)
+	TraitToTraitableType(TildeTilde_ *GenericSymbol, AtomType_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 343:2: trait_mul_type -> traitable_type: ...
 	TraitableTypeToTraitMulType(TraitableType_ *GenericSymbol) (*GenericSymbol, error)
@@ -1024,10 +1023,8 @@ func (i SymbolId) String() string {
 		return "DOLLAR_LBRACKET"
 	case DotdotdotToken:
 		return "DOTDOTDOT"
-	case ExclaimToken:
-		return "EXCLAIM"
-	case ExclaimExclaimToken:
-		return "EXCLAIM_EXCLAIM"
+	case TildeTildeToken:
+		return "TILDE_TILDE"
 	case LabelDeclToken:
 		return "LABEL_DECL"
 	case JumpLabelToken:
@@ -1267,85 +1264,85 @@ const (
 	_EndMarker      = SymbolId(0)
 	_WildcardMarker = SymbolId(-1)
 
-	LiteralType                            = SymbolId(334)
-	AnonymousStructExprType                = SymbolId(335)
-	AtomExprType                           = SymbolId(336)
-	GenericArgumentsType                   = SymbolId(337)
-	OptionalGenericArgumentsType           = SymbolId(338)
-	OptionalGenericBindingType             = SymbolId(339)
-	ArgumentType                           = SymbolId(340)
-	ArgumentsType                          = SymbolId(341)
-	OptionalArgumentsType                  = SymbolId(342)
-	CallExprType                           = SymbolId(343)
-	AccessExprType                         = SymbolId(344)
-	PostfixUnaryExprType                   = SymbolId(345)
-	PrefixUnaryOpType                      = SymbolId(346)
-	PrefixUnaryExprType                    = SymbolId(347)
-	MulOpType                              = SymbolId(348)
-	MulExprType                            = SymbolId(349)
-	AddOpType                              = SymbolId(350)
-	AddExprType                            = SymbolId(351)
-	CmpOpType                              = SymbolId(352)
-	CmpExprType                            = SymbolId(353)
-	AndExprType                            = SymbolId(354)
-	OrExprType                             = SymbolId(355)
-	SequenceExprType                       = SymbolId(356)
-	OptionalJumpLabelType                  = SymbolId(357)
-	OptionalExpressionOrImplicitStructType = SymbolId(358)
-	JumpTypeType                           = SymbolId(359)
-	OpOneAssignType                        = SymbolId(360)
-	BinaryOpAssignType                     = SymbolId(361)
-	ExpressionOrImplicitStructType         = SymbolId(362)
-	UnsafeStatementType                    = SymbolId(363)
-	StatementBodyType                      = SymbolId(364)
-	StatementType                          = SymbolId(365)
-	StatementsType                         = SymbolId(366)
-	OptionalLabelDeclType                  = SymbolId(367)
-	BlockBodyType                          = SymbolId(368)
-	BlockExprType                          = SymbolId(369)
-	IfExprType                             = SymbolId(370)
-	SwitchExprType                         = SymbolId(371)
-	LoopExprType                           = SymbolId(372)
-	ExpressionType                         = SymbolId(373)
-	AtomTypeType                           = SymbolId(374)
-	TraitableTypeType                      = SymbolId(375)
-	TraitMulTypeType                       = SymbolId(376)
-	TraitAddTypeType                       = SymbolId(377)
-	FieldDefOrListType                     = SymbolId(378)
-	ImplicitEnumTypeType                   = SymbolId(379)
-	ExplicitEnumTypeType                   = SymbolId(380)
-	ValueTypeType                          = SymbolId(381)
-	TypeDefType                            = SymbolId(382)
-	GenericParameterDefType                = SymbolId(383)
-	GenericParameterDefsType               = SymbolId(384)
-	OptionalGenericParameterDefsType       = SymbolId(385)
-	OptionalGenericParametersType          = SymbolId(386)
-	FieldDefType                           = SymbolId(387)
-	FieldDefsType                          = SymbolId(388)
-	OptionalFieldDefsType                  = SymbolId(389)
-	ImplicitStructDefType                  = SymbolId(390)
-	ExplicitStructDefType                  = SymbolId(391)
-	TraitPropertyType                      = SymbolId(392)
-	TraitPropertiesType                    = SymbolId(393)
-	OptionalTraitPropertiesType            = SymbolId(394)
-	TraitDefType                           = SymbolId(395)
-	ReturnTypeType                         = SymbolId(396)
-	ParameterDeclType                      = SymbolId(397)
-	ParameterDeclsType                     = SymbolId(398)
-	OptionalParameterDeclsType             = SymbolId(399)
-	FuncTypeType                           = SymbolId(400)
-	MethodSignatureType                    = SymbolId(401)
-	ParameterDefType                       = SymbolId(402)
-	ParameterDefsType                      = SymbolId(403)
-	OptionalParameterDefsType              = SymbolId(404)
-	OptionalReceiverType                   = SymbolId(405)
-	NamedFuncDefType                       = SymbolId(406)
-	AnonymousFuncExprType                  = SymbolId(407)
-	PackageDefType                         = SymbolId(408)
-	PackageStatementBodyType               = SymbolId(409)
-	PackageStatementType                   = SymbolId(410)
-	PackageStatementsType                  = SymbolId(411)
-	LexInternalTokensType                  = SymbolId(412)
+	LiteralType                            = SymbolId(333)
+	AnonymousStructExprType                = SymbolId(334)
+	AtomExprType                           = SymbolId(335)
+	GenericArgumentsType                   = SymbolId(336)
+	OptionalGenericArgumentsType           = SymbolId(337)
+	OptionalGenericBindingType             = SymbolId(338)
+	ArgumentType                           = SymbolId(339)
+	ArgumentsType                          = SymbolId(340)
+	OptionalArgumentsType                  = SymbolId(341)
+	CallExprType                           = SymbolId(342)
+	AccessExprType                         = SymbolId(343)
+	PostfixUnaryExprType                   = SymbolId(344)
+	PrefixUnaryOpType                      = SymbolId(345)
+	PrefixUnaryExprType                    = SymbolId(346)
+	MulOpType                              = SymbolId(347)
+	MulExprType                            = SymbolId(348)
+	AddOpType                              = SymbolId(349)
+	AddExprType                            = SymbolId(350)
+	CmpOpType                              = SymbolId(351)
+	CmpExprType                            = SymbolId(352)
+	AndExprType                            = SymbolId(353)
+	OrExprType                             = SymbolId(354)
+	SequenceExprType                       = SymbolId(355)
+	OptionalJumpLabelType                  = SymbolId(356)
+	OptionalExpressionOrImplicitStructType = SymbolId(357)
+	JumpTypeType                           = SymbolId(358)
+	OpOneAssignType                        = SymbolId(359)
+	BinaryOpAssignType                     = SymbolId(360)
+	ExpressionOrImplicitStructType         = SymbolId(361)
+	UnsafeStatementType                    = SymbolId(362)
+	StatementBodyType                      = SymbolId(363)
+	StatementType                          = SymbolId(364)
+	StatementsType                         = SymbolId(365)
+	OptionalLabelDeclType                  = SymbolId(366)
+	BlockBodyType                          = SymbolId(367)
+	BlockExprType                          = SymbolId(368)
+	IfExprType                             = SymbolId(369)
+	SwitchExprType                         = SymbolId(370)
+	LoopExprType                           = SymbolId(371)
+	ExpressionType                         = SymbolId(372)
+	AtomTypeType                           = SymbolId(373)
+	TraitableTypeType                      = SymbolId(374)
+	TraitMulTypeType                       = SymbolId(375)
+	TraitAddTypeType                       = SymbolId(376)
+	FieldDefOrListType                     = SymbolId(377)
+	ImplicitEnumTypeType                   = SymbolId(378)
+	ExplicitEnumTypeType                   = SymbolId(379)
+	ValueTypeType                          = SymbolId(380)
+	TypeDefType                            = SymbolId(381)
+	GenericParameterDefType                = SymbolId(382)
+	GenericParameterDefsType               = SymbolId(383)
+	OptionalGenericParameterDefsType       = SymbolId(384)
+	OptionalGenericParametersType          = SymbolId(385)
+	FieldDefType                           = SymbolId(386)
+	FieldDefsType                          = SymbolId(387)
+	OptionalFieldDefsType                  = SymbolId(388)
+	ImplicitStructDefType                  = SymbolId(389)
+	ExplicitStructDefType                  = SymbolId(390)
+	TraitPropertyType                      = SymbolId(391)
+	TraitPropertiesType                    = SymbolId(392)
+	OptionalTraitPropertiesType            = SymbolId(393)
+	TraitDefType                           = SymbolId(394)
+	ReturnTypeType                         = SymbolId(395)
+	ParameterDeclType                      = SymbolId(396)
+	ParameterDeclsType                     = SymbolId(397)
+	OptionalParameterDeclsType             = SymbolId(398)
+	FuncTypeType                           = SymbolId(399)
+	MethodSignatureType                    = SymbolId(400)
+	ParameterDefType                       = SymbolId(401)
+	ParameterDefsType                      = SymbolId(402)
+	OptionalParameterDefsType              = SymbolId(403)
+	OptionalReceiverType                   = SymbolId(404)
+	NamedFuncDefType                       = SymbolId(405)
+	AnonymousFuncExprType                  = SymbolId(406)
+	PackageDefType                         = SymbolId(407)
+	PackageStatementBodyType               = SymbolId(408)
+	PackageStatementType                   = SymbolId(409)
+	PackageStatementsType                  = SymbolId(410)
+	LexInternalTokensType                  = SymbolId(411)
 )
 
 type _ActionType int
@@ -2291,7 +2288,7 @@ func NewSymbol(token Token) (*Symbol, error) {
 
 	symbol = &Symbol{SymbolId_: token.Id()}
 	switch token.Id() {
-	case _EndMarker, SpacesToken, NewlinesToken, CommentToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, ReturnToken, BreakToken, ContinueToken, PackageToken, UnsafeToken, TypeToken, StructToken, EnumToken, TraitToken, ImplementsToken, FuncToken, AsyncToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, DollarLbracketToken, DotdotdotToken, ExclaimToken, ExclaimExclaimToken, LabelDeclToken, JumpLabelToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, NotToken, AndToken, OrToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, LexErrorToken:
+	case _EndMarker, SpacesToken, NewlinesToken, CommentToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, ReturnToken, BreakToken, ContinueToken, PackageToken, UnsafeToken, TypeToken, StructToken, EnumToken, TraitToken, ImplementsToken, FuncToken, AsyncToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, DollarLbracketToken, DotdotdotToken, TildeTildeToken, LabelDeclToken, JumpLabelToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, NotToken, AndToken, OrToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, LexErrorToken:
 		val, ok := token.(*GenericSymbol)
 		if !ok {
 			return nil, fmt.Errorf(
@@ -4026,15 +4023,15 @@ var _ActionTable = _ActionTableType{
 	{_State55, DollarLbracketToken}:                     _GotoState103Action,
 	{_State55, EqualToken}:                              _GotoState104Action,
 	{_State55, OptionalGenericParametersType}:           _GotoState105Action,
-	{_State56, IdentifierToken}:                         _GotoState111Action,
+	{_State56, IdentifierToken}:                         _GotoState110Action,
 	{_State56, StructToken}:                             _GotoState31Action,
-	{_State56, EnumToken}:                               _GotoState107Action,
+	{_State56, EnumToken}:                               _GotoState108Action,
 	{_State56, TraitToken}:                              _GotoState15Action,
-	{_State56, FuncToken}:                               _GotoState110Action,
-	{_State56, LparenToken}:                             _GotoState112Action,
-	{_State56, QuestionToken}:                           _GotoState113Action,
-	{_State56, ExclaimToken}:                            _GotoState108Action,
-	{_State56, ExclaimExclaimToken}:                     _GotoState109Action,
+	{_State56, FuncToken}:                               _GotoState109Action,
+	{_State56, LparenToken}:                             _GotoState111Action,
+	{_State56, QuestionToken}:                           _GotoState112Action,
+	{_State56, TildeTildeToken}:                         _GotoState113Action,
+	{_State56, BitNegToken}:                             _GotoState107Action,
 	{_State56, BitAndToken}:                             _GotoState106Action,
 	{_State56, AtomTypeType}:                            _GotoState114Action,
 	{_State56, TraitableTypeType}:                       _GotoState128Action,
@@ -4061,15 +4058,15 @@ var _ActionTable = _ActionTableType{
 	{_State59, OptionalParameterDefsType}:               _GotoState133Action,
 	{_State61, RparenToken}:                             _GotoState137Action,
 	{_State61, CommaToken}:                              _GotoState136Action,
-	{_State63, IdentifierToken}:                         _GotoState111Action,
+	{_State63, IdentifierToken}:                         _GotoState110Action,
 	{_State63, StructToken}:                             _GotoState31Action,
-	{_State63, EnumToken}:                               _GotoState107Action,
+	{_State63, EnumToken}:                               _GotoState108Action,
 	{_State63, TraitToken}:                              _GotoState15Action,
 	{_State63, FuncToken}:                               _GotoState138Action,
-	{_State63, LparenToken}:                             _GotoState112Action,
-	{_State63, QuestionToken}:                           _GotoState113Action,
-	{_State63, ExclaimToken}:                            _GotoState108Action,
-	{_State63, ExclaimExclaimToken}:                     _GotoState109Action,
+	{_State63, LparenToken}:                             _GotoState111Action,
+	{_State63, QuestionToken}:                           _GotoState112Action,
+	{_State63, TildeTildeToken}:                         _GotoState113Action,
+	{_State63, BitNegToken}:                             _GotoState107Action,
 	{_State63, BitAndToken}:                             _GotoState106Action,
 	{_State63, AtomTypeType}:                            _GotoState114Action,
 	{_State63, TraitableTypeType}:                       _GotoState128Action,
@@ -4087,13 +4084,13 @@ var _ActionTable = _ActionTableType{
 	{_State63, FuncTypeType}:                            _GotoState118Action,
 	{_State65, IdentifierToken}:                         _GotoState142Action,
 	{_State65, StructToken}:                             _GotoState31Action,
-	{_State65, EnumToken}:                               _GotoState107Action,
+	{_State65, EnumToken}:                               _GotoState108Action,
 	{_State65, TraitToken}:                              _GotoState15Action,
 	{_State65, FuncToken}:                               _GotoState138Action,
-	{_State65, LparenToken}:                             _GotoState112Action,
-	{_State65, QuestionToken}:                           _GotoState113Action,
-	{_State65, ExclaimToken}:                            _GotoState108Action,
-	{_State65, ExclaimExclaimToken}:                     _GotoState109Action,
+	{_State65, LparenToken}:                             _GotoState111Action,
+	{_State65, QuestionToken}:                           _GotoState112Action,
+	{_State65, TildeTildeToken}:                         _GotoState113Action,
+	{_State65, BitNegToken}:                             _GotoState107Action,
 	{_State65, BitAndToken}:                             _GotoState106Action,
 	{_State65, GenericArgumentsType}:                    _GotoState143Action,
 	{_State65, OptionalGenericArgumentsType}:            _GotoState144Action,
@@ -4420,13 +4417,13 @@ var _ActionTable = _ActionTableType{
 	{_State103, OptionalGenericParameterDefsType}:       _GotoState164Action,
 	{_State104, IdentifierToken}:                        _GotoState142Action,
 	{_State104, StructToken}:                            _GotoState31Action,
-	{_State104, EnumToken}:                              _GotoState107Action,
+	{_State104, EnumToken}:                              _GotoState108Action,
 	{_State104, TraitToken}:                             _GotoState15Action,
 	{_State104, FuncToken}:                              _GotoState138Action,
-	{_State104, LparenToken}:                            _GotoState112Action,
-	{_State104, QuestionToken}:                          _GotoState113Action,
-	{_State104, ExclaimToken}:                           _GotoState108Action,
-	{_State104, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State104, LparenToken}:                            _GotoState111Action,
+	{_State104, QuestionToken}:                          _GotoState112Action,
+	{_State104, TildeTildeToken}:                        _GotoState113Action,
+	{_State104, BitNegToken}:                            _GotoState107Action,
 	{_State104, BitAndToken}:                            _GotoState106Action,
 	{_State104, AtomTypeType}:                           _GotoState114Action,
 	{_State104, TraitableTypeType}:                      _GotoState128Action,
@@ -4441,13 +4438,13 @@ var _ActionTable = _ActionTableType{
 	{_State104, FuncTypeType}:                           _GotoState118Action,
 	{_State105, IdentifierToken}:                        _GotoState142Action,
 	{_State105, StructToken}:                            _GotoState31Action,
-	{_State105, EnumToken}:                              _GotoState107Action,
+	{_State105, EnumToken}:                              _GotoState108Action,
 	{_State105, TraitToken}:                             _GotoState15Action,
 	{_State105, FuncToken}:                              _GotoState138Action,
-	{_State105, LparenToken}:                            _GotoState112Action,
-	{_State105, QuestionToken}:                          _GotoState113Action,
-	{_State105, ExclaimToken}:                           _GotoState108Action,
-	{_State105, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State105, LparenToken}:                            _GotoState111Action,
+	{_State105, QuestionToken}:                          _GotoState112Action,
+	{_State105, TildeTildeToken}:                        _GotoState113Action,
+	{_State105, BitNegToken}:                            _GotoState107Action,
 	{_State105, BitAndToken}:                            _GotoState106Action,
 	{_State105, AtomTypeType}:                           _GotoState114Action,
 	{_State105, TraitableTypeType}:                      _GotoState128Action,
@@ -4462,12 +4459,12 @@ var _ActionTable = _ActionTableType{
 	{_State105, FuncTypeType}:                           _GotoState118Action,
 	{_State106, IdentifierToken}:                        _GotoState142Action,
 	{_State106, StructToken}:                            _GotoState31Action,
-	{_State106, EnumToken}:                              _GotoState107Action,
+	{_State106, EnumToken}:                              _GotoState108Action,
 	{_State106, TraitToken}:                             _GotoState15Action,
-	{_State106, LparenToken}:                            _GotoState112Action,
-	{_State106, QuestionToken}:                          _GotoState113Action,
-	{_State106, ExclaimToken}:                           _GotoState108Action,
-	{_State106, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State106, LparenToken}:                            _GotoState111Action,
+	{_State106, QuestionToken}:                          _GotoState112Action,
+	{_State106, TildeTildeToken}:                        _GotoState113Action,
+	{_State106, BitNegToken}:                            _GotoState107Action,
 	{_State106, AtomTypeType}:                           _GotoState114Action,
 	{_State106, TraitableTypeType}:                      _GotoState128Action,
 	{_State106, TraitMulTypeType}:                       _GotoState125Action,
@@ -4477,81 +4474,81 @@ var _ActionTable = _ActionTableType{
 	{_State106, ImplicitStructDefType}:                  _GotoState120Action,
 	{_State106, ExplicitStructDefType}:                  _GotoState116Action,
 	{_State106, TraitDefType}:                           _GotoState124Action,
-	{_State107, LparenToken}:                            _GotoState168Action,
-	{_State108, IdentifierToken}:                        _GotoState142Action,
-	{_State108, StructToken}:                            _GotoState31Action,
-	{_State108, EnumToken}:                              _GotoState107Action,
-	{_State108, TraitToken}:                             _GotoState15Action,
-	{_State108, LparenToken}:                            _GotoState112Action,
-	{_State108, QuestionToken}:                          _GotoState113Action,
-	{_State108, AtomTypeType}:                           _GotoState169Action,
-	{_State108, ImplicitEnumTypeType}:                   _GotoState119Action,
-	{_State108, ExplicitEnumTypeType}:                   _GotoState115Action,
-	{_State108, ImplicitStructDefType}:                  _GotoState120Action,
-	{_State108, ExplicitStructDefType}:                  _GotoState116Action,
-	{_State108, TraitDefType}:                           _GotoState124Action,
-	{_State109, IdentifierToken}:                        _GotoState142Action,
-	{_State109, StructToken}:                            _GotoState31Action,
-	{_State109, EnumToken}:                              _GotoState107Action,
-	{_State109, TraitToken}:                             _GotoState15Action,
-	{_State109, LparenToken}:                            _GotoState112Action,
-	{_State109, QuestionToken}:                          _GotoState113Action,
-	{_State109, AtomTypeType}:                           _GotoState170Action,
-	{_State109, ImplicitEnumTypeType}:                   _GotoState119Action,
-	{_State109, ExplicitEnumTypeType}:                   _GotoState115Action,
-	{_State109, ImplicitStructDefType}:                  _GotoState120Action,
-	{_State109, ExplicitStructDefType}:                  _GotoState116Action,
-	{_State109, TraitDefType}:                           _GotoState124Action,
-	{_State110, IdentifierToken}:                        _GotoState171Action,
-	{_State110, LparenToken}:                            _GotoState172Action,
-	{_State111, IdentifierToken}:                        _GotoState142Action,
+	{_State107, IdentifierToken}:                        _GotoState142Action,
+	{_State107, StructToken}:                            _GotoState31Action,
+	{_State107, EnumToken}:                              _GotoState108Action,
+	{_State107, TraitToken}:                             _GotoState15Action,
+	{_State107, LparenToken}:                            _GotoState111Action,
+	{_State107, QuestionToken}:                          _GotoState112Action,
+	{_State107, AtomTypeType}:                           _GotoState168Action,
+	{_State107, ImplicitEnumTypeType}:                   _GotoState119Action,
+	{_State107, ExplicitEnumTypeType}:                   _GotoState115Action,
+	{_State107, ImplicitStructDefType}:                  _GotoState120Action,
+	{_State107, ExplicitStructDefType}:                  _GotoState116Action,
+	{_State107, TraitDefType}:                           _GotoState124Action,
+	{_State108, LparenToken}:                            _GotoState169Action,
+	{_State109, IdentifierToken}:                        _GotoState170Action,
+	{_State109, LparenToken}:                            _GotoState171Action,
+	{_State110, IdentifierToken}:                        _GotoState142Action,
+	{_State110, StructToken}:                            _GotoState31Action,
+	{_State110, EnumToken}:                              _GotoState108Action,
+	{_State110, TraitToken}:                             _GotoState15Action,
+	{_State110, FuncToken}:                              _GotoState138Action,
+	{_State110, LparenToken}:                            _GotoState111Action,
+	{_State110, QuestionToken}:                          _GotoState112Action,
+	{_State110, DollarLbracketToken}:                    _GotoState65Action,
+	{_State110, TildeTildeToken}:                        _GotoState113Action,
+	{_State110, BitNegToken}:                            _GotoState107Action,
+	{_State110, BitAndToken}:                            _GotoState106Action,
+	{_State110, OptionalGenericBindingType}:             _GotoState172Action,
+	{_State110, AtomTypeType}:                           _GotoState114Action,
+	{_State110, TraitableTypeType}:                      _GotoState128Action,
+	{_State110, TraitMulTypeType}:                       _GotoState125Action,
+	{_State110, TraitAddTypeType}:                       _GotoState123Action,
+	{_State110, ImplicitEnumTypeType}:                   _GotoState119Action,
+	{_State110, ExplicitEnumTypeType}:                   _GotoState115Action,
+	{_State110, ValueTypeType}:                          _GotoState173Action,
+	{_State110, ImplicitStructDefType}:                  _GotoState120Action,
+	{_State110, ExplicitStructDefType}:                  _GotoState116Action,
+	{_State110, TraitDefType}:                           _GotoState124Action,
+	{_State110, FuncTypeType}:                           _GotoState118Action,
+	{_State111, IdentifierToken}:                        _GotoState110Action,
 	{_State111, StructToken}:                            _GotoState31Action,
-	{_State111, EnumToken}:                              _GotoState107Action,
+	{_State111, EnumToken}:                              _GotoState108Action,
 	{_State111, TraitToken}:                             _GotoState15Action,
 	{_State111, FuncToken}:                              _GotoState138Action,
-	{_State111, LparenToken}:                            _GotoState112Action,
-	{_State111, QuestionToken}:                          _GotoState113Action,
-	{_State111, DollarLbracketToken}:                    _GotoState65Action,
-	{_State111, ExclaimToken}:                           _GotoState108Action,
-	{_State111, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State111, LparenToken}:                            _GotoState111Action,
+	{_State111, QuestionToken}:                          _GotoState112Action,
+	{_State111, TildeTildeToken}:                        _GotoState113Action,
+	{_State111, BitNegToken}:                            _GotoState107Action,
 	{_State111, BitAndToken}:                            _GotoState106Action,
-	{_State111, OptionalGenericBindingType}:             _GotoState173Action,
 	{_State111, AtomTypeType}:                           _GotoState114Action,
 	{_State111, TraitableTypeType}:                      _GotoState128Action,
 	{_State111, TraitMulTypeType}:                       _GotoState125Action,
 	{_State111, TraitAddTypeType}:                       _GotoState123Action,
+	{_State111, FieldDefOrListType}:                     _GotoState175Action,
 	{_State111, ImplicitEnumTypeType}:                   _GotoState119Action,
 	{_State111, ExplicitEnumTypeType}:                   _GotoState115Action,
-	{_State111, ValueTypeType}:                          _GotoState174Action,
+	{_State111, ValueTypeType}:                          _GotoState129Action,
+	{_State111, FieldDefType}:                           _GotoState174Action,
+	{_State111, FieldDefsType}:                          _GotoState140Action,
+	{_State111, OptionalFieldDefsType}:                  _GotoState141Action,
 	{_State111, ImplicitStructDefType}:                  _GotoState120Action,
 	{_State111, ExplicitStructDefType}:                  _GotoState116Action,
 	{_State111, TraitDefType}:                           _GotoState124Action,
 	{_State111, FuncTypeType}:                           _GotoState118Action,
-	{_State112, IdentifierToken}:                        _GotoState111Action,
-	{_State112, StructToken}:                            _GotoState31Action,
-	{_State112, EnumToken}:                              _GotoState107Action,
-	{_State112, TraitToken}:                             _GotoState15Action,
-	{_State112, FuncToken}:                              _GotoState138Action,
-	{_State112, LparenToken}:                            _GotoState112Action,
-	{_State112, QuestionToken}:                          _GotoState113Action,
-	{_State112, ExclaimToken}:                           _GotoState108Action,
-	{_State112, ExclaimExclaimToken}:                    _GotoState109Action,
-	{_State112, BitAndToken}:                            _GotoState106Action,
-	{_State112, AtomTypeType}:                           _GotoState114Action,
-	{_State112, TraitableTypeType}:                      _GotoState128Action,
-	{_State112, TraitMulTypeType}:                       _GotoState125Action,
-	{_State112, TraitAddTypeType}:                       _GotoState123Action,
-	{_State112, FieldDefOrListType}:                     _GotoState176Action,
-	{_State112, ImplicitEnumTypeType}:                   _GotoState119Action,
-	{_State112, ExplicitEnumTypeType}:                   _GotoState115Action,
-	{_State112, ValueTypeType}:                          _GotoState129Action,
-	{_State112, FieldDefType}:                           _GotoState175Action,
-	{_State112, FieldDefsType}:                          _GotoState140Action,
-	{_State112, OptionalFieldDefsType}:                  _GotoState141Action,
-	{_State112, ImplicitStructDefType}:                  _GotoState120Action,
-	{_State112, ExplicitStructDefType}:                  _GotoState116Action,
-	{_State112, TraitDefType}:                           _GotoState124Action,
-	{_State112, FuncTypeType}:                           _GotoState118Action,
+	{_State113, IdentifierToken}:                        _GotoState142Action,
+	{_State113, StructToken}:                            _GotoState31Action,
+	{_State113, EnumToken}:                              _GotoState108Action,
+	{_State113, TraitToken}:                             _GotoState15Action,
+	{_State113, LparenToken}:                            _GotoState111Action,
+	{_State113, QuestionToken}:                          _GotoState112Action,
+	{_State113, AtomTypeType}:                           _GotoState176Action,
+	{_State113, ImplicitEnumTypeType}:                   _GotoState119Action,
+	{_State113, ExplicitEnumTypeType}:                   _GotoState115Action,
+	{_State113, ImplicitStructDefType}:                  _GotoState120Action,
+	{_State113, ExplicitStructDefType}:                  _GotoState116Action,
+	{_State113, TraitDefType}:                           _GotoState124Action,
 	{_State122, RparenToken}:                            _GotoState177Action,
 	{_State123, AddToken}:                               _GotoState178Action,
 	{_State123, SubToken}:                               _GotoState179Action,
@@ -4560,14 +4557,14 @@ var _ActionTable = _ActionTableType{
 	{_State126, CommaToken}:                             _GotoState181Action,
 	{_State130, IdentifierToken}:                        _GotoState142Action,
 	{_State130, StructToken}:                            _GotoState31Action,
-	{_State130, EnumToken}:                              _GotoState107Action,
+	{_State130, EnumToken}:                              _GotoState108Action,
 	{_State130, TraitToken}:                             _GotoState15Action,
 	{_State130, FuncToken}:                              _GotoState138Action,
-	{_State130, LparenToken}:                            _GotoState112Action,
-	{_State130, QuestionToken}:                          _GotoState113Action,
+	{_State130, LparenToken}:                            _GotoState111Action,
+	{_State130, QuestionToken}:                          _GotoState112Action,
 	{_State130, DotdotdotToken}:                         _GotoState183Action,
-	{_State130, ExclaimToken}:                           _GotoState108Action,
-	{_State130, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State130, TildeTildeToken}:                        _GotoState113Action,
+	{_State130, BitNegToken}:                            _GotoState107Action,
 	{_State130, BitAndToken}:                            _GotoState106Action,
 	{_State130, AtomTypeType}:                           _GotoState114Action,
 	{_State130, TraitableTypeType}:                      _GotoState128Action,
@@ -4622,12 +4619,12 @@ var _ActionTable = _ActionTableType{
 	{_State136, ExpressionType}:                         _GotoState62Action,
 	{_State136, ExplicitStructDefType}:                  _GotoState43Action,
 	{_State136, AnonymousFuncExprType}:                  _GotoState37Action,
-	{_State138, LparenToken}:                            _GotoState172Action,
+	{_State138, LparenToken}:                            _GotoState171Action,
 	{_State140, NewlinesToken}:                          _GotoState191Action,
 	{_State140, CommaToken}:                             _GotoState190Action,
 	{_State141, RparenToken}:                            _GotoState192Action,
 	{_State142, DollarLbracketToken}:                    _GotoState65Action,
-	{_State142, OptionalGenericBindingType}:             _GotoState173Action,
+	{_State142, OptionalGenericBindingType}:             _GotoState172Action,
 	{_State143, CommaToken}:                             _GotoState193Action,
 	{_State144, RbracketToken}:                          _GotoState194Action,
 	{_State147, RbracketToken}:                          _GotoState195Action,
@@ -4752,13 +4749,13 @@ var _ActionTable = _ActionTableType{
 	{_State160, PackageStatementType}:                   _GotoState216Action,
 	{_State161, IdentifierToken}:                        _GotoState142Action,
 	{_State161, StructToken}:                            _GotoState31Action,
-	{_State161, EnumToken}:                              _GotoState107Action,
+	{_State161, EnumToken}:                              _GotoState108Action,
 	{_State161, TraitToken}:                             _GotoState15Action,
 	{_State161, FuncToken}:                              _GotoState138Action,
-	{_State161, LparenToken}:                            _GotoState112Action,
-	{_State161, QuestionToken}:                          _GotoState113Action,
-	{_State161, ExclaimToken}:                           _GotoState108Action,
-	{_State161, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State161, LparenToken}:                            _GotoState111Action,
+	{_State161, QuestionToken}:                          _GotoState112Action,
+	{_State161, TildeTildeToken}:                        _GotoState113Action,
+	{_State161, BitNegToken}:                            _GotoState107Action,
 	{_State161, BitAndToken}:                            _GotoState106Action,
 	{_State161, AtomTypeType}:                           _GotoState114Action,
 	{_State161, TraitableTypeType}:                      _GotoState128Action,
@@ -4776,44 +4773,44 @@ var _ActionTable = _ActionTableType{
 	{_State166, ImplementsToken}:                        _GotoState222Action,
 	{_State167, AddToken}:                               _GotoState178Action,
 	{_State167, SubToken}:                               _GotoState179Action,
-	{_State168, RparenToken}:                            _GotoState223Action,
-	{_State171, LparenToken}:                            _GotoState224Action,
-	{_State172, IdentifierToken}:                        _GotoState226Action,
-	{_State172, StructToken}:                            _GotoState31Action,
-	{_State172, EnumToken}:                              _GotoState107Action,
-	{_State172, TraitToken}:                             _GotoState15Action,
-	{_State172, FuncToken}:                              _GotoState138Action,
-	{_State172, LparenToken}:                            _GotoState112Action,
-	{_State172, QuestionToken}:                          _GotoState113Action,
-	{_State172, DotdotdotToken}:                         _GotoState225Action,
-	{_State172, ExclaimToken}:                           _GotoState108Action,
-	{_State172, ExclaimExclaimToken}:                    _GotoState109Action,
-	{_State172, BitAndToken}:                            _GotoState106Action,
-	{_State172, AtomTypeType}:                           _GotoState114Action,
-	{_State172, TraitableTypeType}:                      _GotoState128Action,
-	{_State172, TraitMulTypeType}:                       _GotoState125Action,
-	{_State172, TraitAddTypeType}:                       _GotoState123Action,
-	{_State172, ImplicitEnumTypeType}:                   _GotoState119Action,
-	{_State172, ExplicitEnumTypeType}:                   _GotoState115Action,
-	{_State172, ValueTypeType}:                          _GotoState230Action,
-	{_State172, ImplicitStructDefType}:                  _GotoState120Action,
-	{_State172, ExplicitStructDefType}:                  _GotoState116Action,
-	{_State172, TraitDefType}:                           _GotoState124Action,
-	{_State172, ParameterDeclType}:                      _GotoState228Action,
-	{_State172, ParameterDeclsType}:                     _GotoState229Action,
-	{_State172, OptionalParameterDeclsType}:             _GotoState227Action,
-	{_State172, FuncTypeType}:                           _GotoState118Action,
-	{_State175, OrToken}:                                _GotoState231Action,
-	{_State176, RparenToken}:                            _GotoState233Action,
-	{_State176, OrToken}:                                _GotoState232Action,
+	{_State169, RparenToken}:                            _GotoState223Action,
+	{_State170, LparenToken}:                            _GotoState224Action,
+	{_State171, IdentifierToken}:                        _GotoState226Action,
+	{_State171, StructToken}:                            _GotoState31Action,
+	{_State171, EnumToken}:                              _GotoState108Action,
+	{_State171, TraitToken}:                             _GotoState15Action,
+	{_State171, FuncToken}:                              _GotoState138Action,
+	{_State171, LparenToken}:                            _GotoState111Action,
+	{_State171, QuestionToken}:                          _GotoState112Action,
+	{_State171, DotdotdotToken}:                         _GotoState225Action,
+	{_State171, TildeTildeToken}:                        _GotoState113Action,
+	{_State171, BitNegToken}:                            _GotoState107Action,
+	{_State171, BitAndToken}:                            _GotoState106Action,
+	{_State171, AtomTypeType}:                           _GotoState114Action,
+	{_State171, TraitableTypeType}:                      _GotoState128Action,
+	{_State171, TraitMulTypeType}:                       _GotoState125Action,
+	{_State171, TraitAddTypeType}:                       _GotoState123Action,
+	{_State171, ImplicitEnumTypeType}:                   _GotoState119Action,
+	{_State171, ExplicitEnumTypeType}:                   _GotoState115Action,
+	{_State171, ValueTypeType}:                          _GotoState230Action,
+	{_State171, ImplicitStructDefType}:                  _GotoState120Action,
+	{_State171, ExplicitStructDefType}:                  _GotoState116Action,
+	{_State171, TraitDefType}:                           _GotoState124Action,
+	{_State171, ParameterDeclType}:                      _GotoState228Action,
+	{_State171, ParameterDeclsType}:                     _GotoState229Action,
+	{_State171, OptionalParameterDeclsType}:             _GotoState227Action,
+	{_State171, FuncTypeType}:                           _GotoState118Action,
+	{_State174, OrToken}:                                _GotoState231Action,
+	{_State175, RparenToken}:                            _GotoState233Action,
+	{_State175, OrToken}:                                _GotoState232Action,
 	{_State178, IdentifierToken}:                        _GotoState142Action,
 	{_State178, StructToken}:                            _GotoState31Action,
-	{_State178, EnumToken}:                              _GotoState107Action,
+	{_State178, EnumToken}:                              _GotoState108Action,
 	{_State178, TraitToken}:                             _GotoState15Action,
-	{_State178, LparenToken}:                            _GotoState112Action,
-	{_State178, QuestionToken}:                          _GotoState113Action,
-	{_State178, ExclaimToken}:                           _GotoState108Action,
-	{_State178, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State178, LparenToken}:                            _GotoState111Action,
+	{_State178, QuestionToken}:                          _GotoState112Action,
+	{_State178, TildeTildeToken}:                        _GotoState113Action,
+	{_State178, BitNegToken}:                            _GotoState107Action,
 	{_State178, AtomTypeType}:                           _GotoState114Action,
 	{_State178, TraitableTypeType}:                      _GotoState128Action,
 	{_State178, TraitMulTypeType}:                       _GotoState234Action,
@@ -4824,12 +4821,12 @@ var _ActionTable = _ActionTableType{
 	{_State178, TraitDefType}:                           _GotoState124Action,
 	{_State179, IdentifierToken}:                        _GotoState142Action,
 	{_State179, StructToken}:                            _GotoState31Action,
-	{_State179, EnumToken}:                              _GotoState107Action,
+	{_State179, EnumToken}:                              _GotoState108Action,
 	{_State179, TraitToken}:                             _GotoState15Action,
-	{_State179, LparenToken}:                            _GotoState112Action,
-	{_State179, QuestionToken}:                          _GotoState113Action,
-	{_State179, ExclaimToken}:                           _GotoState108Action,
-	{_State179, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State179, LparenToken}:                            _GotoState111Action,
+	{_State179, QuestionToken}:                          _GotoState112Action,
+	{_State179, TildeTildeToken}:                        _GotoState113Action,
+	{_State179, BitNegToken}:                            _GotoState107Action,
 	{_State179, AtomTypeType}:                           _GotoState114Action,
 	{_State179, TraitableTypeType}:                      _GotoState128Action,
 	{_State179, TraitMulTypeType}:                       _GotoState235Action,
@@ -4840,12 +4837,12 @@ var _ActionTable = _ActionTableType{
 	{_State179, TraitDefType}:                           _GotoState124Action,
 	{_State180, IdentifierToken}:                        _GotoState142Action,
 	{_State180, StructToken}:                            _GotoState31Action,
-	{_State180, EnumToken}:                              _GotoState107Action,
+	{_State180, EnumToken}:                              _GotoState108Action,
 	{_State180, TraitToken}:                             _GotoState15Action,
-	{_State180, LparenToken}:                            _GotoState112Action,
-	{_State180, QuestionToken}:                          _GotoState113Action,
-	{_State180, ExclaimToken}:                           _GotoState108Action,
-	{_State180, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State180, LparenToken}:                            _GotoState111Action,
+	{_State180, QuestionToken}:                          _GotoState112Action,
+	{_State180, TildeTildeToken}:                        _GotoState113Action,
+	{_State180, BitNegToken}:                            _GotoState107Action,
 	{_State180, AtomTypeType}:                           _GotoState114Action,
 	{_State180, TraitableTypeType}:                      _GotoState236Action,
 	{_State180, ImplicitEnumTypeType}:                   _GotoState119Action,
@@ -4853,15 +4850,15 @@ var _ActionTable = _ActionTableType{
 	{_State180, ImplicitStructDefType}:                  _GotoState120Action,
 	{_State180, ExplicitStructDefType}:                  _GotoState116Action,
 	{_State180, TraitDefType}:                           _GotoState124Action,
-	{_State181, IdentifierToken}:                        _GotoState111Action,
+	{_State181, IdentifierToken}:                        _GotoState110Action,
 	{_State181, StructToken}:                            _GotoState31Action,
-	{_State181, EnumToken}:                              _GotoState107Action,
+	{_State181, EnumToken}:                              _GotoState108Action,
 	{_State181, TraitToken}:                             _GotoState15Action,
-	{_State181, FuncToken}:                              _GotoState110Action,
-	{_State181, LparenToken}:                            _GotoState112Action,
-	{_State181, QuestionToken}:                          _GotoState113Action,
-	{_State181, ExclaimToken}:                           _GotoState108Action,
-	{_State181, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State181, FuncToken}:                              _GotoState109Action,
+	{_State181, LparenToken}:                            _GotoState111Action,
+	{_State181, QuestionToken}:                          _GotoState112Action,
+	{_State181, TildeTildeToken}:                        _GotoState113Action,
+	{_State181, BitNegToken}:                            _GotoState107Action,
 	{_State181, BitAndToken}:                            _GotoState106Action,
 	{_State181, AtomTypeType}:                           _GotoState114Action,
 	{_State181, TraitableTypeType}:                      _GotoState128Action,
@@ -4877,15 +4874,15 @@ var _ActionTable = _ActionTableType{
 	{_State181, TraitDefType}:                           _GotoState124Action,
 	{_State181, FuncTypeType}:                           _GotoState118Action,
 	{_State181, MethodSignatureType}:                    _GotoState121Action,
-	{_State182, IdentifierToken}:                        _GotoState111Action,
+	{_State182, IdentifierToken}:                        _GotoState110Action,
 	{_State182, StructToken}:                            _GotoState31Action,
-	{_State182, EnumToken}:                              _GotoState107Action,
+	{_State182, EnumToken}:                              _GotoState108Action,
 	{_State182, TraitToken}:                             _GotoState15Action,
-	{_State182, FuncToken}:                              _GotoState110Action,
-	{_State182, LparenToken}:                            _GotoState112Action,
-	{_State182, QuestionToken}:                          _GotoState113Action,
-	{_State182, ExclaimToken}:                           _GotoState108Action,
-	{_State182, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State182, FuncToken}:                              _GotoState109Action,
+	{_State182, LparenToken}:                            _GotoState111Action,
+	{_State182, QuestionToken}:                          _GotoState112Action,
+	{_State182, TildeTildeToken}:                        _GotoState113Action,
+	{_State182, BitNegToken}:                            _GotoState107Action,
 	{_State182, BitAndToken}:                            _GotoState106Action,
 	{_State182, AtomTypeType}:                           _GotoState114Action,
 	{_State182, TraitableTypeType}:                      _GotoState128Action,
@@ -4903,13 +4900,13 @@ var _ActionTable = _ActionTableType{
 	{_State182, MethodSignatureType}:                    _GotoState121Action,
 	{_State183, IdentifierToken}:                        _GotoState142Action,
 	{_State183, StructToken}:                            _GotoState31Action,
-	{_State183, EnumToken}:                              _GotoState107Action,
+	{_State183, EnumToken}:                              _GotoState108Action,
 	{_State183, TraitToken}:                             _GotoState15Action,
 	{_State183, FuncToken}:                              _GotoState138Action,
-	{_State183, LparenToken}:                            _GotoState112Action,
-	{_State183, QuestionToken}:                          _GotoState113Action,
-	{_State183, ExclaimToken}:                           _GotoState108Action,
-	{_State183, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State183, LparenToken}:                            _GotoState111Action,
+	{_State183, QuestionToken}:                          _GotoState112Action,
+	{_State183, TildeTildeToken}:                        _GotoState113Action,
+	{_State183, BitNegToken}:                            _GotoState107Action,
 	{_State183, BitAndToken}:                            _GotoState106Action,
 	{_State183, AtomTypeType}:                           _GotoState114Action,
 	{_State183, TraitableTypeType}:                      _GotoState128Action,
@@ -4925,13 +4922,13 @@ var _ActionTable = _ActionTableType{
 	{_State186, LparenToken}:                            _GotoState240Action,
 	{_State187, IdentifierToken}:                        _GotoState142Action,
 	{_State187, StructToken}:                            _GotoState31Action,
-	{_State187, EnumToken}:                              _GotoState107Action,
+	{_State187, EnumToken}:                              _GotoState108Action,
 	{_State187, TraitToken}:                             _GotoState15Action,
 	{_State187, FuncToken}:                              _GotoState138Action,
-	{_State187, LparenToken}:                            _GotoState112Action,
-	{_State187, QuestionToken}:                          _GotoState113Action,
-	{_State187, ExclaimToken}:                           _GotoState108Action,
-	{_State187, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State187, LparenToken}:                            _GotoState111Action,
+	{_State187, QuestionToken}:                          _GotoState112Action,
+	{_State187, TildeTildeToken}:                        _GotoState113Action,
+	{_State187, BitNegToken}:                            _GotoState107Action,
 	{_State187, BitAndToken}:                            _GotoState106Action,
 	{_State187, AtomTypeType}:                           _GotoState114Action,
 	{_State187, TraitableTypeType}:                      _GotoState128Action,
@@ -4947,15 +4944,15 @@ var _ActionTable = _ActionTableType{
 	{_State187, FuncTypeType}:                           _GotoState118Action,
 	{_State188, IdentifierToken}:                        _GotoState130Action,
 	{_State188, ParameterDefType}:                       _GotoState243Action,
-	{_State190, IdentifierToken}:                        _GotoState111Action,
+	{_State190, IdentifierToken}:                        _GotoState110Action,
 	{_State190, StructToken}:                            _GotoState31Action,
-	{_State190, EnumToken}:                              _GotoState107Action,
+	{_State190, EnumToken}:                              _GotoState108Action,
 	{_State190, TraitToken}:                             _GotoState15Action,
 	{_State190, FuncToken}:                              _GotoState138Action,
-	{_State190, LparenToken}:                            _GotoState112Action,
-	{_State190, QuestionToken}:                          _GotoState113Action,
-	{_State190, ExclaimToken}:                           _GotoState108Action,
-	{_State190, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State190, LparenToken}:                            _GotoState111Action,
+	{_State190, QuestionToken}:                          _GotoState112Action,
+	{_State190, TildeTildeToken}:                        _GotoState113Action,
+	{_State190, BitNegToken}:                            _GotoState107Action,
 	{_State190, BitAndToken}:                            _GotoState106Action,
 	{_State190, AtomTypeType}:                           _GotoState114Action,
 	{_State190, TraitableTypeType}:                      _GotoState128Action,
@@ -4969,15 +4966,15 @@ var _ActionTable = _ActionTableType{
 	{_State190, ExplicitStructDefType}:                  _GotoState116Action,
 	{_State190, TraitDefType}:                           _GotoState124Action,
 	{_State190, FuncTypeType}:                           _GotoState118Action,
-	{_State191, IdentifierToken}:                        _GotoState111Action,
+	{_State191, IdentifierToken}:                        _GotoState110Action,
 	{_State191, StructToken}:                            _GotoState31Action,
-	{_State191, EnumToken}:                              _GotoState107Action,
+	{_State191, EnumToken}:                              _GotoState108Action,
 	{_State191, TraitToken}:                             _GotoState15Action,
 	{_State191, FuncToken}:                              _GotoState138Action,
-	{_State191, LparenToken}:                            _GotoState112Action,
-	{_State191, QuestionToken}:                          _GotoState113Action,
-	{_State191, ExclaimToken}:                           _GotoState108Action,
-	{_State191, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State191, LparenToken}:                            _GotoState111Action,
+	{_State191, QuestionToken}:                          _GotoState112Action,
+	{_State191, TildeTildeToken}:                        _GotoState113Action,
+	{_State191, BitNegToken}:                            _GotoState107Action,
 	{_State191, BitAndToken}:                            _GotoState106Action,
 	{_State191, AtomTypeType}:                           _GotoState114Action,
 	{_State191, TraitableTypeType}:                      _GotoState128Action,
@@ -4993,13 +4990,13 @@ var _ActionTable = _ActionTableType{
 	{_State191, FuncTypeType}:                           _GotoState118Action,
 	{_State193, IdentifierToken}:                        _GotoState142Action,
 	{_State193, StructToken}:                            _GotoState31Action,
-	{_State193, EnumToken}:                              _GotoState107Action,
+	{_State193, EnumToken}:                              _GotoState108Action,
 	{_State193, TraitToken}:                             _GotoState15Action,
 	{_State193, FuncToken}:                              _GotoState138Action,
-	{_State193, LparenToken}:                            _GotoState112Action,
-	{_State193, QuestionToken}:                          _GotoState113Action,
-	{_State193, ExclaimToken}:                           _GotoState108Action,
-	{_State193, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State193, LparenToken}:                            _GotoState111Action,
+	{_State193, QuestionToken}:                          _GotoState112Action,
+	{_State193, TildeTildeToken}:                        _GotoState113Action,
+	{_State193, BitNegToken}:                            _GotoState107Action,
 	{_State193, BitAndToken}:                            _GotoState106Action,
 	{_State193, AtomTypeType}:                           _GotoState114Action,
 	{_State193, TraitableTypeType}:                      _GotoState128Action,
@@ -5069,13 +5066,13 @@ var _ActionTable = _ActionTableType{
 	{_State220, GenericParameterDefType}:                _GotoState275Action,
 	{_State222, IdentifierToken}:                        _GotoState142Action,
 	{_State222, StructToken}:                            _GotoState31Action,
-	{_State222, EnumToken}:                              _GotoState107Action,
+	{_State222, EnumToken}:                              _GotoState108Action,
 	{_State222, TraitToken}:                             _GotoState15Action,
 	{_State222, FuncToken}:                              _GotoState138Action,
-	{_State222, LparenToken}:                            _GotoState112Action,
-	{_State222, QuestionToken}:                          _GotoState113Action,
-	{_State222, ExclaimToken}:                           _GotoState108Action,
-	{_State222, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State222, LparenToken}:                            _GotoState111Action,
+	{_State222, QuestionToken}:                          _GotoState112Action,
+	{_State222, TildeTildeToken}:                        _GotoState113Action,
+	{_State222, BitNegToken}:                            _GotoState107Action,
 	{_State222, BitAndToken}:                            _GotoState106Action,
 	{_State222, AtomTypeType}:                           _GotoState114Action,
 	{_State222, TraitableTypeType}:                      _GotoState128Action,
@@ -5090,14 +5087,14 @@ var _ActionTable = _ActionTableType{
 	{_State222, FuncTypeType}:                           _GotoState118Action,
 	{_State224, IdentifierToken}:                        _GotoState226Action,
 	{_State224, StructToken}:                            _GotoState31Action,
-	{_State224, EnumToken}:                              _GotoState107Action,
+	{_State224, EnumToken}:                              _GotoState108Action,
 	{_State224, TraitToken}:                             _GotoState15Action,
 	{_State224, FuncToken}:                              _GotoState138Action,
-	{_State224, LparenToken}:                            _GotoState112Action,
-	{_State224, QuestionToken}:                          _GotoState113Action,
+	{_State224, LparenToken}:                            _GotoState111Action,
+	{_State224, QuestionToken}:                          _GotoState112Action,
 	{_State224, DotdotdotToken}:                         _GotoState225Action,
-	{_State224, ExclaimToken}:                           _GotoState108Action,
-	{_State224, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State224, TildeTildeToken}:                        _GotoState113Action,
+	{_State224, BitNegToken}:                            _GotoState107Action,
 	{_State224, BitAndToken}:                            _GotoState106Action,
 	{_State224, AtomTypeType}:                           _GotoState114Action,
 	{_State224, TraitableTypeType}:                      _GotoState128Action,
@@ -5115,13 +5112,13 @@ var _ActionTable = _ActionTableType{
 	{_State224, FuncTypeType}:                           _GotoState118Action,
 	{_State225, IdentifierToken}:                        _GotoState142Action,
 	{_State225, StructToken}:                            _GotoState31Action,
-	{_State225, EnumToken}:                              _GotoState107Action,
+	{_State225, EnumToken}:                              _GotoState108Action,
 	{_State225, TraitToken}:                             _GotoState15Action,
 	{_State225, FuncToken}:                              _GotoState138Action,
-	{_State225, LparenToken}:                            _GotoState112Action,
-	{_State225, QuestionToken}:                          _GotoState113Action,
-	{_State225, ExclaimToken}:                           _GotoState108Action,
-	{_State225, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State225, LparenToken}:                            _GotoState111Action,
+	{_State225, QuestionToken}:                          _GotoState112Action,
+	{_State225, TildeTildeToken}:                        _GotoState113Action,
+	{_State225, BitNegToken}:                            _GotoState107Action,
 	{_State225, BitAndToken}:                            _GotoState106Action,
 	{_State225, AtomTypeType}:                           _GotoState114Action,
 	{_State225, TraitableTypeType}:                      _GotoState128Action,
@@ -5136,17 +5133,17 @@ var _ActionTable = _ActionTableType{
 	{_State225, FuncTypeType}:                           _GotoState118Action,
 	{_State226, IdentifierToken}:                        _GotoState142Action,
 	{_State226, StructToken}:                            _GotoState31Action,
-	{_State226, EnumToken}:                              _GotoState107Action,
+	{_State226, EnumToken}:                              _GotoState108Action,
 	{_State226, TraitToken}:                             _GotoState15Action,
 	{_State226, FuncToken}:                              _GotoState138Action,
-	{_State226, LparenToken}:                            _GotoState112Action,
-	{_State226, QuestionToken}:                          _GotoState113Action,
+	{_State226, LparenToken}:                            _GotoState111Action,
+	{_State226, QuestionToken}:                          _GotoState112Action,
 	{_State226, DollarLbracketToken}:                    _GotoState65Action,
 	{_State226, DotdotdotToken}:                         _GotoState279Action,
-	{_State226, ExclaimToken}:                           _GotoState108Action,
-	{_State226, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State226, TildeTildeToken}:                        _GotoState113Action,
+	{_State226, BitNegToken}:                            _GotoState107Action,
 	{_State226, BitAndToken}:                            _GotoState106Action,
-	{_State226, OptionalGenericBindingType}:             _GotoState173Action,
+	{_State226, OptionalGenericBindingType}:             _GotoState172Action,
 	{_State226, AtomTypeType}:                           _GotoState114Action,
 	{_State226, TraitableTypeType}:                      _GotoState128Action,
 	{_State226, TraitMulTypeType}:                       _GotoState125Action,
@@ -5160,15 +5157,15 @@ var _ActionTable = _ActionTableType{
 	{_State226, FuncTypeType}:                           _GotoState118Action,
 	{_State227, RparenToken}:                            _GotoState281Action,
 	{_State229, CommaToken}:                             _GotoState282Action,
-	{_State231, IdentifierToken}:                        _GotoState111Action,
+	{_State231, IdentifierToken}:                        _GotoState110Action,
 	{_State231, StructToken}:                            _GotoState31Action,
-	{_State231, EnumToken}:                              _GotoState107Action,
+	{_State231, EnumToken}:                              _GotoState108Action,
 	{_State231, TraitToken}:                             _GotoState15Action,
 	{_State231, FuncToken}:                              _GotoState138Action,
-	{_State231, LparenToken}:                            _GotoState112Action,
-	{_State231, QuestionToken}:                          _GotoState113Action,
-	{_State231, ExclaimToken}:                           _GotoState108Action,
-	{_State231, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State231, LparenToken}:                            _GotoState111Action,
+	{_State231, QuestionToken}:                          _GotoState112Action,
+	{_State231, TildeTildeToken}:                        _GotoState113Action,
+	{_State231, BitNegToken}:                            _GotoState107Action,
 	{_State231, BitAndToken}:                            _GotoState106Action,
 	{_State231, AtomTypeType}:                           _GotoState114Action,
 	{_State231, TraitableTypeType}:                      _GotoState128Action,
@@ -5182,15 +5179,15 @@ var _ActionTable = _ActionTableType{
 	{_State231, ExplicitStructDefType}:                  _GotoState116Action,
 	{_State231, TraitDefType}:                           _GotoState124Action,
 	{_State231, FuncTypeType}:                           _GotoState118Action,
-	{_State232, IdentifierToken}:                        _GotoState111Action,
+	{_State232, IdentifierToken}:                        _GotoState110Action,
 	{_State232, StructToken}:                            _GotoState31Action,
-	{_State232, EnumToken}:                              _GotoState107Action,
+	{_State232, EnumToken}:                              _GotoState108Action,
 	{_State232, TraitToken}:                             _GotoState15Action,
 	{_State232, FuncToken}:                              _GotoState138Action,
-	{_State232, LparenToken}:                            _GotoState112Action,
-	{_State232, QuestionToken}:                          _GotoState113Action,
-	{_State232, ExclaimToken}:                           _GotoState108Action,
-	{_State232, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State232, LparenToken}:                            _GotoState111Action,
+	{_State232, QuestionToken}:                          _GotoState112Action,
+	{_State232, TildeTildeToken}:                        _GotoState113Action,
+	{_State232, BitNegToken}:                            _GotoState107Action,
 	{_State232, BitAndToken}:                            _GotoState106Action,
 	{_State232, AtomTypeType}:                           _GotoState114Action,
 	{_State232, TraitableTypeType}:                      _GotoState128Action,
@@ -5335,13 +5332,13 @@ var _ActionTable = _ActionTableType{
 	{_State277, RparenToken}:                            _GotoState295Action,
 	{_State279, IdentifierToken}:                        _GotoState142Action,
 	{_State279, StructToken}:                            _GotoState31Action,
-	{_State279, EnumToken}:                              _GotoState107Action,
+	{_State279, EnumToken}:                              _GotoState108Action,
 	{_State279, TraitToken}:                             _GotoState15Action,
 	{_State279, FuncToken}:                              _GotoState138Action,
-	{_State279, LparenToken}:                            _GotoState112Action,
-	{_State279, QuestionToken}:                          _GotoState113Action,
-	{_State279, ExclaimToken}:                           _GotoState108Action,
-	{_State279, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State279, LparenToken}:                            _GotoState111Action,
+	{_State279, QuestionToken}:                          _GotoState112Action,
+	{_State279, TildeTildeToken}:                        _GotoState113Action,
+	{_State279, BitNegToken}:                            _GotoState107Action,
 	{_State279, BitAndToken}:                            _GotoState106Action,
 	{_State279, AtomTypeType}:                           _GotoState114Action,
 	{_State279, TraitableTypeType}:                      _GotoState128Action,
@@ -5356,13 +5353,13 @@ var _ActionTable = _ActionTableType{
 	{_State279, FuncTypeType}:                           _GotoState118Action,
 	{_State281, IdentifierToken}:                        _GotoState142Action,
 	{_State281, StructToken}:                            _GotoState31Action,
-	{_State281, EnumToken}:                              _GotoState107Action,
+	{_State281, EnumToken}:                              _GotoState108Action,
 	{_State281, TraitToken}:                             _GotoState15Action,
 	{_State281, FuncToken}:                              _GotoState138Action,
-	{_State281, LparenToken}:                            _GotoState112Action,
-	{_State281, QuestionToken}:                          _GotoState113Action,
-	{_State281, ExclaimToken}:                           _GotoState108Action,
-	{_State281, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State281, LparenToken}:                            _GotoState111Action,
+	{_State281, QuestionToken}:                          _GotoState112Action,
+	{_State281, TildeTildeToken}:                        _GotoState113Action,
+	{_State281, BitNegToken}:                            _GotoState107Action,
 	{_State281, BitAndToken}:                            _GotoState106Action,
 	{_State281, AtomTypeType}:                           _GotoState114Action,
 	{_State281, TraitableTypeType}:                      _GotoState128Action,
@@ -5378,14 +5375,14 @@ var _ActionTable = _ActionTableType{
 	{_State281, FuncTypeType}:                           _GotoState118Action,
 	{_State282, IdentifierToken}:                        _GotoState226Action,
 	{_State282, StructToken}:                            _GotoState31Action,
-	{_State282, EnumToken}:                              _GotoState107Action,
+	{_State282, EnumToken}:                              _GotoState108Action,
 	{_State282, TraitToken}:                             _GotoState15Action,
 	{_State282, FuncToken}:                              _GotoState138Action,
-	{_State282, LparenToken}:                            _GotoState112Action,
-	{_State282, QuestionToken}:                          _GotoState113Action,
+	{_State282, LparenToken}:                            _GotoState111Action,
+	{_State282, QuestionToken}:                          _GotoState112Action,
 	{_State282, DotdotdotToken}:                         _GotoState225Action,
-	{_State282, ExclaimToken}:                           _GotoState108Action,
-	{_State282, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State282, TildeTildeToken}:                        _GotoState113Action,
+	{_State282, BitNegToken}:                            _GotoState107Action,
 	{_State282, BitAndToken}:                            _GotoState106Action,
 	{_State282, AtomTypeType}:                           _GotoState114Action,
 	{_State282, TraitableTypeType}:                      _GotoState128Action,
@@ -5404,13 +5401,13 @@ var _ActionTable = _ActionTableType{
 	{_State292, CommaToken}:                             _GotoState267Action,
 	{_State295, IdentifierToken}:                        _GotoState142Action,
 	{_State295, StructToken}:                            _GotoState31Action,
-	{_State295, EnumToken}:                              _GotoState107Action,
+	{_State295, EnumToken}:                              _GotoState108Action,
 	{_State295, TraitToken}:                             _GotoState15Action,
 	{_State295, FuncToken}:                              _GotoState138Action,
-	{_State295, LparenToken}:                            _GotoState112Action,
-	{_State295, QuestionToken}:                          _GotoState113Action,
-	{_State295, ExclaimToken}:                           _GotoState108Action,
-	{_State295, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State295, LparenToken}:                            _GotoState111Action,
+	{_State295, QuestionToken}:                          _GotoState112Action,
+	{_State295, TildeTildeToken}:                        _GotoState113Action,
+	{_State295, BitNegToken}:                            _GotoState107Action,
 	{_State295, BitAndToken}:                            _GotoState106Action,
 	{_State295, AtomTypeType}:                           _GotoState114Action,
 	{_State295, TraitableTypeType}:                      _GotoState128Action,
@@ -5426,13 +5423,13 @@ var _ActionTable = _ActionTableType{
 	{_State295, FuncTypeType}:                           _GotoState118Action,
 	{_State299, IdentifierToken}:                        _GotoState142Action,
 	{_State299, StructToken}:                            _GotoState31Action,
-	{_State299, EnumToken}:                              _GotoState107Action,
+	{_State299, EnumToken}:                              _GotoState108Action,
 	{_State299, TraitToken}:                             _GotoState15Action,
 	{_State299, FuncToken}:                              _GotoState138Action,
-	{_State299, LparenToken}:                            _GotoState112Action,
-	{_State299, QuestionToken}:                          _GotoState113Action,
-	{_State299, ExclaimToken}:                           _GotoState108Action,
-	{_State299, ExclaimExclaimToken}:                    _GotoState109Action,
+	{_State299, LparenToken}:                            _GotoState111Action,
+	{_State299, QuestionToken}:                          _GotoState112Action,
+	{_State299, TildeTildeToken}:                        _GotoState113Action,
+	{_State299, BitNegToken}:                            _GotoState107Action,
 	{_State299, BitAndToken}:                            _GotoState106Action,
 	{_State299, AtomTypeType}:                           _GotoState114Action,
 	{_State299, TraitableTypeType}:                      _GotoState128Action,
@@ -5528,9 +5525,9 @@ var _ActionTable = _ActionTableType{
 	{_State101, _WildcardMarker}:                        _ReducePrefixOpToPrefixUnaryExprAction,
 	{_State102, _WildcardMarker}:                        _ReduceEmptyListToPackageStatementsAction,
 	{_State103, RbracketToken}:                          _ReduceNilToOptionalGenericParameterDefsAction,
-	{_State111, _WildcardMarker}:                        _ReduceNilToOptionalGenericBindingAction,
-	{_State112, RparenToken}:                            _ReduceNilToOptionalFieldDefsAction,
-	{_State113, _WildcardMarker}:                        _ReduceQuestionToAtomTypeAction,
+	{_State110, _WildcardMarker}:                        _ReduceNilToOptionalGenericBindingAction,
+	{_State111, RparenToken}:                            _ReduceNilToOptionalFieldDefsAction,
+	{_State112, _WildcardMarker}:                        _ReduceQuestionToAtomTypeAction,
 	{_State114, _WildcardMarker}:                        _ReduceAtomTypeToTraitableTypeAction,
 	{_State115, _WildcardMarker}:                        _ReduceExplicitEnumTypeToAtomTypeAction,
 	{_State116, _WildcardMarker}:                        _ReduceExplicitStructDefToAtomTypeAction,
@@ -5574,12 +5571,12 @@ var _ActionTable = _ActionTableType{
 	{_State165, _EndMarker}:                             _ReduceAliasToTypeDefAction,
 	{_State166, _EndMarker}:                             _ReduceDefinitionToTypeDefAction,
 	{_State167, _EndMarker}:                             _ReduceReferenceToValueTypeAction,
-	{_State169, _WildcardMarker}:                        _ReduceMethodInterfaceToTraitableTypeAction,
-	{_State170, _WildcardMarker}:                        _ReduceTraitToTraitableTypeAction,
-	{_State172, RparenToken}:                            _ReduceNilToOptionalParameterDeclsAction,
-	{_State173, _WildcardMarker}:                        _ReduceNamedToAtomTypeAction,
-	{_State174, _WildcardMarker}:                        _ReduceExplicitToFieldDefAction,
-	{_State175, _WildcardMarker}:                        _ReduceFieldDefToFieldDefsAction,
+	{_State168, _WildcardMarker}:                        _ReduceMethodInterfaceToTraitableTypeAction,
+	{_State171, RparenToken}:                            _ReduceNilToOptionalParameterDeclsAction,
+	{_State172, _WildcardMarker}:                        _ReduceNamedToAtomTypeAction,
+	{_State173, _WildcardMarker}:                        _ReduceExplicitToFieldDefAction,
+	{_State174, _WildcardMarker}:                        _ReduceFieldDefToFieldDefsAction,
+	{_State176, _WildcardMarker}:                        _ReduceTraitToTraitableTypeAction,
 	{_State177, _EndMarker}:                             _ReduceToTraitDefAction,
 	{_State184, _WildcardMarker}:                        _ReduceArgToParameterDefAction,
 	{_State185, IdentifierToken}:                        _ReduceReceiverToOptionalReceiverAction,
@@ -6286,15 +6283,15 @@ Parser Debug States:
     Reduce:
       RPAREN -> [optional_trait_properties]
     Goto:
-      IDENTIFIER -> State 111
+      IDENTIFIER -> State 110
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
-      FUNC -> State 110
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      FUNC -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -6373,15 +6370,15 @@ Parser Debug States:
     Reduce:
       RPAREN -> [optional_field_defs]
     Goto:
-      IDENTIFIER -> State 111
+      IDENTIFIER -> State 110
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -6414,13 +6411,13 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       generic_arguments -> State 143
       optional_generic_arguments -> State 144
@@ -7045,13 +7042,13 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -7074,13 +7071,13 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -7102,12 +7099,12 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       atom_type -> State 114
       traitable_type -> State 128
       trait_mul_type -> State 125
@@ -7120,61 +7117,42 @@ Parser Debug States:
 
   State 107:
     Kernel Items:
+      traitable_type: BIT_NEG.atom_type
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 142
+      STRUCT -> State 31
+      ENUM -> State 108
+      TRAIT -> State 15
+      LPAREN -> State 111
+      QUESTION -> State 112
+      atom_type -> State 168
+      implicit_enum_type -> State 119
+      explicit_enum_type -> State 115
+      implicit_struct_def -> State 120
+      explicit_struct_def -> State 116
+      trait_def -> State 124
+
+  State 108:
+    Kernel Items:
       explicit_enum_type: ENUM.LPAREN RPAREN
     Reduce:
       (nil)
     Goto:
-      LPAREN -> State 168
-
-  State 108:
-    Kernel Items:
-      traitable_type: EXCLAIM.atom_type
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 142
-      STRUCT -> State 31
-      ENUM -> State 107
-      TRAIT -> State 15
-      LPAREN -> State 112
-      QUESTION -> State 113
-      atom_type -> State 169
-      implicit_enum_type -> State 119
-      explicit_enum_type -> State 115
-      implicit_struct_def -> State 120
-      explicit_struct_def -> State 116
-      trait_def -> State 124
+      LPAREN -> State 169
 
   State 109:
-    Kernel Items:
-      traitable_type: EXCLAIM_EXCLAIM.atom_type
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 142
-      STRUCT -> State 31
-      ENUM -> State 107
-      TRAIT -> State 15
-      LPAREN -> State 112
-      QUESTION -> State 113
-      atom_type -> State 170
-      implicit_enum_type -> State 119
-      explicit_enum_type -> State 115
-      implicit_struct_def -> State 120
-      explicit_struct_def -> State 116
-      trait_def -> State 124
-
-  State 110:
     Kernel Items:
       func_type: FUNC.LPAREN optional_parameter_decls RPAREN return_type
       method_signature: FUNC.IDENTIFIER LPAREN optional_parameter_decls RPAREN return_type
     Reduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 171
-      LPAREN -> State 172
+      IDENTIFIER -> State 170
+      LPAREN -> State 171
 
-  State 111:
+  State 110:
     Kernel Items:
       atom_type: IDENTIFIER.optional_generic_binding
       field_def: IDENTIFIER.value_type
@@ -7183,54 +7161,54 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
+      LPAREN -> State 111
+      QUESTION -> State 112
       DOLLAR_LBRACKET -> State 65
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
-      optional_generic_binding -> State 173
+      optional_generic_binding -> State 172
       atom_type -> State 114
       traitable_type -> State 128
       trait_mul_type -> State 125
       trait_add_type -> State 123
       implicit_enum_type -> State 119
       explicit_enum_type -> State 115
-      value_type -> State 174
+      value_type -> State 173
       implicit_struct_def -> State 120
       explicit_struct_def -> State 116
       trait_def -> State 124
       func_type -> State 118
 
-  State 112:
+  State 111:
     Kernel Items:
       implicit_enum_type: LPAREN.field_def_or_list RPAREN
       implicit_struct_def: LPAREN.optional_field_defs RPAREN
     Reduce:
       RPAREN -> [optional_field_defs]
     Goto:
-      IDENTIFIER -> State 111
+      IDENTIFIER -> State 110
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
       trait_mul_type -> State 125
       trait_add_type -> State 123
-      field_def_or_list -> State 176
+      field_def_or_list -> State 175
       implicit_enum_type -> State 119
       explicit_enum_type -> State 115
       value_type -> State 129
-      field_def -> State 175
+      field_def -> State 174
       field_defs -> State 140
       optional_field_defs -> State 141
       implicit_struct_def -> State 120
@@ -7238,13 +7216,32 @@ Parser Debug States:
       trait_def -> State 124
       func_type -> State 118
 
-  State 113:
+  State 112:
     Kernel Items:
       atom_type: QUESTION., *
     Reduce:
       * -> [atom_type]
     Goto:
       (nil)
+
+  State 113:
+    Kernel Items:
+      traitable_type: TILDE_TILDE.atom_type
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 142
+      STRUCT -> State 31
+      ENUM -> State 108
+      TRAIT -> State 15
+      LPAREN -> State 111
+      QUESTION -> State 112
+      atom_type -> State 176
+      implicit_enum_type -> State 119
+      explicit_enum_type -> State 115
+      implicit_struct_def -> State 120
+      explicit_struct_def -> State 116
+      trait_def -> State 124
 
   State 114:
     Kernel Items:
@@ -7390,14 +7387,14 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
+      LPAREN -> State 111
+      QUESTION -> State 112
       DOTDOTDOT -> State 183
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -7511,7 +7508,7 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      LPAREN -> State 172
+      LPAREN -> State 171
 
   State 139:
     Kernel Items:
@@ -7547,7 +7544,7 @@ Parser Debug States:
       * -> [optional_generic_binding]
     Goto:
       DOLLAR_LBRACKET -> State 65
-      optional_generic_binding -> State 173
+      optional_generic_binding -> State 172
 
   State 143:
     Kernel Items:
@@ -7823,13 +7820,13 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -7898,29 +7895,21 @@ Parser Debug States:
 
   State 168:
     Kernel Items:
+      traitable_type: BIT_NEG atom_type., *
+    Reduce:
+      * -> [traitable_type]
+    Goto:
+      (nil)
+
+  State 169:
+    Kernel Items:
       explicit_enum_type: ENUM LPAREN.RPAREN
     Reduce:
       (nil)
     Goto:
       RPAREN -> State 223
 
-  State 169:
-    Kernel Items:
-      traitable_type: EXCLAIM atom_type., *
-    Reduce:
-      * -> [traitable_type]
-    Goto:
-      (nil)
-
   State 170:
-    Kernel Items:
-      traitable_type: EXCLAIM_EXCLAIM atom_type., *
-    Reduce:
-      * -> [traitable_type]
-    Goto:
-      (nil)
-
-  State 171:
     Kernel Items:
       method_signature: FUNC IDENTIFIER.LPAREN optional_parameter_decls RPAREN return_type
     Reduce:
@@ -7928,7 +7917,7 @@ Parser Debug States:
     Goto:
       LPAREN -> State 224
 
-  State 172:
+  State 171:
     Kernel Items:
       func_type: FUNC LPAREN.optional_parameter_decls RPAREN return_type
     Reduce:
@@ -7936,14 +7925,14 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 226
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
+      LPAREN -> State 111
+      QUESTION -> State 112
       DOTDOTDOT -> State 225
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -7960,7 +7949,7 @@ Parser Debug States:
       optional_parameter_decls -> State 227
       func_type -> State 118
 
-  State 173:
+  State 172:
     Kernel Items:
       atom_type: IDENTIFIER optional_generic_binding., *
     Reduce:
@@ -7968,7 +7957,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 174:
+  State 173:
     Kernel Items:
       field_def: IDENTIFIER value_type., *
     Reduce:
@@ -7976,7 +7965,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 175:
+  State 174:
     Kernel Items:
       field_def_or_list: field_def.OR field_def
       field_defs: field_def., *
@@ -7985,7 +7974,7 @@ Parser Debug States:
     Goto:
       OR -> State 231
 
-  State 176:
+  State 175:
     Kernel Items:
       field_def_or_list: field_def_or_list.OR field_def
       implicit_enum_type: LPAREN field_def_or_list.RPAREN
@@ -7994,6 +7983,14 @@ Parser Debug States:
     Goto:
       RPAREN -> State 233
       OR -> State 232
+
+  State 176:
+    Kernel Items:
+      traitable_type: TILDE_TILDE atom_type., *
+    Reduce:
+      * -> [traitable_type]
+    Goto:
+      (nil)
 
   State 177:
     Kernel Items:
@@ -8011,12 +8008,12 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       atom_type -> State 114
       traitable_type -> State 128
       trait_mul_type -> State 234
@@ -8034,12 +8031,12 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       atom_type -> State 114
       traitable_type -> State 128
       trait_mul_type -> State 235
@@ -8057,12 +8054,12 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       atom_type -> State 114
       traitable_type -> State 236
       implicit_enum_type -> State 119
@@ -8077,15 +8074,15 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 111
+      IDENTIFIER -> State 110
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
-      FUNC -> State 110
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      FUNC -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -8108,15 +8105,15 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 111
+      IDENTIFIER -> State 110
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
-      FUNC -> State 110
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      FUNC -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -8141,13 +8138,13 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -8193,13 +8190,13 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -8237,15 +8234,15 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 111
+      IDENTIFIER -> State 110
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -8266,15 +8263,15 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 111
+      IDENTIFIER -> State 110
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -8305,13 +8302,13 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -8613,13 +8610,13 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -8649,14 +8646,14 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 226
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
+      LPAREN -> State 111
+      QUESTION -> State 112
       DOTDOTDOT -> State 225
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -8681,13 +8678,13 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -8711,17 +8708,17 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
+      LPAREN -> State 111
+      QUESTION -> State 112
       DOLLAR_LBRACKET -> State 65
       DOTDOTDOT -> State 279
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
-      optional_generic_binding -> State 173
+      optional_generic_binding -> State 172
       atom_type -> State 114
       traitable_type -> State 128
       trait_mul_type -> State 125
@@ -8773,15 +8770,15 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 111
+      IDENTIFIER -> State 110
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -8802,15 +8799,15 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 111
+      IDENTIFIER -> State 110
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -9329,13 +9326,13 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -9365,13 +9362,13 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -9394,14 +9391,14 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 226
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
+      LPAREN -> State 111
+      QUESTION -> State 112
       DOTDOTDOT -> State 225
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -9521,13 +9518,13 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
@@ -9574,13 +9571,13 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 142
       STRUCT -> State 31
-      ENUM -> State 107
+      ENUM -> State 108
       TRAIT -> State 15
       FUNC -> State 138
-      LPAREN -> State 112
-      QUESTION -> State 113
-      EXCLAIM -> State 108
-      EXCLAIM_EXCLAIM -> State 109
+      LPAREN -> State 111
+      QUESTION -> State 112
+      TILDE_TILDE -> State 113
+      BIT_NEG -> State 107
       BIT_AND -> State 106
       atom_type -> State 114
       traitable_type -> State 128
