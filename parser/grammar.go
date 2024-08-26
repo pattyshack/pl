@@ -484,32 +484,32 @@ type Reducer interface {
 	// 334:2: atom_type -> trait_def: ...
 	TraitDefToAtomType(TraitDef_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 335:2: atom_type -> QUESTION: ...
-	QuestionToAtomType(Question_ *GenericSymbol) (*GenericSymbol, error)
-
-	// 338:2: traitable_type -> atom_type: ...
+	// 337:2: traitable_type -> atom_type: ...
 	AtomTypeToTraitableType(AtomType_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 339:2: traitable_type -> method_interface: ...
+	// 338:2: traitable_type -> method_interface: ...
 	MethodInterfaceToTraitableType(BitNeg_ *GenericSymbol, AtomType_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 340:2: traitable_type -> trait: ...
+	// 339:2: traitable_type -> trait: ...
 	TraitToTraitableType(TildeTilde_ *GenericSymbol, AtomType_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 343:2: trait_mul_type -> traitable_type: ...
+	// 342:2: trait_mul_type -> traitable_type: ...
 	TraitableTypeToTraitMulType(TraitableType_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 344:2: trait_mul_type -> intersect: ...
+	// 343:2: trait_mul_type -> intersect: ...
 	IntersectToTraitMulType(TraitMulType_ *GenericSymbol, Mul_ *GenericSymbol, TraitableType_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 347:2: trait_add_type -> trait_mul_type: ...
+	// 346:2: trait_add_type -> trait_mul_type: ...
 	TraitMulTypeToTraitAddType(TraitMulType_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 348:2: trait_add_type -> union: ...
+	// 347:2: trait_add_type -> union: ...
 	UnionToTraitAddType(TraitAddType_ *GenericSymbol, Add_ *GenericSymbol, TraitMulType_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 353:2: trait_add_type -> difference: ...
+	// 352:2: trait_add_type -> difference: ...
 	DifferenceToTraitAddType(TraitAddType_ *GenericSymbol, Sub_ *GenericSymbol, TraitMulType_ *GenericSymbol) (*GenericSymbol, error)
+
+	// 355:2: value_type -> inferred: ...
+	InferredToValueType(Question_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 356:2: value_type -> trait_add_type: ...
 	TraitAddTypeToValueType(TraitAddType_ *GenericSymbol) (*GenericSymbol, error)
@@ -1522,15 +1522,15 @@ const (
 	_ReduceExplicitEnumDefToAtomType                                      = _ReduceType(117)
 	_ReduceImplicitEnumDefToAtomType                                      = _ReduceType(118)
 	_ReduceTraitDefToAtomType                                             = _ReduceType(119)
-	_ReduceQuestionToAtomType                                             = _ReduceType(120)
-	_ReduceAtomTypeToTraitableType                                        = _ReduceType(121)
-	_ReduceMethodInterfaceToTraitableType                                 = _ReduceType(122)
-	_ReduceTraitToTraitableType                                           = _ReduceType(123)
-	_ReduceTraitableTypeToTraitMulType                                    = _ReduceType(124)
-	_ReduceIntersectToTraitMulType                                        = _ReduceType(125)
-	_ReduceTraitMulTypeToTraitAddType                                     = _ReduceType(126)
-	_ReduceUnionToTraitAddType                                            = _ReduceType(127)
-	_ReduceDifferenceToTraitAddType                                       = _ReduceType(128)
+	_ReduceAtomTypeToTraitableType                                        = _ReduceType(120)
+	_ReduceMethodInterfaceToTraitableType                                 = _ReduceType(121)
+	_ReduceTraitToTraitableType                                           = _ReduceType(122)
+	_ReduceTraitableTypeToTraitMulType                                    = _ReduceType(123)
+	_ReduceIntersectToTraitMulType                                        = _ReduceType(124)
+	_ReduceTraitMulTypeToTraitAddType                                     = _ReduceType(125)
+	_ReduceUnionToTraitAddType                                            = _ReduceType(126)
+	_ReduceDifferenceToTraitAddType                                       = _ReduceType(127)
+	_ReduceInferredToValueType                                            = _ReduceType(128)
 	_ReduceTraitAddTypeToValueType                                        = _ReduceType(129)
 	_ReduceReferenceToValueType                                           = _ReduceType(130)
 	_ReduceFuncTypeToValueType                                            = _ReduceType(131)
@@ -1847,8 +1847,6 @@ func (i _ReduceType) String() string {
 		return "ImplicitEnumDefToAtomType"
 	case _ReduceTraitDefToAtomType:
 		return "TraitDefToAtomType"
-	case _ReduceQuestionToAtomType:
-		return "QuestionToAtomType"
 	case _ReduceAtomTypeToTraitableType:
 		return "AtomTypeToTraitableType"
 	case _ReduceMethodInterfaceToTraitableType:
@@ -1865,6 +1863,8 @@ func (i _ReduceType) String() string {
 		return "UnionToTraitAddType"
 	case _ReduceDifferenceToTraitAddType:
 		return "DifferenceToTraitAddType"
+	case _ReduceInferredToValueType:
+		return "InferredToValueType"
 	case _ReduceTraitAddTypeToValueType:
 		return "TraitAddTypeToValueType"
 	case _ReduceReferenceToValueType:
@@ -3036,11 +3036,6 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
 		symbol.Generic_, err = reducer.TraitDefToAtomType(args[0].Generic_)
-	case _ReduceQuestionToAtomType:
-		args := stack[len(stack)-1:]
-		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = AtomTypeType
-		symbol.Generic_, err = reducer.QuestionToAtomType(args[0].Generic_)
 	case _ReduceAtomTypeToTraitableType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -3081,6 +3076,11 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = TraitAddTypeType
 		symbol.Generic_, err = reducer.DifferenceToTraitAddType(args[0].Generic_, args[1].Generic_, args[2].Generic_)
+	case _ReduceInferredToValueType:
+		args := stack[len(stack)-1:]
+		stack = stack[:len(stack)-1]
+		symbol.SymbolId_ = ValueTypeType
+		symbol.Generic_, err = reducer.InferredToValueType(args[0].Generic_)
 	case _ReduceTraitAddTypeToValueType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -3903,7 +3903,6 @@ var (
 	_ReduceExplicitEnumDefToAtomTypeAction                                      = &_Action{_ReduceAction, 0, _ReduceExplicitEnumDefToAtomType}
 	_ReduceImplicitEnumDefToAtomTypeAction                                      = &_Action{_ReduceAction, 0, _ReduceImplicitEnumDefToAtomType}
 	_ReduceTraitDefToAtomTypeAction                                             = &_Action{_ReduceAction, 0, _ReduceTraitDefToAtomType}
-	_ReduceQuestionToAtomTypeAction                                             = &_Action{_ReduceAction, 0, _ReduceQuestionToAtomType}
 	_ReduceAtomTypeToTraitableTypeAction                                        = &_Action{_ReduceAction, 0, _ReduceAtomTypeToTraitableType}
 	_ReduceMethodInterfaceToTraitableTypeAction                                 = &_Action{_ReduceAction, 0, _ReduceMethodInterfaceToTraitableType}
 	_ReduceTraitToTraitableTypeAction                                           = &_Action{_ReduceAction, 0, _ReduceTraitToTraitableType}
@@ -3912,6 +3911,7 @@ var (
 	_ReduceTraitMulTypeToTraitAddTypeAction                                     = &_Action{_ReduceAction, 0, _ReduceTraitMulTypeToTraitAddType}
 	_ReduceUnionToTraitAddTypeAction                                            = &_Action{_ReduceAction, 0, _ReduceUnionToTraitAddType}
 	_ReduceDifferenceToTraitAddTypeAction                                       = &_Action{_ReduceAction, 0, _ReduceDifferenceToTraitAddType}
+	_ReduceInferredToValueTypeAction                                            = &_Action{_ReduceAction, 0, _ReduceInferredToValueType}
 	_ReduceTraitAddTypeToValueTypeAction                                        = &_Action{_ReduceAction, 0, _ReduceTraitAddTypeToValueType}
 	_ReduceReferenceToValueTypeAction                                           = &_Action{_ReduceAction, 0, _ReduceReferenceToValueType}
 	_ReduceFuncTypeToValueTypeAction                                            = &_Action{_ReduceAction, 0, _ReduceFuncTypeToValueType}
@@ -4594,7 +4594,6 @@ var _ActionTable = _ActionTableType{
 	{_State105, EnumToken}:                              _GotoState107Action,
 	{_State105, TraitToken}:                             _GotoState15Action,
 	{_State105, LparenToken}:                            _GotoState110Action,
-	{_State105, QuestionToken}:                          _GotoState111Action,
 	{_State105, TildeTildeToken}:                        _GotoState112Action,
 	{_State105, BitNegToken}:                            _GotoState106Action,
 	{_State105, AtomTypeType}:                           _GotoState113Action,
@@ -4611,7 +4610,6 @@ var _ActionTable = _ActionTableType{
 	{_State106, EnumToken}:                              _GotoState107Action,
 	{_State106, TraitToken}:                             _GotoState15Action,
 	{_State106, LparenToken}:                            _GotoState110Action,
-	{_State106, QuestionToken}:                          _GotoState111Action,
 	{_State106, AtomTypeType}:                           _GotoState167Action,
 	{_State106, ImplicitStructDefType}:                  _GotoState119Action,
 	{_State106, ExplicitStructDefType}:                  _GotoState115Action,
@@ -4674,7 +4672,6 @@ var _ActionTable = _ActionTableType{
 	{_State112, EnumToken}:                              _GotoState107Action,
 	{_State112, TraitToken}:                             _GotoState15Action,
 	{_State112, LparenToken}:                            _GotoState110Action,
-	{_State112, QuestionToken}:                          _GotoState111Action,
 	{_State112, AtomTypeType}:                           _GotoState177Action,
 	{_State112, ImplicitStructDefType}:                  _GotoState119Action,
 	{_State112, ExplicitStructDefType}:                  _GotoState115Action,
@@ -4965,7 +4962,6 @@ var _ActionTable = _ActionTableType{
 	{_State179, EnumToken}:                              _GotoState107Action,
 	{_State179, TraitToken}:                             _GotoState15Action,
 	{_State179, LparenToken}:                            _GotoState110Action,
-	{_State179, QuestionToken}:                          _GotoState111Action,
 	{_State179, TildeTildeToken}:                        _GotoState112Action,
 	{_State179, BitNegToken}:                            _GotoState106Action,
 	{_State179, AtomTypeType}:                           _GotoState113Action,
@@ -4981,7 +4977,6 @@ var _ActionTable = _ActionTableType{
 	{_State180, EnumToken}:                              _GotoState107Action,
 	{_State180, TraitToken}:                             _GotoState15Action,
 	{_State180, LparenToken}:                            _GotoState110Action,
-	{_State180, QuestionToken}:                          _GotoState111Action,
 	{_State180, TildeTildeToken}:                        _GotoState112Action,
 	{_State180, BitNegToken}:                            _GotoState106Action,
 	{_State180, AtomTypeType}:                           _GotoState113Action,
@@ -4997,7 +4992,6 @@ var _ActionTable = _ActionTableType{
 	{_State181, EnumToken}:                              _GotoState107Action,
 	{_State181, TraitToken}:                             _GotoState15Action,
 	{_State181, LparenToken}:                            _GotoState110Action,
-	{_State181, QuestionToken}:                          _GotoState111Action,
 	{_State181, TildeTildeToken}:                        _GotoState112Action,
 	{_State181, BitNegToken}:                            _GotoState106Action,
 	{_State181, AtomTypeType}:                           _GotoState113Action,
@@ -5798,7 +5792,7 @@ var _ActionTable = _ActionTableType{
 	{_State102, RbracketToken}:                          _ReduceNilToOptionalGenericParameterDefsAction,
 	{_State109, _WildcardMarker}:                        _ReduceNilToOptionalGenericBindingAction,
 	{_State110, RparenToken}:                            _ReduceNilToOptionalImplicitFieldDefsAction,
-	{_State111, _WildcardMarker}:                        _ReduceQuestionToAtomTypeAction,
+	{_State111, _EndMarker}:                             _ReduceInferredToValueTypeAction,
 	{_State113, _WildcardMarker}:                        _ReduceAtomTypeToTraitableTypeAction,
 	{_State114, _WildcardMarker}:                        _ReduceExplicitEnumDefToAtomTypeAction,
 	{_State115, _WildcardMarker}:                        _ReduceExplicitStructDefToAtomTypeAction,
@@ -7373,7 +7367,6 @@ Parser Debug States:
       ENUM -> State 107
       TRAIT -> State 15
       LPAREN -> State 110
-      QUESTION -> State 111
       TILDE_TILDE -> State 112
       BIT_NEG -> State 106
       atom_type -> State 113
@@ -7397,7 +7390,6 @@ Parser Debug States:
       ENUM -> State 107
       TRAIT -> State 15
       LPAREN -> State 110
-      QUESTION -> State 111
       atom_type -> State 167
       implicit_struct_def -> State 119
       explicit_struct_def -> State 115
@@ -7489,9 +7481,9 @@ Parser Debug States:
 
   State 111:
     Kernel Items:
-      atom_type: QUESTION., *
+      value_type: QUESTION., $
     Reduce:
-      * -> [atom_type]
+      $ -> [value_type]
     Goto:
       (nil)
 
@@ -7506,7 +7498,6 @@ Parser Debug States:
       ENUM -> State 107
       TRAIT -> State 15
       LPAREN -> State 110
-      QUESTION -> State 111
       atom_type -> State 177
       implicit_struct_def -> State 119
       explicit_struct_def -> State 115
@@ -8322,7 +8313,6 @@ Parser Debug States:
       ENUM -> State 107
       TRAIT -> State 15
       LPAREN -> State 110
-      QUESTION -> State 111
       TILDE_TILDE -> State 112
       BIT_NEG -> State 106
       atom_type -> State 113
@@ -8345,7 +8335,6 @@ Parser Debug States:
       ENUM -> State 107
       TRAIT -> State 15
       LPAREN -> State 110
-      QUESTION -> State 111
       TILDE_TILDE -> State 112
       BIT_NEG -> State 106
       atom_type -> State 113
@@ -8368,7 +8357,6 @@ Parser Debug States:
       ENUM -> State 107
       TRAIT -> State 15
       LPAREN -> State 110
-      QUESTION -> State 111
       TILDE_TILDE -> State 112
       BIT_NEG -> State 106
       atom_type -> State 113
@@ -10174,7 +10162,7 @@ Parser Debug States:
       (nil)
 
 Number of states: 319
-Number of shift actions: 1723
+Number of shift actions: 1717
 Number of reduce actions: 245
 Number of shift/reduce conflicts: 0
 Number of reduce/reduce conflicts: 0

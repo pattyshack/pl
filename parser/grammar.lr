@@ -331,8 +331,7 @@ atom_type ->
   implicit_struct_def |
   explicit_enum_def |
   implicit_enum_def |
-  trait_def |
-  QUESTION
+  trait_def
 
 traitable_type ->
   atom_type |
@@ -353,6 +352,7 @@ trait_add_type ->
   difference: trait_add_type SUB trait_mul_type
 
 value_type ->
+  inferred: QUESTION |
   trait_add_type |
   reference: BIT_AND trait_add_type |
   func_type
