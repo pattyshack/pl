@@ -69,8 +69,8 @@
 
 %type generic_arguments optional_generic_arguments optional_generic_binding
 
-%type field_decl
-%type field_decls optional_field_decls
+%type field_def
+%type field_defs optional_field_defs
 
 %type generic_parameter_def
 %type generic_parameter_defs optional_generic_parameter_defs
@@ -83,13 +83,16 @@
 
 %type type_def
 %type value_type atom_type traitable_type trait_mul_type trait_add_type
-%type explicit_struct_type implicit_struct_type trait_type
+%type explicit_struct_type implicit_struct_type
 
 %type explicit_enum_type implicit_enum_type
-%type field_decl_or_list
+%type field_def_or_list
 
-%type func_type named_func_def anonymous_func_expr
-%type parameter_type return_type
+%type trait_def
+%type trait_property trait_properties optional_trait_properties
+
+%type func_type named_func_def method_signature anonymous_func_expr
+%type return_type
 %type parameter_decl
 %type parameter_decls optional_parameter_decls
 %type parameter_def
@@ -100,7 +103,7 @@
 %type package_statement package_statement_body
 %type package_statements
 
-%start package_def type_def named_func_def expression lex_internal_tokens
+%start package_def type_def trait_def named_func_def expression lex_internal_tokens
 
 literal ->
   TRUE |
@@ -327,9 +330,10 @@ atom_type ->
   named: IDENTIFIER optional_generic_binding |
   explicit_struct_type |
   implicit_struct_type |
-  implicit_enum_type |
   explicit_enum_type |
-  trait_type
+  implicit_enum_type |
+  trait_def |
+  QUESTION
 
 traitable_type ->
   atom_type |
@@ -349,34 +353,15 @@ trait_add_type ->
   // with expression.
   difference: trait_add_type SUB trait_mul_type
 
-// XXX: how to deal with trait decl / impl?
+field_def_or_list ->
+  pair: field_def OR field_def |
+  add: field_def_or_list OR field_def
 
-field_decl ->
-  explicit: IDENTIFIER value_type |
-  implicit: value_type
-
-field_decls ->
-  field_decl |
-  implicit: field_decls NEWLINES field_decl |
-  explicit: field_decls COMMA field_decl
-
-optional_field_decls ->
-  field_decls |
-  nil:
-
-implicit_struct_type -> LPAREN optional_field_decls RPAREN
-
-field_decl_or_list ->
-  pair: field_decl OR field_decl |
-  add: field_decl_or_list OR field_decl
-
-implicit_enum_type -> LPAREN field_decl_or_list RPAREN
+// XXX: Should unify the syntax with explicit enum ?
+implicit_enum_type -> LPAREN field_def_or_list RPAREN
 
 // TODO declare implements ( interface list )
 explicit_struct_type -> STRUCT implicit_struct_type
-
-// TODO
-trait_type -> TRAIT LPAREN RPAREN
 
 // TODO
 explicit_enum_type -> ENUM LPAREN RPAREN
@@ -393,7 +378,6 @@ type_def ->
 //
 // Generic parameter definition
 //
-
 
 generic_parameter_def ->
   unconstrained: IDENTIFIER |
@@ -412,22 +396,57 @@ optional_generic_parameters ->
   nil:
 
 //
-// Function type / definition, and anonymous func expression
+// Explicit/Implicit struct definition
 //
 
-parameter_type ->
-  value_type |
-  QUESTION
+field_def ->
+  explicit: IDENTIFIER value_type |
+  implicit: value_type
+
+field_defs ->
+  field_def |
+  implicit: field_defs NEWLINES field_def |
+  explicit: field_defs COMMA field_def
+
+optional_field_defs ->
+  field_defs |
+  nil:
+
+implicit_struct_type -> LPAREN optional_field_defs RPAREN
+
+//
+// Trait definition
+//
+
+trait_property ->
+  field_def |
+  method_signature
+
+trait_properties ->
+  trait_property |
+  implicit: trait_properties NEWLINES trait_property |
+  explicit: trait_properties COMMA trait_property
+
+optional_trait_properties ->
+  trait_properties |
+  nil:
+
+trait_def -> TRAIT LPAREN optional_trait_properties RPAREN
+
+//
+// Function type, definition, trait method signature
+// and anonymous func expression
+//
 
 return_type ->
   value_type |
-  QUESTION |
   nil:
 
 parameter_decl ->
-  parameter_def |
-  unamed: parameter_type |
-  unnamed_vararg: DOTDOTDOT parameter_type
+  arg: IDENTIFIER value_type |
+  vararg: IDENTIFIER DOTDOTDOT value_type |
+  unamed: value_type |
+  unnamed_vararg: DOTDOTDOT value_type
 
 parameter_decls ->
   parameter_decl |
@@ -439,9 +458,17 @@ optional_parameter_decls ->
 
 func_type -> FUNC LPAREN optional_parameter_decls RPAREN return_type
 
+// NOTE: FUNC is needed to disambiguate method signature from field def.
+// e.g., Foo (int, int) could mean a field named Foo with type
+// struct(int, int), or a method called Foo that takes two argument if func
+// is not present.
+//
+// XXX: allow generic parameters in method signature? No for now.
+method_signature -> FUNC IDENTIFIER LPAREN optional_parameter_decls RPAREN return_type
+
 parameter_def ->
-  arg: IDENTIFIER parameter_type |
-  vararg: IDENTIFIER DOTDOTDOT parameter_type
+  arg: IDENTIFIER value_type |
+  vararg: IDENTIFIER DOTDOTDOT value_type
 
 parameter_defs ->
   parameter_def |
