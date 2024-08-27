@@ -371,7 +371,8 @@ atom_type ->
   implicit_struct_def |
   explicit_enum_def |
   implicit_enum_def |
-  slice: LBRACKET value_type RBRACKET |  // shorthand for Array$[ <value_type> ]
+  slice: LBRACKET RBRACKET value_type |  // shorthand for Slice$[ <value_type> ]
+  array: LBRACKET INTEGER_LITERAL RBRACKET value_type |
   trait_def |
   func_type |
   LEX_ERROR
