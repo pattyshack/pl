@@ -401,7 +401,8 @@ optional_generic_parameters ->
 
 field_def ->
   explicit: IDENTIFIER value_type |
-  implicit: value_type
+  implicit: value_type |
+  unsafe_statement
 
 implicit_field_defs ->
   field_def |
