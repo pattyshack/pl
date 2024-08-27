@@ -278,7 +278,7 @@ atom_expr ->
   IDENTIFIER |
   block_expr |
   anonymous_func_expr |
-  anonymous_struct_expr |
+  initialize_expr|
   LEX_ERROR
 
 literal ->
@@ -289,9 +289,9 @@ literal ->
   RUNE_LITERAL |
   STRING_LITERAL
 
-anonymous_struct_expr ->
-  explicit: explicit_struct_def LPAREN arguments RPAREN |
-  implicit: LPAREN arguments RPAREN
+initialize_expr ->
+  explicit: initializable_type LPAREN arguments RPAREN |
+  implicit_struct: LPAREN arguments RPAREN
 
 access_expr ->
   atom_expr |
@@ -364,16 +364,22 @@ or_expr ->
 // Types ======================================================================
 //
 
-atom_type ->
-  inferred: DOT |  // XXX: maybe use a different token symbol
-  named: IDENTIFIER optional_generic_binding |
+// Note: named type initializations are parsed as call_expr instead of
+// initialize_expr
+initializable_type ->
   explicit_struct_def |
-  implicit_struct_def |
   explicit_enum_def |
-  implicit_enum_def |
   slice: LBRACKET value_type RBRACKET |  // shorthand for Slice$[ <value_type> ]
   array: LBRACKET value_type COMMA INTEGER_LITERAL RBRACKET |
-  map: LBRACKET value_type COLON value_type RBRACKET |  // shorthand for Map$[ <value_type> , <value_type> ]
+  map: LBRACKET value_type COLON value_type RBRACKET // shorthand for Map$[ <value_type> , <value_type> ]
+
+atom_type ->
+  initializable_type |
+  named: IDENTIFIER optional_generic_binding |
+  extern_named: IDENTIFIER DOT IDENTIFIER optional_generic_binding |
+  inferred: DOT optional_generic_binding |  // XXX: maybe use a different token symbol
+  implicit_struct_def |
+  implicit_enum_def |
   trait_def |
   func_type |
   LEX_ERROR
