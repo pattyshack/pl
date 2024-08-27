@@ -7,7 +7,7 @@
 
 %token IDENTIFIER
 %token TRUE FALSE
-%token IF ELSE SWITCH CASE DEFAULT FOR
+%token IF ELSE SWITCH CASE DEFAULT FOR DO IN
 %token RETURN BREAK CONTINUE
 
 %token PACKAGE
@@ -78,11 +78,27 @@ switch_expr -> SWITCH sequence_expr LBRACE CASE DEFAULT RBRACE
 // For control flow expression
 //
 
+// NOTE: Since we use {} for expression grouping, we need the extra DO keyword
+// to help the parser figure out which block is the loop's body.
+//
+// For example, suppose the infinite loop grammar is "FOR body_expr" and
+// the while loop grammar is "FOR sequence_expr body_expr".  Then the while
+// loop can be interpreted as an infinite loop "FOR sequence_expr", followed by
+// an sequence statement "body_expr".
 loop_expr ->
-  infinite: FOR block_expr |
-  while: FOR sequence_expr block_expr
-  // TODO: FOR optional_assignment SEMICOLON sequence_expr SEMICOLON sequence_expr block_expr
-  // TODO FOR let_decl IN sequence_expr block_expr
+  infinite: DO block_body |
+  do_while: DO block_body FOR sequence_expr |
+  while: FOR sequence_expr DO block_body |
+  iterator: FOR /* TODO var decl */ IN sequence_expr DO block_body |
+  for: FOR /* TODO var decl and/or basic statement */ SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO block_body
+
+optional_sequence_expr ->
+  sequence_expr |
+  nil:
+
+  //while: FOR sequence_expr block_body
+  // TODO: FOR optional_assignment SEMICOLON sequence_expr SEMICOLON sequence_expr block_body
+  // TODO FOR let_decl IN sequence_expr block_body
 
 //
 // Block / sequence control flow expressions
