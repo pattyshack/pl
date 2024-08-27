@@ -40,7 +40,28 @@
 
 %token LEX_ERROR
 
-%start package_def type_def trait_def named_func_def expression lex_internal_tokens
+%start source package_def type_def named_func_def expression lex_internal_tokens
+
+source -> optional_definitions
+
+optional_definitions ->
+  NEWLINES |
+  definitions: optional_newlines definitions optional_newlines |
+  nil:
+
+optional_newlines ->
+  NEWLINES |
+  nil:
+
+definitions ->
+  nil: definition |
+  add: definitions NEWLINES definition
+
+definition ->
+  package_def |
+  type_def |
+  named_func_def |
+  unsafe_statement
 
 //
 // Expressions ================================================================
@@ -349,7 +370,8 @@ atom_type ->
   implicit_struct_def |
   explicit_enum_def |
   implicit_enum_def |
-  trait_def
+  trait_def |
+  LEX_ERROR
 
 traitable_type ->
   atom_type |
