@@ -15,7 +15,7 @@
 %token UNSAFE
 
 %token TYPE IMPLEMENTS STRUCT ENUM TRAIT
-%token FUNC ASYNC
+%token FUNC ASYNC DEFER
 
 %token LABEL_DECL // <identifier>@
 %token JUMP_LABEL // @<identifier>
@@ -123,7 +123,18 @@ statement_body ->
 
   expression_or_implicit_struct: expressions |
 
+  // maybe allow pseudo-call such as struct initialization?
   async: ASYNC call_expr |  // returns an await handler
+
+  // Returns unit
+  //
+  // XXX: maybe make defer's call_expr run on the nearest scope exit rather
+  // than on function scope exit.  Transpiling this semantic to golang would
+  // be annoying since closure breaks control flow.
+  //
+  // Need to ensure this an actual function call, not a struct initialization.
+  defer: DEFER call_expr |
+
   // - compiler should optimize away the await handler if it's not used.
 
   jump_statement |
