@@ -21,7 +21,7 @@
 %token JUMP_LABEL // @<identifier>
 
 %token LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
-%token DOT COMMA QUESTION SEMICOLON COLON
+%token DOT COMMA QUESTION SEMICOLON COLON EXCLAIM
 %token DOLLAR_LBRACKET // $[
 %token DOTDOTDOT // ...
 %token TILDE_TILDE
@@ -365,36 +365,29 @@ or_expr ->
 //
 
 atom_type ->
+  inferred: DOT |  // XXX: maybe use a different token symbol
   named: IDENTIFIER optional_generic_binding |
   explicit_struct_def |
   implicit_struct_def |
   explicit_enum_def |
   implicit_enum_def |
+  slice: LBRACKET value_type RBRACKET |  // shorthand for Array$[ <value_type> ]
   trait_def |
+  func_type |
   LEX_ERROR
 
-traitable_type ->
-  atom_type |
-  public_methods_trait: BIT_NEG atom_type |  // atom type's public methods
-  public_trait: TILDE_TILDE atom_type  // atom type's public methods and fields
-
-// NOTE: use explicit trait() to specify op precedence e.g., trait(A+B) * C
-trait_algebra_type ->
-  traitable_type |
-  intersect: trait_algebra_type MUL traitable_type |
-  union: trait_algebra_type ADD traitable_type |
-  difference: trait_algebra_type SUB traitable_type
-
 value_type ->
-  inferred: QUESTION |
-  trait_algebra_type |
-  reference: BIT_AND trait_algebra_type |
-  func_type
+  atom_type |
+  optional: QUESTION value_type | // shorthand for Optional$[ <atom_type> ]
+  result: EXCLAIM value_type | // shorthand for Result$[ <atom_type> ]
+  reference: BIT_AND value_type |
+  public_methods_trait: BIT_NEG value_type |  // type's public methods
+  public_trait: TILDE_TILDE value_type  // type's public methods and fields
 
 type_def ->
   definition: TYPE IDENTIFIER optional_generic_parameters value_type |
   constrained_def: TYPE IDENTIFIER optional_generic_parameters value_type IMPLEMENTS value_type |
-  alias: TYPE IDENTIFIER EQUAL value_type
+  alias: TYPE IDENTIFIER EQUAL trait_algebra_type
 
 //
 // Generic parameter definition
@@ -476,9 +469,19 @@ explicit_enum_def -> ENUM LPAREN explicit_enum_value_defs RPAREN
 // Trait definition
 //
 
+// NOTE: use explicit trait() to specify op precedence e.g.,
+// trait( trait(A+B) * C)
+trait_algebra_type ->
+  value_type |
+  intersect: trait_algebra_type MUL value_type |
+  union: trait_algebra_type ADD value_type |
+  difference: trait_algebra_type SUB value_type
+
 trait_property ->
-  field_def |
-  method_signature
+  explicit: IDENTIFIER value_type |
+  implicit: trait_algebra_type |
+  method_signature |
+  unsafe_statement
 
 trait_properties ->
   trait_property |
