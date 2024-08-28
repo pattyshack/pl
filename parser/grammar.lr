@@ -92,8 +92,24 @@ if_expr ->
 // Switch control flow expression
 //
 
-// don't support fallthrough since it's incompatible with pattern matching
+// match patterns within the same case must all have identical variable binding
 
+// Allow fallthrough iff the next case have identical (and fewer) variable
+// bindings.
+//
+// e.g., OK.  y is binded to the same value
+// switch val {
+// case var (x, y): fallthrough
+// case (_, var y): // do something
+// }
+//
+// e.g., Not ok.  y != z
+// switch val {
+// case var (x, y): fallthrough
+// case (_, var z): // do something
+// }
+
+// Switch need to be exhastive.
 switch_expr -> SWITCH sequence_expr LBRACE case_branches optional_default_branch RBRACE
 
 case_branches ->
@@ -161,15 +177,23 @@ statement_body ->
   expression_or_implicit_struct: expressions |
 
   // maybe allow pseudo-call such as struct initialization?
+  //
+  // NOTE: call_expr's access_expr and its arguments are evaluated immediately
+  // Only the call itself is async.
   async: ASYNC call_expr |  // returns an await handler
 
   // Returns unit
   //
   // XXX: maybe make defer's call_expr run on the nearest scope exit rather
   // than on function scope exit.  Transpiling this semantic to golang would
-  // be annoying since closure breaks control flow.
+  // be annoying since golang's defer operate on function rather than scope
+  // exit.  Maybe just code gen the defer call on every exit point instead of
+  // relying on golang's defer?
   //
   // Need to ensure this an actual function call, not a struct initialization.
+  //
+  // NOTE: call_expr's access_expr and its arguments are evaluated immediately.
+  // Only the call itself is deferred.
   defer: DEFER call_expr |
 
   // - compiler should optimize away the await handler if it's not used.
@@ -486,6 +510,7 @@ enum_value_def ->
   field_def |
   default: field_def ASSIGN DEFAULT
 
+// NOTE: <value_type> OR () should be treated as Optional$[<value_type>]
 implicit_enum_value_defs ->
   pair: enum_value_def OR enum_value_def |
   add: implicit_enum_value_defs OR enum_value_def
@@ -549,7 +574,10 @@ func_type -> FUNC LPAREN optional_parameter_decls RPAREN return_type
 // struct(int, int), or a method called Foo that takes two argument if func
 // is not present.
 //
-// XXX: allow generic parameters in method signature? No for now.
+// XXX: allow generic parameters in method signature? No, for go transpiler.
+// Ideally yes.  We should allow function overloading as long as the functions
+// all conforms to the same (unconstrainted) generic parameterized signature.
+// Ambiguous usage would need to explicitly specify the generic parameter.
 method_signature -> FUNC IDENTIFIER LPAREN optional_parameter_decls RPAREN return_type
 
 parameter_def ->
