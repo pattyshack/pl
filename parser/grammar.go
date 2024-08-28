@@ -13238,4 +13238,7 @@ Number of shift actions: 2561
 Number of reduce actions: 318
 Number of shift/reduce conflicts: 0
 Number of reduce/reduce conflicts: 0
+Number of unoptimized states: 2646
+Number of unoptimized shift actions: 19552
+Number of unoptimized reduce actions: 16314
 */
