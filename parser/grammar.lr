@@ -92,8 +92,24 @@ if_expr ->
 // Switch control flow expression
 //
 
+// don't support fallthrough since it's incompatible with pattern matching
+
+switch_expr -> SWITCH sequence_expr LBRACE case_branches optional_default_branch RBRACE
+
+case_branches ->
+  case_branch |
+  add: case_branches case_branch
+
+case_branch -> CASE match_pattern COLON sequence_expr
+
 // TODO
-switch_expr -> SWITCH sequence_expr LBRACE CASE DEFAULT RBRACE
+match_pattern ->
+
+optional_default_branch ->
+  default_branch |
+  nil:
+
+default_branch -> DEFAULT COLON sequence_expr
 
 //
 // For control flow expression
@@ -116,10 +132,6 @@ loop_expr ->
 optional_sequence_expr ->
   sequence_expr |
   nil:
-
-  //while: FOR sequence_expr block_body
-  // TODO: FOR optional_assignment SEMICOLON sequence_expr SEMICOLON sequence_expr block_body
-  // TODO FOR let_decl IN sequence_expr block_body
 
 //
 // Block / sequence control flow expressions
