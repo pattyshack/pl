@@ -100,7 +100,11 @@ case_branches ->
   case_branch |
   add: case_branches case_branch
 
-case_branch -> CASE match_pattern COLON sequence_expr
+case_branch -> CASE match_patterns COLON sequence_expr
+
+match_patterns ->
+  match_pattern |
+  multiple: match_patterns COMMA match_pattern
 
 // TODO
 match_pattern ->
