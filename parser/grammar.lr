@@ -5,19 +5,24 @@
 
 %token INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
 
+// _ is never a real identifier, and is only used as a variable or type
+// placeholder.  Identifiers with prefix "_" are private to the package.
+// nameing convention is lower camelcase for variables, upper camelcase for
+// types.
 %token IDENTIFIER
+
 %token TRUE FALSE
 
 %token IF ELSE SWITCH CASE DEFAULT FOR DO IN
 %token RETURN BREAK CONTINUE
 
-%token PACKAGE
+%token PACKAGE IMPORT AS
 
 %token UNSAFE
 
 %token TYPE IMPLEMENTS STRUCT ENUM TRAIT
 %token FUNC ASYNC DEFER
-%token VAR
+%token VAR LET
 
 %token LABEL_DECL // <identifier>@
 %token JUMP_LABEL // @<identifier>
@@ -60,10 +65,15 @@ definitions ->
   add: definitions NEWLINES definition
 
 definition ->
+  // There can only be one package_def per package
   package_def |
   type_def |
   named_func_def |
-  unsafe_statement
+  global_var_def: var_decl_pattern |
+  global_var_assignment: var_decl_pattern ASSIGN expression |
+  // There can only be at most one block_body per package, which act as the
+  // package's init function
+  block_body
 
 //
 // Expressions ================================================================
@@ -88,14 +98,21 @@ optional_value_type ->
   value_type |
   nil:
 
+// VAR declares a reassignable variable. LET declares a non-reassignable
+// variable.  A "constant" is a LET variable associated with a type with no
+// public access to fields, and no mutation methods.
+var_or_let -> VAR | LET
+
+var_decl_pattern -> var_or_let var_pattern optional_value_type
+
 expression ->
   if_expr: optional_label_decl if_expr |
   switch_expr: optional_label_decl switch_expr |
   loop_expr: optional_label_decl loop_expr |
   sequence_expr |
-  // NOTE: var_pattern is not a real expression.  Unexpected usage in real
+  // NOTE: var_decl_pattern is not a real expression.  Unexpected usage in real
   // expressions are rejected during type checking.
-  var_pattern: VAR var_pattern optional_value_type
+  var_decl_pattern
 
 optional_label_decl ->
   LABEL_DECL |
@@ -221,11 +238,7 @@ statement_body ->
 
   jump_statement |
 
-  // XXX: var fixed x = 5
-  // x is not reassignable after initial assignment.
-  // if x behaves like a constant if the object reference is immutable, and no
-  // field are publically accessible.
-
+  // NOTE: variable declaration without assignment is parsed as an expression.
   assign_statement: pattern ASSIGN expression |
 
   // NOTE: assignment can only operate on proper address values.  Additional
@@ -244,12 +257,13 @@ pattern ->
   // only allow identifier expressions)
   expression |
 
-  // Note: parsing VAR <pkg>.<enum type>.<enum value>(...) is painful, hence
-  // we won't support this form. (the expression actually parses explicit enum
-  // match pattern, where VARs are inside the data list, but we should reject
-  // this form since we reject the other form)
+  // Note: parsing VAR <pkg>.<enum type>.<enum value>(...) is painful using
+  // context free grammar (e.g, need to make VAR a prefix op expression instead
+  // of var_decl_pattern), hence we won't support this form. (the expression
+  // actually parses explicit enum match pattern, where VARs are inside the
+  // data list, but we should reject this form for consistency)
   enum_match_pattern: DOT IDENTIFIER implicit_struct_expr |
-  enum_var_pattern: VAR DOT IDENTIFIER tuple_pattern
+  enum_var_decl_pattern: VAR DOT IDENTIFIER tuple_pattern
 
 unary_op_assign ->
   ADD_ONE_ASSIGN |
@@ -539,9 +553,7 @@ explicit_struct_def -> STRUCT LPAREN optional_explicit_field_defs RPAREN
 // Explicit/Implicit enum definition
 //
 
-// NOTE: for now, enum value must have a data type.
-// XXX: maybe allow "_" for no data?
-
+// NOTE: use "_" for field type denote no data associated with the  enum value.
 enum_value_def ->
   field_def |
   default: field_def ASSIGN DEFAULT
@@ -641,19 +653,42 @@ anonymous_func_expr ->
 // Package definition =========================================================
 //
 
+// NOTE: the package name is taken from the directory name.  The compiler must
+// ensure the directory name is a valid IDENTIFIER.  The name cannot be
+// "internal" since that's special cased by go.  As an alternative to go's
+// internal, if the package name is a private, it can only be accessed by its
+// parent directory package.
 package_def ->
-  no_spec: PACKAGE IDENTIFIER |
-  with_spec: PACKAGE IDENTIFIER LPAREN package_statements RPAREN
+  no_spec: PACKAGE |
+  with_spec: PACKAGE LPAREN package_statements RPAREN
 
-package_statement_body -> unsafe_statement
+package_statement_body ->
+  unsafe_statement |
+  import_statement
 
 package_statement ->
   implicit: package_statement_body NEWLINES |
-  explicit: package_statement_body SEMICOLON
+  explicit: package_statement_body COMMA
 
 package_statements ->
   empty_list: |
   add: package_statements package_statement
+
+import_statement ->
+  single: IMPORT import_clause |
+  multiple: IMPORT LPAREN import_clauses RPAREN
+
+import_clause ->
+  STRING_LITERAL |
+  alias: STRING_LITERAL AS IDENTIFIER
+
+import_clause_terminal ->
+  implicit: import_clause NEWLINES |
+  explicit: import_clause COMMA
+
+import_clauses ->
+  first: import_clause_terminal |
+  add: import_clauses import_clause_terminal
 
 // Note: auxillary tokens that are consumed by the lexer internally
 lex_internal_tokens ->
