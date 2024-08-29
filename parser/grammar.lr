@@ -76,8 +76,15 @@ definition ->
   block_body
 
 //
-// Expressions ================================================================
+// Variable declaration pattern (Pseudo expression) ===========================
 //
+
+// VAR declares a reassignable variable. LET declares a non-reassignable
+// variable.  A "constant" is a LET variable associated with a type with no
+// public access to fields, and no mutation methods.
+var_decl_pattern -> var_or_let var_pattern optional_value_type
+
+var_or_let -> VAR | LET
 
 var_pattern ->
   IDENTIFIER |
@@ -98,21 +105,32 @@ optional_value_type ->
   value_type |
   nil:
 
-// VAR declares a reassignable variable. LET declares a non-reassignable
-// variable.  A "constant" is a LET variable associated with a type with no
-// public access to fields, and no mutation methods.
-var_or_let -> VAR | LET
+// NOTE: expression captures identifier and tuple vars, as well as fully
+// evaluated expressions.  Additional post analysis checks are needed to
+// reject invalid usage, depending on the context (e.g., assignment should
+// only allow identifier expressions)
+assign_pattern -> sequence_expr
 
-var_decl_pattern -> var_or_let var_pattern optional_value_type
+case_pattern ->
+  assign_pattern |
+
+  // Note: parsing VAR <pkg>.<enum type>.<enum value>(...) is painful using
+  // context free grammar (e.g, need to make VAR a prefix op expression instead
+  // of var_decl_pattern), hence we won't support this form. (the expression
+  // actually parses explicit enum match pattern, where VARs are inside the
+  // data list, but we should reject this form for consistency)
+  enum_match_pattern: DOT IDENTIFIER implicit_struct_expr |
+  enum_var_decl_pattern: VAR DOT IDENTIFIER tuple_pattern
+
+//
+// Expressions ================================================================
+//
 
 expression ->
   if_expr: optional_label_decl if_expr |
   switch_expr: optional_label_decl switch_expr |
   loop_expr: optional_label_decl loop_expr |
-  sequence_expr |
-  // NOTE: var_decl_pattern is not a real expression.  Unexpected usage in real
-  // expressions are rejected during type checking.
-  var_decl_pattern
+  sequence_expr
 
 optional_label_decl ->
   LABEL_DECL |
@@ -157,11 +175,11 @@ case_branches ->
   case_branch |
   add: case_branches case_branch
 
-case_branch -> CASE patterns COLON sequence_expr
+case_branch -> CASE case_patterns COLON sequence_expr
 
-patterns ->
-  pattern |
-  multiple: patterns COMMA pattern
+case_patterns ->
+  case_pattern |
+  multiple: case_patterns COMMA case_pattern
 
 optional_default_branch ->
   default_branch |
@@ -184,18 +202,26 @@ loop_expr ->
   infinite: DO block_body |
   do_while: DO block_body FOR sequence_expr |
   while: FOR sequence_expr DO block_body |
-  iterator: FOR pattern IN sequence_expr DO block_body |
-  for: FOR /* TODO var decl and/or basic statement */ SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO block_body
+  iterator: FOR assign_pattern IN sequence_expr DO block_body |
+  for: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO block_body
 
 optional_sequence_expr ->
   sequence_expr |
   nil:
 
+for_assignment ->
+  sequence_expr |
+  assign: assign_pattern ASSIGN sequence_expr
+
 //
 // Block / sequence control flow expressions
 //
 
-sequence_expr -> or_expr
+sequence_expr ->
+  or_expr |
+  // NOTE: var_decl_pattern is not a real expression.  Unexpected usage in real
+  // expressions are rejected during type checking.
+  var_decl_pattern
 
 block_expr -> optional_label_decl block_body
 
@@ -239,7 +265,7 @@ statement_body ->
   jump_statement |
 
   // NOTE: variable declaration without assignment is parsed as an expression.
-  assign_statement: pattern ASSIGN expression |
+  assign_statement: assign_pattern ASSIGN expression |
 
   // NOTE: assignment can only operate on proper address values.  Additional
   // checks are applied during post analysis.
@@ -249,21 +275,6 @@ statement_body ->
 //
 // Assign statements
 //
-
-pattern ->
-  // NOTE: expression captures identifier and tuple vars, as well as fully
-  // evaluated expressions.  Additional post analysis checks are needed to
-  // reject invalid usage, depending on the context (e.g., assignment should
-  // only allow identifier expressions)
-  expression |
-
-  // Note: parsing VAR <pkg>.<enum type>.<enum value>(...) is painful using
-  // context free grammar (e.g, need to make VAR a prefix op expression instead
-  // of var_decl_pattern), hence we won't support this form. (the expression
-  // actually parses explicit enum match pattern, where VARs are inside the
-  // data list, but we should reject this form for consistency)
-  enum_match_pattern: DOT IDENTIFIER implicit_struct_expr |
-  enum_var_decl_pattern: VAR DOT IDENTIFIER tuple_pattern
 
 unary_op_assign ->
   ADD_ONE_ASSIGN |
