@@ -7,6 +7,7 @@
 
 %token IDENTIFIER
 %token TRUE FALSE
+
 %token IF ELSE SWITCH CASE DEFAULT FOR DO IN
 %token RETURN BREAK CONTINUE
 
@@ -16,6 +17,7 @@
 
 %token TYPE IMPLEMENTS STRUCT ENUM TRAIT
 %token FUNC ASYNC DEFER
+%token VAR
 
 %token LABEL_DECL // <identifier>@
 %token JUMP_LABEL // @<identifier>
@@ -116,14 +118,11 @@ case_branches ->
   case_branch |
   add: case_branches case_branch
 
-case_branch -> CASE match_patterns COLON sequence_expr
+case_branch -> CASE patterns COLON sequence_expr
 
-match_patterns ->
-  match_pattern |
-  multiple: match_patterns COMMA match_pattern
-
-// TODO
-match_pattern ->
+patterns ->
+  pattern |
+  multiple: patterns COMMA pattern
 
 optional_default_branch ->
   default_branch |
@@ -146,7 +145,7 @@ loop_expr ->
   infinite: DO block_body |
   do_while: DO block_body FOR sequence_expr |
   while: FOR sequence_expr DO block_body |
-  iterator: FOR /* TODO var decl */ IN sequence_expr DO block_body |
+  iterator: FOR pattern IN sequence_expr DO block_body |
   for: FOR /* TODO var decl and/or basic statement */ SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO block_body
 
 optional_sequence_expr ->
@@ -200,13 +199,12 @@ statement_body ->
 
   jump_statement |
 
-  // TODO assignment. something like
-  // var <variable pattern> = [optional ASYNC] expression
-  //
-  // var fixed x = 5
+  // XXX: var fixed x = 5
   // x is not reassignable after initial assignment.
   // if x behaves like a constant if the object reference is immutable, and no
   // field are publically accessible.
+
+  assign_statement: pattern ASSIGN expression |
 
   // NOTE: assignment can only operate on proper address values.  Additional
   // checks are applied during post analysis.
@@ -216,6 +214,11 @@ statement_body ->
 //
 // Assign statements
 //
+
+// TODO
+pattern ->
+  expression |
+  var: VAR expression
 
 unary_op_assign ->
   ADD_ONE_ASSIGN |
