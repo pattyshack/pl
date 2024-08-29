@@ -482,7 +482,7 @@ value_type ->
 type_def ->
   definition: TYPE IDENTIFIER optional_generic_parameters value_type |
   constrained_def: TYPE IDENTIFIER optional_generic_parameters value_type IMPLEMENTS value_type |
-  alias: TYPE IDENTIFIER EQUAL value_type
+  alias: TYPE IDENTIFIER ASSIGN value_type
 
 //
 // Generic parameter definition
@@ -628,12 +628,11 @@ optional_parameter_defs ->
   parameter_defs |
   nil:
 
-optional_receiver ->
-  receiver: LPAREN parameter_def RPAREN |
-  nil:
-
 named_func_def ->
-  FUNC optional_receiver IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type block_body
+  func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type block_body |
+  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type block_body |
+  alias: FUNC IDENTIFIER ASSIGN expression
+
 
 anonymous_func_expr ->
   FUNC LPAREN optional_parameter_defs RPAREN return_type block_body
