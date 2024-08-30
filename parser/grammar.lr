@@ -30,7 +30,7 @@
 %token LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
 %token DOT COMMA QUESTION SEMICOLON COLON EXCLAIM
 %token DOLLAR_LBRACKET // $[
-%token DOTDOTDOT // ...
+%token DOT_DOT_DOT // ...
 %token TILDE_TILDE
 
 %token ASSIGN
@@ -99,7 +99,7 @@ field_var_patterns ->
 field_var_pattern ->
   positional: var_pattern |
   named: IDENTIFIER ASSIGN var_pattern |
-  DOTDOTDOT
+  DOT_DOT_DOT
 
 optional_value_type ->
   value_type |
@@ -366,7 +366,7 @@ argument ->
   colon_expressions |
   // NOTE: ... is not a real expression.  Unexpected usage in real expressions
   // are rejected during type checking.
-  DOTDOTDOT
+  DOT_DOT_DOT
 
 colon_expressions ->
   pair: optional_expression COLON optional_expression |
@@ -630,9 +630,9 @@ return_type ->
 
 parameter_decl ->
   arg: IDENTIFIER value_type |
-  vararg: IDENTIFIER DOTDOTDOT value_type |
+  vararg: IDENTIFIER DOT_DOT_DOT value_type |
   unamed: value_type |
-  unnamed_vararg: DOTDOTDOT value_type
+  unnamed_vararg: DOT_DOT_DOT value_type
 
 parameter_decls ->
   parameter_decl |
@@ -660,9 +660,9 @@ method_signature -> FUNC IDENTIFIER LPAREN optional_parameter_decls RPAREN retur
 // as its type will be inferred as copy-on-mutable reference by default.
 parameter_def ->
   inferred_ref_arg: IDENTIFIER |
-  inferred_ref_vararg: IDENTIFIER DOTDOTDOT |
+  inferred_ref_vararg: IDENTIFIER DOT_DOT_DOT |
   arg: IDENTIFIER value_type |
-  vararg: IDENTIFIER DOTDOTDOT value_type
+  vararg: IDENTIFIER DOT_DOT_DOT value_type
 
 parameter_defs ->
   parameter_def |

@@ -61,7 +61,7 @@ const (
 	ColonToken           = SymbolId(303)
 	ExclaimToken         = SymbolId(304)
 	DollarLbracketToken  = SymbolId(305)
-	DotdotdotToken       = SymbolId(306)
+	DotDotDotToken       = SymbolId(306)
 	TildeTildeToken      = SymbolId(307)
 	AssignToken          = SymbolId(308)
 	AddAssignToken       = SymbolId(309)
@@ -209,8 +209,8 @@ type Reducer interface {
 	// 101:2: field_var_pattern -> named: ...
 	NamedToFieldVarPattern(Identifier_ *GenericSymbol, Assign_ *GenericSymbol, VarPattern_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 102:2: field_var_pattern -> DOTDOTDOT: ...
-	DotdotdotToFieldVarPattern(Dotdotdot_ *GenericSymbol) (*GenericSymbol, error)
+	// 102:2: field_var_pattern -> DOT_DOT_DOT: ...
+	DotDotDotToFieldVarPattern(DotDotDot_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 105:2: optional_value_type -> value_type: ...
 	ValueTypeToOptionalValueType(ValueType_ *GenericSymbol) (*GenericSymbol, error)
@@ -482,8 +482,8 @@ type Reducer interface {
 	// 366:2: argument -> colon_expressions: ...
 	ColonExpressionsToArgument(ColonExpressions_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 369:2: argument -> DOTDOTDOT: ...
-	DotdotdotToArgument(Dotdotdot_ *GenericSymbol) (*GenericSymbol, error)
+	// 369:2: argument -> DOT_DOT_DOT: ...
+	DotDotDotToArgument(DotDotDot_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 372:2: colon_expressions -> pair: ...
 	PairToColonExpressions(OptionalExpression_ *GenericSymbol, Colon_ *GenericSymbol, OptionalExpression_2 *GenericSymbol) (*GenericSymbol, error)
@@ -867,13 +867,13 @@ type Reducer interface {
 	ArgToParameterDecl(Identifier_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 633:2: parameter_decl -> vararg: ...
-	VarargToParameterDecl(Identifier_ *GenericSymbol, Dotdotdot_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	VarargToParameterDecl(Identifier_ *GenericSymbol, DotDotDot_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 634:2: parameter_decl -> unamed: ...
 	UnamedToParameterDecl(ValueType_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 635:2: parameter_decl -> unnamed_vararg: ...
-	UnnamedVarargToParameterDecl(Dotdotdot_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	UnnamedVarargToParameterDecl(DotDotDot_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 638:2: parameter_decls -> parameter_decl: ...
 	ParameterDeclToParameterDecls(ParameterDecl_ *GenericSymbol) (*GenericSymbol, error)
@@ -897,13 +897,13 @@ type Reducer interface {
 	InferredRefArgToParameterDef(Identifier_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 663:2: parameter_def -> inferred_ref_vararg: ...
-	InferredRefVarargToParameterDef(Identifier_ *GenericSymbol, Dotdotdot_ *GenericSymbol) (*GenericSymbol, error)
+	InferredRefVarargToParameterDef(Identifier_ *GenericSymbol, DotDotDot_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 664:2: parameter_def -> arg: ...
 	ArgToParameterDef(Identifier_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 665:2: parameter_def -> vararg: ...
-	VarargToParameterDef(Identifier_ *GenericSymbol, Dotdotdot_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	VarargToParameterDef(Identifier_ *GenericSymbol, DotDotDot_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 668:2: parameter_defs -> parameter_def: ...
 	ParameterDefToParameterDefs(ParameterDef_ *GenericSymbol) (*GenericSymbol, error)
@@ -1317,8 +1317,8 @@ func (i SymbolId) String() string {
 		return "EXCLAIM"
 	case DollarLbracketToken:
 		return "DOLLAR_LBRACKET"
-	case DotdotdotToken:
-		return "DOTDOTDOT"
+	case DotDotDotToken:
+		return "DOT_DOT_DOT"
 	case TildeTildeToken:
 		return "TILDE_TILDE"
 	case AssignToken:
@@ -1781,7 +1781,7 @@ const (
 	_ReduceAddToFieldVarPatterns                              = _ReduceType(22)
 	_ReducePositionalToFieldVarPattern                        = _ReduceType(23)
 	_ReduceNamedToFieldVarPattern                             = _ReduceType(24)
-	_ReduceDotdotdotToFieldVarPattern                         = _ReduceType(25)
+	_ReduceDotDotDotToFieldVarPattern                         = _ReduceType(25)
 	_ReduceValueTypeToOptionalValueType                       = _ReduceType(26)
 	_ReduceNilToOptionalValueType                             = _ReduceType(27)
 	_ReduceToAssignPattern                                    = _ReduceType(28)
@@ -1872,7 +1872,7 @@ const (
 	_ReducePositionalToArgument                               = _ReduceType(113)
 	_ReduceNamedToArgument                                    = _ReduceType(114)
 	_ReduceColonExpressionsToArgument                         = _ReduceType(115)
-	_ReduceDotdotdotToArgument                                = _ReduceType(116)
+	_ReduceDotDotDotToArgument                                = _ReduceType(116)
 	_ReducePairToColonExpressions                             = _ReduceType(117)
 	_ReduceAddToColonExpressions                              = _ReduceType(118)
 	_ReduceExpressionToOptionalExpression                     = _ReduceType(119)
@@ -2091,8 +2091,8 @@ func (i _ReduceType) String() string {
 		return "PositionalToFieldVarPattern"
 	case _ReduceNamedToFieldVarPattern:
 		return "NamedToFieldVarPattern"
-	case _ReduceDotdotdotToFieldVarPattern:
-		return "DotdotdotToFieldVarPattern"
+	case _ReduceDotDotDotToFieldVarPattern:
+		return "DotDotDotToFieldVarPattern"
 	case _ReduceValueTypeToOptionalValueType:
 		return "ValueTypeToOptionalValueType"
 	case _ReduceNilToOptionalValueType:
@@ -2273,8 +2273,8 @@ func (i _ReduceType) String() string {
 		return "NamedToArgument"
 	case _ReduceColonExpressionsToArgument:
 		return "ColonExpressionsToArgument"
-	case _ReduceDotdotdotToArgument:
-		return "DotdotdotToArgument"
+	case _ReduceDotDotDotToArgument:
+		return "DotDotDotToArgument"
 	case _ReducePairToColonExpressions:
 		return "PairToColonExpressions"
 	case _ReduceAddToColonExpressions:
@@ -3100,7 +3100,7 @@ func NewSymbol(token Token) (*Symbol, error) {
 
 	symbol = &Symbol{SymbolId_: token.Id()}
 	switch token.Id() {
-	case _EndMarker, SpacesToken, NewlinesToken, CommentToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotdotdotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, NotToken, AndToken, OrToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, LexErrorToken:
+	case _EndMarker, SpacesToken, NewlinesToken, CommentToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, NotToken, AndToken, OrToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, LexErrorToken:
 		val, ok := token.(*GenericSymbol)
 		if !ok {
 			return nil, fmt.Errorf(
@@ -3311,11 +3311,11 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = FieldVarPatternType
 		symbol.Generic_, err = reducer.NamedToFieldVarPattern(args[0].Generic_, args[1].Generic_, args[2].Generic_)
-	case _ReduceDotdotdotToFieldVarPattern:
+	case _ReduceDotDotDotToFieldVarPattern:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = FieldVarPatternType
-		symbol.Generic_, err = reducer.DotdotdotToFieldVarPattern(args[0].Generic_)
+		symbol.Generic_, err = reducer.DotDotDotToFieldVarPattern(args[0].Generic_)
 	case _ReduceValueTypeToOptionalValueType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -3746,11 +3746,11 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ArgumentType
 		symbol.Generic_, err = reducer.ColonExpressionsToArgument(args[0].Generic_)
-	case _ReduceDotdotdotToArgument:
+	case _ReduceDotDotDotToArgument:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ArgumentType
-		symbol.Generic_, err = reducer.DotdotdotToArgument(args[0].Generic_)
+		symbol.Generic_, err = reducer.DotDotDotToArgument(args[0].Generic_)
 	case _ReducePairToColonExpressions:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -5084,7 +5084,7 @@ var (
 	_ReduceAddToFieldVarPatternsAction                              = &_Action{_ReduceAction, 0, _ReduceAddToFieldVarPatterns}
 	_ReducePositionalToFieldVarPatternAction                        = &_Action{_ReduceAction, 0, _ReducePositionalToFieldVarPattern}
 	_ReduceNamedToFieldVarPatternAction                             = &_Action{_ReduceAction, 0, _ReduceNamedToFieldVarPattern}
-	_ReduceDotdotdotToFieldVarPatternAction                         = &_Action{_ReduceAction, 0, _ReduceDotdotdotToFieldVarPattern}
+	_ReduceDotDotDotToFieldVarPatternAction                         = &_Action{_ReduceAction, 0, _ReduceDotDotDotToFieldVarPattern}
 	_ReduceValueTypeToOptionalValueTypeAction                       = &_Action{_ReduceAction, 0, _ReduceValueTypeToOptionalValueType}
 	_ReduceNilToOptionalValueTypeAction                             = &_Action{_ReduceAction, 0, _ReduceNilToOptionalValueType}
 	_ReduceToAssignPatternAction                                    = &_Action{_ReduceAction, 0, _ReduceToAssignPattern}
@@ -5175,7 +5175,7 @@ var (
 	_ReducePositionalToArgumentAction                               = &_Action{_ReduceAction, 0, _ReducePositionalToArgument}
 	_ReduceNamedToArgumentAction                                    = &_Action{_ReduceAction, 0, _ReduceNamedToArgument}
 	_ReduceColonExpressionsToArgumentAction                         = &_Action{_ReduceAction, 0, _ReduceColonExpressionsToArgument}
-	_ReduceDotdotdotToArgumentAction                                = &_Action{_ReduceAction, 0, _ReduceDotdotdotToArgument}
+	_ReduceDotDotDotToArgumentAction                                = &_Action{_ReduceAction, 0, _ReduceDotDotDotToArgument}
 	_ReducePairToColonExpressionsAction                             = &_Action{_ReduceAction, 0, _ReducePairToColonExpressions}
 	_ReduceAddToColonExpressionsAction                              = &_Action{_ReduceAction, 0, _ReduceAddToColonExpressions}
 	_ReduceExpressionToOptionalExpressionAction                     = &_Action{_ReduceAction, 0, _ReduceExpressionToOptionalExpression}
@@ -5506,7 +5506,7 @@ var _ActionTable = _ActionTableType{
 	{_State31, LabelDeclToken}:                    _GotoState27Action,
 	{_State31, LparenToken}:                       _GotoState31Action,
 	{_State31, LbracketToken}:                     _GotoState28Action,
-	{_State31, DotdotdotToken}:                    _GotoState99Action,
+	{_State31, DotDotDotToken}:                    _GotoState99Action,
 	{_State31, NotToken}:                          _GotoState33Action,
 	{_State31, SubToken}:                          _GotoState37Action,
 	{_State31, MulToken}:                          _GotoState32Action,
@@ -5866,7 +5866,7 @@ var _ActionTable = _ActionTableType{
 	{_State109, LabelDeclToken}:                   _GotoState27Action,
 	{_State109, LparenToken}:                      _GotoState31Action,
 	{_State109, LbracketToken}:                    _GotoState28Action,
-	{_State109, DotdotdotToken}:                   _GotoState99Action,
+	{_State109, DotDotDotToken}:                   _GotoState99Action,
 	{_State109, NotToken}:                         _GotoState33Action,
 	{_State109, SubToken}:                         _GotoState37Action,
 	{_State109, MulToken}:                         _GotoState32Action,
@@ -6013,7 +6013,7 @@ var _ActionTable = _ActionTableType{
 	{_State125, LabelDeclToken}:                   _GotoState27Action,
 	{_State125, LparenToken}:                      _GotoState31Action,
 	{_State125, LbracketToken}:                    _GotoState28Action,
-	{_State125, DotdotdotToken}:                   _GotoState99Action,
+	{_State125, DotDotDotToken}:                   _GotoState99Action,
 	{_State125, NotToken}:                         _GotoState33Action,
 	{_State125, SubToken}:                         _GotoState37Action,
 	{_State125, MulToken}:                         _GotoState32Action,
@@ -6247,7 +6247,7 @@ var _ActionTable = _ActionTableType{
 	{_State141, AnonymousFuncExprType}:            _GotoState43Action,
 	{_State144, IdentifierToken}:                  _GotoState217Action,
 	{_State144, LparenToken}:                      _GotoState144Action,
-	{_State144, DotdotdotToken}:                   _GotoState216Action,
+	{_State144, DotDotDotToken}:                   _GotoState216Action,
 	{_State144, VarPatternType}:                   _GotoState220Action,
 	{_State144, TuplePatternType}:                 _GotoState145Action,
 	{_State144, FieldVarPatternsType}:             _GotoState219Action,
@@ -6503,7 +6503,7 @@ var _ActionTable = _ActionTableType{
 	{_State157, DotToken}:                         _GotoState80Action,
 	{_State157, QuestionToken}:                    _GotoState87Action,
 	{_State157, ExclaimToken}:                     _GotoState82Action,
-	{_State157, DotdotdotToken}:                   _GotoState255Action,
+	{_State157, DotDotDotToken}:                   _GotoState255Action,
 	{_State157, TildeTildeToken}:                  _GotoState88Action,
 	{_State157, BitNegToken}:                      _GotoState79Action,
 	{_State157, BitAndToken}:                      _GotoState78Action,
@@ -6561,7 +6561,7 @@ var _ActionTable = _ActionTableType{
 	{_State167, DotToken}:                         _GotoState80Action,
 	{_State167, QuestionToken}:                    _GotoState87Action,
 	{_State167, ExclaimToken}:                     _GotoState82Action,
-	{_State167, DotdotdotToken}:                   _GotoState264Action,
+	{_State167, DotDotDotToken}:                   _GotoState264Action,
 	{_State167, TildeTildeToken}:                  _GotoState88Action,
 	{_State167, BitNegToken}:                      _GotoState79Action,
 	{_State167, BitAndToken}:                      _GotoState78Action,
@@ -6798,7 +6798,7 @@ var _ActionTable = _ActionTableType{
 	{_State189, LabelDeclToken}:                   _GotoState27Action,
 	{_State189, LparenToken}:                      _GotoState31Action,
 	{_State189, LbracketToken}:                    _GotoState28Action,
-	{_State189, DotdotdotToken}:                   _GotoState99Action,
+	{_State189, DotDotDotToken}:                   _GotoState99Action,
 	{_State189, NotToken}:                         _GotoState33Action,
 	{_State189, SubToken}:                         _GotoState37Action,
 	{_State189, MulToken}:                         _GotoState32Action,
@@ -6942,7 +6942,7 @@ var _ActionTable = _ActionTableType{
 	{_State201, LabelDeclToken}:                   _GotoState27Action,
 	{_State201, LparenToken}:                      _GotoState31Action,
 	{_State201, LbracketToken}:                    _GotoState28Action,
-	{_State201, DotdotdotToken}:                   _GotoState99Action,
+	{_State201, DotDotDotToken}:                   _GotoState99Action,
 	{_State201, NotToken}:                         _GotoState33Action,
 	{_State201, SubToken}:                         _GotoState37Action,
 	{_State201, MulToken}:                         _GotoState32Action,
@@ -7268,7 +7268,7 @@ var _ActionTable = _ActionTableType{
 	{_State265, QuestionToken}:                    _GotoState87Action,
 	{_State265, ExclaimToken}:                     _GotoState82Action,
 	{_State265, DollarLbracketToken}:              _GotoState107Action,
-	{_State265, DotdotdotToken}:                   _GotoState366Action,
+	{_State265, DotDotDotToken}:                   _GotoState366Action,
 	{_State265, TildeTildeToken}:                  _GotoState88Action,
 	{_State265, BitNegToken}:                      _GotoState79Action,
 	{_State265, BitAndToken}:                      _GotoState78Action,
@@ -7657,7 +7657,7 @@ var _ActionTable = _ActionTableType{
 	{_State318, TuplePatternType}:                 _GotoState145Action,
 	{_State319, IdentifierToken}:                  _GotoState217Action,
 	{_State319, LparenToken}:                      _GotoState144Action,
-	{_State319, DotdotdotToken}:                   _GotoState216Action,
+	{_State319, DotDotDotToken}:                   _GotoState216Action,
 	{_State319, VarPatternType}:                   _GotoState220Action,
 	{_State319, TuplePatternType}:                 _GotoState145Action,
 	{_State319, FieldVarPatternType}:              _GotoState401Action,
@@ -8057,7 +8057,7 @@ var _ActionTable = _ActionTableType{
 	{_State369, DotToken}:                         _GotoState80Action,
 	{_State369, QuestionToken}:                    _GotoState87Action,
 	{_State369, ExclaimToken}:                     _GotoState82Action,
-	{_State369, DotdotdotToken}:                   _GotoState264Action,
+	{_State369, DotDotDotToken}:                   _GotoState264Action,
 	{_State369, TildeTildeToken}:                  _GotoState88Action,
 	{_State369, BitNegToken}:                      _GotoState79Action,
 	{_State369, BitAndToken}:                      _GotoState78Action,
@@ -8333,7 +8333,7 @@ var _ActionTable = _ActionTableType{
 	{_State424, DotToken}:                         _GotoState80Action,
 	{_State424, QuestionToken}:                    _GotoState87Action,
 	{_State424, ExclaimToken}:                     _GotoState82Action,
-	{_State424, DotdotdotToken}:                   _GotoState264Action,
+	{_State424, DotDotDotToken}:                   _GotoState264Action,
 	{_State424, TildeTildeToken}:                  _GotoState88Action,
 	{_State424, BitNegToken}:                      _GotoState79Action,
 	{_State424, BitAndToken}:                      _GotoState78Action,
@@ -8619,7 +8619,7 @@ var _ActionTable = _ActionTableType{
 	{_State95, _WildcardMarker}:                   _ReduceInitializableTypeToAtomTypeAction,
 	{_State96, _WildcardMarker}:                   _ReduceReturnableTypeToValueTypeAction,
 	{_State97, _WildcardMarker}:                   _ReduceTraitDefToAtomTypeAction,
-	{_State99, _WildcardMarker}:                   _ReduceDotdotdotToArgumentAction,
+	{_State99, _WildcardMarker}:                   _ReduceDotDotDotToArgumentAction,
 	{_State100, _WildcardMarker}:                  _ReduceIdentifierToAtomExprAction,
 	{_State101, _WildcardMarker}:                  _ReduceArgumentToArgumentsAction,
 	{_State103, _WildcardMarker}:                  _ReduceColonExpressionsToArgumentAction,
@@ -8721,7 +8721,7 @@ var _ActionTable = _ActionTableType{
 	{_State211, LbraceToken}:                      _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State213, LbraceToken}:                      _ReduceSequenceExprToConditionAction,
 	{_State215, _WildcardMarker}:                  _ReduceOpToOrExprAction,
-	{_State216, _WildcardMarker}:                  _ReduceDotdotdotToFieldVarPatternAction,
+	{_State216, _WildcardMarker}:                  _ReduceDotDotDotToFieldVarPatternAction,
 	{_State217, _WildcardMarker}:                  _ReduceIdentifierToVarPatternAction,
 	{_State218, _WildcardMarker}:                  _ReduceFieldVarPatternToFieldVarPatternsAction,
 	{_State220, _WildcardMarker}:                  _ReducePositionalToFieldVarPatternAction,
@@ -9318,7 +9318,7 @@ Parser Debug States:
       LABEL_DECL -> State 27
       LPAREN -> State 31
       LBRACKET -> State 28
-      DOTDOTDOT -> State 99
+      DOT_DOT_DOT -> State 99
       NOT -> State 33
       SUB -> State 37
       MUL -> State 32
@@ -10135,7 +10135,7 @@ Parser Debug States:
 
   State 99:
     Kernel Items:
-      argument: DOTDOTDOT., *
+      argument: DOT_DOT_DOT., *
     Reduce:
       * -> [argument]
     Goto:
@@ -10293,7 +10293,7 @@ Parser Debug States:
       LABEL_DECL -> State 27
       LPAREN -> State 31
       LBRACKET -> State 28
-      DOTDOTDOT -> State 99
+      DOT_DOT_DOT -> State 99
       NOT -> State 33
       SUB -> State 37
       MUL -> State 32
@@ -10564,7 +10564,7 @@ Parser Debug States:
       LABEL_DECL -> State 27
       LPAREN -> State 31
       LBRACKET -> State 28
-      DOTDOTDOT -> State 99
+      DOT_DOT_DOT -> State 99
       NOT -> State 33
       SUB -> State 37
       MUL -> State 32
@@ -10948,7 +10948,7 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 217
       LPAREN -> State 144
-      DOTDOTDOT -> State 216
+      DOT_DOT_DOT -> State 216
       var_pattern -> State 220
       tuple_pattern -> State 145
       field_var_patterns -> State 219
@@ -11288,9 +11288,9 @@ Parser Debug States:
   State 157:
     Kernel Items:
       parameter_def: IDENTIFIER., *
-      parameter_def: IDENTIFIER.DOTDOTDOT
+      parameter_def: IDENTIFIER.DOT_DOT_DOT
       parameter_def: IDENTIFIER.value_type
-      parameter_def: IDENTIFIER.DOTDOTDOT value_type
+      parameter_def: IDENTIFIER.DOT_DOT_DOT value_type
     Reduce:
       * -> [parameter_def]
     Goto:
@@ -11304,7 +11304,7 @@ Parser Debug States:
       DOT -> State 80
       QUESTION -> State 87
       EXCLAIM -> State 82
-      DOTDOTDOT -> State 255
+      DOT_DOT_DOT -> State 255
       TILDE_TILDE -> State 88
       BIT_NEG -> State 79
       BIT_AND -> State 78
@@ -11438,7 +11438,7 @@ Parser Debug States:
       DOT -> State 80
       QUESTION -> State 87
       EXCLAIM -> State 82
-      DOTDOTDOT -> State 264
+      DOT_DOT_DOT -> State 264
       TILDE_TILDE -> State 88
       BIT_NEG -> State 79
       BIT_AND -> State 78
@@ -11845,7 +11845,7 @@ Parser Debug States:
       LABEL_DECL -> State 27
       LPAREN -> State 31
       LBRACKET -> State 28
-      DOTDOTDOT -> State 99
+      DOT_DOT_DOT -> State 99
       NOT -> State 33
       SUB -> State 37
       MUL -> State 32
@@ -12092,7 +12092,7 @@ Parser Debug States:
       LABEL_DECL -> State 27
       LPAREN -> State 31
       LBRACKET -> State 28
-      DOTDOTDOT -> State 99
+      DOT_DOT_DOT -> State 99
       NOT -> State 33
       SUB -> State 37
       MUL -> State 32
@@ -12318,7 +12318,7 @@ Parser Debug States:
 
   State 216:
     Kernel Items:
-      field_var_pattern: DOTDOTDOT., *
+      field_var_pattern: DOT_DOT_DOT., *
     Reduce:
       * -> [field_var_pattern]
     Goto:
@@ -12759,8 +12759,8 @@ Parser Debug States:
 
   State 255:
     Kernel Items:
-      parameter_def: IDENTIFIER DOTDOTDOT., *
-      parameter_def: IDENTIFIER DOTDOTDOT.value_type
+      parameter_def: IDENTIFIER DOT_DOT_DOT., *
+      parameter_def: IDENTIFIER DOT_DOT_DOT.value_type
     Reduce:
       * -> [parameter_def]
     Goto:
@@ -12891,7 +12891,7 @@ Parser Debug States:
 
   State 264:
     Kernel Items:
-      parameter_decl: DOTDOTDOT.value_type
+      parameter_decl: DOT_DOT_DOT.value_type
     Reduce:
       (nil)
     Goto:
@@ -12925,7 +12925,7 @@ Parser Debug States:
       atom_type: IDENTIFIER.optional_generic_binding
       atom_type: IDENTIFIER.DOT IDENTIFIER optional_generic_binding
       parameter_decl: IDENTIFIER.value_type
-      parameter_decl: IDENTIFIER.DOTDOTDOT value_type
+      parameter_decl: IDENTIFIER.DOT_DOT_DOT value_type
     Reduce:
       * -> [optional_generic_binding]
     Goto:
@@ -12940,7 +12940,7 @@ Parser Debug States:
       QUESTION -> State 87
       EXCLAIM -> State 82
       DOLLAR_LBRACKET -> State 107
-      DOTDOTDOT -> State 366
+      DOT_DOT_DOT -> State 366
       TILDE_TILDE -> State 88
       BIT_NEG -> State 79
       BIT_AND -> State 78
@@ -13748,7 +13748,7 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 217
       LPAREN -> State 144
-      DOTDOTDOT -> State 216
+      DOT_DOT_DOT -> State 216
       var_pattern -> State 220
       tuple_pattern -> State 145
       field_var_pattern -> State 401
@@ -14256,7 +14256,7 @@ Parser Debug States:
       value_type: value_type.MUL returnable_type
       value_type: value_type.ADD returnable_type
       value_type: value_type.SUB returnable_type
-      parameter_def: IDENTIFIER DOTDOTDOT value_type., *
+      parameter_def: IDENTIFIER DOT_DOT_DOT value_type., *
     Reduce:
       * -> [parameter_def]
     Goto:
@@ -14453,7 +14453,7 @@ Parser Debug States:
       value_type: value_type.MUL returnable_type
       value_type: value_type.ADD returnable_type
       value_type: value_type.SUB returnable_type
-      parameter_decl: DOTDOTDOT value_type., *
+      parameter_decl: DOT_DOT_DOT value_type., *
     Reduce:
       * -> [parameter_decl]
     Goto:
@@ -14463,7 +14463,7 @@ Parser Debug States:
 
   State 366:
     Kernel Items:
-      parameter_decl: IDENTIFIER DOTDOTDOT.value_type
+      parameter_decl: IDENTIFIER DOT_DOT_DOT.value_type
     Reduce:
       (nil)
     Goto:
@@ -14552,7 +14552,7 @@ Parser Debug States:
       DOT -> State 80
       QUESTION -> State 87
       EXCLAIM -> State 82
-      DOTDOTDOT -> State 264
+      DOT_DOT_DOT -> State 264
       TILDE_TILDE -> State 88
       BIT_NEG -> State 79
       BIT_AND -> State 78
@@ -15214,7 +15214,7 @@ Parser Debug States:
       value_type: value_type.MUL returnable_type
       value_type: value_type.ADD returnable_type
       value_type: value_type.SUB returnable_type
-      parameter_decl: IDENTIFIER DOTDOTDOT value_type., *
+      parameter_decl: IDENTIFIER DOT_DOT_DOT value_type., *
     Reduce:
       * -> [parameter_decl]
     Goto:
@@ -15262,7 +15262,7 @@ Parser Debug States:
       DOT -> State 80
       QUESTION -> State 87
       EXCLAIM -> State 82
-      DOTDOTDOT -> State 264
+      DOT_DOT_DOT -> State 264
       TILDE_TILDE -> State 88
       BIT_NEG -> State 79
       BIT_AND -> State 78
