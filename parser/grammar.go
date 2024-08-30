@@ -884,88 +884,94 @@ type Reducer interface {
 	// 640:20: method_signature -> ...
 	ToMethodSignature(Func_ *GenericSymbol, Identifier_ *GenericSymbol, Lparen_ *GenericSymbol, OptionalParameterDecls_ *GenericSymbol, Rparen_ *GenericSymbol, ReturnType_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 643:2: parameter_def -> arg: ...
+	// 646:2: parameter_def -> inferred_ref_arg: ...
+	InferredRefArgToParameterDef(Identifier_ *GenericSymbol) (*GenericSymbol, error)
+
+	// 647:2: parameter_def -> inferred_ref_vararg: ...
+	InferredRefVarargToParameterDef(Identifier_ *GenericSymbol, Dotdotdot_ *GenericSymbol) (*GenericSymbol, error)
+
+	// 648:2: parameter_def -> arg: ...
 	ArgToParameterDef(Identifier_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 644:2: parameter_def -> vararg: ...
+	// 649:2: parameter_def -> vararg: ...
 	VarargToParameterDef(Identifier_ *GenericSymbol, Dotdotdot_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 647:2: parameter_defs -> parameter_def: ...
+	// 652:2: parameter_defs -> parameter_def: ...
 	ParameterDefToParameterDefs(ParameterDef_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 648:2: parameter_defs -> add: ...
+	// 653:2: parameter_defs -> add: ...
 	AddToParameterDefs(ParameterDefs_ *GenericSymbol, Comma_ *GenericSymbol, ParameterDef_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 651:2: optional_parameter_defs -> parameter_defs: ...
+	// 656:2: optional_parameter_defs -> parameter_defs: ...
 	ParameterDefsToOptionalParameterDefs(ParameterDefs_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 652:2: optional_parameter_defs -> nil: ...
+	// 657:2: optional_parameter_defs -> nil: ...
 	NilToOptionalParameterDefs() (*GenericSymbol, error)
 
-	// 655:2: named_func_def -> func_def: ...
+	// 660:2: named_func_def -> func_def: ...
 	FuncDefToNamedFuncDef(Func_ *GenericSymbol, Identifier_ *GenericSymbol, OptionalGenericParameters_ *GenericSymbol, Lparen_ *GenericSymbol, OptionalParameterDefs_ *GenericSymbol, Rparen_ *GenericSymbol, ReturnType_ *GenericSymbol, BlockBody_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 656:2: named_func_def -> method_def: ...
+	// 661:2: named_func_def -> method_def: ...
 	MethodDefToNamedFuncDef(Func_ *GenericSymbol, Lparen_ *GenericSymbol, ParameterDef_ *GenericSymbol, Rparen_ *GenericSymbol, Identifier_ *GenericSymbol, OptionalGenericParameters_ *GenericSymbol, Lparen_2 *GenericSymbol, OptionalParameterDefs_ *GenericSymbol, Rparen_2 *GenericSymbol, ReturnType_ *GenericSymbol, BlockBody_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 657:2: named_func_def -> alias: ...
+	// 662:2: named_func_def -> alias: ...
 	AliasToNamedFuncDef(Func_ *GenericSymbol, Identifier_ *GenericSymbol, Assign_ *GenericSymbol, Expression_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 661:2: anonymous_func_expr -> ...
+	// 666:2: anonymous_func_expr -> ...
 	ToAnonymousFuncExpr(Func_ *GenericSymbol, Lparen_ *GenericSymbol, OptionalParameterDefs_ *GenericSymbol, Rparen_ *GenericSymbol, ReturnType_ *GenericSymbol, BlockBody_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 673:2: package_def -> no_spec: ...
+	// 678:2: package_def -> no_spec: ...
 	NoSpecToPackageDef(Package_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 674:2: package_def -> with_spec: ...
+	// 679:2: package_def -> with_spec: ...
 	WithSpecToPackageDef(Package_ *GenericSymbol, Lparen_ *GenericSymbol, PackageStatements_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 677:2: package_statement_body -> unsafe_statement: ...
+	// 682:2: package_statement_body -> unsafe_statement: ...
 	UnsafeStatementToPackageStatementBody(UnsafeStatement_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 678:2: package_statement_body -> import_statement: ...
+	// 683:2: package_statement_body -> import_statement: ...
 	ImportStatementToPackageStatementBody(ImportStatement_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 681:2: package_statement -> implicit: ...
+	// 686:2: package_statement -> implicit: ...
 	ImplicitToPackageStatement(PackageStatementBody_ *GenericSymbol, Newlines_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 682:2: package_statement -> explicit: ...
+	// 687:2: package_statement -> explicit: ...
 	ExplicitToPackageStatement(PackageStatementBody_ *GenericSymbol, Comma_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 685:2: package_statements -> empty_list: ...
+	// 690:2: package_statements -> empty_list: ...
 	EmptyListToPackageStatements() (*GenericSymbol, error)
 
-	// 686:2: package_statements -> add: ...
+	// 691:2: package_statements -> add: ...
 	AddToPackageStatements(PackageStatements_ *GenericSymbol, PackageStatement_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 689:2: import_statement -> single: ...
+	// 694:2: import_statement -> single: ...
 	SingleToImportStatement(Import_ *GenericSymbol, ImportClause_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 690:2: import_statement -> multiple: ...
+	// 695:2: import_statement -> multiple: ...
 	MultipleToImportStatement(Import_ *GenericSymbol, Lparen_ *GenericSymbol, ImportClauses_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 693:2: import_clause -> STRING_LITERAL: ...
+	// 698:2: import_clause -> STRING_LITERAL: ...
 	StringLiteralToImportClause(StringLiteral_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 694:2: import_clause -> alias: ...
+	// 699:2: import_clause -> alias: ...
 	AliasToImportClause(StringLiteral_ *GenericSymbol, As_ *GenericSymbol, Identifier_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 697:2: import_clause_terminal -> implicit: ...
+	// 702:2: import_clause_terminal -> implicit: ...
 	ImplicitToImportClauseTerminal(ImportClause_ *GenericSymbol, Newlines_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 698:2: import_clause_terminal -> explicit: ...
+	// 703:2: import_clause_terminal -> explicit: ...
 	ExplicitToImportClauseTerminal(ImportClause_ *GenericSymbol, Comma_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 701:2: import_clauses -> first: ...
+	// 706:2: import_clauses -> first: ...
 	FirstToImportClauses(ImportClauseTerminal_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 702:2: import_clauses -> add: ...
+	// 707:2: import_clauses -> add: ...
 	AddToImportClauses(ImportClauses_ *GenericSymbol, ImportClauseTerminal_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 706:2: lex_internal_tokens -> SPACES: ...
+	// 711:2: lex_internal_tokens -> SPACES: ...
 	SpacesToLexInternalTokens(Spaces_ *GenericSymbol) (*GenericSymbol, error)
 
-	// 707:2: lex_internal_tokens -> COMMENT: ...
+	// 712:2: lex_internal_tokens -> COMMENT: ...
 	CommentToLexInternalTokens(Comment_ *GenericSymbol) (*GenericSymbol, error)
 }
 
@@ -1988,34 +1994,36 @@ const (
 	_ReduceNilToOptionalParameterDecls                        = _ReduceType(247)
 	_ReduceToFuncType                                         = _ReduceType(248)
 	_ReduceToMethodSignature                                  = _ReduceType(249)
-	_ReduceArgToParameterDef                                  = _ReduceType(250)
-	_ReduceVarargToParameterDef                               = _ReduceType(251)
-	_ReduceParameterDefToParameterDefs                        = _ReduceType(252)
-	_ReduceAddToParameterDefs                                 = _ReduceType(253)
-	_ReduceParameterDefsToOptionalParameterDefs               = _ReduceType(254)
-	_ReduceNilToOptionalParameterDefs                         = _ReduceType(255)
-	_ReduceFuncDefToNamedFuncDef                              = _ReduceType(256)
-	_ReduceMethodDefToNamedFuncDef                            = _ReduceType(257)
-	_ReduceAliasToNamedFuncDef                                = _ReduceType(258)
-	_ReduceToAnonymousFuncExpr                                = _ReduceType(259)
-	_ReduceNoSpecToPackageDef                                 = _ReduceType(260)
-	_ReduceWithSpecToPackageDef                               = _ReduceType(261)
-	_ReduceUnsafeStatementToPackageStatementBody              = _ReduceType(262)
-	_ReduceImportStatementToPackageStatementBody              = _ReduceType(263)
-	_ReduceImplicitToPackageStatement                         = _ReduceType(264)
-	_ReduceExplicitToPackageStatement                         = _ReduceType(265)
-	_ReduceEmptyListToPackageStatements                       = _ReduceType(266)
-	_ReduceAddToPackageStatements                             = _ReduceType(267)
-	_ReduceSingleToImportStatement                            = _ReduceType(268)
-	_ReduceMultipleToImportStatement                          = _ReduceType(269)
-	_ReduceStringLiteralToImportClause                        = _ReduceType(270)
-	_ReduceAliasToImportClause                                = _ReduceType(271)
-	_ReduceImplicitToImportClauseTerminal                     = _ReduceType(272)
-	_ReduceExplicitToImportClauseTerminal                     = _ReduceType(273)
-	_ReduceFirstToImportClauses                               = _ReduceType(274)
-	_ReduceAddToImportClauses                                 = _ReduceType(275)
-	_ReduceSpacesToLexInternalTokens                          = _ReduceType(276)
-	_ReduceCommentToLexInternalTokens                         = _ReduceType(277)
+	_ReduceInferredRefArgToParameterDef                       = _ReduceType(250)
+	_ReduceInferredRefVarargToParameterDef                    = _ReduceType(251)
+	_ReduceArgToParameterDef                                  = _ReduceType(252)
+	_ReduceVarargToParameterDef                               = _ReduceType(253)
+	_ReduceParameterDefToParameterDefs                        = _ReduceType(254)
+	_ReduceAddToParameterDefs                                 = _ReduceType(255)
+	_ReduceParameterDefsToOptionalParameterDefs               = _ReduceType(256)
+	_ReduceNilToOptionalParameterDefs                         = _ReduceType(257)
+	_ReduceFuncDefToNamedFuncDef                              = _ReduceType(258)
+	_ReduceMethodDefToNamedFuncDef                            = _ReduceType(259)
+	_ReduceAliasToNamedFuncDef                                = _ReduceType(260)
+	_ReduceToAnonymousFuncExpr                                = _ReduceType(261)
+	_ReduceNoSpecToPackageDef                                 = _ReduceType(262)
+	_ReduceWithSpecToPackageDef                               = _ReduceType(263)
+	_ReduceUnsafeStatementToPackageStatementBody              = _ReduceType(264)
+	_ReduceImportStatementToPackageStatementBody              = _ReduceType(265)
+	_ReduceImplicitToPackageStatement                         = _ReduceType(266)
+	_ReduceExplicitToPackageStatement                         = _ReduceType(267)
+	_ReduceEmptyListToPackageStatements                       = _ReduceType(268)
+	_ReduceAddToPackageStatements                             = _ReduceType(269)
+	_ReduceSingleToImportStatement                            = _ReduceType(270)
+	_ReduceMultipleToImportStatement                          = _ReduceType(271)
+	_ReduceStringLiteralToImportClause                        = _ReduceType(272)
+	_ReduceAliasToImportClause                                = _ReduceType(273)
+	_ReduceImplicitToImportClauseTerminal                     = _ReduceType(274)
+	_ReduceExplicitToImportClauseTerminal                     = _ReduceType(275)
+	_ReduceFirstToImportClauses                               = _ReduceType(276)
+	_ReduceAddToImportClauses                                 = _ReduceType(277)
+	_ReduceSpacesToLexInternalTokens                          = _ReduceType(278)
+	_ReduceCommentToLexInternalTokens                         = _ReduceType(279)
 )
 
 func (i _ReduceType) String() string {
@@ -2518,6 +2526,10 @@ func (i _ReduceType) String() string {
 		return "ToFuncType"
 	case _ReduceToMethodSignature:
 		return "ToMethodSignature"
+	case _ReduceInferredRefArgToParameterDef:
+		return "InferredRefArgToParameterDef"
+	case _ReduceInferredRefVarargToParameterDef:
+		return "InferredRefVarargToParameterDef"
 	case _ReduceArgToParameterDef:
 		return "ArgToParameterDef"
 	case _ReduceVarargToParameterDef:
@@ -4360,6 +4372,16 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-6]
 		symbol.SymbolId_ = MethodSignatureType
 		symbol.Generic_, err = reducer.ToMethodSignature(args[0].Generic_, args[1].Generic_, args[2].Generic_, args[3].Generic_, args[4].Generic_, args[5].Generic_)
+	case _ReduceInferredRefArgToParameterDef:
+		args := stack[len(stack)-1:]
+		stack = stack[:len(stack)-1]
+		symbol.SymbolId_ = ParameterDefType
+		symbol.Generic_, err = reducer.InferredRefArgToParameterDef(args[0].Generic_)
+	case _ReduceInferredRefVarargToParameterDef:
+		args := stack[len(stack)-2:]
+		stack = stack[:len(stack)-2]
+		symbol.SymbolId_ = ParameterDefType
+		symbol.Generic_, err = reducer.InferredRefVarargToParameterDef(args[0].Generic_, args[1].Generic_)
 	case _ReduceArgToParameterDef:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
@@ -5237,6 +5259,8 @@ var (
 	_ReduceNilToOptionalParameterDeclsAction                        = &_Action{_ReduceAction, 0, _ReduceNilToOptionalParameterDecls}
 	_ReduceToFuncTypeAction                                         = &_Action{_ReduceAction, 0, _ReduceToFuncType}
 	_ReduceToMethodSignatureAction                                  = &_Action{_ReduceAction, 0, _ReduceToMethodSignature}
+	_ReduceInferredRefArgToParameterDefAction                       = &_Action{_ReduceAction, 0, _ReduceInferredRefArgToParameterDef}
+	_ReduceInferredRefVarargToParameterDefAction                    = &_Action{_ReduceAction, 0, _ReduceInferredRefVarargToParameterDef}
 	_ReduceArgToParameterDefAction                                  = &_Action{_ReduceAction, 0, _ReduceArgToParameterDef}
 	_ReduceVarargToParameterDefAction                               = &_Action{_ReduceAction, 0, _ReduceVarargToParameterDef}
 	_ReduceParameterDefToParameterDefsAction                        = &_Action{_ReduceAction, 0, _ReduceParameterDefToParameterDefs}
@@ -8429,6 +8453,7 @@ var _ActionTable = _ActionTableType{
 	{_State148, _WildcardMarker}:                  _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State151, RbracketToken}:                    _ReduceNilToOptionalGenericParameterDefsAction,
 	{_State153, _WildcardMarker}:                  _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State155, _WildcardMarker}:                  _ReduceInferredRefArgToParameterDefAction,
 	{_State158, _WildcardMarker}:                  _ReduceParameterDefToParameterDefsAction,
 	{_State159, RparenToken}:                      _ReduceParameterDefsToOptionalParameterDefsAction,
 	{_State160, _WildcardMarker}:                  _ReduceReferenceToReturnableTypeAction,
@@ -8512,6 +8537,7 @@ var _ActionTable = _ActionTableType{
 	{_State248, _WildcardMarker}:                  _ReduceDefinitionToTypeDefAction,
 	{_State249, _EndMarker}:                       _ReduceAliasToNamedFuncDefAction,
 	{_State250, RparenToken}:                      _ReduceNilToOptionalParameterDefsAction,
+	{_State251, _WildcardMarker}:                  _ReduceInferredRefVarargToParameterDefAction,
 	{_State252, _WildcardMarker}:                  _ReduceArgToParameterDefAction,
 	{_State254, LbraceToken}:                      _ReduceNilToReturnTypeAction,
 	{_State258, _WildcardMarker}:                  _ReduceFieldDefToEnumValueDefAction,
@@ -10971,10 +10997,12 @@ Parser Debug States:
 
   State 155:
     Kernel Items:
+      parameter_def: IDENTIFIER., *
+      parameter_def: IDENTIFIER.DOTDOTDOT
       parameter_def: IDENTIFIER.value_type
       parameter_def: IDENTIFIER.DOTDOTDOT value_type
     Reduce:
-      (nil)
+      * -> [parameter_def]
     Goto:
       IDENTIFIER -> State 81
       STRUCT -> State 35
@@ -12375,9 +12403,10 @@ Parser Debug States:
 
   State 251:
     Kernel Items:
+      parameter_def: IDENTIFIER DOTDOTDOT., *
       parameter_def: IDENTIFIER DOTDOTDOT.value_type
     Reduce:
-      (nil)
+      * -> [parameter_def]
     Goto:
       IDENTIFIER -> State 81
       STRUCT -> State 35
@@ -15327,10 +15356,10 @@ Parser Debug States:
 
 Number of states: 458
 Number of shift actions: 3034
-Number of reduce actions: 366
+Number of reduce actions: 368
 Number of shift/reduce conflicts: 0
 Number of reduce/reduce conflicts: 0
 Number of unoptimized states: 4079
 Number of unoptimized shift actions: 30048
-Number of unoptimized reduce actions: 23585
+Number of unoptimized reduce actions: 23591
 */

@@ -639,7 +639,12 @@ func_type -> FUNC LPAREN optional_parameter_decls RPAREN return_type
 // Ambiguous usage would need to explicitly specify the generic parameter.
 method_signature -> FUNC IDENTIFIER LPAREN optional_parameter_decls RPAREN return_type
 
+// NOTE: Parameter that don't specify any value will be inferred as a mutable
+// reference by default, i.e., equivalent to "&.".  Parameter that specify "."
+// as its type will be inferred as copy-on-mutable reference by default.
 parameter_def ->
+  inferred_ref_arg: IDENTIFIER |
+  inferred_ref_vararg: IDENTIFIER DOTDOTDOT |
   arg: IDENTIFIER value_type |
   vararg: IDENTIFIER DOTDOTDOT value_type
 
