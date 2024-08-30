@@ -225,7 +225,11 @@ sequence_expr ->
   or_expr |
   // NOTE: var_decl_pattern is not a real expression.  Unexpected usage in real
   // expressions are rejected during type checking.
-  var_decl_pattern
+  var_decl_pattern |
+  // Case pattern need to disambiguate between using a variable for pattern
+  // matching vs assigning a value to the variable (This is optional in
+  // assign_pattern since it's unambiguous)
+  assign_var_pattern: GREATER sequence_expr
 
 block_expr -> optional_label_decl block_body
 
