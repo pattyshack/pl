@@ -76,7 +76,14 @@ func (s *RawLexerSuite) TestNewlinesTokens(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestSpacesTokens(t *testing.T) {
-	// TODO
+	testInputPrefix := "+"
+
+	// Test in loop to check for peek window resizing
+	for i := 0; i < 129; i++ {
+		testInputPrefix += " "
+		s.lex(t, testInputPrefix, AddToken, spacesToken)
+		s.lex(t, testInputPrefix+"-", AddToken, spacesToken, SubToken)
+	}
 }
 
 func (s *RawLexerSuite) TestAtTokens(t *testing.T) {
@@ -133,7 +140,7 @@ func (s *RawLexerSuite) TestDollarTokens(t *testing.T) {
 	s.lex(t, "+$[-", AddToken, DollarLbracketToken, SubToken)
 
 	tokens := s.lex(t, "+$-", AddToken, ParseErrorToken, SubToken)
-	parseError, ok := tokens[1].(ParseError)
+	parseError, ok := tokens[1].(ParseErrorSymbol)
 
 	expect.True(t, ok)
 

@@ -737,5 +737,5 @@ package_def ->
 go:
   package: parser
   value_types:
-    ParseError: "ParseError"
+    ParseError: "ParseErrorSymbol"
 }%%

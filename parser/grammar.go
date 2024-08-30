@@ -523,7 +523,7 @@ type Reducer interface {
 	ImplicitStructExprToAtomExpr(ImplicitStructExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 432:2: atom_expr -> PARSE_ERROR: ...
-	ParseErrorToAtomExpr(ParseError_ ParseError) (GenericSymbol, error)
+	ParseErrorToAtomExpr(ParseError_ ParseErrorSymbol) (GenericSymbol, error)
 
 	// 435:2: literal -> TRUE: ...
 	TrueToLiteral(True_ GenericSymbol) (GenericSymbol, error)
@@ -703,7 +703,7 @@ type Reducer interface {
 	FuncTypeToAtomType(FuncType_ GenericSymbol) (GenericSymbol, error)
 
 	// 533:2: atom_type -> PARSE_ERROR: ...
-	ParseErrorToAtomType(ParseError_ ParseError) (GenericSymbol, error)
+	ParseErrorToAtomType(ParseError_ ParseErrorSymbol) (GenericSymbol, error)
 
 	// 539:2: returnable_type -> atom_type: ...
 	AtomTypeToReturnableType(AtomType_ GenericSymbol) (GenericSymbol, error)
@@ -2935,7 +2935,7 @@ type Symbol struct {
 
 	Generic_ GenericSymbol
 
-	ParseError ParseError
+	ParseError ParseErrorSymbol
 }
 
 func NewSymbol(token Token) (*Symbol, error) {
@@ -2957,11 +2957,11 @@ func NewSymbol(token Token) (*Symbol, error) {
 		}
 		symbol.Generic_ = val
 	case ParseErrorToken:
-		val, ok := token.(ParseError)
+		val, ok := token.(ParseErrorSymbol)
 		if !ok {
 			return nil, fmt.Errorf(
 				"Invalid value type for token %s.  "+
-					"Expecting ParseError (%v)",
+					"Expecting ParseErrorSymbol (%v)",
 				token.Id(),
 				token.Loc())
 		}

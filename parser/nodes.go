@@ -1,10 +1,20 @@
 package parser
 
-type ParseError struct {
+type ParseErrorSymbol struct {
 	Error error
 	Location
 }
 
-func (pe ParseError) Id() SymbolId { return ParseErrorToken }
+func (pe ParseErrorSymbol) Id() SymbolId { return ParseErrorToken }
 
-func (pe ParseError) Loc() Location { return pe.Location }
+func (pe ParseErrorSymbol) Loc() Location { return pe.Location }
+
+type ValueSymbol struct {
+	SymbolId
+	Location
+	Value string
+}
+
+func (vs ValueSymbol) Id() SymbolId { return vs.SymbolId }
+
+func (vs ValueSymbol) Loc() Location { return vs.Location }

@@ -15,6 +15,38 @@ const (
 	blockCommentToken = SymbolId(-3)
 )
 
+var (
+	keywords = map[string]SymbolId{
+		"true":       TrueToken,
+		"false":      FalseToken,
+		"if":         IfToken,
+		"else":       ElseToken,
+		"switch":     SwitchToken,
+		"case":       CaseToken,
+		"default":    DefaultToken,
+		"for":        ForToken,
+		"do":         DoToken,
+		"in":         InToken,
+		"return":     ReturnToken,
+		"break":      BreakToken,
+		"continue":   ContinueToken,
+		"package":    PackageToken,
+		"import":     ImportToken,
+		"as":         AsToken,
+		"unsafe":     UnsafeToken,
+		"type":       TypeToken,
+		"implements": ImplementsToken,
+		"struct":     StructToken,
+		"enum":       EnumToken,
+		"trait":      TraitToken,
+		"func":       FuncToken,
+		"async":      AsyncToken,
+		"defer":      DeferToken,
+		"var":        VarToken,
+		"let":        LetToken,
+	}
+)
+
 type RawLexerOptions struct {
 	PreserveCommentContent bool
 
@@ -251,6 +283,83 @@ func (lexer *RawLexer) peekNextToken() (SymbolId, int, error) {
 	return IdentifierToken, 0, nil
 }
 
+func (lexer *RawLexer) lexSpacesToken() (Token, error) {
+	hasMore := true
+	peekSize := 2
+	numSpaceBytes := 0
+
+	for hasMore {
+		peeked, err := lexer.Peek(peekSize)
+		if len(peeked) > 0 && err == io.EOF {
+			hasMore = false
+			err = nil
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		for numSpaceBytes < len(peeked) {
+			char := peeked[numSpaceBytes]
+			if char == ' ' || char == '\t' {
+				numSpaceBytes++
+			} else {
+				hasMore = false
+				break
+			}
+		}
+
+		peekSize *= 2
+	}
+
+	loc := Location(lexer.Location)
+
+	_, err := lexer.Discard(numSpaceBytes)
+	if err != nil {
+		panic("This should never happen")
+	}
+
+	return GenericSymbol{
+		SymbolId: spacesToken,
+		Location: loc,
+	}, nil
+}
+
+func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
+	panic("TODO")
+}
+
+func (lexer *RawLexer) lexLineCommentToken() (Token, error) {
+	panic("TODO")
+}
+
+func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
+	panic("TODO")
+}
+
+func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
+	panic("TODO")
+}
+
+func (lexer *RawLexer) lexDotDecimalFloatLiteralToken() (Token, error) {
+	panic("TODO")
+}
+
+func (lexer *RawLexer) lexRuneLiteralToken() (Token, error) {
+	panic("TODO")
+}
+
+func (lexer *RawLexer) lexStringLiteralToken() (Token, error) {
+	panic("TODO")
+}
+
+func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
+	panic("TODO")
+}
+
+func (lexer *RawLexer) lexIdentifierOrLabelDeclToken() (ValueSymbol, error) {
+	panic("TODO")
+}
+
 func (lexer *RawLexer) Next() (Token, error) {
 	symbolId, size, err := lexer.peekNextToken()
 	if err != nil {
@@ -258,18 +367,22 @@ func (lexer *RawLexer) Next() (Token, error) {
 	}
 
 	if symbolId == ParseErrorToken {
+		loc := Location(lexer.Location)
+
 		_, err := lexer.Discard(size)
 		if err != nil {
 			panic("Should never happen")
 		}
 
-		return ParseError{
+		return ParseErrorSymbol{
 			Error:    fmt.Errorf("lex error: unexpected utf8 rune"),
-			Location: Location(lexer.Location),
+			Location: loc,
 		}, nil
 	}
 
 	if size > 0 {
+		loc := Location(lexer.Location)
+
 		_, err := lexer.Discard(size)
 		if err != nil {
 			panic("Should never happen")
@@ -277,10 +390,47 @@ func (lexer *RawLexer) Next() (Token, error) {
 
 		return GenericSymbol{
 			SymbolId: symbolId,
-			Location: Location(lexer.Location),
+			Location: loc,
 		}, nil
 	}
 
 	// variable length tokens
-	panic("TODO")
+	switch symbolId {
+	case spacesToken:
+		return lexer.lexSpacesToken()
+	case NewlinesToken:
+		return lexer.lexNewlinesToken()
+	case lineCommentToken:
+		return lexer.lexLineCommentToken()
+	case blockCommentToken:
+		return lexer.lexBlockCommentToken()
+	case IntegerLiteralToken:
+		return lexer.lexIntegerOrFloatLiteralToken()
+	case FloatLiteralToken:
+		return lexer.lexDotDecimalFloatLiteralToken()
+	case RuneLiteralToken:
+		return lexer.lexRuneLiteralToken()
+	case StringLiteralToken:
+		return lexer.lexStringLiteralToken()
+	case JumpLabelToken:
+		return lexer.lexJumpLabelToken()
+	case IdentifierToken:
+		token, err := lexer.lexIdentifierOrLabelDeclToken()
+		if err != nil {
+			return nil, err
+		}
+
+		if token.SymbolId != IdentifierToken {
+			return token, nil
+		}
+
+		symbolId, ok := keywords[token.Value]
+		if ok {
+			token.SymbolId = symbolId
+		}
+
+		return token, nil
+	}
+
+	panic(fmt.Sprintf("RawLexer: unhandled variable length token: %v", symbolId))
 }
