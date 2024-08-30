@@ -73,6 +73,27 @@ func (s *RawLexerSuite) TestStringLiteralToken(t *testing.T) {
 
 func (s *RawLexerSuite) TestNewlinesTokens(t *testing.T) {
 	// TODO (also need to check lex error for '\r' without '\n')
+
+	testInputPrefix := "+"
+
+	// Test in loop to check for peek window resizing
+	for i := 0; i < 129; i++ {
+		if i%2 == 0 {
+			testInputPrefix += "\n"
+		} else {
+			testInputPrefix += "\r\n"
+		}
+		s.lex(t, testInputPrefix, AddToken, NewlinesToken)
+		s.lex(t, testInputPrefix+"-", AddToken, NewlinesToken, SubToken)
+
+		tokens := s.lex(
+			t, testInputPrefix+"\r-",
+			AddToken, NewlinesToken, ParseErrorToken, SubToken)
+
+		parseError, ok := tokens[2].(ParseErrorSymbol)
+		expect.True(t, ok)
+		expect.Error(t, parseError.Error, "unexpected utf8 rune")
+	}
 }
 
 func (s *RawLexerSuite) TestSpacesTokens(t *testing.T) {

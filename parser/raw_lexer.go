@@ -303,12 +303,15 @@ func (lexer *RawLexer) lexSpacesToken() (Token, error) {
 			if char == ' ' || char == '\t' {
 				numSpaceBytes++
 			} else {
-				hasMore = false
 				break
 			}
 		}
 
 		peekSize *= 2
+	}
+
+	if numSpaceBytes == 0 {
+		panic("This should never happen")
 	}
 
 	loc := Location(lexer.Location)
@@ -325,7 +328,67 @@ func (lexer *RawLexer) lexSpacesToken() (Token, error) {
 }
 
 func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
-	panic("TODO")
+	hasMore := true
+	peekSize := 2
+	numNewlineBytes := 0
+	foundInvalidNewline := false
+
+	for hasMore {
+		peeked, err := lexer.Peek(peekSize)
+		if len(peeked) > 0 && err == io.EOF {
+			hasMore = false
+			err = nil
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		for numNewlineBytes < len(peeked) {
+			char := peeked[numNewlineBytes]
+			if char == '\n' {
+				numNewlineBytes++
+
+			} else if char == '\r' {
+				if numNewlineBytes+1 < len(peeked) &&
+					peeked[numNewlineBytes+1] == '\n' {
+
+					numNewlineBytes += 2
+				} else { // '\r' not paired with '\n'
+					foundInvalidNewline = true
+					break
+				}
+			} else {
+				break
+			}
+		}
+
+		peekSize *= 2
+	}
+
+	loc := Location(lexer.Location)
+	if numNewlineBytes > 0 {
+		_, err := lexer.Discard(numNewlineBytes)
+		if err != nil {
+			panic("This should never happen")
+		}
+
+		return GenericSymbol{
+			SymbolId: NewlinesToken,
+			Location: loc,
+		}, nil
+	} else if foundInvalidNewline {
+		_, err := lexer.Discard(1)
+		if err != nil {
+			panic("This should never happen")
+		}
+
+		return ParseErrorSymbol{
+			Error:    fmt.Errorf("lex error: unexpected utf8 rune"),
+			Location: loc,
+		}, nil
+	}
+
+	panic("This should never happen")
 }
 
 func (lexer *RawLexer) lexLineCommentToken() (Token, error) {
