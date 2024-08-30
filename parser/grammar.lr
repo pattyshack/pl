@@ -573,7 +573,15 @@ enum_value_def ->
   field_def |
   default: field_def ASSIGN DEFAULT
 
-// NOTE: <value_type> OR () should be treated as Optional$[<value_type>]
+// NOTE: inferred "<value_type> OR ()" should be treated as
+// Optional$[<value_type>]
+//
+// NOTE: inferred "<value_type> OR Error" should be treated as
+// Result$[<value_type>]
+//
+// NOTE: both inferred types "<value_type> OR Error or ()" and
+// "<value_type> OR () OR Error" should be treated as
+// Result$[ Optional$[ <value_type> ] ]
 implicit_enum_value_defs ->
   pair: enum_value_def OR enum_value_def |
   add: implicit_enum_value_defs OR enum_value_def
