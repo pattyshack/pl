@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	lineCommentToken  = SymbolId(-1)
-	blockCommentToken = SymbolId(-2)
+	spacesToken       = SymbolId(-1) // [ \t]+
+	lineCommentToken  = SymbolId(-2)
+	blockCommentToken = SymbolId(-3)
 )
 
 type RawLexerOptions struct {
@@ -85,7 +86,7 @@ func (lexer *RawLexer) peekNextToken() (SymbolId, int, error) {
 	case '\r', '\n':
 		return NewlinesToken, 0, nil
 	case ' ', '\t':
-		return SpacesToken, 0, nil
+		return spacesToken, 0, nil
 	case '@':
 		return JumpLabelToken, 0, nil
 
@@ -244,7 +245,7 @@ func (lexer *RawLexer) peekNextToken() (SymbolId, int, error) {
 
 	utf8Char, size := utf8.DecodeRune(peeked)
 	if size == 1 || utf8Char == utf8.RuneError { // unexpected token
-		return LexErrorToken, size, nil
+		return ParseErrorToken, size, nil
 	}
 
 	return IdentifierToken, 0, nil
@@ -256,8 +257,8 @@ func (lexer *RawLexer) Next() (Token, error) {
 		return nil, err
 	}
 
-	if symbolId == LexErrorToken {
-		// LexErrorToken
+	if symbolId == ParseErrorToken {
+		// ParseErrorToken
 		panic("TODO")
 	}
 

@@ -1,7 +1,4 @@
-%token SPACES // [ \t]+
 %token NEWLINES // (\n|\r\n)+
-
-%token COMMENT // //-style or block-style comment
 
 %token INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
 
@@ -45,9 +42,9 @@
 %token BIT_NEG BIT_AND BIT_XOR BIT_OR BIT_LSHIFT BIT_RSHIFT
 %token EQUAL NOT_EQUAL LESS LESS_OR_EQUAL GREATER GREATER_OR_EQUAL
 
-%token LEX_ERROR
+%token PARSE_ERROR
 
-%start source package_def type_def named_func_def expression lex_internal_tokens
+%start source package_def type_def named_func_def expression
 
 source -> optional_definitions
 
@@ -390,7 +387,7 @@ atom_expr ->
   anonymous_func_expr |
   initialize_expr: initializable_type LPAREN arguments RPAREN |
   implicit_struct_expr |
-  LEX_ERROR
+  PARSE_ERROR
 
 literal ->
   TRUE |
@@ -491,7 +488,7 @@ atom_type ->
   implicit_enum_def |
   trait_def |
   func_type |
-  LEX_ERROR
+  PARSE_ERROR
 
 // NOTE: allowing return type to use trait algebra without explicitly wrapping
 // inside a trait() would cause to ambiguity.  e.g.,
@@ -721,11 +718,6 @@ import_clause_terminal ->
 import_clauses ->
   first: import_clause_terminal |
   add: import_clauses import_clause_terminal
-
-// Note: auxillary tokens that are consumed by the lexer internally
-lex_internal_tokens ->
-  SPACES |
-  COMMENT
 
 %%lang_specs{
 go:
