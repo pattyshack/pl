@@ -122,13 +122,13 @@ type GenericSymbol struct {
 	Location
 }
 
-func (t *GenericSymbol) Id() SymbolId { return t.SymbolId }
+func (t GenericSymbol) Id() SymbolId { return t.SymbolId }
 
-func (t *GenericSymbol) Loc() Location { return t.Location }
+func (t GenericSymbol) Loc() Location { return t.Location }
 
 type Lexer interface {
 	// Note: Return io.EOF to indicate end of stream
-	// Token with unspecified value type should return *GenericSymbol
+	// Token with unspecified value type should return GenericSymbol
 	Next() (Token, error)
 
 	CurrentLocation() Location
@@ -136,811 +136,811 @@ type Lexer interface {
 
 type Reducer interface {
 	// 49:10: source -> ...
-	ToSource(OptionalDefinitions_ *GenericSymbol) (*GenericSymbol, error)
+	ToSource(OptionalDefinitions_ GenericSymbol) (GenericSymbol, error)
 
 	// 52:2: optional_definitions -> NEWLINES: ...
-	NewlinesToOptionalDefinitions(Newlines_ *GenericSymbol) (*GenericSymbol, error)
+	NewlinesToOptionalDefinitions(Newlines_ GenericSymbol) (GenericSymbol, error)
 
 	// 53:2: optional_definitions -> definitions: ...
-	DefinitionsToOptionalDefinitions(OptionalNewlines_ *GenericSymbol, Definitions_ *GenericSymbol, OptionalNewlines_2 *GenericSymbol) (*GenericSymbol, error)
+	DefinitionsToOptionalDefinitions(OptionalNewlines_ GenericSymbol, Definitions_ GenericSymbol, OptionalNewlines_2 GenericSymbol) (GenericSymbol, error)
 
 	// 54:2: optional_definitions -> nil: ...
-	NilToOptionalDefinitions() (*GenericSymbol, error)
+	NilToOptionalDefinitions() (GenericSymbol, error)
 
 	// 57:2: optional_newlines -> NEWLINES: ...
-	NewlinesToOptionalNewlines(Newlines_ *GenericSymbol) (*GenericSymbol, error)
+	NewlinesToOptionalNewlines(Newlines_ GenericSymbol) (GenericSymbol, error)
 
 	// 58:2: optional_newlines -> nil: ...
-	NilToOptionalNewlines() (*GenericSymbol, error)
+	NilToOptionalNewlines() (GenericSymbol, error)
 
 	// 61:2: definitions -> nil: ...
-	NilToDefinitions(Definition_ *GenericSymbol) (*GenericSymbol, error)
+	NilToDefinitions(Definition_ GenericSymbol) (GenericSymbol, error)
 
 	// 62:2: definitions -> add: ...
-	AddToDefinitions(Definitions_ *GenericSymbol, Newlines_ *GenericSymbol, Definition_ *GenericSymbol) (*GenericSymbol, error)
+	AddToDefinitions(Definitions_ GenericSymbol, Newlines_ GenericSymbol, Definition_ GenericSymbol) (GenericSymbol, error)
 
 	// 66:2: definition -> package_def: ...
-	PackageDefToDefinition(PackageDef_ *GenericSymbol) (*GenericSymbol, error)
+	PackageDefToDefinition(PackageDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 67:2: definition -> type_def: ...
-	TypeDefToDefinition(TypeDef_ *GenericSymbol) (*GenericSymbol, error)
+	TypeDefToDefinition(TypeDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 68:2: definition -> named_func_def: ...
-	NamedFuncDefToDefinition(NamedFuncDef_ *GenericSymbol) (*GenericSymbol, error)
+	NamedFuncDefToDefinition(NamedFuncDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 69:2: definition -> global_var_def: ...
-	GlobalVarDefToDefinition(VarDeclPattern_ *GenericSymbol) (*GenericSymbol, error)
+	GlobalVarDefToDefinition(VarDeclPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 70:2: definition -> global_var_assignment: ...
-	GlobalVarAssignmentToDefinition(VarDeclPattern_ *GenericSymbol, Assign_ *GenericSymbol, Expression_ *GenericSymbol) (*GenericSymbol, error)
+	GlobalVarAssignmentToDefinition(VarDeclPattern_ GenericSymbol, Assign_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 73:2: definition -> statement_block: ...
-	StatementBlockToDefinition(StatementBlock_ *GenericSymbol) (*GenericSymbol, error)
+	StatementBlockToDefinition(StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 93:19: statement_block -> ...
-	ToStatementBlock(Lbrace_ *GenericSymbol, Statements_ *GenericSymbol, Rbrace_ *GenericSymbol) (*GenericSymbol, error)
+	ToStatementBlock(Lbrace_ GenericSymbol, Statements_ GenericSymbol, Rbrace_ GenericSymbol) (GenericSymbol, error)
 
 	// 96:2: statements -> empty_list: ...
-	EmptyListToStatements() (*GenericSymbol, error)
+	EmptyListToStatements() (GenericSymbol, error)
 
 	// 97:2: statements -> add: ...
-	AddToStatements(Statements_ *GenericSymbol, Statement_ *GenericSymbol) (*GenericSymbol, error)
+	AddToStatements(Statements_ GenericSymbol, Statement_ GenericSymbol) (GenericSymbol, error)
 
 	// 100:2: statement -> implicit: ...
-	ImplicitToStatement(StatementBody_ *GenericSymbol, Newlines_ *GenericSymbol) (*GenericSymbol, error)
+	ImplicitToStatement(StatementBody_ GenericSymbol, Newlines_ GenericSymbol) (GenericSymbol, error)
 
 	// 101:2: statement -> explicit: ...
-	ExplicitToStatement(StatementBody_ *GenericSymbol, Semicolon_ *GenericSymbol) (*GenericSymbol, error)
+	ExplicitToStatement(StatementBody_ GenericSymbol, Semicolon_ GenericSymbol) (GenericSymbol, error)
 
 	// 104:2: statement_body -> unsafe_statement: ...
-	UnsafeStatementToStatementBody(UnsafeStatement_ *GenericSymbol) (*GenericSymbol, error)
+	UnsafeStatementToStatementBody(UnsafeStatement_ GenericSymbol) (GenericSymbol, error)
 
 	// 106:2: statement_body -> expression_or_implicit_struct: ...
-	ExpressionOrImplicitStructToStatementBody(Expressions_ *GenericSymbol) (*GenericSymbol, error)
+	ExpressionOrImplicitStructToStatementBody(Expressions_ GenericSymbol) (GenericSymbol, error)
 
 	// 114:2: statement_body -> async: ...
-	AsyncToStatementBody(Async_ *GenericSymbol, CallExpr_ *GenericSymbol) (*GenericSymbol, error)
+	AsyncToStatementBody(Async_ GenericSymbol, CallExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 132:2: statement_body -> defer: ...
-	DeferToStatementBody(Defer_ *GenericSymbol, CallExpr_ *GenericSymbol) (*GenericSymbol, error)
+	DeferToStatementBody(Defer_ GenericSymbol, CallExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 136:2: statement_body -> jump_statement: ...
-	JumpStatementToStatementBody(JumpType_ *GenericSymbol, OptionalJumpLabel_ *GenericSymbol, OptionalExpressions_ *GenericSymbol) (*GenericSymbol, error)
+	JumpStatementToStatementBody(JumpType_ GenericSymbol, OptionalJumpLabel_ GenericSymbol, OptionalExpressions_ GenericSymbol) (GenericSymbol, error)
 
 	// 141:2: statement_body -> assign_statement: ...
-	AssignStatementToStatementBody(AssignPattern_ *GenericSymbol, Assign_ *GenericSymbol, Expression_ *GenericSymbol) (*GenericSymbol, error)
+	AssignStatementToStatementBody(AssignPattern_ GenericSymbol, Assign_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 147:2: statement_body -> unary_op_assign_statement: ...
-	UnaryOpAssignStatementToStatementBody(AccessExpr_ *GenericSymbol, UnaryOpAssign_ *GenericSymbol) (*GenericSymbol, error)
+	UnaryOpAssignStatementToStatementBody(AccessExpr_ GenericSymbol, UnaryOpAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 148:2: statement_body -> binary_op_assign_statement: ...
-	BinaryOpAssignStatementToStatementBody(AccessExpr_ *GenericSymbol, BinaryOpAssign_ *GenericSymbol, Expression_ *GenericSymbol) (*GenericSymbol, error)
+	BinaryOpAssignStatementToStatementBody(AccessExpr_ GenericSymbol, BinaryOpAssign_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 151:2: statement_body -> import_statement: ...
-	ImportStatementToStatementBody(ImportStatement_ *GenericSymbol) (*GenericSymbol, error)
+	ImportStatementToStatementBody(ImportStatement_ GenericSymbol) (GenericSymbol, error)
 
 	// 154:2: statement_body -> case_branch_statement: ...
-	CaseBranchStatementToStatementBody(Case_ *GenericSymbol, CasePatterns_ *GenericSymbol, Colon_ *GenericSymbol, SequenceExpr_ *GenericSymbol) (*GenericSymbol, error)
+	CaseBranchStatementToStatementBody(Case_ GenericSymbol, CasePatterns_ GenericSymbol, Colon_ GenericSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 155:2: statement_body -> default_branch_statement: ...
-	DefaultBranchStatementToStatementBody(Default_ *GenericSymbol, Colon_ *GenericSymbol, SequenceExpr_ *GenericSymbol) (*GenericSymbol, error)
+	DefaultBranchStatementToStatementBody(Default_ GenericSymbol, Colon_ GenericSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 162:2: unary_op_assign -> ADD_ONE_ASSIGN: ...
-	AddOneAssignToUnaryOpAssign(AddOneAssign_ *GenericSymbol) (*GenericSymbol, error)
+	AddOneAssignToUnaryOpAssign(AddOneAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 163:2: unary_op_assign -> SUB_ONE_ASSIGN: ...
-	SubOneAssignToUnaryOpAssign(SubOneAssign_ *GenericSymbol) (*GenericSymbol, error)
+	SubOneAssignToUnaryOpAssign(SubOneAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 166:2: binary_op_assign -> ADD_ASSIGN: ...
-	AddAssignToBinaryOpAssign(AddAssign_ *GenericSymbol) (*GenericSymbol, error)
+	AddAssignToBinaryOpAssign(AddAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 167:2: binary_op_assign -> SUB_ASSIGN: ...
-	SubAssignToBinaryOpAssign(SubAssign_ *GenericSymbol) (*GenericSymbol, error)
+	SubAssignToBinaryOpAssign(SubAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 168:2: binary_op_assign -> MUL_ASSIGN: ...
-	MulAssignToBinaryOpAssign(MulAssign_ *GenericSymbol) (*GenericSymbol, error)
+	MulAssignToBinaryOpAssign(MulAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 169:2: binary_op_assign -> DIV_ASSIGN: ...
-	DivAssignToBinaryOpAssign(DivAssign_ *GenericSymbol) (*GenericSymbol, error)
+	DivAssignToBinaryOpAssign(DivAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 170:2: binary_op_assign -> MOD_ASSIGN: ...
-	ModAssignToBinaryOpAssign(ModAssign_ *GenericSymbol) (*GenericSymbol, error)
+	ModAssignToBinaryOpAssign(ModAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 171:2: binary_op_assign -> BIT_NEG_ASSIGN: ...
-	BitNegAssignToBinaryOpAssign(BitNegAssign_ *GenericSymbol) (*GenericSymbol, error)
+	BitNegAssignToBinaryOpAssign(BitNegAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 172:2: binary_op_assign -> BIT_AND_ASSIGN: ...
-	BitAndAssignToBinaryOpAssign(BitAndAssign_ *GenericSymbol) (*GenericSymbol, error)
+	BitAndAssignToBinaryOpAssign(BitAndAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 173:2: binary_op_assign -> BIT_OR_ASSIGN: ...
-	BitOrAssignToBinaryOpAssign(BitOrAssign_ *GenericSymbol) (*GenericSymbol, error)
+	BitOrAssignToBinaryOpAssign(BitOrAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 174:2: binary_op_assign -> BIT_XOR_ASSIGN: ...
-	BitXorAssignToBinaryOpAssign(BitXorAssign_ *GenericSymbol) (*GenericSymbol, error)
+	BitXorAssignToBinaryOpAssign(BitXorAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 175:2: binary_op_assign -> BIT_LSHIFT_ASSIGN: ...
-	BitLshiftAssignToBinaryOpAssign(BitLshiftAssign_ *GenericSymbol) (*GenericSymbol, error)
+	BitLshiftAssignToBinaryOpAssign(BitLshiftAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 176:2: binary_op_assign -> BIT_RSHIFT_ASSIGN: ...
-	BitRshiftAssignToBinaryOpAssign(BitRshiftAssign_ *GenericSymbol) (*GenericSymbol, error)
+	BitRshiftAssignToBinaryOpAssign(BitRshiftAssign_ GenericSymbol) (GenericSymbol, error)
 
 	// 184:20: unsafe_statement -> ...
-	ToUnsafeStatement(Unsafe_ *GenericSymbol, Less_ *GenericSymbol, Identifier_ *GenericSymbol, Greater_ *GenericSymbol, StringLiteral_ *GenericSymbol) (*GenericSymbol, error)
+	ToUnsafeStatement(Unsafe_ GenericSymbol, Less_ GenericSymbol, Identifier_ GenericSymbol, Greater_ GenericSymbol, StringLiteral_ GenericSymbol) (GenericSymbol, error)
 
 	// 191:2: jump_type -> RETURN: ...
-	ReturnToJumpType(Return_ *GenericSymbol) (*GenericSymbol, error)
+	ReturnToJumpType(Return_ GenericSymbol) (GenericSymbol, error)
 
 	// 192:2: jump_type -> BREAK: ...
-	BreakToJumpType(Break_ *GenericSymbol) (*GenericSymbol, error)
+	BreakToJumpType(Break_ GenericSymbol) (GenericSymbol, error)
 
 	// 193:2: jump_type -> CONTINUE: ...
-	ContinueToJumpType(Continue_ *GenericSymbol) (*GenericSymbol, error)
+	ContinueToJumpType(Continue_ GenericSymbol) (GenericSymbol, error)
 
 	// 196:2: optional_jump_label -> JUMP_LABEL: ...
-	JumpLabelToOptionalJumpLabel(JumpLabel_ *GenericSymbol) (*GenericSymbol, error)
+	JumpLabelToOptionalJumpLabel(JumpLabel_ GenericSymbol) (GenericSymbol, error)
 
 	// 197:2: optional_jump_label -> unlabelled: ...
-	UnlabelledToOptionalJumpLabel() (*GenericSymbol, error)
+	UnlabelledToOptionalJumpLabel() (GenericSymbol, error)
 
 	// 200:2: expressions -> expression: ...
-	ExpressionToExpressions(Expression_ *GenericSymbol) (*GenericSymbol, error)
+	ExpressionToExpressions(Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 201:2: expressions -> add: ...
-	AddToExpressions(Expressions_ *GenericSymbol, Comma_ *GenericSymbol, Expression_ *GenericSymbol) (*GenericSymbol, error)
+	AddToExpressions(Expressions_ GenericSymbol, Comma_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 204:2: optional_expressions -> expressions: ...
-	ExpressionsToOptionalExpressions(Expressions_ *GenericSymbol) (*GenericSymbol, error)
+	ExpressionsToOptionalExpressions(Expressions_ GenericSymbol) (GenericSymbol, error)
 
 	// 205:2: optional_expressions -> nil: ...
-	NilToOptionalExpressions() (*GenericSymbol, error)
+	NilToOptionalExpressions() (GenericSymbol, error)
 
 	// 212:2: import_statement -> single: ...
-	SingleToImportStatement(Import_ *GenericSymbol, ImportClause_ *GenericSymbol) (*GenericSymbol, error)
+	SingleToImportStatement(Import_ GenericSymbol, ImportClause_ GenericSymbol) (GenericSymbol, error)
 
 	// 213:2: import_statement -> multiple: ...
-	MultipleToImportStatement(Import_ *GenericSymbol, Lparen_ *GenericSymbol, ImportClauses_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
+	MultipleToImportStatement(Import_ GenericSymbol, Lparen_ GenericSymbol, ImportClauses_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
 	// 216:2: import_clause -> STRING_LITERAL: ...
-	StringLiteralToImportClause(StringLiteral_ *GenericSymbol) (*GenericSymbol, error)
+	StringLiteralToImportClause(StringLiteral_ GenericSymbol) (GenericSymbol, error)
 
 	// 217:2: import_clause -> alias: ...
-	AliasToImportClause(StringLiteral_ *GenericSymbol, As_ *GenericSymbol, Identifier_ *GenericSymbol) (*GenericSymbol, error)
+	AliasToImportClause(StringLiteral_ GenericSymbol, As_ GenericSymbol, Identifier_ GenericSymbol) (GenericSymbol, error)
 
 	// 220:2: import_clause_terminal -> implicit: ...
-	ImplicitToImportClauseTerminal(ImportClause_ *GenericSymbol, Newlines_ *GenericSymbol) (*GenericSymbol, error)
+	ImplicitToImportClauseTerminal(ImportClause_ GenericSymbol, Newlines_ GenericSymbol) (GenericSymbol, error)
 
 	// 221:2: import_clause_terminal -> explicit: ...
-	ExplicitToImportClauseTerminal(ImportClause_ *GenericSymbol, Comma_ *GenericSymbol) (*GenericSymbol, error)
+	ExplicitToImportClauseTerminal(ImportClause_ GenericSymbol, Comma_ GenericSymbol) (GenericSymbol, error)
 
 	// 224:2: import_clauses -> first: ...
-	FirstToImportClauses(ImportClauseTerminal_ *GenericSymbol) (*GenericSymbol, error)
+	FirstToImportClauses(ImportClauseTerminal_ GenericSymbol) (GenericSymbol, error)
 
 	// 225:2: import_clauses -> add: ...
-	AddToImportClauses(ImportClauses_ *GenericSymbol, ImportClauseTerminal_ *GenericSymbol) (*GenericSymbol, error)
+	AddToImportClauses(ImportClauses_ GenericSymbol, ImportClauseTerminal_ GenericSymbol) (GenericSymbol, error)
 
 	// 232:2: case_patterns -> case_pattern: ...
-	CasePatternToCasePatterns(CasePattern_ *GenericSymbol) (*GenericSymbol, error)
+	CasePatternToCasePatterns(CasePattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 233:2: case_patterns -> multiple: ...
-	MultipleToCasePatterns(CasePatterns_ *GenericSymbol, Comma_ *GenericSymbol, CasePattern_ *GenericSymbol) (*GenericSymbol, error)
+	MultipleToCasePatterns(CasePatterns_ GenericSymbol, Comma_ GenericSymbol, CasePattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 242:20: var_decl_pattern -> ...
-	ToVarDeclPattern(VarOrLet_ *GenericSymbol, VarPattern_ *GenericSymbol, OptionalValueType_ *GenericSymbol) (*GenericSymbol, error)
+	ToVarDeclPattern(VarOrLet_ GenericSymbol, VarPattern_ GenericSymbol, OptionalValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 244:14: var_or_let -> VAR: ...
-	VarToVarOrLet(Var_ *GenericSymbol) (*GenericSymbol, error)
+	VarToVarOrLet(Var_ GenericSymbol) (GenericSymbol, error)
 
 	// 244:20: var_or_let -> LET: ...
-	LetToVarOrLet(Let_ *GenericSymbol) (*GenericSymbol, error)
+	LetToVarOrLet(Let_ GenericSymbol) (GenericSymbol, error)
 
 	// 247:2: var_pattern -> IDENTIFIER: ...
-	IdentifierToVarPattern(Identifier_ *GenericSymbol) (*GenericSymbol, error)
+	IdentifierToVarPattern(Identifier_ GenericSymbol) (GenericSymbol, error)
 
 	// 248:2: var_pattern -> tuple_pattern: ...
-	TuplePatternToVarPattern(TuplePattern_ *GenericSymbol) (*GenericSymbol, error)
+	TuplePatternToVarPattern(TuplePattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 250:17: tuple_pattern -> ...
-	ToTuplePattern(Lparen_ *GenericSymbol, FieldVarPatterns_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
+	ToTuplePattern(Lparen_ GenericSymbol, FieldVarPatterns_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
 	// 253:2: field_var_patterns -> field_var_pattern: ...
-	FieldVarPatternToFieldVarPatterns(FieldVarPattern_ *GenericSymbol) (*GenericSymbol, error)
+	FieldVarPatternToFieldVarPatterns(FieldVarPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 254:2: field_var_patterns -> add: ...
-	AddToFieldVarPatterns(FieldVarPatterns_ *GenericSymbol, Comma_ *GenericSymbol, FieldVarPattern_ *GenericSymbol) (*GenericSymbol, error)
+	AddToFieldVarPatterns(FieldVarPatterns_ GenericSymbol, Comma_ GenericSymbol, FieldVarPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 257:2: field_var_pattern -> positional: ...
-	PositionalToFieldVarPattern(VarPattern_ *GenericSymbol) (*GenericSymbol, error)
+	PositionalToFieldVarPattern(VarPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 258:2: field_var_pattern -> named: ...
-	NamedToFieldVarPattern(Identifier_ *GenericSymbol, Assign_ *GenericSymbol, VarPattern_ *GenericSymbol) (*GenericSymbol, error)
+	NamedToFieldVarPattern(Identifier_ GenericSymbol, Assign_ GenericSymbol, VarPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 259:2: field_var_pattern -> DOT_DOT_DOT: ...
-	DotDotDotToFieldVarPattern(DotDotDot_ *GenericSymbol) (*GenericSymbol, error)
+	DotDotDotToFieldVarPattern(DotDotDot_ GenericSymbol) (GenericSymbol, error)
 
 	// 262:2: optional_value_type -> value_type: ...
-	ValueTypeToOptionalValueType(ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	ValueTypeToOptionalValueType(ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 263:2: optional_value_type -> nil: ...
-	NilToOptionalValueType() (*GenericSymbol, error)
+	NilToOptionalValueType() (GenericSymbol, error)
 
 	// 269:18: assign_pattern -> ...
-	ToAssignPattern(SequenceExpr_ *GenericSymbol) (*GenericSymbol, error)
+	ToAssignPattern(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 272:2: case_pattern -> assign_pattern: ...
-	AssignPatternToCasePattern(AssignPattern_ *GenericSymbol) (*GenericSymbol, error)
+	AssignPatternToCasePattern(AssignPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 279:2: case_pattern -> enum_match_pattern: ...
-	EnumMatchPatternToCasePattern(Dot_ *GenericSymbol, Identifier_ *GenericSymbol, ImplicitStructExpr_ *GenericSymbol) (*GenericSymbol, error)
+	EnumMatchPatternToCasePattern(Dot_ GenericSymbol, Identifier_ GenericSymbol, ImplicitStructExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 280:2: case_pattern -> enum_var_decl_pattern: ...
-	EnumVarDeclPatternToCasePattern(Var_ *GenericSymbol, Dot_ *GenericSymbol, Identifier_ *GenericSymbol, TuplePattern_ *GenericSymbol) (*GenericSymbol, error)
+	EnumVarDeclPatternToCasePattern(Var_ GenericSymbol, Dot_ GenericSymbol, Identifier_ GenericSymbol, TuplePattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 287:2: expression -> if_expr: ...
-	IfExprToExpression(OptionalLabelDecl_ *GenericSymbol, IfExpr_ *GenericSymbol) (*GenericSymbol, error)
+	IfExprToExpression(OptionalLabelDecl_ GenericSymbol, IfExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 288:2: expression -> switch_expr: ...
-	SwitchExprToExpression(OptionalLabelDecl_ *GenericSymbol, SwitchExpr_ *GenericSymbol) (*GenericSymbol, error)
+	SwitchExprToExpression(OptionalLabelDecl_ GenericSymbol, SwitchExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 289:2: expression -> loop_expr: ...
-	LoopExprToExpression(OptionalLabelDecl_ *GenericSymbol, LoopExpr_ *GenericSymbol) (*GenericSymbol, error)
+	LoopExprToExpression(OptionalLabelDecl_ GenericSymbol, LoopExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 290:2: expression -> sequence_expr: ...
-	SequenceExprToExpression(SequenceExpr_ *GenericSymbol) (*GenericSymbol, error)
+	SequenceExprToExpression(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 293:2: optional_label_decl -> LABEL_DECL: ...
-	LabelDeclToOptionalLabelDecl(LabelDecl_ *GenericSymbol) (*GenericSymbol, error)
+	LabelDeclToOptionalLabelDecl(LabelDecl_ GenericSymbol) (GenericSymbol, error)
 
 	// 294:2: optional_label_decl -> unlabelled: ...
-	UnlabelledToOptionalLabelDecl() (*GenericSymbol, error)
+	UnlabelledToOptionalLabelDecl() (GenericSymbol, error)
 
 	// 301:2: sequence_expr -> or_expr: ...
-	OrExprToSequenceExpr(OrExpr_ *GenericSymbol) (*GenericSymbol, error)
+	OrExprToSequenceExpr(OrExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 304:2: sequence_expr -> var_decl_pattern: ...
-	VarDeclPatternToSequenceExpr(VarDeclPattern_ *GenericSymbol) (*GenericSymbol, error)
+	VarDeclPatternToSequenceExpr(VarDeclPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 308:2: sequence_expr -> assign_var_pattern: ...
-	AssignVarPatternToSequenceExpr(Greater_ *GenericSymbol, SequenceExpr_ *GenericSymbol) (*GenericSymbol, error)
+	AssignVarPatternToSequenceExpr(Greater_ GenericSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 317:2: if_expr -> no_else: ...
-	NoElseToIfExpr(If_ *GenericSymbol, Condition_ *GenericSymbol, StatementBlock_ *GenericSymbol) (*GenericSymbol, error)
+	NoElseToIfExpr(If_ GenericSymbol, Condition_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 318:2: if_expr -> if_else: ...
-	IfElseToIfExpr(If_ *GenericSymbol, Condition_ *GenericSymbol, StatementBlock_ *GenericSymbol, Else_ *GenericSymbol, StatementBlock_2 *GenericSymbol) (*GenericSymbol, error)
+	IfElseToIfExpr(If_ GenericSymbol, Condition_ GenericSymbol, StatementBlock_ GenericSymbol, Else_ GenericSymbol, StatementBlock_2 GenericSymbol) (GenericSymbol, error)
 
 	// 319:2: if_expr -> multi_if_else: ...
-	MultiIfElseToIfExpr(If_ *GenericSymbol, Condition_ *GenericSymbol, StatementBlock_ *GenericSymbol, Else_ *GenericSymbol, IfExpr_ *GenericSymbol) (*GenericSymbol, error)
+	MultiIfElseToIfExpr(If_ GenericSymbol, Condition_ GenericSymbol, StatementBlock_ GenericSymbol, Else_ GenericSymbol, IfExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 322:2: condition -> sequence_expr: ...
-	SequenceExprToCondition(SequenceExpr_ *GenericSymbol) (*GenericSymbol, error)
+	SequenceExprToCondition(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 323:2: condition -> case: ...
-	CaseToCondition(Case_ *GenericSymbol, CasePatterns_ *GenericSymbol, Assign_ *GenericSymbol, SequenceExpr_ *GenericSymbol) (*GenericSymbol, error)
+	CaseToCondition(Case_ GenericSymbol, CasePatterns_ GenericSymbol, Assign_ GenericSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 347:15: switch_expr -> ...
-	ToSwitchExpr(Switch_ *GenericSymbol, SequenceExpr_ *GenericSymbol, StatementBlock_ *GenericSymbol) (*GenericSymbol, error)
+	ToSwitchExpr(Switch_ GenericSymbol, SequenceExpr_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 361:2: loop_expr -> infinite: ...
-	InfiniteToLoopExpr(Do_ *GenericSymbol, StatementBlock_ *GenericSymbol) (*GenericSymbol, error)
+	InfiniteToLoopExpr(Do_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 362:2: loop_expr -> do_while: ...
-	DoWhileToLoopExpr(Do_ *GenericSymbol, StatementBlock_ *GenericSymbol, For_ *GenericSymbol, SequenceExpr_ *GenericSymbol) (*GenericSymbol, error)
+	DoWhileToLoopExpr(Do_ GenericSymbol, StatementBlock_ GenericSymbol, For_ GenericSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 363:2: loop_expr -> while: ...
-	WhileToLoopExpr(For_ *GenericSymbol, SequenceExpr_ *GenericSymbol, Do_ *GenericSymbol, StatementBlock_ *GenericSymbol) (*GenericSymbol, error)
+	WhileToLoopExpr(For_ GenericSymbol, SequenceExpr_ GenericSymbol, Do_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 364:2: loop_expr -> iterator: ...
-	IteratorToLoopExpr(For_ *GenericSymbol, AssignPattern_ *GenericSymbol, In_ *GenericSymbol, SequenceExpr_ *GenericSymbol, Do_ *GenericSymbol, StatementBlock_ *GenericSymbol) (*GenericSymbol, error)
+	IteratorToLoopExpr(For_ GenericSymbol, AssignPattern_ GenericSymbol, In_ GenericSymbol, SequenceExpr_ GenericSymbol, Do_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 365:2: loop_expr -> for: ...
-	ForToLoopExpr(For_ *GenericSymbol, ForAssignment_ *GenericSymbol, Semicolon_ *GenericSymbol, OptionalSequenceExpr_ *GenericSymbol, Semicolon_2 *GenericSymbol, OptionalSequenceExpr_2 *GenericSymbol, Do_ *GenericSymbol, StatementBlock_ *GenericSymbol) (*GenericSymbol, error)
+	ForToLoopExpr(For_ GenericSymbol, ForAssignment_ GenericSymbol, Semicolon_ GenericSymbol, OptionalSequenceExpr_ GenericSymbol, Semicolon_2 GenericSymbol, OptionalSequenceExpr_2 GenericSymbol, Do_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 368:2: optional_sequence_expr -> sequence_expr: ...
-	SequenceExprToOptionalSequenceExpr(SequenceExpr_ *GenericSymbol) (*GenericSymbol, error)
+	SequenceExprToOptionalSequenceExpr(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 369:2: optional_sequence_expr -> nil: ...
-	NilToOptionalSequenceExpr() (*GenericSymbol, error)
+	NilToOptionalSequenceExpr() (GenericSymbol, error)
 
 	// 372:2: for_assignment -> sequence_expr: ...
-	SequenceExprToForAssignment(SequenceExpr_ *GenericSymbol) (*GenericSymbol, error)
+	SequenceExprToForAssignment(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 373:2: for_assignment -> assign: ...
-	AssignToForAssignment(AssignPattern_ *GenericSymbol, Assign_ *GenericSymbol, SequenceExpr_ *GenericSymbol) (*GenericSymbol, error)
+	AssignToForAssignment(AssignPattern_ GenericSymbol, Assign_ GenericSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 379:13: call_expr -> ...
-	ToCallExpr(AccessExpr_ *GenericSymbol, OptionalGenericBinding_ *GenericSymbol, Lparen_ *GenericSymbol, OptionalArguments_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
+	ToCallExpr(AccessExpr_ GenericSymbol, OptionalGenericBinding_ GenericSymbol, Lparen_ GenericSymbol, OptionalArguments_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
 	// 382:2: optional_generic_binding -> binding: ...
-	BindingToOptionalGenericBinding(DollarLbracket_ *GenericSymbol, OptionalGenericArguments_ *GenericSymbol, Rbracket_ *GenericSymbol) (*GenericSymbol, error)
+	BindingToOptionalGenericBinding(DollarLbracket_ GenericSymbol, OptionalGenericArguments_ GenericSymbol, Rbracket_ GenericSymbol) (GenericSymbol, error)
 
 	// 383:2: optional_generic_binding -> nil: ...
-	NilToOptionalGenericBinding() (*GenericSymbol, error)
+	NilToOptionalGenericBinding() (GenericSymbol, error)
 
 	// 386:2: optional_generic_arguments -> generic_arguments: ...
-	GenericArgumentsToOptionalGenericArguments(GenericArguments_ *GenericSymbol) (*GenericSymbol, error)
+	GenericArgumentsToOptionalGenericArguments(GenericArguments_ GenericSymbol) (GenericSymbol, error)
 
 	// 387:2: optional_generic_arguments -> nil: ...
-	NilToOptionalGenericArguments() (*GenericSymbol, error)
+	NilToOptionalGenericArguments() (GenericSymbol, error)
 
 	// 391:2: generic_arguments -> value_type: ...
-	ValueTypeToGenericArguments(ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	ValueTypeToGenericArguments(ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 392:2: generic_arguments -> add: ...
-	AddToGenericArguments(GenericArguments_ *GenericSymbol, Comma_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	AddToGenericArguments(GenericArguments_ GenericSymbol, Comma_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 395:2: optional_arguments -> arguments: ...
-	ArgumentsToOptionalArguments(Arguments_ *GenericSymbol) (*GenericSymbol, error)
+	ArgumentsToOptionalArguments(Arguments_ GenericSymbol) (GenericSymbol, error)
 
 	// 396:2: optional_arguments -> nil: ...
-	NilToOptionalArguments() (*GenericSymbol, error)
+	NilToOptionalArguments() (GenericSymbol, error)
 
 	// 399:2: arguments -> argument: ...
-	ArgumentToArguments(Argument_ *GenericSymbol) (*GenericSymbol, error)
+	ArgumentToArguments(Argument_ GenericSymbol) (GenericSymbol, error)
 
 	// 400:2: arguments -> add: ...
-	AddToArguments(Arguments_ *GenericSymbol, Comma_ *GenericSymbol, Argument_ *GenericSymbol) (*GenericSymbol, error)
+	AddToArguments(Arguments_ GenericSymbol, Comma_ GenericSymbol, Argument_ GenericSymbol) (GenericSymbol, error)
 
 	// 403:2: argument -> positional: ...
-	PositionalToArgument(Expression_ *GenericSymbol) (*GenericSymbol, error)
+	PositionalToArgument(Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 404:2: argument -> named: ...
-	NamedToArgument(Identifier_ *GenericSymbol, Assign_ *GenericSymbol, Expression_ *GenericSymbol) (*GenericSymbol, error)
+	NamedToArgument(Identifier_ GenericSymbol, Assign_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 405:2: argument -> colon_expressions: ...
-	ColonExpressionsToArgument(ColonExpressions_ *GenericSymbol) (*GenericSymbol, error)
+	ColonExpressionsToArgument(ColonExpressions_ GenericSymbol) (GenericSymbol, error)
 
 	// 408:2: argument -> DOT_DOT_DOT: ...
-	DotDotDotToArgument(DotDotDot_ *GenericSymbol) (*GenericSymbol, error)
+	DotDotDotToArgument(DotDotDot_ GenericSymbol) (GenericSymbol, error)
 
 	// 411:2: colon_expressions -> pair: ...
-	PairToColonExpressions(OptionalExpression_ *GenericSymbol, Colon_ *GenericSymbol, OptionalExpression_2 *GenericSymbol) (*GenericSymbol, error)
+	PairToColonExpressions(OptionalExpression_ GenericSymbol, Colon_ GenericSymbol, OptionalExpression_2 GenericSymbol) (GenericSymbol, error)
 
 	// 412:2: colon_expressions -> add: ...
-	AddToColonExpressions(ColonExpressions_ *GenericSymbol, Colon_ *GenericSymbol, OptionalExpression_ *GenericSymbol) (*GenericSymbol, error)
+	AddToColonExpressions(ColonExpressions_ GenericSymbol, Colon_ GenericSymbol, OptionalExpression_ GenericSymbol) (GenericSymbol, error)
 
 	// 415:2: optional_expression -> expression: ...
-	ExpressionToOptionalExpression(Expression_ *GenericSymbol) (*GenericSymbol, error)
+	ExpressionToOptionalExpression(Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 416:2: optional_expression -> nil: ...
-	NilToOptionalExpression() (*GenericSymbol, error)
+	NilToOptionalExpression() (GenericSymbol, error)
 
 	// 426:2: atom_expr -> literal: ...
-	LiteralToAtomExpr(Literal_ *GenericSymbol) (*GenericSymbol, error)
+	LiteralToAtomExpr(Literal_ GenericSymbol) (GenericSymbol, error)
 
 	// 427:2: atom_expr -> IDENTIFIER: ...
-	IdentifierToAtomExpr(Identifier_ *GenericSymbol) (*GenericSymbol, error)
+	IdentifierToAtomExpr(Identifier_ GenericSymbol) (GenericSymbol, error)
 
 	// 428:2: atom_expr -> block_expr: ...
-	BlockExprToAtomExpr(OptionalLabelDecl_ *GenericSymbol, StatementBlock_ *GenericSymbol) (*GenericSymbol, error)
+	BlockExprToAtomExpr(OptionalLabelDecl_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 429:2: atom_expr -> anonymous_func_expr: ...
-	AnonymousFuncExprToAtomExpr(AnonymousFuncExpr_ *GenericSymbol) (*GenericSymbol, error)
+	AnonymousFuncExprToAtomExpr(AnonymousFuncExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 430:2: atom_expr -> initialize_expr: ...
-	InitializeExprToAtomExpr(InitializableType_ *GenericSymbol, Lparen_ *GenericSymbol, Arguments_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
+	InitializeExprToAtomExpr(InitializableType_ GenericSymbol, Lparen_ GenericSymbol, Arguments_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
 	// 431:2: atom_expr -> implicit_struct_expr: ...
-	ImplicitStructExprToAtomExpr(ImplicitStructExpr_ *GenericSymbol) (*GenericSymbol, error)
+	ImplicitStructExprToAtomExpr(ImplicitStructExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 432:2: atom_expr -> PARSE_ERROR: ...
-	ParseErrorToAtomExpr(ParseError_ ParseError) (*GenericSymbol, error)
+	ParseErrorToAtomExpr(ParseError_ ParseError) (GenericSymbol, error)
 
 	// 435:2: literal -> TRUE: ...
-	TrueToLiteral(True_ *GenericSymbol) (*GenericSymbol, error)
+	TrueToLiteral(True_ GenericSymbol) (GenericSymbol, error)
 
 	// 436:2: literal -> FALSE: ...
-	FalseToLiteral(False_ *GenericSymbol) (*GenericSymbol, error)
+	FalseToLiteral(False_ GenericSymbol) (GenericSymbol, error)
 
 	// 437:2: literal -> INTEGER_LITERAL: ...
-	IntegerLiteralToLiteral(IntegerLiteral_ *GenericSymbol) (*GenericSymbol, error)
+	IntegerLiteralToLiteral(IntegerLiteral_ GenericSymbol) (GenericSymbol, error)
 
 	// 438:2: literal -> FLOAT_LITERAL: ...
-	FloatLiteralToLiteral(FloatLiteral_ *GenericSymbol) (*GenericSymbol, error)
+	FloatLiteralToLiteral(FloatLiteral_ GenericSymbol) (GenericSymbol, error)
 
 	// 439:2: literal -> RUNE_LITERAL: ...
-	RuneLiteralToLiteral(RuneLiteral_ *GenericSymbol) (*GenericSymbol, error)
+	RuneLiteralToLiteral(RuneLiteral_ GenericSymbol) (GenericSymbol, error)
 
 	// 440:2: literal -> STRING_LITERAL: ...
-	StringLiteralToLiteral(StringLiteral_ *GenericSymbol) (*GenericSymbol, error)
+	StringLiteralToLiteral(StringLiteral_ GenericSymbol) (GenericSymbol, error)
 
 	// 442:24: implicit_struct_expr -> ...
-	ToImplicitStructExpr(Lparen_ *GenericSymbol, Arguments_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
+	ToImplicitStructExpr(Lparen_ GenericSymbol, Arguments_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
 	// 445:2: access_expr -> atom_expr: ...
-	AtomExprToAccessExpr(AtomExpr_ *GenericSymbol) (*GenericSymbol, error)
+	AtomExprToAccessExpr(AtomExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 446:2: access_expr -> access: ...
-	AccessToAccessExpr(AccessExpr_ *GenericSymbol, Dot_ *GenericSymbol, Identifier_ *GenericSymbol) (*GenericSymbol, error)
+	AccessToAccessExpr(AccessExpr_ GenericSymbol, Dot_ GenericSymbol, Identifier_ GenericSymbol) (GenericSymbol, error)
 
 	// 447:2: access_expr -> call_expr: ...
-	CallExprToAccessExpr(CallExpr_ *GenericSymbol) (*GenericSymbol, error)
+	CallExprToAccessExpr(CallExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 448:2: access_expr -> index: ...
-	IndexToAccessExpr(AccessExpr_ *GenericSymbol, Lbracket_ *GenericSymbol, Argument_ *GenericSymbol, Rbracket_ *GenericSymbol) (*GenericSymbol, error)
+	IndexToAccessExpr(AccessExpr_ GenericSymbol, Lbracket_ GenericSymbol, Argument_ GenericSymbol, Rbracket_ GenericSymbol) (GenericSymbol, error)
 
 	// 451:2: postfix_unary_expr -> access_expr: ...
-	AccessExprToPostfixUnaryExpr(AccessExpr_ *GenericSymbol) (*GenericSymbol, error)
+	AccessExprToPostfixUnaryExpr(AccessExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 452:2: postfix_unary_expr -> question: ...
-	QuestionToPostfixUnaryExpr(AccessExpr_ *GenericSymbol, Question_ *GenericSymbol) (*GenericSymbol, error)
+	QuestionToPostfixUnaryExpr(AccessExpr_ GenericSymbol, Question_ GenericSymbol) (GenericSymbol, error)
 
 	// 455:2: prefix_unary_op -> NOT: ...
-	NotToPrefixUnaryOp(Not_ *GenericSymbol) (*GenericSymbol, error)
+	NotToPrefixUnaryOp(Not_ GenericSymbol) (GenericSymbol, error)
 
 	// 456:2: prefix_unary_op -> BIT_NEG: ...
-	BitNegToPrefixUnaryOp(BitNeg_ *GenericSymbol) (*GenericSymbol, error)
+	BitNegToPrefixUnaryOp(BitNeg_ GenericSymbol) (GenericSymbol, error)
 
 	// 457:2: prefix_unary_op -> SUB: ...
-	SubToPrefixUnaryOp(Sub_ *GenericSymbol) (*GenericSymbol, error)
+	SubToPrefixUnaryOp(Sub_ GenericSymbol) (GenericSymbol, error)
 
 	// 460:2: prefix_unary_op -> MUL: ...
-	MulToPrefixUnaryOp(Mul_ *GenericSymbol) (*GenericSymbol, error)
+	MulToPrefixUnaryOp(Mul_ GenericSymbol) (GenericSymbol, error)
 
 	// 463:2: prefix_unary_op -> BIT_AND: ...
-	BitAndToPrefixUnaryOp(BitAnd_ *GenericSymbol) (*GenericSymbol, error)
+	BitAndToPrefixUnaryOp(BitAnd_ GenericSymbol) (GenericSymbol, error)
 
 	// 466:2: prefix_unary_expr -> postfix_unary_expr: ...
-	PostfixUnaryExprToPrefixUnaryExpr(PostfixUnaryExpr_ *GenericSymbol) (*GenericSymbol, error)
+	PostfixUnaryExprToPrefixUnaryExpr(PostfixUnaryExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 467:2: prefix_unary_expr -> prefix_op: ...
-	PrefixOpToPrefixUnaryExpr(PrefixUnaryOp_ *GenericSymbol, PrefixUnaryExpr_ *GenericSymbol) (*GenericSymbol, error)
+	PrefixOpToPrefixUnaryExpr(PrefixUnaryOp_ GenericSymbol, PrefixUnaryExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 470:2: mul_op -> MUL: ...
-	MulToMulOp(Mul_ *GenericSymbol) (*GenericSymbol, error)
+	MulToMulOp(Mul_ GenericSymbol) (GenericSymbol, error)
 
 	// 471:2: mul_op -> DIV: ...
-	DivToMulOp(Div_ *GenericSymbol) (*GenericSymbol, error)
+	DivToMulOp(Div_ GenericSymbol) (GenericSymbol, error)
 
 	// 472:2: mul_op -> MOD: ...
-	ModToMulOp(Mod_ *GenericSymbol) (*GenericSymbol, error)
+	ModToMulOp(Mod_ GenericSymbol) (GenericSymbol, error)
 
 	// 473:2: mul_op -> BIT_AND: ...
-	BitAndToMulOp(BitAnd_ *GenericSymbol) (*GenericSymbol, error)
+	BitAndToMulOp(BitAnd_ GenericSymbol) (GenericSymbol, error)
 
 	// 474:2: mul_op -> BIT_LSHIFT: ...
-	BitLshiftToMulOp(BitLshift_ *GenericSymbol) (*GenericSymbol, error)
+	BitLshiftToMulOp(BitLshift_ GenericSymbol) (GenericSymbol, error)
 
 	// 475:2: mul_op -> BIT_RSHIFT: ...
-	BitRshiftToMulOp(BitRshift_ *GenericSymbol) (*GenericSymbol, error)
+	BitRshiftToMulOp(BitRshift_ GenericSymbol) (GenericSymbol, error)
 
 	// 478:2: mul_expr -> prefix_unary_expr: ...
-	PrefixUnaryExprToMulExpr(PrefixUnaryExpr_ *GenericSymbol) (*GenericSymbol, error)
+	PrefixUnaryExprToMulExpr(PrefixUnaryExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 479:2: mul_expr -> op: ...
-	OpToMulExpr(MulExpr_ *GenericSymbol, MulOp_ *GenericSymbol, PrefixUnaryExpr_ *GenericSymbol) (*GenericSymbol, error)
+	OpToMulExpr(MulExpr_ GenericSymbol, MulOp_ GenericSymbol, PrefixUnaryExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 482:2: add_op -> ADD: ...
-	AddToAddOp(Add_ *GenericSymbol) (*GenericSymbol, error)
+	AddToAddOp(Add_ GenericSymbol) (GenericSymbol, error)
 
 	// 483:2: add_op -> SUB: ...
-	SubToAddOp(Sub_ *GenericSymbol) (*GenericSymbol, error)
+	SubToAddOp(Sub_ GenericSymbol) (GenericSymbol, error)
 
 	// 484:2: add_op -> BIT_OR: ...
-	BitOrToAddOp(BitOr_ *GenericSymbol) (*GenericSymbol, error)
+	BitOrToAddOp(BitOr_ GenericSymbol) (GenericSymbol, error)
 
 	// 485:2: add_op -> BIT_XOR: ...
-	BitXorToAddOp(BitXor_ *GenericSymbol) (*GenericSymbol, error)
+	BitXorToAddOp(BitXor_ GenericSymbol) (GenericSymbol, error)
 
 	// 488:2: add_expr -> mul_expr: ...
-	MulExprToAddExpr(MulExpr_ *GenericSymbol) (*GenericSymbol, error)
+	MulExprToAddExpr(MulExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 489:2: add_expr -> op: ...
-	OpToAddExpr(AddExpr_ *GenericSymbol, AddOp_ *GenericSymbol, MulExpr_ *GenericSymbol) (*GenericSymbol, error)
+	OpToAddExpr(AddExpr_ GenericSymbol, AddOp_ GenericSymbol, MulExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 492:2: cmp_op -> EQUAL: ...
-	EqualToCmpOp(Equal_ *GenericSymbol) (*GenericSymbol, error)
+	EqualToCmpOp(Equal_ GenericSymbol) (GenericSymbol, error)
 
 	// 493:2: cmp_op -> NOT_EQUAL: ...
-	NotEqualToCmpOp(NotEqual_ *GenericSymbol) (*GenericSymbol, error)
+	NotEqualToCmpOp(NotEqual_ GenericSymbol) (GenericSymbol, error)
 
 	// 494:2: cmp_op -> LESS: ...
-	LessToCmpOp(Less_ *GenericSymbol) (*GenericSymbol, error)
+	LessToCmpOp(Less_ GenericSymbol) (GenericSymbol, error)
 
 	// 495:2: cmp_op -> LESS_OR_EQUAL: ...
-	LessOrEqualToCmpOp(LessOrEqual_ *GenericSymbol) (*GenericSymbol, error)
+	LessOrEqualToCmpOp(LessOrEqual_ GenericSymbol) (GenericSymbol, error)
 
 	// 496:2: cmp_op -> GREATER: ...
-	GreaterToCmpOp(Greater_ *GenericSymbol) (*GenericSymbol, error)
+	GreaterToCmpOp(Greater_ GenericSymbol) (GenericSymbol, error)
 
 	// 497:2: cmp_op -> GREATER_OR_EQUAL: ...
-	GreaterOrEqualToCmpOp(GreaterOrEqual_ *GenericSymbol) (*GenericSymbol, error)
+	GreaterOrEqualToCmpOp(GreaterOrEqual_ GenericSymbol) (GenericSymbol, error)
 
 	// 500:2: cmp_expr -> add_expr: ...
-	AddExprToCmpExpr(AddExpr_ *GenericSymbol) (*GenericSymbol, error)
+	AddExprToCmpExpr(AddExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 501:2: cmp_expr -> op: ...
-	OpToCmpExpr(CmpExpr_ *GenericSymbol, CmpOp_ *GenericSymbol, AddExpr_ *GenericSymbol) (*GenericSymbol, error)
+	OpToCmpExpr(CmpExpr_ GenericSymbol, CmpOp_ GenericSymbol, AddExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 504:2: and_expr -> cmp_expr: ...
-	CmpExprToAndExpr(CmpExpr_ *GenericSymbol) (*GenericSymbol, error)
+	CmpExprToAndExpr(CmpExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 505:2: and_expr -> op: ...
-	OpToAndExpr(AndExpr_ *GenericSymbol, And_ *GenericSymbol, CmpExpr_ *GenericSymbol) (*GenericSymbol, error)
+	OpToAndExpr(AndExpr_ GenericSymbol, And_ GenericSymbol, CmpExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 508:2: or_expr -> and_expr: ...
-	AndExprToOrExpr(AndExpr_ *GenericSymbol) (*GenericSymbol, error)
+	AndExprToOrExpr(AndExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 509:2: or_expr -> op: ...
-	OpToOrExpr(OrExpr_ *GenericSymbol, Or_ *GenericSymbol, AndExpr_ *GenericSymbol) (*GenericSymbol, error)
+	OpToOrExpr(OrExpr_ GenericSymbol, Or_ GenericSymbol, AndExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 518:2: initializable_type -> explicit_struct_def: ...
-	ExplicitStructDefToInitializableType(ExplicitStructDef_ *GenericSymbol) (*GenericSymbol, error)
+	ExplicitStructDefToInitializableType(ExplicitStructDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 519:2: initializable_type -> slice: ...
-	SliceToInitializableType(Lbracket_ *GenericSymbol, ValueType_ *GenericSymbol, Rbracket_ *GenericSymbol) (*GenericSymbol, error)
+	SliceToInitializableType(Lbracket_ GenericSymbol, ValueType_ GenericSymbol, Rbracket_ GenericSymbol) (GenericSymbol, error)
 
 	// 520:2: initializable_type -> array: ...
-	ArrayToInitializableType(Lbracket_ *GenericSymbol, ValueType_ *GenericSymbol, Comma_ *GenericSymbol, IntegerLiteral_ *GenericSymbol, Rbracket_ *GenericSymbol) (*GenericSymbol, error)
+	ArrayToInitializableType(Lbracket_ GenericSymbol, ValueType_ GenericSymbol, Comma_ GenericSymbol, IntegerLiteral_ GenericSymbol, Rbracket_ GenericSymbol) (GenericSymbol, error)
 
 	// 521:2: initializable_type -> map: ...
-	MapToInitializableType(Lbracket_ *GenericSymbol, ValueType_ *GenericSymbol, Colon_ *GenericSymbol, ValueType_2 *GenericSymbol, Rbracket_ *GenericSymbol) (*GenericSymbol, error)
+	MapToInitializableType(Lbracket_ GenericSymbol, ValueType_ GenericSymbol, Colon_ GenericSymbol, ValueType_2 GenericSymbol, Rbracket_ GenericSymbol) (GenericSymbol, error)
 
 	// 524:2: atom_type -> initializable_type: ...
-	InitializableTypeToAtomType(InitializableType_ *GenericSymbol) (*GenericSymbol, error)
+	InitializableTypeToAtomType(InitializableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 525:2: atom_type -> named: ...
-	NamedToAtomType(Identifier_ *GenericSymbol, OptionalGenericBinding_ *GenericSymbol) (*GenericSymbol, error)
+	NamedToAtomType(Identifier_ GenericSymbol, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
 
 	// 526:2: atom_type -> extern_named: ...
-	ExternNamedToAtomType(Identifier_ *GenericSymbol, Dot_ *GenericSymbol, Identifier_2 *GenericSymbol, OptionalGenericBinding_ *GenericSymbol) (*GenericSymbol, error)
+	ExternNamedToAtomType(Identifier_ GenericSymbol, Dot_ GenericSymbol, Identifier_2 GenericSymbol, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
 
 	// 527:2: atom_type -> inferred: ...
-	InferredToAtomType(Dot_ *GenericSymbol, OptionalGenericBinding_ *GenericSymbol) (*GenericSymbol, error)
+	InferredToAtomType(Dot_ GenericSymbol, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
 
 	// 528:2: atom_type -> implicit_struct_def: ...
-	ImplicitStructDefToAtomType(ImplicitStructDef_ *GenericSymbol) (*GenericSymbol, error)
+	ImplicitStructDefToAtomType(ImplicitStructDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 529:2: atom_type -> explicit_enum_def: ...
-	ExplicitEnumDefToAtomType(ExplicitEnumDef_ *GenericSymbol) (*GenericSymbol, error)
+	ExplicitEnumDefToAtomType(ExplicitEnumDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 530:2: atom_type -> implicit_enum_def: ...
-	ImplicitEnumDefToAtomType(ImplicitEnumDef_ *GenericSymbol) (*GenericSymbol, error)
+	ImplicitEnumDefToAtomType(ImplicitEnumDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 531:2: atom_type -> trait_def: ...
-	TraitDefToAtomType(TraitDef_ *GenericSymbol) (*GenericSymbol, error)
+	TraitDefToAtomType(TraitDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 532:2: atom_type -> func_type: ...
-	FuncTypeToAtomType(FuncType_ *GenericSymbol) (*GenericSymbol, error)
+	FuncTypeToAtomType(FuncType_ GenericSymbol) (GenericSymbol, error)
 
 	// 533:2: atom_type -> PARSE_ERROR: ...
-	ParseErrorToAtomType(ParseError_ ParseError) (*GenericSymbol, error)
+	ParseErrorToAtomType(ParseError_ ParseError) (GenericSymbol, error)
 
 	// 539:2: returnable_type -> atom_type: ...
-	AtomTypeToReturnableType(AtomType_ *GenericSymbol) (*GenericSymbol, error)
+	AtomTypeToReturnableType(AtomType_ GenericSymbol) (GenericSymbol, error)
 
 	// 540:2: returnable_type -> optional: ...
-	OptionalToReturnableType(Question_ *GenericSymbol, ReturnableType_ *GenericSymbol) (*GenericSymbol, error)
+	OptionalToReturnableType(Question_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 541:2: returnable_type -> result: ...
-	ResultToReturnableType(Exclaim_ *GenericSymbol, ReturnableType_ *GenericSymbol) (*GenericSymbol, error)
+	ResultToReturnableType(Exclaim_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 542:2: returnable_type -> reference: ...
-	ReferenceToReturnableType(BitAnd_ *GenericSymbol, ReturnableType_ *GenericSymbol) (*GenericSymbol, error)
+	ReferenceToReturnableType(BitAnd_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 543:2: returnable_type -> public_methods_trait: ...
-	PublicMethodsTraitToReturnableType(BitNeg_ *GenericSymbol, ReturnableType_ *GenericSymbol) (*GenericSymbol, error)
+	PublicMethodsTraitToReturnableType(BitNeg_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 544:2: returnable_type -> public_trait: ...
-	PublicTraitToReturnableType(TildeTilde_ *GenericSymbol, ReturnableType_ *GenericSymbol) (*GenericSymbol, error)
+	PublicTraitToReturnableType(TildeTilde_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 549:2: value_type -> returnable_type: ...
-	ReturnableTypeToValueType(ReturnableType_ *GenericSymbol) (*GenericSymbol, error)
+	ReturnableTypeToValueType(ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 550:2: value_type -> trait_intersect: ...
-	TraitIntersectToValueType(ValueType_ *GenericSymbol, Mul_ *GenericSymbol, ReturnableType_ *GenericSymbol) (*GenericSymbol, error)
+	TraitIntersectToValueType(ValueType_ GenericSymbol, Mul_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 551:2: value_type -> trait_union: ...
-	TraitUnionToValueType(ValueType_ *GenericSymbol, Add_ *GenericSymbol, ReturnableType_ *GenericSymbol) (*GenericSymbol, error)
+	TraitUnionToValueType(ValueType_ GenericSymbol, Add_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 552:2: value_type -> trait_difference: ...
-	TraitDifferenceToValueType(ValueType_ *GenericSymbol, Sub_ *GenericSymbol, ReturnableType_ *GenericSymbol) (*GenericSymbol, error)
+	TraitDifferenceToValueType(ValueType_ GenericSymbol, Sub_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 555:2: type_def -> definition: ...
-	DefinitionToTypeDef(Type_ *GenericSymbol, Identifier_ *GenericSymbol, OptionalGenericParameters_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	DefinitionToTypeDef(Type_ GenericSymbol, Identifier_ GenericSymbol, OptionalGenericParameters_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 556:2: type_def -> constrained_def: ...
-	ConstrainedDefToTypeDef(Type_ *GenericSymbol, Identifier_ *GenericSymbol, OptionalGenericParameters_ *GenericSymbol, ValueType_ *GenericSymbol, Implements_ *GenericSymbol, ValueType_2 *GenericSymbol) (*GenericSymbol, error)
+	ConstrainedDefToTypeDef(Type_ GenericSymbol, Identifier_ GenericSymbol, OptionalGenericParameters_ GenericSymbol, ValueType_ GenericSymbol, Implements_ GenericSymbol, ValueType_2 GenericSymbol) (GenericSymbol, error)
 
 	// 557:2: type_def -> alias: ...
-	AliasToTypeDef(Type_ *GenericSymbol, Identifier_ *GenericSymbol, Assign_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	AliasToTypeDef(Type_ GenericSymbol, Identifier_ GenericSymbol, Assign_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 565:2: generic_parameter_def -> unconstrained: ...
-	UnconstrainedToGenericParameterDef(Identifier_ *GenericSymbol) (*GenericSymbol, error)
+	UnconstrainedToGenericParameterDef(Identifier_ GenericSymbol) (GenericSymbol, error)
 
 	// 566:2: generic_parameter_def -> constrained: ...
-	ConstrainedToGenericParameterDef(Identifier_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	ConstrainedToGenericParameterDef(Identifier_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 569:2: generic_parameter_defs -> generic_parameter_def: ...
-	GenericParameterDefToGenericParameterDefs(GenericParameterDef_ *GenericSymbol) (*GenericSymbol, error)
+	GenericParameterDefToGenericParameterDefs(GenericParameterDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 570:2: generic_parameter_defs -> add: ...
-	AddToGenericParameterDefs(GenericParameterDefs_ *GenericSymbol, Comma_ *GenericSymbol, GenericParameterDef_ *GenericSymbol) (*GenericSymbol, error)
+	AddToGenericParameterDefs(GenericParameterDefs_ GenericSymbol, Comma_ GenericSymbol, GenericParameterDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 573:2: optional_generic_parameter_defs -> generic_parameter_defs: ...
-	GenericParameterDefsToOptionalGenericParameterDefs(GenericParameterDefs_ *GenericSymbol) (*GenericSymbol, error)
+	GenericParameterDefsToOptionalGenericParameterDefs(GenericParameterDefs_ GenericSymbol) (GenericSymbol, error)
 
 	// 574:2: optional_generic_parameter_defs -> nil: ...
-	NilToOptionalGenericParameterDefs() (*GenericSymbol, error)
+	NilToOptionalGenericParameterDefs() (GenericSymbol, error)
 
 	// 577:2: optional_generic_parameters -> generic: ...
-	GenericToOptionalGenericParameters(DollarLbracket_ *GenericSymbol, OptionalGenericParameterDefs_ *GenericSymbol, Rbracket_ *GenericSymbol) (*GenericSymbol, error)
+	GenericToOptionalGenericParameters(DollarLbracket_ GenericSymbol, OptionalGenericParameterDefs_ GenericSymbol, Rbracket_ GenericSymbol) (GenericSymbol, error)
 
 	// 578:2: optional_generic_parameters -> nil: ...
-	NilToOptionalGenericParameters() (*GenericSymbol, error)
+	NilToOptionalGenericParameters() (GenericSymbol, error)
 
 	// 585:2: field_def -> explicit: ...
-	ExplicitToFieldDef(Identifier_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	ExplicitToFieldDef(Identifier_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 586:2: field_def -> implicit: ...
-	ImplicitToFieldDef(ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	ImplicitToFieldDef(ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 587:2: field_def -> unsafe_statement: ...
-	UnsafeStatementToFieldDef(UnsafeStatement_ *GenericSymbol) (*GenericSymbol, error)
+	UnsafeStatementToFieldDef(UnsafeStatement_ GenericSymbol) (GenericSymbol, error)
 
 	// 590:2: implicit_field_defs -> field_def: ...
-	FieldDefToImplicitFieldDefs(FieldDef_ *GenericSymbol) (*GenericSymbol, error)
+	FieldDefToImplicitFieldDefs(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 591:2: implicit_field_defs -> add: ...
-	AddToImplicitFieldDefs(ImplicitFieldDefs_ *GenericSymbol, Comma_ *GenericSymbol, FieldDef_ *GenericSymbol) (*GenericSymbol, error)
+	AddToImplicitFieldDefs(ImplicitFieldDefs_ GenericSymbol, Comma_ GenericSymbol, FieldDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 594:2: optional_implicit_field_defs -> implicit_field_defs: ...
-	ImplicitFieldDefsToOptionalImplicitFieldDefs(ImplicitFieldDefs_ *GenericSymbol) (*GenericSymbol, error)
+	ImplicitFieldDefsToOptionalImplicitFieldDefs(ImplicitFieldDefs_ GenericSymbol) (GenericSymbol, error)
 
 	// 595:2: optional_implicit_field_defs -> nil: ...
-	NilToOptionalImplicitFieldDefs() (*GenericSymbol, error)
+	NilToOptionalImplicitFieldDefs() (GenericSymbol, error)
 
 	// 597:23: implicit_struct_def -> ...
-	ToImplicitStructDef(Lparen_ *GenericSymbol, OptionalImplicitFieldDefs_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
+	ToImplicitStructDef(Lparen_ GenericSymbol, OptionalImplicitFieldDefs_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
 	// 600:2: explicit_field_defs -> field_def: ...
-	FieldDefToExplicitFieldDefs(FieldDef_ *GenericSymbol) (*GenericSymbol, error)
+	FieldDefToExplicitFieldDefs(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 601:2: explicit_field_defs -> implicit: ...
-	ImplicitToExplicitFieldDefs(ExplicitFieldDefs_ *GenericSymbol, Newlines_ *GenericSymbol, FieldDef_ *GenericSymbol) (*GenericSymbol, error)
+	ImplicitToExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol, Newlines_ GenericSymbol, FieldDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 602:2: explicit_field_defs -> explicit: ...
-	ExplicitToExplicitFieldDefs(ExplicitFieldDefs_ *GenericSymbol, Comma_ *GenericSymbol, FieldDef_ *GenericSymbol) (*GenericSymbol, error)
+	ExplicitToExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol, Comma_ GenericSymbol, FieldDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 605:2: optional_explicit_field_defs -> explicit_field_defs: ...
-	ExplicitFieldDefsToOptionalExplicitFieldDefs(ExplicitFieldDefs_ *GenericSymbol) (*GenericSymbol, error)
+	ExplicitFieldDefsToOptionalExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol) (GenericSymbol, error)
 
 	// 606:2: optional_explicit_field_defs -> nil: ...
-	NilToOptionalExplicitFieldDefs() (*GenericSymbol, error)
+	NilToOptionalExplicitFieldDefs() (GenericSymbol, error)
 
 	// 608:23: explicit_struct_def -> ...
-	ToExplicitStructDef(Struct_ *GenericSymbol, Lparen_ *GenericSymbol, OptionalExplicitFieldDefs_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
+	ToExplicitStructDef(Struct_ GenericSymbol, Lparen_ GenericSymbol, OptionalExplicitFieldDefs_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
 	// 616:2: enum_value_def -> field_def: ...
-	FieldDefToEnumValueDef(FieldDef_ *GenericSymbol) (*GenericSymbol, error)
+	FieldDefToEnumValueDef(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 617:2: enum_value_def -> default: ...
-	DefaultToEnumValueDef(FieldDef_ *GenericSymbol, Assign_ *GenericSymbol, Default_ *GenericSymbol) (*GenericSymbol, error)
+	DefaultToEnumValueDef(FieldDef_ GenericSymbol, Assign_ GenericSymbol, Default_ GenericSymbol) (GenericSymbol, error)
 
 	// 629:2: implicit_enum_value_defs -> pair: ...
-	PairToImplicitEnumValueDefs(EnumValueDef_ *GenericSymbol, Or_ *GenericSymbol, EnumValueDef_2 *GenericSymbol) (*GenericSymbol, error)
+	PairToImplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Or_ GenericSymbol, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
 	// 630:2: implicit_enum_value_defs -> add: ...
-	AddToImplicitEnumValueDefs(ImplicitEnumValueDefs_ *GenericSymbol, Or_ *GenericSymbol, EnumValueDef_ *GenericSymbol) (*GenericSymbol, error)
+	AddToImplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Or_ GenericSymbol, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 632:21: implicit_enum_def -> ...
-	ToImplicitEnumDef(Lparen_ *GenericSymbol, ImplicitEnumValueDefs_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
+	ToImplicitEnumDef(Lparen_ GenericSymbol, ImplicitEnumValueDefs_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
 	// 635:2: explicit_enum_value_defs -> explicit_pair: ...
-	ExplicitPairToExplicitEnumValueDefs(EnumValueDef_ *GenericSymbol, Or_ *GenericSymbol, EnumValueDef_2 *GenericSymbol) (*GenericSymbol, error)
+	ExplicitPairToExplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Or_ GenericSymbol, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
 	// 636:2: explicit_enum_value_defs -> implicit_pair: ...
-	ImplicitPairToExplicitEnumValueDefs(EnumValueDef_ *GenericSymbol, Newlines_ *GenericSymbol, EnumValueDef_2 *GenericSymbol) (*GenericSymbol, error)
+	ImplicitPairToExplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Newlines_ GenericSymbol, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
 	// 637:2: explicit_enum_value_defs -> explicit_add: ...
-	ExplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ *GenericSymbol, Or_ *GenericSymbol, EnumValueDef_ *GenericSymbol) (*GenericSymbol, error)
+	ExplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Or_ GenericSymbol, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 638:2: explicit_enum_value_defs -> implicit_add: ...
-	ImplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ *GenericSymbol, Newlines_ *GenericSymbol, EnumValueDef_ *GenericSymbol) (*GenericSymbol, error)
+	ImplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Newlines_ GenericSymbol, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 640:21: explicit_enum_def -> ...
-	ToExplicitEnumDef(Enum_ *GenericSymbol, Lparen_ *GenericSymbol, ExplicitEnumValueDefs_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
+	ToExplicitEnumDef(Enum_ GenericSymbol, Lparen_ GenericSymbol, ExplicitEnumValueDefs_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
 	// 647:2: trait_property -> field_def: ...
-	FieldDefToTraitProperty(FieldDef_ *GenericSymbol) (*GenericSymbol, error)
+	FieldDefToTraitProperty(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 648:2: trait_property -> method_signature: ...
-	MethodSignatureToTraitProperty(MethodSignature_ *GenericSymbol) (*GenericSymbol, error)
+	MethodSignatureToTraitProperty(MethodSignature_ GenericSymbol) (GenericSymbol, error)
 
 	// 651:2: trait_properties -> trait_property: ...
-	TraitPropertyToTraitProperties(TraitProperty_ *GenericSymbol) (*GenericSymbol, error)
+	TraitPropertyToTraitProperties(TraitProperty_ GenericSymbol) (GenericSymbol, error)
 
 	// 652:2: trait_properties -> implicit: ...
-	ImplicitToTraitProperties(TraitProperties_ *GenericSymbol, Newlines_ *GenericSymbol, TraitProperty_ *GenericSymbol) (*GenericSymbol, error)
+	ImplicitToTraitProperties(TraitProperties_ GenericSymbol, Newlines_ GenericSymbol, TraitProperty_ GenericSymbol) (GenericSymbol, error)
 
 	// 653:2: trait_properties -> explicit: ...
-	ExplicitToTraitProperties(TraitProperties_ *GenericSymbol, Comma_ *GenericSymbol, TraitProperty_ *GenericSymbol) (*GenericSymbol, error)
+	ExplicitToTraitProperties(TraitProperties_ GenericSymbol, Comma_ GenericSymbol, TraitProperty_ GenericSymbol) (GenericSymbol, error)
 
 	// 656:2: optional_trait_properties -> trait_properties: ...
-	TraitPropertiesToOptionalTraitProperties(TraitProperties_ *GenericSymbol) (*GenericSymbol, error)
+	TraitPropertiesToOptionalTraitProperties(TraitProperties_ GenericSymbol) (GenericSymbol, error)
 
 	// 657:2: optional_trait_properties -> nil: ...
-	NilToOptionalTraitProperties() (*GenericSymbol, error)
+	NilToOptionalTraitProperties() (GenericSymbol, error)
 
 	// 659:13: trait_def -> ...
-	ToTraitDef(Trait_ *GenericSymbol, Lparen_ *GenericSymbol, OptionalTraitProperties_ *GenericSymbol, Rparen_ *GenericSymbol) (*GenericSymbol, error)
+	ToTraitDef(Trait_ GenericSymbol, Lparen_ GenericSymbol, OptionalTraitProperties_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
 	// 667:2: return_type -> returnable_type: ...
-	ReturnableTypeToReturnType(ReturnableType_ *GenericSymbol) (*GenericSymbol, error)
+	ReturnableTypeToReturnType(ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 668:2: return_type -> nil: ...
-	NilToReturnType() (*GenericSymbol, error)
+	NilToReturnType() (GenericSymbol, error)
 
 	// 671:2: parameter_decl -> arg: ...
-	ArgToParameterDecl(Identifier_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	ArgToParameterDecl(Identifier_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 672:2: parameter_decl -> vararg: ...
-	VarargToParameterDecl(Identifier_ *GenericSymbol, DotDotDot_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	VarargToParameterDecl(Identifier_ GenericSymbol, DotDotDot_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 673:2: parameter_decl -> unamed: ...
-	UnamedToParameterDecl(ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	UnamedToParameterDecl(ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 674:2: parameter_decl -> unnamed_vararg: ...
-	UnnamedVarargToParameterDecl(DotDotDot_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	UnnamedVarargToParameterDecl(DotDotDot_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 677:2: parameter_decls -> parameter_decl: ...
-	ParameterDeclToParameterDecls(ParameterDecl_ *GenericSymbol) (*GenericSymbol, error)
+	ParameterDeclToParameterDecls(ParameterDecl_ GenericSymbol) (GenericSymbol, error)
 
 	// 678:2: parameter_decls -> add: ...
-	AddToParameterDecls(ParameterDecls_ *GenericSymbol, Comma_ *GenericSymbol, ParameterDecl_ *GenericSymbol) (*GenericSymbol, error)
+	AddToParameterDecls(ParameterDecls_ GenericSymbol, Comma_ GenericSymbol, ParameterDecl_ GenericSymbol) (GenericSymbol, error)
 
 	// 681:2: optional_parameter_decls -> parameter_decls: ...
-	ParameterDeclsToOptionalParameterDecls(ParameterDecls_ *GenericSymbol) (*GenericSymbol, error)
+	ParameterDeclsToOptionalParameterDecls(ParameterDecls_ GenericSymbol) (GenericSymbol, error)
 
 	// 682:2: optional_parameter_decls -> nil: ...
-	NilToOptionalParameterDecls() (*GenericSymbol, error)
+	NilToOptionalParameterDecls() (GenericSymbol, error)
 
 	// 684:13: func_type -> ...
-	ToFuncType(Func_ *GenericSymbol, Lparen_ *GenericSymbol, OptionalParameterDecls_ *GenericSymbol, Rparen_ *GenericSymbol, ReturnType_ *GenericSymbol) (*GenericSymbol, error)
+	ToFuncType(Func_ GenericSymbol, Lparen_ GenericSymbol, OptionalParameterDecls_ GenericSymbol, Rparen_ GenericSymbol, ReturnType_ GenericSymbol) (GenericSymbol, error)
 
 	// 695:20: method_signature -> ...
-	ToMethodSignature(Func_ *GenericSymbol, Identifier_ *GenericSymbol, Lparen_ *GenericSymbol, OptionalParameterDecls_ *GenericSymbol, Rparen_ *GenericSymbol, ReturnType_ *GenericSymbol) (*GenericSymbol, error)
+	ToMethodSignature(Func_ GenericSymbol, Identifier_ GenericSymbol, Lparen_ GenericSymbol, OptionalParameterDecls_ GenericSymbol, Rparen_ GenericSymbol, ReturnType_ GenericSymbol) (GenericSymbol, error)
 
 	// 701:2: parameter_def -> inferred_ref_arg: ...
-	InferredRefArgToParameterDef(Identifier_ *GenericSymbol) (*GenericSymbol, error)
+	InferredRefArgToParameterDef(Identifier_ GenericSymbol) (GenericSymbol, error)
 
 	// 702:2: parameter_def -> inferred_ref_vararg: ...
-	InferredRefVarargToParameterDef(Identifier_ *GenericSymbol, DotDotDot_ *GenericSymbol) (*GenericSymbol, error)
+	InferredRefVarargToParameterDef(Identifier_ GenericSymbol, DotDotDot_ GenericSymbol) (GenericSymbol, error)
 
 	// 703:2: parameter_def -> arg: ...
-	ArgToParameterDef(Identifier_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	ArgToParameterDef(Identifier_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 704:2: parameter_def -> vararg: ...
-	VarargToParameterDef(Identifier_ *GenericSymbol, DotDotDot_ *GenericSymbol, ValueType_ *GenericSymbol) (*GenericSymbol, error)
+	VarargToParameterDef(Identifier_ GenericSymbol, DotDotDot_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 707:2: parameter_defs -> parameter_def: ...
-	ParameterDefToParameterDefs(ParameterDef_ *GenericSymbol) (*GenericSymbol, error)
+	ParameterDefToParameterDefs(ParameterDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 708:2: parameter_defs -> add: ...
-	AddToParameterDefs(ParameterDefs_ *GenericSymbol, Comma_ *GenericSymbol, ParameterDef_ *GenericSymbol) (*GenericSymbol, error)
+	AddToParameterDefs(ParameterDefs_ GenericSymbol, Comma_ GenericSymbol, ParameterDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 711:2: optional_parameter_defs -> parameter_defs: ...
-	ParameterDefsToOptionalParameterDefs(ParameterDefs_ *GenericSymbol) (*GenericSymbol, error)
+	ParameterDefsToOptionalParameterDefs(ParameterDefs_ GenericSymbol) (GenericSymbol, error)
 
 	// 712:2: optional_parameter_defs -> nil: ...
-	NilToOptionalParameterDefs() (*GenericSymbol, error)
+	NilToOptionalParameterDefs() (GenericSymbol, error)
 
 	// 715:2: named_func_def -> func_def: ...
-	FuncDefToNamedFuncDef(Func_ *GenericSymbol, Identifier_ *GenericSymbol, OptionalGenericParameters_ *GenericSymbol, Lparen_ *GenericSymbol, OptionalParameterDefs_ *GenericSymbol, Rparen_ *GenericSymbol, ReturnType_ *GenericSymbol, StatementBlock_ *GenericSymbol) (*GenericSymbol, error)
+	FuncDefToNamedFuncDef(Func_ GenericSymbol, Identifier_ GenericSymbol, OptionalGenericParameters_ GenericSymbol, Lparen_ GenericSymbol, OptionalParameterDefs_ GenericSymbol, Rparen_ GenericSymbol, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 716:2: named_func_def -> method_def: ...
-	MethodDefToNamedFuncDef(Func_ *GenericSymbol, Lparen_ *GenericSymbol, ParameterDef_ *GenericSymbol, Rparen_ *GenericSymbol, Identifier_ *GenericSymbol, OptionalGenericParameters_ *GenericSymbol, Lparen_2 *GenericSymbol, OptionalParameterDefs_ *GenericSymbol, Rparen_2 *GenericSymbol, ReturnType_ *GenericSymbol, StatementBlock_ *GenericSymbol) (*GenericSymbol, error)
+	MethodDefToNamedFuncDef(Func_ GenericSymbol, Lparen_ GenericSymbol, ParameterDef_ GenericSymbol, Rparen_ GenericSymbol, Identifier_ GenericSymbol, OptionalGenericParameters_ GenericSymbol, Lparen_2 GenericSymbol, OptionalParameterDefs_ GenericSymbol, Rparen_2 GenericSymbol, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 717:2: named_func_def -> alias: ...
-	AliasToNamedFuncDef(Func_ *GenericSymbol, Identifier_ *GenericSymbol, Assign_ *GenericSymbol, Expression_ *GenericSymbol) (*GenericSymbol, error)
+	AliasToNamedFuncDef(Func_ GenericSymbol, Identifier_ GenericSymbol, Assign_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 721:2: anonymous_func_expr -> ...
-	ToAnonymousFuncExpr(Func_ *GenericSymbol, Lparen_ *GenericSymbol, OptionalParameterDefs_ *GenericSymbol, Rparen_ *GenericSymbol, ReturnType_ *GenericSymbol, StatementBlock_ *GenericSymbol) (*GenericSymbol, error)
+	ToAnonymousFuncExpr(Func_ GenericSymbol, Lparen_ GenericSymbol, OptionalParameterDefs_ GenericSymbol, Rparen_ GenericSymbol, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 733:2: package_def -> no_spec: ...
-	NoSpecToPackageDef(Package_ *GenericSymbol) (*GenericSymbol, error)
+	NoSpecToPackageDef(Package_ GenericSymbol) (GenericSymbol, error)
 
 	// 734:2: package_def -> with_spec: ...
-	WithSpecToPackageDef(Package_ *GenericSymbol, StatementBlock_ *GenericSymbol) (*GenericSymbol, error)
+	WithSpecToPackageDef(Package_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 }
 
 type ParseErrorHandler interface {
@@ -970,7 +970,7 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	return result
 }
 
-func ParseSource(lexer Lexer, reducer Reducer) (*GenericSymbol, error) {
+func ParseSource(lexer Lexer, reducer Reducer) (GenericSymbol, error) {
 
 	return ParseSourceWithCustomErrorHandler(
 		lexer,
@@ -982,18 +982,18 @@ func ParseSourceWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
 	errHandler ParseErrorHandler) (
-	*GenericSymbol,
+	GenericSymbol,
 	error) {
 
 	item, err := _Parse(lexer, reducer, errHandler, _State1)
 	if err != nil {
-		var errRetVal *GenericSymbol
+		var errRetVal GenericSymbol
 		return errRetVal, err
 	}
 	return item.Generic_, nil
 }
 
-func ParsePackageDef(lexer Lexer, reducer Reducer) (*GenericSymbol, error) {
+func ParsePackageDef(lexer Lexer, reducer Reducer) (GenericSymbol, error) {
 
 	return ParsePackageDefWithCustomErrorHandler(
 		lexer,
@@ -1005,18 +1005,18 @@ func ParsePackageDefWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
 	errHandler ParseErrorHandler) (
-	*GenericSymbol,
+	GenericSymbol,
 	error) {
 
 	item, err := _Parse(lexer, reducer, errHandler, _State2)
 	if err != nil {
-		var errRetVal *GenericSymbol
+		var errRetVal GenericSymbol
 		return errRetVal, err
 	}
 	return item.Generic_, nil
 }
 
-func ParseTypeDef(lexer Lexer, reducer Reducer) (*GenericSymbol, error) {
+func ParseTypeDef(lexer Lexer, reducer Reducer) (GenericSymbol, error) {
 
 	return ParseTypeDefWithCustomErrorHandler(
 		lexer,
@@ -1028,18 +1028,18 @@ func ParseTypeDefWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
 	errHandler ParseErrorHandler) (
-	*GenericSymbol,
+	GenericSymbol,
 	error) {
 
 	item, err := _Parse(lexer, reducer, errHandler, _State3)
 	if err != nil {
-		var errRetVal *GenericSymbol
+		var errRetVal GenericSymbol
 		return errRetVal, err
 	}
 	return item.Generic_, nil
 }
 
-func ParseNamedFuncDef(lexer Lexer, reducer Reducer) (*GenericSymbol, error) {
+func ParseNamedFuncDef(lexer Lexer, reducer Reducer) (GenericSymbol, error) {
 
 	return ParseNamedFuncDefWithCustomErrorHandler(
 		lexer,
@@ -1051,18 +1051,18 @@ func ParseNamedFuncDefWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
 	errHandler ParseErrorHandler) (
-	*GenericSymbol,
+	GenericSymbol,
 	error) {
 
 	item, err := _Parse(lexer, reducer, errHandler, _State4)
 	if err != nil {
-		var errRetVal *GenericSymbol
+		var errRetVal GenericSymbol
 		return errRetVal, err
 	}
 	return item.Generic_, nil
 }
 
-func ParseExpression(lexer Lexer, reducer Reducer) (*GenericSymbol, error) {
+func ParseExpression(lexer Lexer, reducer Reducer) (GenericSymbol, error) {
 
 	return ParseExpressionWithCustomErrorHandler(
 		lexer,
@@ -1074,12 +1074,12 @@ func ParseExpressionWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
 	errHandler ParseErrorHandler) (
-	*GenericSymbol,
+	GenericSymbol,
 	error) {
 
 	item, err := _Parse(lexer, reducer, errHandler, _State5)
 	if err != nil {
-		var errRetVal *GenericSymbol
+		var errRetVal GenericSymbol
 		return errRetVal, err
 	}
 	return item.Generic_, nil
@@ -2933,7 +2933,7 @@ const (
 type Symbol struct {
 	SymbolId_ SymbolId
 
-	Generic_ *GenericSymbol
+	Generic_ GenericSymbol
 
 	ParseError ParseError
 }
@@ -2947,11 +2947,11 @@ func NewSymbol(token Token) (*Symbol, error) {
 	symbol = &Symbol{SymbolId_: token.Id()}
 	switch token.Id() {
 	case _EndMarker, NewlinesToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, NotToken, AndToken, OrToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
-		val, ok := token.(*GenericSymbol)
+		val, ok := token.(GenericSymbol)
 		if !ok {
 			return nil, fmt.Errorf(
 				"Invalid value type for token %s.  "+
-					"Expecting *GenericSymbol (%v)",
+					"Expecting GenericSymbol (%v)",
 				token.Id(),
 				token.Loc())
 		}
@@ -2985,10 +2985,7 @@ func (s *Symbol) Loc() Location {
 			return loc.Loc()
 		}
 	}
-	if s.Generic_ != nil {
-		return s.Generic_.Loc()
-	}
-	return Location{}
+	return s.Generic_.Loc()
 }
 
 type _PseudoSymbolStack struct {
@@ -3003,7 +3000,7 @@ func (stack *_PseudoSymbolStack) Top() (*Symbol, error) {
 			if err != io.EOF {
 				return nil, fmt.Errorf("Unexpected lex error: %s", err)
 			}
-			token = &GenericSymbol{_EndMarker, stack.lexer.CurrentLocation()}
+			token = GenericSymbol{_EndMarker, stack.lexer.CurrentLocation()}
 		}
 		item, err := NewSymbol(token)
 		if err != nil {

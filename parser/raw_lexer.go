@@ -275,7 +275,7 @@ func (lexer *RawLexer) Next() (Token, error) {
 			panic("Should never happen")
 		}
 
-		return &GenericSymbol{
+		return GenericSymbol{
 			SymbolId: symbolId,
 			Location: Location(lexer.Location),
 		}, nil
