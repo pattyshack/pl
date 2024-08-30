@@ -143,9 +143,13 @@ optional_label_decl ->
 // NOTE: label is applied to the entire if expression rather than individual
 // branches.
 if_expr ->
-  no_else: IF sequence_expr block_body |
-  if_else: IF sequence_expr block_body ELSE block_body |
-  multi_if_else: IF sequence_expr block_body ELSE if_expr
+  no_else: IF condition block_body |
+  if_else: IF condition block_body ELSE block_body |
+  multi_if_else: IF condition block_body ELSE if_expr
+
+condition ->
+  sequence_expr |
+  case: CASE case_patterns ASSIGN sequence_expr
 
 //
 // Switch control flow expression
