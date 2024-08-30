@@ -1,7 +1,7 @@
 package parser
 
 import (
-	//"fmt"
+	"fmt"
 	"io"
 	"unicode/utf8"
 
@@ -258,12 +258,23 @@ func (lexer *RawLexer) Next() (Token, error) {
 	}
 
 	if symbolId == ParseErrorToken {
-		// ParseErrorToken
-		panic("TODO")
+		_, err := lexer.Discard(size)
+		if err != nil {
+			panic("Should never happen")
+		}
+
+		return ParseError{
+			Error:    fmt.Errorf("lex error: unexpected utf8 rune"),
+			Location: Location(lexer.Location),
+		}, nil
 	}
 
 	if size > 0 {
-		lexer.Discard(size)
+		_, err := lexer.Discard(size)
+		if err != nil {
+			panic("Should never happen")
+		}
+
 		return &GenericSymbol{
 			SymbolId: symbolId,
 			Location: Location(lexer.Location),

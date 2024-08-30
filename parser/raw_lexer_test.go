@@ -130,8 +130,14 @@ func (s *RawLexerSuite) TestColonTokens(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestDollarTokens(t *testing.T) {
-	// TODO lex error for $
 	s.lex(t, "+$[-", AddToken, DollarLbracketToken, SubToken)
+
+	tokens := s.lex(t, "+$-", AddToken, ParseErrorToken, SubToken)
+	parseError, ok := tokens[1].(ParseError)
+
+	expect.True(t, ok)
+
+	expect.Error(t, parseError.Error, "unexpected utf8 rune")
 }
 
 func (s *RawLexerSuite) TestAddTokens(t *testing.T) {

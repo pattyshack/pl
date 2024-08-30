@@ -523,7 +523,7 @@ type Reducer interface {
 	ImplicitStructExprToAtomExpr(ImplicitStructExpr_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 432:2: atom_expr -> PARSE_ERROR: ...
-	ParseErrorToAtomExpr(ParseError_ *GenericSymbol) (*GenericSymbol, error)
+	ParseErrorToAtomExpr(ParseError_ ParseError) (*GenericSymbol, error)
 
 	// 435:2: literal -> TRUE: ...
 	TrueToLiteral(True_ *GenericSymbol) (*GenericSymbol, error)
@@ -703,7 +703,7 @@ type Reducer interface {
 	FuncTypeToAtomType(FuncType_ *GenericSymbol) (*GenericSymbol, error)
 
 	// 533:2: atom_type -> PARSE_ERROR: ...
-	ParseErrorToAtomType(ParseError_ *GenericSymbol) (*GenericSymbol, error)
+	ParseErrorToAtomType(ParseError_ ParseError) (*GenericSymbol, error)
 
 	// 539:2: returnable_type -> atom_type: ...
 	AtomTypeToReturnableType(AtomType_ *GenericSymbol) (*GenericSymbol, error)
@@ -2934,6 +2934,8 @@ type Symbol struct {
 	SymbolId_ SymbolId
 
 	Generic_ *GenericSymbol
+
+	ParseError ParseError
 }
 
 func NewSymbol(token Token) (*Symbol, error) {
@@ -2944,7 +2946,7 @@ func NewSymbol(token Token) (*Symbol, error) {
 
 	symbol = &Symbol{SymbolId_: token.Id()}
 	switch token.Id() {
-	case _EndMarker, NewlinesToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, NotToken, AndToken, OrToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, ParseErrorToken:
+	case _EndMarker, NewlinesToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, NotToken, AndToken, OrToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
 		val, ok := token.(*GenericSymbol)
 		if !ok {
 			return nil, fmt.Errorf(
@@ -2954,6 +2956,16 @@ func NewSymbol(token Token) (*Symbol, error) {
 				token.Loc())
 		}
 		symbol.Generic_ = val
+	case ParseErrorToken:
+		val, ok := token.(ParseError)
+		if !ok {
+			return nil, fmt.Errorf(
+				"Invalid value type for token %s.  "+
+					"Expecting ParseError (%v)",
+				token.Id(),
+				token.Loc())
+		}
+		symbol.ParseError = val
 	default:
 		return nil, fmt.Errorf("Unexpected token type: %s", symbol.Id())
 	}
@@ -2967,6 +2979,11 @@ func (s *Symbol) Id() SymbolId {
 func (s *Symbol) Loc() Location {
 	type locator interface{ Loc() Location }
 	switch s.SymbolId_ {
+	case ParseErrorToken:
+		loc, ok := interface{}(s.ParseError).(locator)
+		if ok {
+			return loc.Loc()
+		}
 	}
 	if s.Generic_ != nil {
 		return s.Generic_.Loc()
@@ -3664,7 +3681,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomExprType
-		symbol.Generic_, err = reducer.ParseErrorToAtomExpr(args[0].Generic_)
+		symbol.Generic_, err = reducer.ParseErrorToAtomExpr(args[0].ParseError)
 	case _ReduceTrueToLiteral:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -3964,7 +3981,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		symbol.Generic_, err = reducer.ParseErrorToAtomType(args[0].Generic_)
+		symbol.Generic_, err = reducer.ParseErrorToAtomType(args[0].ParseError)
 	case _ReduceAtomTypeToReturnableType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]

@@ -42,7 +42,7 @@
 %token BIT_NEG BIT_AND BIT_XOR BIT_OR BIT_LSHIFT BIT_RSHIFT
 %token EQUAL NOT_EQUAL LESS LESS_OR_EQUAL GREATER GREATER_OR_EQUAL
 
-%token PARSE_ERROR
+%token<ParseError> PARSE_ERROR
 
 %start source package_def type_def named_func_def expression
 
@@ -736,4 +736,6 @@ package_def ->
 %%lang_specs{
 go:
   package: parser
+  value_types:
+    ParseError: "ParseError"
 }%%
