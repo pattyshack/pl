@@ -68,9 +68,169 @@ definition ->
   named_func_def |
   global_var_def: var_decl_pattern |
   global_var_assignment: var_decl_pattern ASSIGN expression |
-  // There can only be at most one block_body per package, which act as the
-  // package's init function
-  block_body
+  // There can only be at most one statement_block per package, which act as
+  // the package's init function
+  statement_block
+
+//
+// Statement block
+//
+
+// IMPORTANT NOTE!!!
+//
+// The grammar is specified in such a way that only the statement_block rule
+// uses LBRACE and RBRACE.  Hence, we can unconditionally parse a
+// statement_block when we encounters a LBRACE.
+//
+// This enables the parser to parse the source in piecemeal manner, which
+// enables the parser to collect more parse errors on a single run.
+//
+// Post analysis is needed to ensure statements are valid for the specific
+// context.
+//
+// Note: statement_block's value type can be either the statement_block's
+// real value type, or PARSE_ERROR's value type
+statement_block -> LBRACE statements RBRACE
+
+statements ->
+  empty_list: |
+  add: statements statement
+
+statement ->
+  implicit: statement_body NEWLINES |
+  explicit: statement_body SEMICOLON
+
+statement_body ->
+  unsafe_statement |
+
+  expression_or_implicit_struct: expressions |
+
+  // maybe allow pseudo-call such as struct initialization?
+  //
+  // NOTE: call_expr's access_expr and its arguments are evaluated immediately
+  // Only the call itself is async.
+  //
+  // NOTE: Only applicable in expression blocks
+  async: ASYNC call_expr |  // returns an await handler
+
+  // Returns unit
+  //
+  // XXX: maybe make defer's call_expr run on the nearest scope exit rather
+  // than on function scope exit.  Transpiling this semantic to golang would
+  // be annoying since golang's defer operate on function rather than scope
+  // exit.  Maybe just code gen the defer call on every exit point instead of
+  // relying on golang's defer?
+  //
+  // Need to ensure this an actual function call, not a struct initialization.
+  //
+  // NOTE: call_expr's access_expr and its arguments are evaluated immediately.
+  // Only the call itself is deferred.
+  //
+  // NOTE: Only applicable in expression blocks
+  //
+  // NOTE: compiler should optimize away the await handler if it's not used.
+  defer: DEFER call_expr |
+
+
+  // NOTE: Only applicable in expression blocks
+  jump_statement: jump_type optional_jump_label optional_expressions |
+
+  // NOTE: variable declaration without assignment is parsed as an expression.
+  //
+  // NOTE: package level assign pattern must be a var/let declaration
+  assign_statement: assign_pattern ASSIGN expression |
+
+  // NOTE: assignment can only operate on proper address values.  Additional
+  // checks are applied during post analysis.
+  //
+  // NOTE: Only applicable in expression block
+  unary_op_assign_statement: access_expr unary_op_assign |
+  binary_op_assign_statement: access_expr binary_op_assign expression |
+
+  // NOTE: Only applicable to package_def
+  import_statement |
+
+  // NOTE: Only applicable to switch case block
+  case_branch_statement: CASE case_patterns COLON sequence_expr |
+  default_branch_statement: DEFAULT COLON sequence_expr
+
+//
+// Assign statements
+//
+
+unary_op_assign ->
+  ADD_ONE_ASSIGN |
+  SUB_ONE_ASSIGN
+
+binary_op_assign ->
+  ADD_ASSIGN |
+  SUB_ASSIGN |
+  MUL_ASSIGN |
+  DIV_ASSIGN |
+  MOD_ASSIGN |
+  BIT_NEG_ASSIGN |
+  BIT_AND_ASSIGN |
+  BIT_OR_ASSIGN |
+  BIT_XOR_ASSIGN |
+  BIT_LSHIFT_ASSIGN |
+  BIT_RSHIFT_ASSIGN
+
+//
+// Unsafe statement
+//
+
+// escape hatch to get a basic compiler/transpiler running.
+// unsafe<go> "emit verbatim go source"
+unsafe_statement -> UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
+
+//
+// Jump statement
+//
+
+jump_type ->
+  RETURN |
+  BREAK |
+  CONTINUE
+
+optional_jump_label ->
+  JUMP_LABEL |
+  unlabelled:
+
+expressions ->
+  expression |
+  add: expressions COMMA expression
+
+optional_expressions ->
+  expressions |
+  nil:
+
+//
+// Import statement
+//
+
+import_statement ->
+  single: IMPORT import_clause |
+  multiple: IMPORT LPAREN import_clauses RPAREN
+
+import_clause ->
+  STRING_LITERAL |
+  alias: STRING_LITERAL AS IDENTIFIER
+
+import_clause_terminal ->
+  implicit: import_clause NEWLINES |
+  explicit: import_clause COMMA
+
+import_clauses ->
+  first: import_clause_terminal |
+  add: import_clauses import_clause_terminal
+
+//
+// Case statement
+//
+
+case_patterns ->
+  case_pattern |
+  multiple: case_patterns COMMA case_pattern
 
 //
 // Variable declaration pattern (Pseudo expression) ===========================
@@ -134,15 +294,29 @@ optional_label_decl ->
   unlabelled:
 
 //
+// Sequence control flow expression
+//
+
+sequence_expr ->
+  or_expr |
+  // NOTE: var_decl_pattern is not a real expression.  Unexpected usage in real
+  // expressions are rejected during type checking.
+  var_decl_pattern |
+  // Case pattern need to disambiguate between using a variable for pattern
+  // matching vs assigning a value to the variable (This is optional in
+  // assign_pattern since it's unambiguous)
+  assign_var_pattern: GREATER sequence_expr
+
+//
 // If control flow expression
 //
 
 // NOTE: label is applied to the entire if expression rather than individual
 // branches.
 if_expr ->
-  no_else: IF condition block_body |
-  if_else: IF condition block_body ELSE block_body |
-  multi_if_else: IF condition block_body ELSE if_expr
+  no_else: IF condition statement_block |
+  if_else: IF condition statement_block ELSE statement_block |
+  multi_if_else: IF condition statement_block ELSE if_expr
 
 condition ->
   sequence_expr |
@@ -170,23 +344,7 @@ condition ->
 // }
 
 // Switch need to be exhastive.
-switch_expr -> SWITCH sequence_expr LBRACE case_branches optional_default_branch RBRACE
-
-case_branches ->
-  case_branch |
-  add: case_branches case_branch
-
-case_branch -> CASE case_patterns COLON sequence_expr
-
-case_patterns ->
-  case_pattern |
-  multiple: case_patterns COMMA case_pattern
-
-optional_default_branch ->
-  default_branch |
-  nil:
-
-default_branch -> DEFAULT COLON sequence_expr
+switch_expr -> SWITCH sequence_expr statement_block
 
 //
 // For control flow expression
@@ -200,11 +358,11 @@ default_branch -> DEFAULT COLON sequence_expr
 // loop can be interpreted as an infinite loop "FOR sequence_expr", followed by
 // an sequence statement "body_expr".
 loop_expr ->
-  infinite: DO block_body |
-  do_while: DO block_body FOR sequence_expr |
-  while: FOR sequence_expr DO block_body |
-  iterator: FOR assign_pattern IN sequence_expr DO block_body |
-  for: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO block_body
+  infinite: DO statement_block |
+  do_while: DO statement_block FOR sequence_expr |
+  while: FOR sequence_expr DO statement_block |
+  iterator: FOR assign_pattern IN sequence_expr DO statement_block |
+  for: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO statement_block
 
 optional_sequence_expr ->
   sequence_expr |
@@ -213,122 +371,6 @@ optional_sequence_expr ->
 for_assignment ->
   sequence_expr |
   assign: assign_pattern ASSIGN sequence_expr
-
-//
-// Block / sequence control flow expressions
-//
-
-sequence_expr ->
-  or_expr |
-  // NOTE: var_decl_pattern is not a real expression.  Unexpected usage in real
-  // expressions are rejected during type checking.
-  var_decl_pattern |
-  // Case pattern need to disambiguate between using a variable for pattern
-  // matching vs assigning a value to the variable (This is optional in
-  // assign_pattern since it's unambiguous)
-  assign_var_pattern: GREATER sequence_expr
-
-block_expr -> optional_label_decl block_body
-
-block_body -> LBRACE statements RBRACE
-
-statements ->
-  empty_list: |
-  add: statements statement
-
-statement ->
-  implicit: statement_body NEWLINES |
-  explicit: statement_body SEMICOLON
-
-statement_body ->
-  unsafe_statement |
-
-  expression_or_implicit_struct: expressions |
-
-  // maybe allow pseudo-call such as struct initialization?
-  //
-  // NOTE: call_expr's access_expr and its arguments are evaluated immediately
-  // Only the call itself is async.
-  async: ASYNC call_expr |  // returns an await handler
-
-  // Returns unit
-  //
-  // XXX: maybe make defer's call_expr run on the nearest scope exit rather
-  // than on function scope exit.  Transpiling this semantic to golang would
-  // be annoying since golang's defer operate on function rather than scope
-  // exit.  Maybe just code gen the defer call on every exit point instead of
-  // relying on golang's defer?
-  //
-  // Need to ensure this an actual function call, not a struct initialization.
-  //
-  // NOTE: call_expr's access_expr and its arguments are evaluated immediately.
-  // Only the call itself is deferred.
-  defer: DEFER call_expr |
-
-  // - compiler should optimize away the await handler if it's not used.
-
-  jump_statement |
-
-  // NOTE: variable declaration without assignment is parsed as an expression.
-  assign_statement: assign_pattern ASSIGN expression |
-
-  // NOTE: assignment can only operate on proper address values.  Additional
-  // checks are applied during post analysis.
-  unary_op_assign_statement: access_expr unary_op_assign |
-  binary_op_assign_statement: access_expr binary_op_assign expression
-
-//
-// Assign statements
-//
-
-unary_op_assign ->
-  ADD_ONE_ASSIGN |
-  SUB_ONE_ASSIGN
-
-binary_op_assign ->
-  ADD_ASSIGN |
-  SUB_ASSIGN |
-  MUL_ASSIGN |
-  DIV_ASSIGN |
-  MOD_ASSIGN |
-  BIT_NEG_ASSIGN |
-  BIT_AND_ASSIGN |
-  BIT_OR_ASSIGN |
-  BIT_XOR_ASSIGN |
-  BIT_LSHIFT_ASSIGN |
-  BIT_RSHIFT_ASSIGN
-
-//
-// Unsafe statement
-//
-
-// escape hatch to get a basic compiler/transpiler running.
-// unsafe<go> "emit verbatim go source"
-unsafe_statement -> UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
-
-//
-// Jump statement
-//
-
-jump_statement ->
-  jump_type optional_jump_label optional_expressions
-
-jump_type ->
-  RETURN |
-  BREAK |
-  CONTINUE
-
-optional_jump_label ->
-  JUMP_LABEL |
-  unlabelled:
-
-expressions ->
-  expression |
-  add: expressions COMMA expression
-
-optional_expressions ->
-  expressions |
-  nil:
 
 //
 // Call expression
@@ -383,7 +425,7 @@ optional_expression ->
 atom_expr ->
   literal |
   IDENTIFIER |
-  block_expr |
+  block_expr: optional_label_decl statement_block |
   anonymous_func_expr |
   initialize_expr: initializable_type LPAREN arguments RPAREN |
   implicit_struct_expr |
@@ -670,13 +712,13 @@ optional_parameter_defs ->
   nil:
 
 named_func_def ->
-  func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type block_body |
-  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type block_body |
+  func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type statement_block |
+  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type statement_block |
   alias: FUNC IDENTIFIER ASSIGN expression
 
 
 anonymous_func_expr ->
-  FUNC LPAREN optional_parameter_defs RPAREN return_type block_body
+  FUNC LPAREN optional_parameter_defs RPAREN return_type statement_block
 
 //
 // Package definition =========================================================
@@ -689,35 +731,7 @@ anonymous_func_expr ->
 // parent directory package.
 package_def ->
   no_spec: PACKAGE |
-  with_spec: PACKAGE LPAREN package_statements RPAREN
-
-package_statement_body ->
-  unsafe_statement |
-  import_statement
-
-package_statement ->
-  implicit: package_statement_body NEWLINES |
-  explicit: package_statement_body COMMA
-
-package_statements ->
-  empty_list: |
-  add: package_statements package_statement
-
-import_statement ->
-  single: IMPORT import_clause |
-  multiple: IMPORT LPAREN import_clauses RPAREN
-
-import_clause ->
-  STRING_LITERAL |
-  alias: STRING_LITERAL AS IDENTIFIER
-
-import_clause_terminal ->
-  implicit: import_clause NEWLINES |
-  explicit: import_clause COMMA
-
-import_clauses ->
-  first: import_clause_terminal |
-  add: import_clauses import_clause_terminal
+  with_spec: PACKAGE statement_block
 
 %%lang_specs{
 go:
