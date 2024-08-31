@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"io"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/pattyshack/gt/lexutil"
@@ -13,6 +14,8 @@ const (
 	spacesToken       = SymbolId(-1) // [ \t]+
 	lineCommentToken  = SymbolId(-2)
 	blockCommentToken = SymbolId(-3)
+
+	defaultInitialPeekWindowSize = 64
 )
 
 var (
@@ -51,6 +54,10 @@ type RawLexerOptions struct {
 	PreserveCommentContent bool
 
 	InitialLookAheadBufferSize int
+
+	// Initial peek window size used for lexing a variable length token
+	// (Only used for testing)
+	InitialPeekWindowSize int
 }
 
 type RawLexer struct {
@@ -65,13 +72,22 @@ func NewRawLexer(
 	sourceContent io.Reader,
 	options RawLexerOptions,
 ) RawLexer {
+	if options.InitialPeekWindowSize <= 0 {
+		options.InitialPeekWindowSize = defaultInitialPeekWindowSize
+	}
+
+	internPool := stringutil.NewInternPool()
+	for kw, _ := range keywords {
+		internPool.Intern(kw)
+	}
+
 	return RawLexer{
 		RawLexerOptions: options,
 		BufferedByteLocationReader: lexutil.NewBufferedByteLocationReader(
 			sourceFileName,
 			sourceContent,
 			options.InitialLookAheadBufferSize),
-		InternPool: stringutil.NewInternPool(),
+		InternPool: internPool,
 	}
 }
 
@@ -285,7 +301,7 @@ func (lexer *RawLexer) peekNextToken() (SymbolId, int, error) {
 
 func (lexer *RawLexer) lexSpacesToken() (Token, error) {
 	hasMore := true
-	peekSize := 2
+	peekSize := lexer.InitialPeekWindowSize
 	numSpaceBytes := 0
 
 	for hasMore {
@@ -303,6 +319,7 @@ func (lexer *RawLexer) lexSpacesToken() (Token, error) {
 			if char == ' ' || char == '\t' {
 				numSpaceBytes++
 			} else {
+				hasMore = false
 				break
 			}
 		}
@@ -329,7 +346,7 @@ func (lexer *RawLexer) lexSpacesToken() (Token, error) {
 
 func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 	hasMore := true
-	peekSize := 2
+	peekSize := lexer.InitialPeekWindowSize
 	numNewlineBytes := 0
 	foundInvalidNewline := false
 
@@ -349,15 +366,23 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 				numNewlineBytes++
 
 			} else if char == '\r' {
-				if numNewlineBytes+1 < len(peeked) &&
-					peeked[numNewlineBytes+1] == '\n' {
+				if numNewlineBytes+1 >= len(peeked) {
+					// If hasMore is true, then we may have read half of the \r\n pair.
+					// The next outer loop iteration will take care of this. If hasMore
+					// is false, then this is a lone \r and it should not be included
+					// as part of this token.
+					break
+				}
 
+				if peeked[numNewlineBytes+1] == '\n' {
 					numNewlineBytes += 2
 				} else { // '\r' not paired with '\n'
 					foundInvalidNewline = true
+					hasMore = false
 					break
 				}
 			} else {
+				hasMore = false
 				break
 			}
 		}
@@ -383,7 +408,7 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 		}
 
 		return ParseErrorSymbol{
-			Error:    fmt.Errorf("lex error: unexpected utf8 rune"),
+			Error:    fmt.Errorf("unexpected utf8 rune"),
 			Location: loc,
 		}, nil
 	}
@@ -415,12 +440,146 @@ func (lexer *RawLexer) lexStringLiteralToken() (Token, error) {
 	panic("TODO")
 }
 
-func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
-	panic("TODO")
+// offset = 0 for Identifier, 1 for jump label
+func (lexer *RawLexer) peekIdentifier(offset int) (int, error) {
+	hasMore := true
+	peekSize := lexer.InitialPeekWindowSize
+	numIdentifierBytes := 0
+
+	for hasMore {
+		peeked, err := lexer.Peek(offset + peekSize)
+		if len(peeked) > 0 && err == io.EOF {
+			hasMore = false
+			err = nil
+		}
+		if err != nil {
+			return 0, err
+		}
+
+		if len(peeked) < offset+numIdentifierBytes {
+			panic("should never happen")
+		}
+
+		remaining := peeked[offset+numIdentifierBytes:]
+
+		for len(remaining) > 0 {
+			utf8Char, size := utf8.DecodeRune(remaining)
+			if utf8Char == utf8.RuneError {
+				if len(remaining) < 4 && hasMore {
+					// The rune may have been chopped off in the middle by Peek.  Read
+					// more bytes and try again.
+					break
+				} else {
+					// Encountered a real invalid utf8 byte
+					hasMore = false
+					break
+				}
+			}
+
+			if size == 0 {
+				panic("should never happen")
+			}
+
+			if unicode.IsLetter(utf8Char) ||
+				utf8Char == '_' ||
+				(numIdentifierBytes > 0 && unicode.IsNumber(utf8Char)) {
+
+				numIdentifierBytes += size
+				remaining = remaining[size:]
+			} else {
+				hasMore = false
+				break
+			}
+		}
+
+		peekSize *= 2
+	}
+
+	return numIdentifierBytes, nil
 }
 
-func (lexer *RawLexer) lexIdentifierOrLabelDeclToken() (ValueSymbol, error) {
-	panic("TODO")
+func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
+	// Note: we can skip checking the first byte, which we alreay know is '@'
+
+	size, err := lexer.peekIdentifier(1)
+	if err != nil {
+		return nil, err
+	}
+
+	loc := Location(lexer.Location)
+
+	if size == 0 {
+		_, err := lexer.Discard(1)
+		if err != nil {
+			panic("Should never happen")
+		}
+
+		return ParseErrorSymbol{
+			Error:    fmt.Errorf("invalid label. no label name."),
+			Location: loc,
+		}, nil
+	}
+
+	size++
+
+	jumpLabelBytes, err := lexer.Peek(size)
+	if err != nil || len(jumpLabelBytes) != size {
+		panic("Should never happen")
+	}
+
+	jumpLabel := lexer.InternBytes(jumpLabelBytes)
+
+	_, err = lexer.Discard(size)
+	if err != nil {
+		panic("Should never happen")
+	}
+
+	return ValueSymbol{
+		SymbolId: JumpLabelToken,
+		Location: loc,
+		Value:    jumpLabel,
+	}, nil
+}
+
+func (lexer *RawLexer) lexIdentifierKeywordsOrLabelDeclToken() (
+	ValueSymbol,
+	error,
+) {
+	size, err := lexer.peekIdentifier(0)
+	if err != nil {
+		return ValueSymbol{}, err
+	}
+
+	if size == 0 {
+		panic("Should never hapapen")
+	}
+
+	symbolId := IdentifierToken
+
+	peeked, _ := lexer.Peek(size + 1)
+	if size+1 == len(peeked) && peeked[size] == '@' {
+		size++
+		symbolId = LabelDeclToken
+	}
+
+	loc := Location(lexer.Location)
+	value := lexer.InternBytes(peeked[:size])
+
+	_, err = lexer.Discard(size)
+	if err != nil {
+		panic("Should never happen")
+	}
+
+	kwSymbolId, ok := keywords[value]
+	if ok {
+		symbolId = kwSymbolId
+	}
+
+	return ValueSymbol{
+		SymbolId: symbolId,
+		Location: loc,
+		Value:    value,
+	}, nil
 }
 
 func (lexer *RawLexer) Next() (Token, error) {
@@ -438,7 +597,7 @@ func (lexer *RawLexer) Next() (Token, error) {
 		}
 
 		return ParseErrorSymbol{
-			Error:    fmt.Errorf("lex error: unexpected utf8 rune"),
+			Error:    fmt.Errorf("unexpected utf8 rune"),
 			Location: loc,
 		}, nil
 	}
@@ -478,21 +637,7 @@ func (lexer *RawLexer) Next() (Token, error) {
 	case JumpLabelToken:
 		return lexer.lexJumpLabelToken()
 	case IdentifierToken:
-		token, err := lexer.lexIdentifierOrLabelDeclToken()
-		if err != nil {
-			return nil, err
-		}
-
-		if token.SymbolId != IdentifierToken {
-			return token, nil
-		}
-
-		symbolId, ok := keywords[token.Value]
-		if ok {
-			token.SymbolId = symbolId
-		}
-
-		return token, nil
+		return lexer.lexIdentifierKeywordsOrLabelDeclToken()
 	}
 
 	panic(fmt.Sprintf("RawLexer: unhandled variable length token: %v", symbolId))

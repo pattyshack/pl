@@ -26,7 +26,9 @@ func (s *RawLexerSuite) lex(
 	lexer := NewRawLexer(
 		"source.txt",
 		buffer,
-		RawLexerOptions{})
+		RawLexerOptions{
+			InitialPeekWindowSize: 1,
+		})
 
 	tokens := []Token{}
 	tokenIds := []SymbolId{}
@@ -47,12 +49,11 @@ func (s *RawLexerSuite) lex(
 	return tokens
 }
 
-func (s *RawLexerSuite) TestIdentifierToken(t *testing.T) {
-	// TODO
-}
-
-func (s *RawLexerSuite) TestKeywordTokens(t *testing.T) {
-	// TODO
+func (RawLexerSuite) idChar(idx int) string {
+	charSet := "abcdefghijklmnopqrstuvwxyz" +
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+		"0123456789_"
+	return string(charSet[idx%len(charSet)])
 }
 
 func (s *RawLexerSuite) TestIntegerLiteralToken(t *testing.T) {
@@ -72,12 +73,10 @@ func (s *RawLexerSuite) TestStringLiteralToken(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestNewlinesTokens(t *testing.T) {
-	// TODO (also need to check lex error for '\r' without '\n')
-
 	testInputPrefix := "+"
 
 	// Test in loop to check for peek window resizing
-	for i := 0; i < 129; i++ {
+	for i := 0; i < 151; i++ {
 		if i%2 == 0 {
 			testInputPrefix += "\n"
 		} else {
@@ -100,16 +99,11 @@ func (s *RawLexerSuite) TestSpacesTokens(t *testing.T) {
 	testInputPrefix := "+"
 
 	// Test in loop to check for peek window resizing
-	for i := 0; i < 129; i++ {
+	for i := 0; i < 151; i++ {
 		testInputPrefix += " "
 		s.lex(t, testInputPrefix, AddToken, spacesToken)
 		s.lex(t, testInputPrefix+"-", AddToken, spacesToken, SubToken)
 	}
-}
-
-func (s *RawLexerSuite) TestAtTokens(t *testing.T) {
-	// TODO lex error for @ not followed by identifier
-	// TODO jump label
 }
 
 func (s *RawLexerSuite) TestLbraceTokens(t *testing.T) {
@@ -239,4 +233,108 @@ func (s *RawLexerSuite) TestLessTokens(t *testing.T) {
 	s.lex(t, "+<=-", AddToken, LessOrEqualToken, SubToken)
 	s.lex(t, "+<<-", AddToken, BitLshiftToken, SubToken)
 	s.lex(t, "+<<=-", AddToken, BitLshiftAssignToken, SubToken)
+}
+
+func (s *RawLexerSuite) TestIdentifierToken(t *testing.T) {
+	testId := ""
+
+	// Test in loop to check for peek window resizing
+	for i := 0; i < 151; i++ {
+		testId += s.idChar(i)
+		tokens := s.lex(t, "+"+testId, AddToken, IdentifierToken)
+		value, ok := tokens[1].(ValueSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, testId, value.Value)
+
+		tokens = s.lex(t, "+"+testId+"-", AddToken, IdentifierToken, SubToken)
+		value, ok = tokens[1].(ValueSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, testId, value.Value)
+	}
+
+	tokens := s.lex(t, "+世界", AddToken, IdentifierToken)
+	value, ok := tokens[1].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "世界", value.Value)
+
+	tokens = s.lex(t, "+世界-", AddToken, IdentifierToken, SubToken)
+	value, ok = tokens[1].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "世界", value.Value)
+
+	tokens = s.lex(
+		// '+' + '世' + (first two bytes of '界') + '-'
+		t, string([]byte{'+', 228, 184, 150, 231, 149, '-'}),
+		AddToken, IdentifierToken, ParseErrorToken, ParseErrorToken, SubToken)
+	value, ok = tokens[1].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "世", value.Value)
+
+	parseError, ok := tokens[2].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "unexpected utf8 rune")
+
+	parseError, ok = tokens[3].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "unexpected utf8 rune")
+}
+
+func (s *RawLexerSuite) TestLabelDeclToken(t *testing.T) {
+	testId := ""
+
+	// Test in loop to check for peek window resizing
+	for i := 0; i < 151; i++ {
+		testId += s.idChar(i)
+		tokens := s.lex(t, "+"+testId+"@", AddToken, LabelDeclToken)
+		value, ok := tokens[1].(ValueSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, testId+"@", value.Value)
+
+		tokens = s.lex(t, "+"+testId+"@-", AddToken, LabelDeclToken, SubToken)
+		value, ok = tokens[1].(ValueSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, testId+"@", value.Value)
+	}
+
+	tokens := s.lex(t, "+世界@", AddToken, LabelDeclToken)
+	value, ok := tokens[1].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "世界@", value.Value)
+
+	tokens = s.lex(t, "+世界@-", AddToken, LabelDeclToken, SubToken)
+	value, ok = tokens[1].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "世界@", value.Value)
+}
+
+func (s *RawLexerSuite) TestJumpLabelToken(t *testing.T) {
+	tokens := s.lex(t, "+@-", AddToken, ParseErrorToken, SubToken)
+	parseError, ok := tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "invalid label. no label name.")
+
+	//
+	// TODO check for invalid identifier (first char is a number) @0abc
+	//
+
+	tokens = s.lex(t, "+@label", AddToken, JumpLabelToken)
+	symbol, ok := tokens[1].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "@label", symbol.Value)
+
+	tokens = s.lex(t, "+@label-", AddToken, JumpLabelToken, SubToken)
+	symbol, ok = tokens[1].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "@label", symbol.Value)
+}
+
+func (s *RawLexerSuite) TestKeywordTokens(t *testing.T) {
+	for kw, symbolId := range keywords {
+		s.lex(t, "+"+kw+"-", AddToken, symbolId, SubToken)
+
+		tokens := s.lex(t, "+"+kw+"blah-", AddToken, IdentifierToken, SubToken)
+		symbol, ok := tokens[1].(ValueSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, kw+"blah", symbol.Value)
+	}
 }
