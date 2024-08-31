@@ -10,7 +10,7 @@ Sequence of ' ' or '\t'.  Only serve to separate tokens.  Spaces are ignored by 
 ### Newlines
 Sequence of '\n' or '\r\n' ('\r' not paired with '\n' is not a newline).  Serve to separate tokens and may terminate a statement.
 
-go explicitly inserts ';' to terminate statement.  we'll conditionally emit newline to the parser the same way. newline is emitted if the line's final token is 
+go explicitly inserts ';' to terminate statement.  we'll conditionally emit newline to the parser the same way. newline is emitted if the line's final token is
 1. an identifier
 2. a literal
 3. one of the keywords: `break`, `continue`, `fallthrough`, or `return`
@@ -24,10 +24,10 @@ Line comments. Terminated by '\n', '\r', or EOF.  Note that the '\n'/'\r'/EOF is
 // single line comment
 ```
 
-Block comments.  Begin with /* and end with */.  Block comments are scoped. 
+Block comments.  Begin with /* and end with */.  Block comments are scoped.
 ```
 /*
-block comment 
+block comment
   /*
   nested scope block comment.  The indentation is only for clarity
   */
@@ -76,7 +76,7 @@ Special escaped characters
 ```
 
 ### String Literal
-Strings are sequence of characters surrounded by matching pair of string delimiter.  Single line strings are delimited using matching " or \'. 
+Strings are sequence of characters surrounded by matching pair of string delimiter.  Single line strings are delimited using matching " or \'.
  Swift-style multi-line strings (string start on next line, leading indentation is strip based on spacing before the closing delimiter, etc.) are delimited using matching """ or \`\`\`.  There are two modes: interpreted vs. raw string.  Raw strings are prefixed by `r`.  Raw string does not interpret escape character sequence, whereas interpreted string does.
 
 Escaped carriage return sequence "\\\\r" is preserved by interpreted string but unescaped carriage return '\r' is discarded from all string.
@@ -156,20 +156,20 @@ identifer = letter (letter | unicode-number)*
 
 ### Keywords
 ```
-and      as        async
+and      as           async
 break
 case     continue
-default  defer     do
+default  defer        do
 else     enum
-false    for       func
-if       in        implements  import
+false    fallthrough  for       func
+if       in           implements  import
 let
 not
 or
 package
 return
 struct   switch
-trait    true      type
+trait    true         type
 unsafe
 var
 ```

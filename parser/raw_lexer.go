@@ -20,36 +20,37 @@ const (
 
 var (
 	keywords = map[string]SymbolId{
-		"true":       TrueToken,
-		"false":      FalseToken,
-		"if":         IfToken,
-		"else":       ElseToken,
-		"switch":     SwitchToken,
-		"case":       CaseToken,
-		"default":    DefaultToken,
-		"for":        ForToken,
-		"do":         DoToken,
-		"in":         InToken,
-		"return":     ReturnToken,
-		"break":      BreakToken,
-		"continue":   ContinueToken,
-		"package":    PackageToken,
-		"import":     ImportToken,
-		"as":         AsToken,
-		"unsafe":     UnsafeToken,
-		"type":       TypeToken,
-		"implements": ImplementsToken,
-		"struct":     StructToken,
-		"enum":       EnumToken,
-		"trait":      TraitToken,
-		"func":       FuncToken,
-		"async":      AsyncToken,
-		"defer":      DeferToken,
-		"var":        VarToken,
-		"let":        LetToken,
-		"and":        AndToken,
-		"or":         OrToken,
-		"not":        NotToken,
+		"true":        TrueToken,
+		"false":       FalseToken,
+		"if":          IfToken,
+		"else":        ElseToken,
+		"switch":      SwitchToken,
+		"case":        CaseToken,
+		"default":     DefaultToken,
+		"for":         ForToken,
+		"do":          DoToken,
+		"in":          InToken,
+		"return":      ReturnToken,
+		"break":       BreakToken,
+		"continue":    ContinueToken,
+		"fallthrough": FallthroughToken,
+		"package":     PackageToken,
+		"import":      ImportToken,
+		"as":          AsToken,
+		"unsafe":      UnsafeToken,
+		"type":        TypeToken,
+		"implements":  ImplementsToken,
+		"struct":      StructToken,
+		"enum":        EnumToken,
+		"trait":       TraitToken,
+		"func":        FuncToken,
+		"async":       AsyncToken,
+		"defer":       DeferToken,
+		"var":         VarToken,
+		"let":         LetToken,
+		"and":         AndToken,
+		"or":          OrToken,
+		"not":         NotToken,
 	}
 )
 
@@ -474,6 +475,7 @@ func (lexer *RawLexer) lexLineCommentToken() (Token, error) {
 
 func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
 	panic("TODO")
+	// err msg "comment not terminated"
 }
 
 func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {

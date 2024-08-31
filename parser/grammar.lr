@@ -11,7 +11,7 @@
 %token TRUE FALSE
 
 %token IF ELSE SWITCH CASE DEFAULT FOR DO IN
-%token RETURN BREAK CONTINUE
+%token RETURN BREAK CONTINUE FALLTHROUGH
 
 %token PACKAGE IMPORT AS
 
@@ -101,7 +101,7 @@ statement ->
   implicit: statement_body NEWLINES |
   explicit: statement_body SEMICOLON
 
-statement_body ->
+simple_statement_body ->
   unsafe_statement |
 
   expression_or_implicit_struct: expressions |
@@ -148,12 +148,24 @@ statement_body ->
   unary_op_assign_statement: access_expr unary_op_assign |
   binary_op_assign_statement: access_expr binary_op_assign expression |
 
+  // Only applicable to switch case block
+  FALLTHROUGH
+
+statement_body ->
+  simple_statement_body |
+
   // NOTE: Only applicable to package_def
   import_statement |
 
-  // NOTE: Only applicable to switch case block
-  case_branch_statement: CASE case_patterns COLON sequence_expr |
-  default_branch_statement: DEFAULT COLON sequence_expr
+  // NOTE: Only applicable to switch case block.
+  // Post analysis is needed to associate statements to cases (move trailing
+  // non-case statements into case's data structure).
+  case_branch_statement: CASE case_patterns COLON optional_simple_statement_body |
+  default_branch_statement: DEFAULT COLON optional_simple_statement_body
+
+optional_simple_statement_body ->
+  simple_statement_body |
+  nil:
 
 //
 // Assign statements
@@ -423,6 +435,7 @@ optional_expression ->
 // TODO cast
 // TODO type isa check
 // TODO is check
+// TODO select (via trait instead of channel)
 atom_expr ->
   literal |
   IDENTIFIER |
