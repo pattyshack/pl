@@ -2,19 +2,15 @@
 
 
 ## Raw Tokens
-All byte sequences are tokenizable to the following tokens.  Unexpected characters, and other lex errors such as missing string end delimiter, are captured by lex error tokens rather than lexer returning an error.
-
-### Lex Error Token
-Invalid characters in source:
-- non-printing ascii characters except '\t', '\n', (and '\r' when paired with '\n').  i.e., [0,32) + {127 DEL} - {9 '\t', 10 '\n'} - {13 '\r' when paried with 10 '\n'}
+All byte sequences are tokenizable to the following tokens.  Unexpected characters, and other lex errors such as missing string end delimiter, are captured by parse error tokens rather than lexer returning an error.
 
 ### Spaces
 Sequence of ' ' or '\t'.  Only serve to separate tokens.  Spaces are ignored by multi-staged lexing.
 
 ### Newlines
-Sequence of '\n' or '\r\n'.  Serve to separate tokens and may terminate a statement.
+Sequence of '\n' or '\r\n' ('\r' not paired with '\n' is not a newline).  Serve to separate tokens and may terminate a statement.
 
-go explicitly inserts ';' to terminate statement.  we'll conditionally emit newline the same way. newline is emitted if the line's final token is 
+go explicitly inserts ';' to terminate statement.  we'll conditionally emit newline to the parser the same way. newline is emitted if the line's final token is 
 1. an identifier
 2. a literal
 3. one of the keywords: `break`, `continue`, `fallthrough`, or `return`
@@ -74,35 +70,44 @@ Special escaped characters
 \v vertical tab
 \\ backslash
 \' single quote
-\" double quote (only within string literals)
+\" double quote (only within string literals with " as delimiter)
+\` back quote (only within string literals with ` as delimiter)
+\{newline} line continuation (only within multi-line strings)
 ```
 
 ### String Literal
-Strings are sequence of characters surrounded by matching pair of string delimiter.  Valid delimiters are ", """, \`, and \`\`\`.  There are two forms: interpreted vs. raw string.  Raw strings are prefixed by `r`.  Raw string does not interpret escape character sequence, whereas interpreted string does.
+Strings are sequence of characters surrounded by matching pair of string delimiter.  Single line strings are delimited using matching " or \'. 
+ Swift-style multi-line strings (string start on next line, leading indentation is strip based on spacing before the closing delimiter, etc.) are delimited using matching """ or \`\`\`.  There are two modes: interpreted vs. raw string.  Raw strings are prefixed by `r`.  Raw string does not interpret escape character sequence, whereas interpreted string does.
 
-In all cases, string may span multiple lines, i.e., contain unescaped newline '\n'.  Escaped carriage return sequence "\\\\r" is preserved by interpreted string but unescaped carriage return '\r' is discarded from all string.
+Escaped carriage return sequence "\\\\r" is preserved by interpreted string but unescaped carriage return '\r' is discarded from all string.
 
 ```
 "escaped tab \t"
+`can use " without escaping in back quote string`
+"can use ` without escaping in double quote string"
 
-`string can span
-multiple lines`
+"""
+string can span
+multiple lines
+"""
 
-"""string can use " without escaping because of the triple-quote delimiter"""  // similarly for backticks, etc.
+"""
+string can use " without escaping because of the triple-quote delimiter
+"""  // similarly for backticks, etc.
 
 r"raw string\n" == "raw string\\n"
 
-r"""multi-line
-raw string with "
-character"""
+r"""
+multi-line
+raw string with " character
+\n are two separate characters
+"""
 
 r`can use " """ with backtick delimiter`
 
 Note: no example for triple-backticks cuz github's markdown can't escape triple-backticks correctly
-```
 
-XXX: maybe adopt swift-style string literal instead?  In particular, multi-line leading space triming.
-```
+
 // The whitespace before the closing quotation marks tells the compiler what whitespace
 // to ignore before all of the other lines.
 
@@ -151,38 +156,29 @@ identifer = letter (letter | unicode-number)*
 
 ### Keywords
 ```
-package
-import
-
-type
-struct
-enum
-
-func
-return
-
-and
-or
-not
-
-if
-else
-
-match
-case
-
-for
-continue
+and      as        async
 break
-
-// "go"?
+case     continue
+default  defer     do
+else     enum
+false    for       func
+if       in        implements  import
+let
+not
+or
+package
+return
+struct   switch
+trait    true      type
+unsafe
+var
 ```
 
 ### Operators and punctuations
 ```
 // ` string
 // @ label
-// ( ) struct / call argument
+// ( ) struct / enum / func paramenters / func arguments
 // _ identifier
 // [ ] array, index
 // { } expr block
@@ -195,7 +191,7 @@ break
 *     *=
 /     /=
 %     %=
-~     ~=
+~     ~=    ~~
 &     &=
 |     |=
 ^     ^=
@@ -209,64 +205,57 @@ break
 ]
 {
 }
-.
+.     ...
 ,
 :
 ;
 ?
+!
 $[
 
-// unused: \ #
+// unused ascii symbols: \ #
 ```
 
 XXX: consider adding overflow guard to arithmetic operators, and adding swift style overflow-able arithmetic operator &* &+ &-
 
 ### Label
-Structured goto label for `return` / `break` / `continue` statements.
+Structured goto/jump label for `return` / `break` / `continue` statements.
 
 ```
 <identifier>@    label declaration
 
-@<identifier>    return to label
+@<identifier>    jump to label
 ```
 
 e.g.,
 ```
-outer@ for ... {
-  for ... {
-    if ... {
-      break @outer  // break ensures the label refers to a loop
-    }
-  }
-}
-
-is equivalent to
-
-outer@ for ... {
-  for ... {
-    if ... {
-      return @outer  // can jump to any valid label
+var x = myscope@{
+  if ... {
+    for ... do {
+      if ... {
+        return @myscope 1
+      }
+      ...
     }
   }
 }
 ```
 
 ```
-
 outer@ for ... {
-  for ... {
+  for ... do {
     if ... {
-      continue @outer  // continue ensures the label refers to a loop
+      break @outer  // break the outer loop
     }
   }
 }
+```
 
-is equivalent to
-
-for ... outer@{
-  for ... {
+```
+outer@ for ... do {
+  for ... do {
     if ... {
-      return @outer  // can jump to any valid label
+      continue @outer  // continue onto the next outer loop iteration
     }
   }
 }
