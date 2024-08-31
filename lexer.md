@@ -143,11 +143,10 @@ Complex / Imaginary number
 
 ### Identifier
 
-TODO: improve non-ascii unicode handling (e.g., adopt golang or swift's identifier convention)
 ```
-letter = [_a-zA-Z] | {non-ascii rune}
+letter = unicode-letter | '_'
 
-identifer = letter (letter | [0-9])*
+identifer = letter (letter | unicode-number)*
 ```
 
 ### Keywords
