@@ -148,7 +148,8 @@ simple_statement_body ->
   unary_op_assign_statement: access_expr unary_op_assign |
   binary_op_assign_statement: access_expr binary_op_assign expression |
 
-  // Only applicable to switch case block
+  // Only applicable to switch case block (must be the last statement in the
+  // case branch)
   FALLTHROUGH
 
 statement_body ->

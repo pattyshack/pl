@@ -2,6 +2,7 @@ package parser
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"testing"
 
@@ -315,7 +316,7 @@ func (s *RawLexerSuite) TestJumpLabelToken(t *testing.T) {
 	tokens := s.lex(t, "+@-", AddToken, ParseErrorToken, SubToken)
 	parseError, ok := tokens[1].(ParseErrorSymbol)
 	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "invalid label. no label name.")
+	expect.Error(t, parseError.Error, "no label name associated with @")
 
 	//
 	// TODO check for invalid identifier (first char is a number) @0abc
@@ -369,4 +370,62 @@ func (s *RawLexerSuite) TestLineCommentToken(t *testing.T) {
 	}
 }
 
-// TODO line and block comments
+func (s *RawLexerSuite) TestBlockCommentToken(t *testing.T) {
+	commentBody := ""
+	for i := 0; i < 151; i++ {
+		tokens := s.lex(t, "+/*"+commentBody, AddToken, ParseErrorToken)
+		parseError, ok := tokens[1].(ParseErrorSymbol)
+		expect.True(t, ok)
+		expect.Error(t, parseError.Error, "comment not terminated")
+
+		tokens = s.lex(t, "+/*"+commentBody+"*", AddToken, ParseErrorToken)
+		parseError, ok = tokens[1].(ParseErrorSymbol)
+		expect.True(t, ok)
+		expect.Error(t, parseError.Error, "comment not terminated")
+
+		tokens = s.lex(t, "+/*"+commentBody+"*/", AddToken, blockCommentToken)
+		value, ok := tokens[1].(ValueSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, value.Value, "/*"+commentBody+"*/")
+
+		tokens = s.lex(
+			t, "+/*"+commentBody+"*/-", AddToken,
+			blockCommentToken, SubToken)
+		value, ok = tokens[1].(ValueSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, value.Value, "/*"+commentBody+"*/")
+
+		commentBody += s.idChar(i)
+	}
+
+	comment := "/* scope 0 */"
+	for i := 0; i < 10; i++ {
+		tokens := s.lex(t, "+"+comment+"-", AddToken, blockCommentToken, SubToken)
+		value, ok := tokens[1].(ValueSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, value.Value, comment)
+
+		comment = fmt.Sprintf("/* scope %d %s %s */", i+1, comment, comment)
+	}
+
+	commentPrefix := ""
+	for i := 0; i < 30; i++ {
+		commentPrefix += fmt.Sprintf("/* scope %d ", i)
+
+		comment := commentPrefix
+		for j := i; j >= 1; j-- {
+			comment += " */"
+
+			tokens := s.lex(t, "+"+comment, AddToken, ParseErrorToken)
+			parseError, ok := tokens[1].(ParseErrorSymbol)
+			expect.True(t, ok)
+			expect.Error(t, parseError.Error, "comment not terminated")
+		}
+
+		comment += " */"
+		tokens := s.lex(t, "+"+comment+"-", AddToken, blockCommentToken, SubToken)
+		value, ok := tokens[1].(ValueSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, value.Value, comment)
+	}
+}

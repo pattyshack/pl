@@ -474,8 +474,80 @@ func (lexer *RawLexer) lexLineCommentToken() (Token, error) {
 }
 
 func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
-	panic("TODO")
-	// err msg "comment not terminated"
+	hasMore := true
+	peekSize := lexer.initialPeekWindowSize
+	numCommentBytes := 2 // "/*" already peeked by peekNextToken
+	scopeLevel := 1
+
+	for hasMore {
+		peeked, err := lexer.Peek(peekSize)
+		if len(peeked) > 0 && err == io.EOF {
+			hasMore = false
+			err = nil
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		for numCommentBytes < len(peeked) {
+			if numCommentBytes+1 >= len(peeked) {
+				if hasMore {
+					// read more bytes
+					break
+				} else {
+					// reached EOF without finding block comment's closing delimiter.
+					numCommentBytes++
+					break
+				}
+			}
+
+			char := peeked[numCommentBytes]
+			if char == '/' && peeked[numCommentBytes+1] == '*' {
+				numCommentBytes += 2
+				scopeLevel += 1
+
+			} else if char == '*' && peeked[numCommentBytes+1] == '/' {
+				numCommentBytes += 2
+				scopeLevel -= 1
+
+				if scopeLevel == 0 {
+					hasMore = false
+					break
+				}
+			} else {
+				numCommentBytes++
+			}
+		}
+
+		peekSize *= 2
+	}
+
+	loc := Location(lexer.Location)
+
+	value := ""
+	if lexer.PreserveCommentContent && scopeLevel == 0 {
+		peeked, _ := lexer.Peek(numCommentBytes)
+		// Don't intern comment string since duplicates are unlikely
+		value = string(peeked)
+	}
+
+	_, err := lexer.Discard(numCommentBytes)
+	if err != nil {
+		panic("This should never happen")
+	}
+
+	if scopeLevel > 0 {
+		return ParseErrorSymbol{
+			Error:    fmt.Errorf("comment not terminated"),
+			Location: loc,
+		}, nil
+	}
+
+	return ValueSymbol{
+		SymbolId: blockCommentToken,
+		Location: loc,
+		Value:    value,
+	}, nil
 }
 
 func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
@@ -569,7 +641,7 @@ func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
 		}
 
 		return ParseErrorSymbol{
-			Error:    fmt.Errorf("invalid label. no label name."),
+			Error:    fmt.Errorf("no label name associated with @"),
 			Location: loc,
 		}, nil
 	}
