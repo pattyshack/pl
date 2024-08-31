@@ -44,40 +44,40 @@ const (
 	DeferToken           = SymbolId(286)
 	VarToken             = SymbolId(287)
 	LetToken             = SymbolId(288)
-	LabelDeclToken       = SymbolId(289)
-	JumpLabelToken       = SymbolId(290)
-	LbraceToken          = SymbolId(291)
-	RbraceToken          = SymbolId(292)
-	LparenToken          = SymbolId(293)
-	RparenToken          = SymbolId(294)
-	LbracketToken        = SymbolId(295)
-	RbracketToken        = SymbolId(296)
-	DotToken             = SymbolId(297)
-	CommaToken           = SymbolId(298)
-	QuestionToken        = SymbolId(299)
-	SemicolonToken       = SymbolId(300)
-	ColonToken           = SymbolId(301)
-	ExclaimToken         = SymbolId(302)
-	DollarLbracketToken  = SymbolId(303)
-	DotDotDotToken       = SymbolId(304)
-	TildeTildeToken      = SymbolId(305)
-	AssignToken          = SymbolId(306)
-	AddAssignToken       = SymbolId(307)
-	SubAssignToken       = SymbolId(308)
-	MulAssignToken       = SymbolId(309)
-	DivAssignToken       = SymbolId(310)
-	ModAssignToken       = SymbolId(311)
-	AddOneAssignToken    = SymbolId(312)
-	SubOneAssignToken    = SymbolId(313)
-	BitNegAssignToken    = SymbolId(314)
-	BitAndAssignToken    = SymbolId(315)
-	BitOrAssignToken     = SymbolId(316)
-	BitXorAssignToken    = SymbolId(317)
-	BitLshiftAssignToken = SymbolId(318)
-	BitRshiftAssignToken = SymbolId(319)
-	NotToken             = SymbolId(320)
-	AndToken             = SymbolId(321)
-	OrToken              = SymbolId(322)
+	NotToken             = SymbolId(289)
+	AndToken             = SymbolId(290)
+	OrToken              = SymbolId(291)
+	LabelDeclToken       = SymbolId(292)
+	JumpLabelToken       = SymbolId(293)
+	LbraceToken          = SymbolId(294)
+	RbraceToken          = SymbolId(295)
+	LparenToken          = SymbolId(296)
+	RparenToken          = SymbolId(297)
+	LbracketToken        = SymbolId(298)
+	RbracketToken        = SymbolId(299)
+	DotToken             = SymbolId(300)
+	CommaToken           = SymbolId(301)
+	QuestionToken        = SymbolId(302)
+	SemicolonToken       = SymbolId(303)
+	ColonToken           = SymbolId(304)
+	ExclaimToken         = SymbolId(305)
+	DollarLbracketToken  = SymbolId(306)
+	DotDotDotToken       = SymbolId(307)
+	TildeTildeToken      = SymbolId(308)
+	AssignToken          = SymbolId(309)
+	AddAssignToken       = SymbolId(310)
+	SubAssignToken       = SymbolId(311)
+	MulAssignToken       = SymbolId(312)
+	DivAssignToken       = SymbolId(313)
+	ModAssignToken       = SymbolId(314)
+	AddOneAssignToken    = SymbolId(315)
+	SubOneAssignToken    = SymbolId(316)
+	BitNegAssignToken    = SymbolId(317)
+	BitAndAssignToken    = SymbolId(318)
+	BitOrAssignToken     = SymbolId(319)
+	BitXorAssignToken    = SymbolId(320)
+	BitLshiftAssignToken = SymbolId(321)
+	BitRshiftAssignToken = SymbolId(322)
 	AddToken             = SymbolId(323)
 	SubToken             = SymbolId(324)
 	MulToken             = SymbolId(325)
@@ -135,811 +135,811 @@ type Lexer interface {
 }
 
 type Reducer interface {
-	// 49:10: source -> ...
+	// 50:10: source -> ...
 	ToSource(OptionalDefinitions_ GenericSymbol) (GenericSymbol, error)
 
-	// 52:2: optional_definitions -> NEWLINES: ...
-	NewlinesToOptionalDefinitions(Newlines_ GenericSymbol) (GenericSymbol, error)
+	// 53:2: optional_definitions -> NEWLINES: ...
+	NewlinesToOptionalDefinitions(Newlines_ CountSymbol) (GenericSymbol, error)
 
-	// 53:2: optional_definitions -> definitions: ...
+	// 54:2: optional_definitions -> definitions: ...
 	DefinitionsToOptionalDefinitions(OptionalNewlines_ GenericSymbol, Definitions_ GenericSymbol, OptionalNewlines_2 GenericSymbol) (GenericSymbol, error)
 
-	// 54:2: optional_definitions -> nil: ...
+	// 55:2: optional_definitions -> nil: ...
 	NilToOptionalDefinitions() (GenericSymbol, error)
 
-	// 57:2: optional_newlines -> NEWLINES: ...
-	NewlinesToOptionalNewlines(Newlines_ GenericSymbol) (GenericSymbol, error)
+	// 58:2: optional_newlines -> NEWLINES: ...
+	NewlinesToOptionalNewlines(Newlines_ CountSymbol) (GenericSymbol, error)
 
-	// 58:2: optional_newlines -> nil: ...
+	// 59:2: optional_newlines -> nil: ...
 	NilToOptionalNewlines() (GenericSymbol, error)
 
-	// 61:2: definitions -> nil: ...
+	// 62:2: definitions -> nil: ...
 	NilToDefinitions(Definition_ GenericSymbol) (GenericSymbol, error)
 
-	// 62:2: definitions -> add: ...
-	AddToDefinitions(Definitions_ GenericSymbol, Newlines_ GenericSymbol, Definition_ GenericSymbol) (GenericSymbol, error)
+	// 63:2: definitions -> add: ...
+	AddToDefinitions(Definitions_ GenericSymbol, Newlines_ CountSymbol, Definition_ GenericSymbol) (GenericSymbol, error)
 
-	// 66:2: definition -> package_def: ...
+	// 67:2: definition -> package_def: ...
 	PackageDefToDefinition(PackageDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 67:2: definition -> type_def: ...
+	// 68:2: definition -> type_def: ...
 	TypeDefToDefinition(TypeDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 68:2: definition -> named_func_def: ...
+	// 69:2: definition -> named_func_def: ...
 	NamedFuncDefToDefinition(NamedFuncDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 69:2: definition -> global_var_def: ...
+	// 70:2: definition -> global_var_def: ...
 	GlobalVarDefToDefinition(VarDeclPattern_ GenericSymbol) (GenericSymbol, error)
 
-	// 70:2: definition -> global_var_assignment: ...
+	// 71:2: definition -> global_var_assignment: ...
 	GlobalVarAssignmentToDefinition(VarDeclPattern_ GenericSymbol, Assign_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
 
-	// 73:2: definition -> statement_block: ...
+	// 74:2: definition -> statement_block: ...
 	StatementBlockToDefinition(StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
-	// 93:19: statement_block -> ...
+	// 94:19: statement_block -> ...
 	ToStatementBlock(Lbrace_ GenericSymbol, Statements_ GenericSymbol, Rbrace_ GenericSymbol) (GenericSymbol, error)
 
-	// 96:2: statements -> empty_list: ...
+	// 97:2: statements -> empty_list: ...
 	EmptyListToStatements() (GenericSymbol, error)
 
-	// 97:2: statements -> add: ...
+	// 98:2: statements -> add: ...
 	AddToStatements(Statements_ GenericSymbol, Statement_ GenericSymbol) (GenericSymbol, error)
 
-	// 100:2: statement -> implicit: ...
-	ImplicitToStatement(StatementBody_ GenericSymbol, Newlines_ GenericSymbol) (GenericSymbol, error)
+	// 101:2: statement -> implicit: ...
+	ImplicitToStatement(StatementBody_ GenericSymbol, Newlines_ CountSymbol) (GenericSymbol, error)
 
-	// 101:2: statement -> explicit: ...
+	// 102:2: statement -> explicit: ...
 	ExplicitToStatement(StatementBody_ GenericSymbol, Semicolon_ GenericSymbol) (GenericSymbol, error)
 
-	// 104:2: statement_body -> unsafe_statement: ...
+	// 105:2: statement_body -> unsafe_statement: ...
 	UnsafeStatementToStatementBody(UnsafeStatement_ GenericSymbol) (GenericSymbol, error)
 
-	// 106:2: statement_body -> expression_or_implicit_struct: ...
+	// 107:2: statement_body -> expression_or_implicit_struct: ...
 	ExpressionOrImplicitStructToStatementBody(Expressions_ GenericSymbol) (GenericSymbol, error)
 
-	// 114:2: statement_body -> async: ...
+	// 115:2: statement_body -> async: ...
 	AsyncToStatementBody(Async_ GenericSymbol, CallExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 132:2: statement_body -> defer: ...
+	// 133:2: statement_body -> defer: ...
 	DeferToStatementBody(Defer_ GenericSymbol, CallExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 136:2: statement_body -> jump_statement: ...
+	// 137:2: statement_body -> jump_statement: ...
 	JumpStatementToStatementBody(JumpType_ GenericSymbol, OptionalJumpLabel_ GenericSymbol, OptionalExpressions_ GenericSymbol) (GenericSymbol, error)
 
-	// 141:2: statement_body -> assign_statement: ...
+	// 142:2: statement_body -> assign_statement: ...
 	AssignStatementToStatementBody(AssignPattern_ GenericSymbol, Assign_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
 
-	// 147:2: statement_body -> unary_op_assign_statement: ...
+	// 148:2: statement_body -> unary_op_assign_statement: ...
 	UnaryOpAssignStatementToStatementBody(AccessExpr_ GenericSymbol, UnaryOpAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 148:2: statement_body -> binary_op_assign_statement: ...
+	// 149:2: statement_body -> binary_op_assign_statement: ...
 	BinaryOpAssignStatementToStatementBody(AccessExpr_ GenericSymbol, BinaryOpAssign_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
 
-	// 151:2: statement_body -> import_statement: ...
+	// 152:2: statement_body -> import_statement: ...
 	ImportStatementToStatementBody(ImportStatement_ GenericSymbol) (GenericSymbol, error)
 
-	// 154:2: statement_body -> case_branch_statement: ...
+	// 155:2: statement_body -> case_branch_statement: ...
 	CaseBranchStatementToStatementBody(Case_ GenericSymbol, CasePatterns_ GenericSymbol, Colon_ GenericSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 155:2: statement_body -> default_branch_statement: ...
+	// 156:2: statement_body -> default_branch_statement: ...
 	DefaultBranchStatementToStatementBody(Default_ GenericSymbol, Colon_ GenericSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 162:2: unary_op_assign -> ADD_ONE_ASSIGN: ...
+	// 163:2: unary_op_assign -> ADD_ONE_ASSIGN: ...
 	AddOneAssignToUnaryOpAssign(AddOneAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 163:2: unary_op_assign -> SUB_ONE_ASSIGN: ...
+	// 164:2: unary_op_assign -> SUB_ONE_ASSIGN: ...
 	SubOneAssignToUnaryOpAssign(SubOneAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 166:2: binary_op_assign -> ADD_ASSIGN: ...
+	// 167:2: binary_op_assign -> ADD_ASSIGN: ...
 	AddAssignToBinaryOpAssign(AddAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 167:2: binary_op_assign -> SUB_ASSIGN: ...
+	// 168:2: binary_op_assign -> SUB_ASSIGN: ...
 	SubAssignToBinaryOpAssign(SubAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 168:2: binary_op_assign -> MUL_ASSIGN: ...
+	// 169:2: binary_op_assign -> MUL_ASSIGN: ...
 	MulAssignToBinaryOpAssign(MulAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 169:2: binary_op_assign -> DIV_ASSIGN: ...
+	// 170:2: binary_op_assign -> DIV_ASSIGN: ...
 	DivAssignToBinaryOpAssign(DivAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 170:2: binary_op_assign -> MOD_ASSIGN: ...
+	// 171:2: binary_op_assign -> MOD_ASSIGN: ...
 	ModAssignToBinaryOpAssign(ModAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 171:2: binary_op_assign -> BIT_NEG_ASSIGN: ...
+	// 172:2: binary_op_assign -> BIT_NEG_ASSIGN: ...
 	BitNegAssignToBinaryOpAssign(BitNegAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 172:2: binary_op_assign -> BIT_AND_ASSIGN: ...
+	// 173:2: binary_op_assign -> BIT_AND_ASSIGN: ...
 	BitAndAssignToBinaryOpAssign(BitAndAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 173:2: binary_op_assign -> BIT_OR_ASSIGN: ...
+	// 174:2: binary_op_assign -> BIT_OR_ASSIGN: ...
 	BitOrAssignToBinaryOpAssign(BitOrAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 174:2: binary_op_assign -> BIT_XOR_ASSIGN: ...
+	// 175:2: binary_op_assign -> BIT_XOR_ASSIGN: ...
 	BitXorAssignToBinaryOpAssign(BitXorAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 175:2: binary_op_assign -> BIT_LSHIFT_ASSIGN: ...
+	// 176:2: binary_op_assign -> BIT_LSHIFT_ASSIGN: ...
 	BitLshiftAssignToBinaryOpAssign(BitLshiftAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 176:2: binary_op_assign -> BIT_RSHIFT_ASSIGN: ...
+	// 177:2: binary_op_assign -> BIT_RSHIFT_ASSIGN: ...
 	BitRshiftAssignToBinaryOpAssign(BitRshiftAssign_ GenericSymbol) (GenericSymbol, error)
 
-	// 184:20: unsafe_statement -> ...
-	ToUnsafeStatement(Unsafe_ GenericSymbol, Less_ GenericSymbol, Identifier_ GenericSymbol, Greater_ GenericSymbol, StringLiteral_ GenericSymbol) (GenericSymbol, error)
+	// 185:20: unsafe_statement -> ...
+	ToUnsafeStatement(Unsafe_ GenericSymbol, Less_ GenericSymbol, Identifier_ ValueSymbol, Greater_ GenericSymbol, StringLiteral_ GenericSymbol) (GenericSymbol, error)
 
-	// 191:2: jump_type -> RETURN: ...
+	// 192:2: jump_type -> RETURN: ...
 	ReturnToJumpType(Return_ GenericSymbol) (GenericSymbol, error)
 
-	// 192:2: jump_type -> BREAK: ...
+	// 193:2: jump_type -> BREAK: ...
 	BreakToJumpType(Break_ GenericSymbol) (GenericSymbol, error)
 
-	// 193:2: jump_type -> CONTINUE: ...
+	// 194:2: jump_type -> CONTINUE: ...
 	ContinueToJumpType(Continue_ GenericSymbol) (GenericSymbol, error)
 
-	// 196:2: optional_jump_label -> JUMP_LABEL: ...
-	JumpLabelToOptionalJumpLabel(JumpLabel_ GenericSymbol) (GenericSymbol, error)
+	// 197:2: optional_jump_label -> JUMP_LABEL: ...
+	JumpLabelToOptionalJumpLabel(JumpLabel_ ValueSymbol) (GenericSymbol, error)
 
-	// 197:2: optional_jump_label -> unlabelled: ...
+	// 198:2: optional_jump_label -> unlabelled: ...
 	UnlabelledToOptionalJumpLabel() (GenericSymbol, error)
 
-	// 200:2: expressions -> expression: ...
+	// 201:2: expressions -> expression: ...
 	ExpressionToExpressions(Expression_ GenericSymbol) (GenericSymbol, error)
 
-	// 201:2: expressions -> add: ...
+	// 202:2: expressions -> add: ...
 	AddToExpressions(Expressions_ GenericSymbol, Comma_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
 
-	// 204:2: optional_expressions -> expressions: ...
+	// 205:2: optional_expressions -> expressions: ...
 	ExpressionsToOptionalExpressions(Expressions_ GenericSymbol) (GenericSymbol, error)
 
-	// 205:2: optional_expressions -> nil: ...
+	// 206:2: optional_expressions -> nil: ...
 	NilToOptionalExpressions() (GenericSymbol, error)
 
-	// 212:2: import_statement -> single: ...
+	// 213:2: import_statement -> single: ...
 	SingleToImportStatement(Import_ GenericSymbol, ImportClause_ GenericSymbol) (GenericSymbol, error)
 
-	// 213:2: import_statement -> multiple: ...
+	// 214:2: import_statement -> multiple: ...
 	MultipleToImportStatement(Import_ GenericSymbol, Lparen_ GenericSymbol, ImportClauses_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
-	// 216:2: import_clause -> STRING_LITERAL: ...
+	// 217:2: import_clause -> STRING_LITERAL: ...
 	StringLiteralToImportClause(StringLiteral_ GenericSymbol) (GenericSymbol, error)
 
-	// 217:2: import_clause -> alias: ...
-	AliasToImportClause(StringLiteral_ GenericSymbol, As_ GenericSymbol, Identifier_ GenericSymbol) (GenericSymbol, error)
+	// 218:2: import_clause -> alias: ...
+	AliasToImportClause(StringLiteral_ GenericSymbol, As_ GenericSymbol, Identifier_ ValueSymbol) (GenericSymbol, error)
 
-	// 220:2: import_clause_terminal -> implicit: ...
-	ImplicitToImportClauseTerminal(ImportClause_ GenericSymbol, Newlines_ GenericSymbol) (GenericSymbol, error)
+	// 221:2: import_clause_terminal -> implicit: ...
+	ImplicitToImportClauseTerminal(ImportClause_ GenericSymbol, Newlines_ CountSymbol) (GenericSymbol, error)
 
-	// 221:2: import_clause_terminal -> explicit: ...
+	// 222:2: import_clause_terminal -> explicit: ...
 	ExplicitToImportClauseTerminal(ImportClause_ GenericSymbol, Comma_ GenericSymbol) (GenericSymbol, error)
 
-	// 224:2: import_clauses -> first: ...
+	// 225:2: import_clauses -> first: ...
 	FirstToImportClauses(ImportClauseTerminal_ GenericSymbol) (GenericSymbol, error)
 
-	// 225:2: import_clauses -> add: ...
+	// 226:2: import_clauses -> add: ...
 	AddToImportClauses(ImportClauses_ GenericSymbol, ImportClauseTerminal_ GenericSymbol) (GenericSymbol, error)
 
-	// 232:2: case_patterns -> case_pattern: ...
+	// 233:2: case_patterns -> case_pattern: ...
 	CasePatternToCasePatterns(CasePattern_ GenericSymbol) (GenericSymbol, error)
 
-	// 233:2: case_patterns -> multiple: ...
+	// 234:2: case_patterns -> multiple: ...
 	MultipleToCasePatterns(CasePatterns_ GenericSymbol, Comma_ GenericSymbol, CasePattern_ GenericSymbol) (GenericSymbol, error)
 
-	// 242:20: var_decl_pattern -> ...
+	// 243:20: var_decl_pattern -> ...
 	ToVarDeclPattern(VarOrLet_ GenericSymbol, VarPattern_ GenericSymbol, OptionalValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 244:14: var_or_let -> VAR: ...
+	// 245:14: var_or_let -> VAR: ...
 	VarToVarOrLet(Var_ GenericSymbol) (GenericSymbol, error)
 
-	// 244:20: var_or_let -> LET: ...
+	// 245:20: var_or_let -> LET: ...
 	LetToVarOrLet(Let_ GenericSymbol) (GenericSymbol, error)
 
-	// 247:2: var_pattern -> IDENTIFIER: ...
-	IdentifierToVarPattern(Identifier_ GenericSymbol) (GenericSymbol, error)
+	// 248:2: var_pattern -> IDENTIFIER: ...
+	IdentifierToVarPattern(Identifier_ ValueSymbol) (GenericSymbol, error)
 
-	// 248:2: var_pattern -> tuple_pattern: ...
+	// 249:2: var_pattern -> tuple_pattern: ...
 	TuplePatternToVarPattern(TuplePattern_ GenericSymbol) (GenericSymbol, error)
 
-	// 250:17: tuple_pattern -> ...
+	// 251:17: tuple_pattern -> ...
 	ToTuplePattern(Lparen_ GenericSymbol, FieldVarPatterns_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
-	// 253:2: field_var_patterns -> field_var_pattern: ...
+	// 254:2: field_var_patterns -> field_var_pattern: ...
 	FieldVarPatternToFieldVarPatterns(FieldVarPattern_ GenericSymbol) (GenericSymbol, error)
 
-	// 254:2: field_var_patterns -> add: ...
+	// 255:2: field_var_patterns -> add: ...
 	AddToFieldVarPatterns(FieldVarPatterns_ GenericSymbol, Comma_ GenericSymbol, FieldVarPattern_ GenericSymbol) (GenericSymbol, error)
 
-	// 257:2: field_var_pattern -> positional: ...
+	// 258:2: field_var_pattern -> positional: ...
 	PositionalToFieldVarPattern(VarPattern_ GenericSymbol) (GenericSymbol, error)
 
-	// 258:2: field_var_pattern -> named: ...
-	NamedToFieldVarPattern(Identifier_ GenericSymbol, Assign_ GenericSymbol, VarPattern_ GenericSymbol) (GenericSymbol, error)
+	// 259:2: field_var_pattern -> named: ...
+	NamedToFieldVarPattern(Identifier_ ValueSymbol, Assign_ GenericSymbol, VarPattern_ GenericSymbol) (GenericSymbol, error)
 
-	// 259:2: field_var_pattern -> DOT_DOT_DOT: ...
+	// 260:2: field_var_pattern -> DOT_DOT_DOT: ...
 	DotDotDotToFieldVarPattern(DotDotDot_ GenericSymbol) (GenericSymbol, error)
 
-	// 262:2: optional_value_type -> value_type: ...
+	// 263:2: optional_value_type -> value_type: ...
 	ValueTypeToOptionalValueType(ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 263:2: optional_value_type -> nil: ...
+	// 264:2: optional_value_type -> nil: ...
 	NilToOptionalValueType() (GenericSymbol, error)
 
-	// 269:18: assign_pattern -> ...
+	// 270:18: assign_pattern -> ...
 	ToAssignPattern(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 272:2: case_pattern -> assign_pattern: ...
+	// 273:2: case_pattern -> assign_pattern: ...
 	AssignPatternToCasePattern(AssignPattern_ GenericSymbol) (GenericSymbol, error)
 
-	// 279:2: case_pattern -> enum_match_pattern: ...
-	EnumMatchPatternToCasePattern(Dot_ GenericSymbol, Identifier_ GenericSymbol, ImplicitStructExpr_ GenericSymbol) (GenericSymbol, error)
+	// 280:2: case_pattern -> enum_match_pattern: ...
+	EnumMatchPatternToCasePattern(Dot_ GenericSymbol, Identifier_ ValueSymbol, ImplicitStructExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 280:2: case_pattern -> enum_var_decl_pattern: ...
-	EnumVarDeclPatternToCasePattern(Var_ GenericSymbol, Dot_ GenericSymbol, Identifier_ GenericSymbol, TuplePattern_ GenericSymbol) (GenericSymbol, error)
+	// 281:2: case_pattern -> enum_var_decl_pattern: ...
+	EnumVarDeclPatternToCasePattern(Var_ GenericSymbol, Dot_ GenericSymbol, Identifier_ ValueSymbol, TuplePattern_ GenericSymbol) (GenericSymbol, error)
 
-	// 287:2: expression -> if_expr: ...
+	// 288:2: expression -> if_expr: ...
 	IfExprToExpression(OptionalLabelDecl_ GenericSymbol, IfExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 288:2: expression -> switch_expr: ...
+	// 289:2: expression -> switch_expr: ...
 	SwitchExprToExpression(OptionalLabelDecl_ GenericSymbol, SwitchExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 289:2: expression -> loop_expr: ...
+	// 290:2: expression -> loop_expr: ...
 	LoopExprToExpression(OptionalLabelDecl_ GenericSymbol, LoopExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 290:2: expression -> sequence_expr: ...
+	// 291:2: expression -> sequence_expr: ...
 	SequenceExprToExpression(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 293:2: optional_label_decl -> LABEL_DECL: ...
-	LabelDeclToOptionalLabelDecl(LabelDecl_ GenericSymbol) (GenericSymbol, error)
+	// 294:2: optional_label_decl -> LABEL_DECL: ...
+	LabelDeclToOptionalLabelDecl(LabelDecl_ ValueSymbol) (GenericSymbol, error)
 
-	// 294:2: optional_label_decl -> unlabelled: ...
+	// 295:2: optional_label_decl -> unlabelled: ...
 	UnlabelledToOptionalLabelDecl() (GenericSymbol, error)
 
-	// 301:2: sequence_expr -> or_expr: ...
+	// 302:2: sequence_expr -> or_expr: ...
 	OrExprToSequenceExpr(OrExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 304:2: sequence_expr -> var_decl_pattern: ...
+	// 305:2: sequence_expr -> var_decl_pattern: ...
 	VarDeclPatternToSequenceExpr(VarDeclPattern_ GenericSymbol) (GenericSymbol, error)
 
-	// 308:2: sequence_expr -> assign_var_pattern: ...
+	// 309:2: sequence_expr -> assign_var_pattern: ...
 	AssignVarPatternToSequenceExpr(Greater_ GenericSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 317:2: if_expr -> no_else: ...
+	// 318:2: if_expr -> no_else: ...
 	NoElseToIfExpr(If_ GenericSymbol, Condition_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
-	// 318:2: if_expr -> if_else: ...
+	// 319:2: if_expr -> if_else: ...
 	IfElseToIfExpr(If_ GenericSymbol, Condition_ GenericSymbol, StatementBlock_ GenericSymbol, Else_ GenericSymbol, StatementBlock_2 GenericSymbol) (GenericSymbol, error)
 
-	// 319:2: if_expr -> multi_if_else: ...
+	// 320:2: if_expr -> multi_if_else: ...
 	MultiIfElseToIfExpr(If_ GenericSymbol, Condition_ GenericSymbol, StatementBlock_ GenericSymbol, Else_ GenericSymbol, IfExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 322:2: condition -> sequence_expr: ...
+	// 323:2: condition -> sequence_expr: ...
 	SequenceExprToCondition(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 323:2: condition -> case: ...
+	// 324:2: condition -> case: ...
 	CaseToCondition(Case_ GenericSymbol, CasePatterns_ GenericSymbol, Assign_ GenericSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 347:15: switch_expr -> ...
+	// 348:15: switch_expr -> ...
 	ToSwitchExpr(Switch_ GenericSymbol, SequenceExpr_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
-	// 361:2: loop_expr -> infinite: ...
+	// 362:2: loop_expr -> infinite: ...
 	InfiniteToLoopExpr(Do_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
-	// 362:2: loop_expr -> do_while: ...
+	// 363:2: loop_expr -> do_while: ...
 	DoWhileToLoopExpr(Do_ GenericSymbol, StatementBlock_ GenericSymbol, For_ GenericSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 363:2: loop_expr -> while: ...
+	// 364:2: loop_expr -> while: ...
 	WhileToLoopExpr(For_ GenericSymbol, SequenceExpr_ GenericSymbol, Do_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
-	// 364:2: loop_expr -> iterator: ...
+	// 365:2: loop_expr -> iterator: ...
 	IteratorToLoopExpr(For_ GenericSymbol, AssignPattern_ GenericSymbol, In_ GenericSymbol, SequenceExpr_ GenericSymbol, Do_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
-	// 365:2: loop_expr -> for: ...
+	// 366:2: loop_expr -> for: ...
 	ForToLoopExpr(For_ GenericSymbol, ForAssignment_ GenericSymbol, Semicolon_ GenericSymbol, OptionalSequenceExpr_ GenericSymbol, Semicolon_2 GenericSymbol, OptionalSequenceExpr_2 GenericSymbol, Do_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
-	// 368:2: optional_sequence_expr -> sequence_expr: ...
+	// 369:2: optional_sequence_expr -> sequence_expr: ...
 	SequenceExprToOptionalSequenceExpr(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 369:2: optional_sequence_expr -> nil: ...
+	// 370:2: optional_sequence_expr -> nil: ...
 	NilToOptionalSequenceExpr() (GenericSymbol, error)
 
-	// 372:2: for_assignment -> sequence_expr: ...
+	// 373:2: for_assignment -> sequence_expr: ...
 	SequenceExprToForAssignment(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 373:2: for_assignment -> assign: ...
+	// 374:2: for_assignment -> assign: ...
 	AssignToForAssignment(AssignPattern_ GenericSymbol, Assign_ GenericSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 379:13: call_expr -> ...
+	// 380:13: call_expr -> ...
 	ToCallExpr(AccessExpr_ GenericSymbol, OptionalGenericBinding_ GenericSymbol, Lparen_ GenericSymbol, OptionalArguments_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
-	// 382:2: optional_generic_binding -> binding: ...
+	// 383:2: optional_generic_binding -> binding: ...
 	BindingToOptionalGenericBinding(DollarLbracket_ GenericSymbol, OptionalGenericArguments_ GenericSymbol, Rbracket_ GenericSymbol) (GenericSymbol, error)
 
-	// 383:2: optional_generic_binding -> nil: ...
+	// 384:2: optional_generic_binding -> nil: ...
 	NilToOptionalGenericBinding() (GenericSymbol, error)
 
-	// 386:2: optional_generic_arguments -> generic_arguments: ...
+	// 387:2: optional_generic_arguments -> generic_arguments: ...
 	GenericArgumentsToOptionalGenericArguments(GenericArguments_ GenericSymbol) (GenericSymbol, error)
 
-	// 387:2: optional_generic_arguments -> nil: ...
+	// 388:2: optional_generic_arguments -> nil: ...
 	NilToOptionalGenericArguments() (GenericSymbol, error)
 
-	// 391:2: generic_arguments -> value_type: ...
+	// 392:2: generic_arguments -> value_type: ...
 	ValueTypeToGenericArguments(ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 392:2: generic_arguments -> add: ...
+	// 393:2: generic_arguments -> add: ...
 	AddToGenericArguments(GenericArguments_ GenericSymbol, Comma_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 395:2: optional_arguments -> arguments: ...
+	// 396:2: optional_arguments -> arguments: ...
 	ArgumentsToOptionalArguments(Arguments_ GenericSymbol) (GenericSymbol, error)
 
-	// 396:2: optional_arguments -> nil: ...
+	// 397:2: optional_arguments -> nil: ...
 	NilToOptionalArguments() (GenericSymbol, error)
 
-	// 399:2: arguments -> argument: ...
+	// 400:2: arguments -> argument: ...
 	ArgumentToArguments(Argument_ GenericSymbol) (GenericSymbol, error)
 
-	// 400:2: arguments -> add: ...
+	// 401:2: arguments -> add: ...
 	AddToArguments(Arguments_ GenericSymbol, Comma_ GenericSymbol, Argument_ GenericSymbol) (GenericSymbol, error)
 
-	// 403:2: argument -> positional: ...
+	// 404:2: argument -> positional: ...
 	PositionalToArgument(Expression_ GenericSymbol) (GenericSymbol, error)
 
-	// 404:2: argument -> named: ...
-	NamedToArgument(Identifier_ GenericSymbol, Assign_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
+	// 405:2: argument -> named: ...
+	NamedToArgument(Identifier_ ValueSymbol, Assign_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
 
-	// 405:2: argument -> colon_expressions: ...
+	// 406:2: argument -> colon_expressions: ...
 	ColonExpressionsToArgument(ColonExpressions_ GenericSymbol) (GenericSymbol, error)
 
-	// 408:2: argument -> DOT_DOT_DOT: ...
+	// 409:2: argument -> DOT_DOT_DOT: ...
 	DotDotDotToArgument(DotDotDot_ GenericSymbol) (GenericSymbol, error)
 
-	// 411:2: colon_expressions -> pair: ...
+	// 412:2: colon_expressions -> pair: ...
 	PairToColonExpressions(OptionalExpression_ GenericSymbol, Colon_ GenericSymbol, OptionalExpression_2 GenericSymbol) (GenericSymbol, error)
 
-	// 412:2: colon_expressions -> add: ...
+	// 413:2: colon_expressions -> add: ...
 	AddToColonExpressions(ColonExpressions_ GenericSymbol, Colon_ GenericSymbol, OptionalExpression_ GenericSymbol) (GenericSymbol, error)
 
-	// 415:2: optional_expression -> expression: ...
+	// 416:2: optional_expression -> expression: ...
 	ExpressionToOptionalExpression(Expression_ GenericSymbol) (GenericSymbol, error)
 
-	// 416:2: optional_expression -> nil: ...
+	// 417:2: optional_expression -> nil: ...
 	NilToOptionalExpression() (GenericSymbol, error)
 
-	// 426:2: atom_expr -> literal: ...
+	// 427:2: atom_expr -> literal: ...
 	LiteralToAtomExpr(Literal_ GenericSymbol) (GenericSymbol, error)
 
-	// 427:2: atom_expr -> IDENTIFIER: ...
-	IdentifierToAtomExpr(Identifier_ GenericSymbol) (GenericSymbol, error)
+	// 428:2: atom_expr -> IDENTIFIER: ...
+	IdentifierToAtomExpr(Identifier_ ValueSymbol) (GenericSymbol, error)
 
-	// 428:2: atom_expr -> block_expr: ...
+	// 429:2: atom_expr -> block_expr: ...
 	BlockExprToAtomExpr(OptionalLabelDecl_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
-	// 429:2: atom_expr -> anonymous_func_expr: ...
+	// 430:2: atom_expr -> anonymous_func_expr: ...
 	AnonymousFuncExprToAtomExpr(AnonymousFuncExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 430:2: atom_expr -> initialize_expr: ...
+	// 431:2: atom_expr -> initialize_expr: ...
 	InitializeExprToAtomExpr(InitializableType_ GenericSymbol, Lparen_ GenericSymbol, Arguments_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
-	// 431:2: atom_expr -> implicit_struct_expr: ...
+	// 432:2: atom_expr -> implicit_struct_expr: ...
 	ImplicitStructExprToAtomExpr(ImplicitStructExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 432:2: atom_expr -> PARSE_ERROR: ...
+	// 433:2: atom_expr -> PARSE_ERROR: ...
 	ParseErrorToAtomExpr(ParseError_ ParseErrorSymbol) (GenericSymbol, error)
 
-	// 435:2: literal -> TRUE: ...
+	// 436:2: literal -> TRUE: ...
 	TrueToLiteral(True_ GenericSymbol) (GenericSymbol, error)
 
-	// 436:2: literal -> FALSE: ...
+	// 437:2: literal -> FALSE: ...
 	FalseToLiteral(False_ GenericSymbol) (GenericSymbol, error)
 
-	// 437:2: literal -> INTEGER_LITERAL: ...
+	// 438:2: literal -> INTEGER_LITERAL: ...
 	IntegerLiteralToLiteral(IntegerLiteral_ GenericSymbol) (GenericSymbol, error)
 
-	// 438:2: literal -> FLOAT_LITERAL: ...
+	// 439:2: literal -> FLOAT_LITERAL: ...
 	FloatLiteralToLiteral(FloatLiteral_ GenericSymbol) (GenericSymbol, error)
 
-	// 439:2: literal -> RUNE_LITERAL: ...
+	// 440:2: literal -> RUNE_LITERAL: ...
 	RuneLiteralToLiteral(RuneLiteral_ GenericSymbol) (GenericSymbol, error)
 
-	// 440:2: literal -> STRING_LITERAL: ...
+	// 441:2: literal -> STRING_LITERAL: ...
 	StringLiteralToLiteral(StringLiteral_ GenericSymbol) (GenericSymbol, error)
 
-	// 442:24: implicit_struct_expr -> ...
+	// 443:24: implicit_struct_expr -> ...
 	ToImplicitStructExpr(Lparen_ GenericSymbol, Arguments_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
-	// 445:2: access_expr -> atom_expr: ...
+	// 446:2: access_expr -> atom_expr: ...
 	AtomExprToAccessExpr(AtomExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 446:2: access_expr -> access: ...
-	AccessToAccessExpr(AccessExpr_ GenericSymbol, Dot_ GenericSymbol, Identifier_ GenericSymbol) (GenericSymbol, error)
+	// 447:2: access_expr -> access: ...
+	AccessToAccessExpr(AccessExpr_ GenericSymbol, Dot_ GenericSymbol, Identifier_ ValueSymbol) (GenericSymbol, error)
 
-	// 447:2: access_expr -> call_expr: ...
+	// 448:2: access_expr -> call_expr: ...
 	CallExprToAccessExpr(CallExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 448:2: access_expr -> index: ...
+	// 449:2: access_expr -> index: ...
 	IndexToAccessExpr(AccessExpr_ GenericSymbol, Lbracket_ GenericSymbol, Argument_ GenericSymbol, Rbracket_ GenericSymbol) (GenericSymbol, error)
 
-	// 451:2: postfix_unary_expr -> access_expr: ...
+	// 452:2: postfix_unary_expr -> access_expr: ...
 	AccessExprToPostfixUnaryExpr(AccessExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 452:2: postfix_unary_expr -> question: ...
+	// 453:2: postfix_unary_expr -> question: ...
 	QuestionToPostfixUnaryExpr(AccessExpr_ GenericSymbol, Question_ GenericSymbol) (GenericSymbol, error)
 
-	// 455:2: prefix_unary_op -> NOT: ...
+	// 456:2: prefix_unary_op -> NOT: ...
 	NotToPrefixUnaryOp(Not_ GenericSymbol) (GenericSymbol, error)
 
-	// 456:2: prefix_unary_op -> BIT_NEG: ...
+	// 457:2: prefix_unary_op -> BIT_NEG: ...
 	BitNegToPrefixUnaryOp(BitNeg_ GenericSymbol) (GenericSymbol, error)
 
-	// 457:2: prefix_unary_op -> SUB: ...
+	// 458:2: prefix_unary_op -> SUB: ...
 	SubToPrefixUnaryOp(Sub_ GenericSymbol) (GenericSymbol, error)
 
-	// 460:2: prefix_unary_op -> MUL: ...
+	// 461:2: prefix_unary_op -> MUL: ...
 	MulToPrefixUnaryOp(Mul_ GenericSymbol) (GenericSymbol, error)
 
-	// 463:2: prefix_unary_op -> BIT_AND: ...
+	// 464:2: prefix_unary_op -> BIT_AND: ...
 	BitAndToPrefixUnaryOp(BitAnd_ GenericSymbol) (GenericSymbol, error)
 
-	// 466:2: prefix_unary_expr -> postfix_unary_expr: ...
+	// 467:2: prefix_unary_expr -> postfix_unary_expr: ...
 	PostfixUnaryExprToPrefixUnaryExpr(PostfixUnaryExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 467:2: prefix_unary_expr -> prefix_op: ...
+	// 468:2: prefix_unary_expr -> prefix_op: ...
 	PrefixOpToPrefixUnaryExpr(PrefixUnaryOp_ GenericSymbol, PrefixUnaryExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 470:2: mul_op -> MUL: ...
+	// 471:2: mul_op -> MUL: ...
 	MulToMulOp(Mul_ GenericSymbol) (GenericSymbol, error)
 
-	// 471:2: mul_op -> DIV: ...
+	// 472:2: mul_op -> DIV: ...
 	DivToMulOp(Div_ GenericSymbol) (GenericSymbol, error)
 
-	// 472:2: mul_op -> MOD: ...
+	// 473:2: mul_op -> MOD: ...
 	ModToMulOp(Mod_ GenericSymbol) (GenericSymbol, error)
 
-	// 473:2: mul_op -> BIT_AND: ...
+	// 474:2: mul_op -> BIT_AND: ...
 	BitAndToMulOp(BitAnd_ GenericSymbol) (GenericSymbol, error)
 
-	// 474:2: mul_op -> BIT_LSHIFT: ...
+	// 475:2: mul_op -> BIT_LSHIFT: ...
 	BitLshiftToMulOp(BitLshift_ GenericSymbol) (GenericSymbol, error)
 
-	// 475:2: mul_op -> BIT_RSHIFT: ...
+	// 476:2: mul_op -> BIT_RSHIFT: ...
 	BitRshiftToMulOp(BitRshift_ GenericSymbol) (GenericSymbol, error)
 
-	// 478:2: mul_expr -> prefix_unary_expr: ...
+	// 479:2: mul_expr -> prefix_unary_expr: ...
 	PrefixUnaryExprToMulExpr(PrefixUnaryExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 479:2: mul_expr -> op: ...
+	// 480:2: mul_expr -> op: ...
 	OpToMulExpr(MulExpr_ GenericSymbol, MulOp_ GenericSymbol, PrefixUnaryExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 482:2: add_op -> ADD: ...
+	// 483:2: add_op -> ADD: ...
 	AddToAddOp(Add_ GenericSymbol) (GenericSymbol, error)
 
-	// 483:2: add_op -> SUB: ...
+	// 484:2: add_op -> SUB: ...
 	SubToAddOp(Sub_ GenericSymbol) (GenericSymbol, error)
 
-	// 484:2: add_op -> BIT_OR: ...
+	// 485:2: add_op -> BIT_OR: ...
 	BitOrToAddOp(BitOr_ GenericSymbol) (GenericSymbol, error)
 
-	// 485:2: add_op -> BIT_XOR: ...
+	// 486:2: add_op -> BIT_XOR: ...
 	BitXorToAddOp(BitXor_ GenericSymbol) (GenericSymbol, error)
 
-	// 488:2: add_expr -> mul_expr: ...
+	// 489:2: add_expr -> mul_expr: ...
 	MulExprToAddExpr(MulExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 489:2: add_expr -> op: ...
+	// 490:2: add_expr -> op: ...
 	OpToAddExpr(AddExpr_ GenericSymbol, AddOp_ GenericSymbol, MulExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 492:2: cmp_op -> EQUAL: ...
+	// 493:2: cmp_op -> EQUAL: ...
 	EqualToCmpOp(Equal_ GenericSymbol) (GenericSymbol, error)
 
-	// 493:2: cmp_op -> NOT_EQUAL: ...
+	// 494:2: cmp_op -> NOT_EQUAL: ...
 	NotEqualToCmpOp(NotEqual_ GenericSymbol) (GenericSymbol, error)
 
-	// 494:2: cmp_op -> LESS: ...
+	// 495:2: cmp_op -> LESS: ...
 	LessToCmpOp(Less_ GenericSymbol) (GenericSymbol, error)
 
-	// 495:2: cmp_op -> LESS_OR_EQUAL: ...
+	// 496:2: cmp_op -> LESS_OR_EQUAL: ...
 	LessOrEqualToCmpOp(LessOrEqual_ GenericSymbol) (GenericSymbol, error)
 
-	// 496:2: cmp_op -> GREATER: ...
+	// 497:2: cmp_op -> GREATER: ...
 	GreaterToCmpOp(Greater_ GenericSymbol) (GenericSymbol, error)
 
-	// 497:2: cmp_op -> GREATER_OR_EQUAL: ...
+	// 498:2: cmp_op -> GREATER_OR_EQUAL: ...
 	GreaterOrEqualToCmpOp(GreaterOrEqual_ GenericSymbol) (GenericSymbol, error)
 
-	// 500:2: cmp_expr -> add_expr: ...
+	// 501:2: cmp_expr -> add_expr: ...
 	AddExprToCmpExpr(AddExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 501:2: cmp_expr -> op: ...
+	// 502:2: cmp_expr -> op: ...
 	OpToCmpExpr(CmpExpr_ GenericSymbol, CmpOp_ GenericSymbol, AddExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 504:2: and_expr -> cmp_expr: ...
+	// 505:2: and_expr -> cmp_expr: ...
 	CmpExprToAndExpr(CmpExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 505:2: and_expr -> op: ...
+	// 506:2: and_expr -> op: ...
 	OpToAndExpr(AndExpr_ GenericSymbol, And_ GenericSymbol, CmpExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 508:2: or_expr -> and_expr: ...
+	// 509:2: or_expr -> and_expr: ...
 	AndExprToOrExpr(AndExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 509:2: or_expr -> op: ...
+	// 510:2: or_expr -> op: ...
 	OpToOrExpr(OrExpr_ GenericSymbol, Or_ GenericSymbol, AndExpr_ GenericSymbol) (GenericSymbol, error)
 
-	// 518:2: initializable_type -> explicit_struct_def: ...
+	// 519:2: initializable_type -> explicit_struct_def: ...
 	ExplicitStructDefToInitializableType(ExplicitStructDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 519:2: initializable_type -> slice: ...
+	// 520:2: initializable_type -> slice: ...
 	SliceToInitializableType(Lbracket_ GenericSymbol, ValueType_ GenericSymbol, Rbracket_ GenericSymbol) (GenericSymbol, error)
 
-	// 520:2: initializable_type -> array: ...
+	// 521:2: initializable_type -> array: ...
 	ArrayToInitializableType(Lbracket_ GenericSymbol, ValueType_ GenericSymbol, Comma_ GenericSymbol, IntegerLiteral_ GenericSymbol, Rbracket_ GenericSymbol) (GenericSymbol, error)
 
-	// 521:2: initializable_type -> map: ...
+	// 522:2: initializable_type -> map: ...
 	MapToInitializableType(Lbracket_ GenericSymbol, ValueType_ GenericSymbol, Colon_ GenericSymbol, ValueType_2 GenericSymbol, Rbracket_ GenericSymbol) (GenericSymbol, error)
 
-	// 524:2: atom_type -> initializable_type: ...
+	// 525:2: atom_type -> initializable_type: ...
 	InitializableTypeToAtomType(InitializableType_ GenericSymbol) (GenericSymbol, error)
 
-	// 525:2: atom_type -> named: ...
-	NamedToAtomType(Identifier_ GenericSymbol, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
+	// 526:2: atom_type -> named: ...
+	NamedToAtomType(Identifier_ ValueSymbol, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
 
-	// 526:2: atom_type -> extern_named: ...
-	ExternNamedToAtomType(Identifier_ GenericSymbol, Dot_ GenericSymbol, Identifier_2 GenericSymbol, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
+	// 527:2: atom_type -> extern_named: ...
+	ExternNamedToAtomType(Identifier_ ValueSymbol, Dot_ GenericSymbol, Identifier_2 ValueSymbol, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
 
-	// 527:2: atom_type -> inferred: ...
+	// 528:2: atom_type -> inferred: ...
 	InferredToAtomType(Dot_ GenericSymbol, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
 
-	// 528:2: atom_type -> implicit_struct_def: ...
+	// 529:2: atom_type -> implicit_struct_def: ...
 	ImplicitStructDefToAtomType(ImplicitStructDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 529:2: atom_type -> explicit_enum_def: ...
+	// 530:2: atom_type -> explicit_enum_def: ...
 	ExplicitEnumDefToAtomType(ExplicitEnumDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 530:2: atom_type -> implicit_enum_def: ...
+	// 531:2: atom_type -> implicit_enum_def: ...
 	ImplicitEnumDefToAtomType(ImplicitEnumDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 531:2: atom_type -> trait_def: ...
+	// 532:2: atom_type -> trait_def: ...
 	TraitDefToAtomType(TraitDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 532:2: atom_type -> func_type: ...
+	// 533:2: atom_type -> func_type: ...
 	FuncTypeToAtomType(FuncType_ GenericSymbol) (GenericSymbol, error)
 
-	// 533:2: atom_type -> PARSE_ERROR: ...
+	// 534:2: atom_type -> PARSE_ERROR: ...
 	ParseErrorToAtomType(ParseError_ ParseErrorSymbol) (GenericSymbol, error)
 
-	// 539:2: returnable_type -> atom_type: ...
+	// 540:2: returnable_type -> atom_type: ...
 	AtomTypeToReturnableType(AtomType_ GenericSymbol) (GenericSymbol, error)
 
-	// 540:2: returnable_type -> optional: ...
+	// 541:2: returnable_type -> optional: ...
 	OptionalToReturnableType(Question_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
-	// 541:2: returnable_type -> result: ...
+	// 542:2: returnable_type -> result: ...
 	ResultToReturnableType(Exclaim_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
-	// 542:2: returnable_type -> reference: ...
+	// 543:2: returnable_type -> reference: ...
 	ReferenceToReturnableType(BitAnd_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
-	// 543:2: returnable_type -> public_methods_trait: ...
+	// 544:2: returnable_type -> public_methods_trait: ...
 	PublicMethodsTraitToReturnableType(BitNeg_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
-	// 544:2: returnable_type -> public_trait: ...
+	// 545:2: returnable_type -> public_trait: ...
 	PublicTraitToReturnableType(TildeTilde_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
-	// 549:2: value_type -> returnable_type: ...
+	// 550:2: value_type -> returnable_type: ...
 	ReturnableTypeToValueType(ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
-	// 550:2: value_type -> trait_intersect: ...
+	// 551:2: value_type -> trait_intersect: ...
 	TraitIntersectToValueType(ValueType_ GenericSymbol, Mul_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
-	// 551:2: value_type -> trait_union: ...
+	// 552:2: value_type -> trait_union: ...
 	TraitUnionToValueType(ValueType_ GenericSymbol, Add_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
-	// 552:2: value_type -> trait_difference: ...
+	// 553:2: value_type -> trait_difference: ...
 	TraitDifferenceToValueType(ValueType_ GenericSymbol, Sub_ GenericSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
-	// 555:2: type_def -> definition: ...
-	DefinitionToTypeDef(Type_ GenericSymbol, Identifier_ GenericSymbol, OptionalGenericParameters_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	// 556:2: type_def -> definition: ...
+	DefinitionToTypeDef(Type_ GenericSymbol, Identifier_ ValueSymbol, OptionalGenericParameters_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 556:2: type_def -> constrained_def: ...
-	ConstrainedDefToTypeDef(Type_ GenericSymbol, Identifier_ GenericSymbol, OptionalGenericParameters_ GenericSymbol, ValueType_ GenericSymbol, Implements_ GenericSymbol, ValueType_2 GenericSymbol) (GenericSymbol, error)
+	// 557:2: type_def -> constrained_def: ...
+	ConstrainedDefToTypeDef(Type_ GenericSymbol, Identifier_ ValueSymbol, OptionalGenericParameters_ GenericSymbol, ValueType_ GenericSymbol, Implements_ GenericSymbol, ValueType_2 GenericSymbol) (GenericSymbol, error)
 
-	// 557:2: type_def -> alias: ...
-	AliasToTypeDef(Type_ GenericSymbol, Identifier_ GenericSymbol, Assign_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	// 558:2: type_def -> alias: ...
+	AliasToTypeDef(Type_ GenericSymbol, Identifier_ ValueSymbol, Assign_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 565:2: generic_parameter_def -> unconstrained: ...
-	UnconstrainedToGenericParameterDef(Identifier_ GenericSymbol) (GenericSymbol, error)
+	// 566:2: generic_parameter_def -> unconstrained: ...
+	UnconstrainedToGenericParameterDef(Identifier_ ValueSymbol) (GenericSymbol, error)
 
-	// 566:2: generic_parameter_def -> constrained: ...
-	ConstrainedToGenericParameterDef(Identifier_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	// 567:2: generic_parameter_def -> constrained: ...
+	ConstrainedToGenericParameterDef(Identifier_ ValueSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 569:2: generic_parameter_defs -> generic_parameter_def: ...
+	// 570:2: generic_parameter_defs -> generic_parameter_def: ...
 	GenericParameterDefToGenericParameterDefs(GenericParameterDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 570:2: generic_parameter_defs -> add: ...
+	// 571:2: generic_parameter_defs -> add: ...
 	AddToGenericParameterDefs(GenericParameterDefs_ GenericSymbol, Comma_ GenericSymbol, GenericParameterDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 573:2: optional_generic_parameter_defs -> generic_parameter_defs: ...
+	// 574:2: optional_generic_parameter_defs -> generic_parameter_defs: ...
 	GenericParameterDefsToOptionalGenericParameterDefs(GenericParameterDefs_ GenericSymbol) (GenericSymbol, error)
 
-	// 574:2: optional_generic_parameter_defs -> nil: ...
+	// 575:2: optional_generic_parameter_defs -> nil: ...
 	NilToOptionalGenericParameterDefs() (GenericSymbol, error)
 
-	// 577:2: optional_generic_parameters -> generic: ...
+	// 578:2: optional_generic_parameters -> generic: ...
 	GenericToOptionalGenericParameters(DollarLbracket_ GenericSymbol, OptionalGenericParameterDefs_ GenericSymbol, Rbracket_ GenericSymbol) (GenericSymbol, error)
 
-	// 578:2: optional_generic_parameters -> nil: ...
+	// 579:2: optional_generic_parameters -> nil: ...
 	NilToOptionalGenericParameters() (GenericSymbol, error)
 
-	// 585:2: field_def -> explicit: ...
-	ExplicitToFieldDef(Identifier_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	// 586:2: field_def -> explicit: ...
+	ExplicitToFieldDef(Identifier_ ValueSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 586:2: field_def -> implicit: ...
+	// 587:2: field_def -> implicit: ...
 	ImplicitToFieldDef(ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 587:2: field_def -> unsafe_statement: ...
+	// 588:2: field_def -> unsafe_statement: ...
 	UnsafeStatementToFieldDef(UnsafeStatement_ GenericSymbol) (GenericSymbol, error)
 
-	// 590:2: implicit_field_defs -> field_def: ...
+	// 591:2: implicit_field_defs -> field_def: ...
 	FieldDefToImplicitFieldDefs(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 591:2: implicit_field_defs -> add: ...
+	// 592:2: implicit_field_defs -> add: ...
 	AddToImplicitFieldDefs(ImplicitFieldDefs_ GenericSymbol, Comma_ GenericSymbol, FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 594:2: optional_implicit_field_defs -> implicit_field_defs: ...
+	// 595:2: optional_implicit_field_defs -> implicit_field_defs: ...
 	ImplicitFieldDefsToOptionalImplicitFieldDefs(ImplicitFieldDefs_ GenericSymbol) (GenericSymbol, error)
 
-	// 595:2: optional_implicit_field_defs -> nil: ...
+	// 596:2: optional_implicit_field_defs -> nil: ...
 	NilToOptionalImplicitFieldDefs() (GenericSymbol, error)
 
-	// 597:23: implicit_struct_def -> ...
+	// 598:23: implicit_struct_def -> ...
 	ToImplicitStructDef(Lparen_ GenericSymbol, OptionalImplicitFieldDefs_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
-	// 600:2: explicit_field_defs -> field_def: ...
+	// 601:2: explicit_field_defs -> field_def: ...
 	FieldDefToExplicitFieldDefs(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 601:2: explicit_field_defs -> implicit: ...
-	ImplicitToExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol, Newlines_ GenericSymbol, FieldDef_ GenericSymbol) (GenericSymbol, error)
+	// 602:2: explicit_field_defs -> implicit: ...
+	ImplicitToExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol, Newlines_ CountSymbol, FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 602:2: explicit_field_defs -> explicit: ...
+	// 603:2: explicit_field_defs -> explicit: ...
 	ExplicitToExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol, Comma_ GenericSymbol, FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 605:2: optional_explicit_field_defs -> explicit_field_defs: ...
+	// 606:2: optional_explicit_field_defs -> explicit_field_defs: ...
 	ExplicitFieldDefsToOptionalExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol) (GenericSymbol, error)
 
-	// 606:2: optional_explicit_field_defs -> nil: ...
+	// 607:2: optional_explicit_field_defs -> nil: ...
 	NilToOptionalExplicitFieldDefs() (GenericSymbol, error)
 
-	// 608:23: explicit_struct_def -> ...
+	// 609:23: explicit_struct_def -> ...
 	ToExplicitStructDef(Struct_ GenericSymbol, Lparen_ GenericSymbol, OptionalExplicitFieldDefs_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
-	// 616:2: enum_value_def -> field_def: ...
+	// 617:2: enum_value_def -> field_def: ...
 	FieldDefToEnumValueDef(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 617:2: enum_value_def -> default: ...
+	// 618:2: enum_value_def -> default: ...
 	DefaultToEnumValueDef(FieldDef_ GenericSymbol, Assign_ GenericSymbol, Default_ GenericSymbol) (GenericSymbol, error)
 
-	// 629:2: implicit_enum_value_defs -> pair: ...
+	// 630:2: implicit_enum_value_defs -> pair: ...
 	PairToImplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Or_ GenericSymbol, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
-	// 630:2: implicit_enum_value_defs -> add: ...
+	// 631:2: implicit_enum_value_defs -> add: ...
 	AddToImplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Or_ GenericSymbol, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 632:21: implicit_enum_def -> ...
+	// 633:21: implicit_enum_def -> ...
 	ToImplicitEnumDef(Lparen_ GenericSymbol, ImplicitEnumValueDefs_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
-	// 635:2: explicit_enum_value_defs -> explicit_pair: ...
+	// 636:2: explicit_enum_value_defs -> explicit_pair: ...
 	ExplicitPairToExplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Or_ GenericSymbol, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
-	// 636:2: explicit_enum_value_defs -> implicit_pair: ...
-	ImplicitPairToExplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Newlines_ GenericSymbol, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
+	// 637:2: explicit_enum_value_defs -> implicit_pair: ...
+	ImplicitPairToExplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Newlines_ CountSymbol, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
-	// 637:2: explicit_enum_value_defs -> explicit_add: ...
+	// 638:2: explicit_enum_value_defs -> explicit_add: ...
 	ExplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Or_ GenericSymbol, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 638:2: explicit_enum_value_defs -> implicit_add: ...
-	ImplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Newlines_ GenericSymbol, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
+	// 639:2: explicit_enum_value_defs -> implicit_add: ...
+	ImplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Newlines_ CountSymbol, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 640:21: explicit_enum_def -> ...
+	// 641:21: explicit_enum_def -> ...
 	ToExplicitEnumDef(Enum_ GenericSymbol, Lparen_ GenericSymbol, ExplicitEnumValueDefs_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
-	// 647:2: trait_property -> field_def: ...
+	// 648:2: trait_property -> field_def: ...
 	FieldDefToTraitProperty(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 648:2: trait_property -> method_signature: ...
+	// 649:2: trait_property -> method_signature: ...
 	MethodSignatureToTraitProperty(MethodSignature_ GenericSymbol) (GenericSymbol, error)
 
-	// 651:2: trait_properties -> trait_property: ...
+	// 652:2: trait_properties -> trait_property: ...
 	TraitPropertyToTraitProperties(TraitProperty_ GenericSymbol) (GenericSymbol, error)
 
-	// 652:2: trait_properties -> implicit: ...
-	ImplicitToTraitProperties(TraitProperties_ GenericSymbol, Newlines_ GenericSymbol, TraitProperty_ GenericSymbol) (GenericSymbol, error)
+	// 653:2: trait_properties -> implicit: ...
+	ImplicitToTraitProperties(TraitProperties_ GenericSymbol, Newlines_ CountSymbol, TraitProperty_ GenericSymbol) (GenericSymbol, error)
 
-	// 653:2: trait_properties -> explicit: ...
+	// 654:2: trait_properties -> explicit: ...
 	ExplicitToTraitProperties(TraitProperties_ GenericSymbol, Comma_ GenericSymbol, TraitProperty_ GenericSymbol) (GenericSymbol, error)
 
-	// 656:2: optional_trait_properties -> trait_properties: ...
+	// 657:2: optional_trait_properties -> trait_properties: ...
 	TraitPropertiesToOptionalTraitProperties(TraitProperties_ GenericSymbol) (GenericSymbol, error)
 
-	// 657:2: optional_trait_properties -> nil: ...
+	// 658:2: optional_trait_properties -> nil: ...
 	NilToOptionalTraitProperties() (GenericSymbol, error)
 
-	// 659:13: trait_def -> ...
+	// 660:13: trait_def -> ...
 	ToTraitDef(Trait_ GenericSymbol, Lparen_ GenericSymbol, OptionalTraitProperties_ GenericSymbol, Rparen_ GenericSymbol) (GenericSymbol, error)
 
-	// 667:2: return_type -> returnable_type: ...
+	// 668:2: return_type -> returnable_type: ...
 	ReturnableTypeToReturnType(ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
-	// 668:2: return_type -> nil: ...
+	// 669:2: return_type -> nil: ...
 	NilToReturnType() (GenericSymbol, error)
 
-	// 671:2: parameter_decl -> arg: ...
-	ArgToParameterDecl(Identifier_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	// 672:2: parameter_decl -> arg: ...
+	ArgToParameterDecl(Identifier_ ValueSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 672:2: parameter_decl -> vararg: ...
-	VarargToParameterDecl(Identifier_ GenericSymbol, DotDotDot_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	// 673:2: parameter_decl -> vararg: ...
+	VarargToParameterDecl(Identifier_ ValueSymbol, DotDotDot_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 673:2: parameter_decl -> unamed: ...
+	// 674:2: parameter_decl -> unamed: ...
 	UnamedToParameterDecl(ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 674:2: parameter_decl -> unnamed_vararg: ...
+	// 675:2: parameter_decl -> unnamed_vararg: ...
 	UnnamedVarargToParameterDecl(DotDotDot_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 677:2: parameter_decls -> parameter_decl: ...
+	// 678:2: parameter_decls -> parameter_decl: ...
 	ParameterDeclToParameterDecls(ParameterDecl_ GenericSymbol) (GenericSymbol, error)
 
-	// 678:2: parameter_decls -> add: ...
+	// 679:2: parameter_decls -> add: ...
 	AddToParameterDecls(ParameterDecls_ GenericSymbol, Comma_ GenericSymbol, ParameterDecl_ GenericSymbol) (GenericSymbol, error)
 
-	// 681:2: optional_parameter_decls -> parameter_decls: ...
+	// 682:2: optional_parameter_decls -> parameter_decls: ...
 	ParameterDeclsToOptionalParameterDecls(ParameterDecls_ GenericSymbol) (GenericSymbol, error)
 
-	// 682:2: optional_parameter_decls -> nil: ...
+	// 683:2: optional_parameter_decls -> nil: ...
 	NilToOptionalParameterDecls() (GenericSymbol, error)
 
-	// 684:13: func_type -> ...
+	// 685:13: func_type -> ...
 	ToFuncType(Func_ GenericSymbol, Lparen_ GenericSymbol, OptionalParameterDecls_ GenericSymbol, Rparen_ GenericSymbol, ReturnType_ GenericSymbol) (GenericSymbol, error)
 
-	// 695:20: method_signature -> ...
-	ToMethodSignature(Func_ GenericSymbol, Identifier_ GenericSymbol, Lparen_ GenericSymbol, OptionalParameterDecls_ GenericSymbol, Rparen_ GenericSymbol, ReturnType_ GenericSymbol) (GenericSymbol, error)
+	// 696:20: method_signature -> ...
+	ToMethodSignature(Func_ GenericSymbol, Identifier_ ValueSymbol, Lparen_ GenericSymbol, OptionalParameterDecls_ GenericSymbol, Rparen_ GenericSymbol, ReturnType_ GenericSymbol) (GenericSymbol, error)
 
-	// 701:2: parameter_def -> inferred_ref_arg: ...
-	InferredRefArgToParameterDef(Identifier_ GenericSymbol) (GenericSymbol, error)
+	// 702:2: parameter_def -> inferred_ref_arg: ...
+	InferredRefArgToParameterDef(Identifier_ ValueSymbol) (GenericSymbol, error)
 
-	// 702:2: parameter_def -> inferred_ref_vararg: ...
-	InferredRefVarargToParameterDef(Identifier_ GenericSymbol, DotDotDot_ GenericSymbol) (GenericSymbol, error)
+	// 703:2: parameter_def -> inferred_ref_vararg: ...
+	InferredRefVarargToParameterDef(Identifier_ ValueSymbol, DotDotDot_ GenericSymbol) (GenericSymbol, error)
 
-	// 703:2: parameter_def -> arg: ...
-	ArgToParameterDef(Identifier_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	// 704:2: parameter_def -> arg: ...
+	ArgToParameterDef(Identifier_ ValueSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 704:2: parameter_def -> vararg: ...
-	VarargToParameterDef(Identifier_ GenericSymbol, DotDotDot_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	// 705:2: parameter_def -> vararg: ...
+	VarargToParameterDef(Identifier_ ValueSymbol, DotDotDot_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
-	// 707:2: parameter_defs -> parameter_def: ...
+	// 708:2: parameter_defs -> parameter_def: ...
 	ParameterDefToParameterDefs(ParameterDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 708:2: parameter_defs -> add: ...
+	// 709:2: parameter_defs -> add: ...
 	AddToParameterDefs(ParameterDefs_ GenericSymbol, Comma_ GenericSymbol, ParameterDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 711:2: optional_parameter_defs -> parameter_defs: ...
+	// 712:2: optional_parameter_defs -> parameter_defs: ...
 	ParameterDefsToOptionalParameterDefs(ParameterDefs_ GenericSymbol) (GenericSymbol, error)
 
-	// 712:2: optional_parameter_defs -> nil: ...
+	// 713:2: optional_parameter_defs -> nil: ...
 	NilToOptionalParameterDefs() (GenericSymbol, error)
 
-	// 715:2: named_func_def -> func_def: ...
-	FuncDefToNamedFuncDef(Func_ GenericSymbol, Identifier_ GenericSymbol, OptionalGenericParameters_ GenericSymbol, Lparen_ GenericSymbol, OptionalParameterDefs_ GenericSymbol, Rparen_ GenericSymbol, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
+	// 716:2: named_func_def -> func_def: ...
+	FuncDefToNamedFuncDef(Func_ GenericSymbol, Identifier_ ValueSymbol, OptionalGenericParameters_ GenericSymbol, Lparen_ GenericSymbol, OptionalParameterDefs_ GenericSymbol, Rparen_ GenericSymbol, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
-	// 716:2: named_func_def -> method_def: ...
-	MethodDefToNamedFuncDef(Func_ GenericSymbol, Lparen_ GenericSymbol, ParameterDef_ GenericSymbol, Rparen_ GenericSymbol, Identifier_ GenericSymbol, OptionalGenericParameters_ GenericSymbol, Lparen_2 GenericSymbol, OptionalParameterDefs_ GenericSymbol, Rparen_2 GenericSymbol, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
+	// 717:2: named_func_def -> method_def: ...
+	MethodDefToNamedFuncDef(Func_ GenericSymbol, Lparen_ GenericSymbol, ParameterDef_ GenericSymbol, Rparen_ GenericSymbol, Identifier_ ValueSymbol, OptionalGenericParameters_ GenericSymbol, Lparen_2 GenericSymbol, OptionalParameterDefs_ GenericSymbol, Rparen_2 GenericSymbol, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
-	// 717:2: named_func_def -> alias: ...
-	AliasToNamedFuncDef(Func_ GenericSymbol, Identifier_ GenericSymbol, Assign_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
+	// 718:2: named_func_def -> alias: ...
+	AliasToNamedFuncDef(Func_ GenericSymbol, Identifier_ ValueSymbol, Assign_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
 
-	// 721:2: anonymous_func_expr -> ...
+	// 722:2: anonymous_func_expr -> ...
 	ToAnonymousFuncExpr(Func_ GenericSymbol, Lparen_ GenericSymbol, OptionalParameterDefs_ GenericSymbol, Rparen_ GenericSymbol, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
-	// 733:2: package_def -> no_spec: ...
+	// 734:2: package_def -> no_spec: ...
 	NoSpecToPackageDef(Package_ GenericSymbol) (GenericSymbol, error)
 
-	// 734:2: package_def -> with_spec: ...
+	// 735:2: package_def -> with_spec: ...
 	WithSpecToPackageDef(Package_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 }
 
@@ -1219,6 +1219,12 @@ func (i SymbolId) String() string {
 		return "VAR"
 	case LetToken:
 		return "LET"
+	case NotToken:
+		return "NOT"
+	case AndToken:
+		return "AND"
+	case OrToken:
+		return "OR"
 	case LabelDeclToken:
 		return "LABEL_DECL"
 	case JumpLabelToken:
@@ -1281,12 +1287,6 @@ func (i SymbolId) String() string {
 		return "BIT_LSHIFT_ASSIGN"
 	case BitRshiftAssignToken:
 		return "BIT_RSHIFT_ASSIGN"
-	case NotToken:
-		return "NOT"
-	case AndToken:
-		return "AND"
-	case OrToken:
-		return "OR"
 	case AddToken:
 		return "ADD"
 	case SubToken:
@@ -2935,7 +2935,9 @@ type Symbol struct {
 
 	Generic_ GenericSymbol
 
-	ParseError ParseErrorSymbol
+	CountSymbol CountSymbol
+	ParseError  ParseErrorSymbol
+	ValueSymbol ValueSymbol
 }
 
 func NewSymbol(token Token) (*Symbol, error) {
@@ -2946,7 +2948,17 @@ func NewSymbol(token Token) (*Symbol, error) {
 
 	symbol = &Symbol{SymbolId_: token.Id()}
 	switch token.Id() {
-	case _EndMarker, NewlinesToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, NotToken, AndToken, OrToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
+	case NewlinesToken:
+		val, ok := token.(CountSymbol)
+		if !ok {
+			return nil, fmt.Errorf(
+				"Invalid value type for token %s.  "+
+					"Expecting CountSymbol (%v)",
+				token.Id(),
+				token.Loc())
+		}
+		symbol.CountSymbol = val
+	case _EndMarker, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
 		val, ok := token.(GenericSymbol)
 		if !ok {
 			return nil, fmt.Errorf(
@@ -2966,6 +2978,16 @@ func NewSymbol(token Token) (*Symbol, error) {
 				token.Loc())
 		}
 		symbol.ParseError = val
+	case IdentifierToken, LabelDeclToken, JumpLabelToken:
+		val, ok := token.(ValueSymbol)
+		if !ok {
+			return nil, fmt.Errorf(
+				"Invalid value type for token %s.  "+
+					"Expecting ValueSymbol (%v)",
+				token.Id(),
+				token.Loc())
+		}
+		symbol.ValueSymbol = val
 	default:
 		return nil, fmt.Errorf("Unexpected token type: %s", symbol.Id())
 	}
@@ -2979,8 +3001,18 @@ func (s *Symbol) Id() SymbolId {
 func (s *Symbol) Loc() Location {
 	type locator interface{ Loc() Location }
 	switch s.SymbolId_ {
+	case NewlinesToken:
+		loc, ok := interface{}(s.CountSymbol).(locator)
+		if ok {
+			return loc.Loc()
+		}
 	case ParseErrorToken:
 		loc, ok := interface{}(s.ParseError).(locator)
+		if ok {
+			return loc.Loc()
+		}
+	case IdentifierToken, LabelDeclToken, JumpLabelToken:
+		loc, ok := interface{}(s.ValueSymbol).(locator)
 		if ok {
 			return loc.Loc()
 		}
@@ -3062,7 +3094,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OptionalDefinitionsType
-		symbol.Generic_, err = reducer.NewlinesToOptionalDefinitions(args[0].Generic_)
+		symbol.Generic_, err = reducer.NewlinesToOptionalDefinitions(args[0].CountSymbol)
 	case _ReduceDefinitionsToOptionalDefinitions:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -3075,7 +3107,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OptionalNewlinesType
-		symbol.Generic_, err = reducer.NewlinesToOptionalNewlines(args[0].Generic_)
+		symbol.Generic_, err = reducer.NewlinesToOptionalNewlines(args[0].CountSymbol)
 	case _ReduceNilToOptionalNewlines:
 		symbol.SymbolId_ = OptionalNewlinesType
 		symbol.Generic_, err = reducer.NilToOptionalNewlines()
@@ -3088,7 +3120,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = DefinitionsType
-		symbol.Generic_, err = reducer.AddToDefinitions(args[0].Generic_, args[1].Generic_, args[2].Generic_)
+		symbol.Generic_, err = reducer.AddToDefinitions(args[0].Generic_, args[1].CountSymbol, args[2].Generic_)
 	case _ReducePackageDefToDefinition:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -3136,7 +3168,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = StatementType
-		symbol.Generic_, err = reducer.ImplicitToStatement(args[0].Generic_, args[1].Generic_)
+		symbol.Generic_, err = reducer.ImplicitToStatement(args[0].Generic_, args[1].CountSymbol)
 	case _ReduceExplicitToStatement:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
@@ -3266,7 +3298,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-5:]
 		stack = stack[:len(stack)-5]
 		symbol.SymbolId_ = UnsafeStatementType
-		symbol.Generic_, err = reducer.ToUnsafeStatement(args[0].Generic_, args[1].Generic_, args[2].Generic_, args[3].Generic_, args[4].Generic_)
+		symbol.Generic_, err = reducer.ToUnsafeStatement(args[0].Generic_, args[1].Generic_, args[2].ValueSymbol, args[3].Generic_, args[4].Generic_)
 	case _ReduceReturnToJumpType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -3286,7 +3318,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OptionalJumpLabelType
-		symbol.Generic_, err = reducer.JumpLabelToOptionalJumpLabel(args[0].Generic_)
+		symbol.Generic_, err = reducer.JumpLabelToOptionalJumpLabel(args[0].ValueSymbol)
 	case _ReduceUnlabelledToOptionalJumpLabel:
 		symbol.SymbolId_ = OptionalJumpLabelType
 		symbol.Generic_, err = reducer.UnlabelledToOptionalJumpLabel()
@@ -3327,12 +3359,12 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ImportClauseType
-		symbol.Generic_, err = reducer.AliasToImportClause(args[0].Generic_, args[1].Generic_, args[2].Generic_)
+		symbol.Generic_, err = reducer.AliasToImportClause(args[0].Generic_, args[1].Generic_, args[2].ValueSymbol)
 	case _ReduceImplicitToImportClauseTerminal:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ImportClauseTerminalType
-		symbol.Generic_, err = reducer.ImplicitToImportClauseTerminal(args[0].Generic_, args[1].Generic_)
+		symbol.Generic_, err = reducer.ImplicitToImportClauseTerminal(args[0].Generic_, args[1].CountSymbol)
 	case _ReduceExplicitToImportClauseTerminal:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
@@ -3377,7 +3409,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = VarPatternType
-		symbol.Generic_, err = reducer.IdentifierToVarPattern(args[0].Generic_)
+		symbol.Generic_, err = reducer.IdentifierToVarPattern(args[0].ValueSymbol)
 	case _ReduceTuplePatternToVarPattern:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -3407,7 +3439,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = FieldVarPatternType
-		symbol.Generic_, err = reducer.NamedToFieldVarPattern(args[0].Generic_, args[1].Generic_, args[2].Generic_)
+		symbol.Generic_, err = reducer.NamedToFieldVarPattern(args[0].ValueSymbol, args[1].Generic_, args[2].Generic_)
 	case _ReduceDotDotDotToFieldVarPattern:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -3435,12 +3467,12 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = CasePatternType
-		symbol.Generic_, err = reducer.EnumMatchPatternToCasePattern(args[0].Generic_, args[1].Generic_, args[2].Generic_)
+		symbol.Generic_, err = reducer.EnumMatchPatternToCasePattern(args[0].Generic_, args[1].ValueSymbol, args[2].Generic_)
 	case _ReduceEnumVarDeclPatternToCasePattern:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = CasePatternType
-		symbol.Generic_, err = reducer.EnumVarDeclPatternToCasePattern(args[0].Generic_, args[1].Generic_, args[2].Generic_, args[3].Generic_)
+		symbol.Generic_, err = reducer.EnumVarDeclPatternToCasePattern(args[0].Generic_, args[1].Generic_, args[2].ValueSymbol, args[3].Generic_)
 	case _ReduceIfExprToExpression:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
@@ -3465,7 +3497,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OptionalLabelDeclType
-		symbol.Generic_, err = reducer.LabelDeclToOptionalLabelDecl(args[0].Generic_)
+		symbol.Generic_, err = reducer.LabelDeclToOptionalLabelDecl(args[0].ValueSymbol)
 	case _ReduceUnlabelledToOptionalLabelDecl:
 		symbol.SymbolId_ = OptionalLabelDeclType
 		symbol.Generic_, err = reducer.UnlabelledToOptionalLabelDecl()
@@ -3615,7 +3647,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ArgumentType
-		symbol.Generic_, err = reducer.NamedToArgument(args[0].Generic_, args[1].Generic_, args[2].Generic_)
+		symbol.Generic_, err = reducer.NamedToArgument(args[0].ValueSymbol, args[1].Generic_, args[2].Generic_)
 	case _ReduceColonExpressionsToArgument:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -3653,7 +3685,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomExprType
-		symbol.Generic_, err = reducer.IdentifierToAtomExpr(args[0].Generic_)
+		symbol.Generic_, err = reducer.IdentifierToAtomExpr(args[0].ValueSymbol)
 	case _ReduceBlockExprToAtomExpr:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
@@ -3723,7 +3755,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = AccessExprType
-		symbol.Generic_, err = reducer.AccessToAccessExpr(args[0].Generic_, args[1].Generic_, args[2].Generic_)
+		symbol.Generic_, err = reducer.AccessToAccessExpr(args[0].Generic_, args[1].Generic_, args[2].ValueSymbol)
 	case _ReduceCallExprToAccessExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -3938,12 +3970,12 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = AtomTypeType
-		symbol.Generic_, err = reducer.NamedToAtomType(args[0].Generic_, args[1].Generic_)
+		symbol.Generic_, err = reducer.NamedToAtomType(args[0].ValueSymbol, args[1].Generic_)
 	case _ReduceExternNamedToAtomType:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = AtomTypeType
-		symbol.Generic_, err = reducer.ExternNamedToAtomType(args[0].Generic_, args[1].Generic_, args[2].Generic_, args[3].Generic_)
+		symbol.Generic_, err = reducer.ExternNamedToAtomType(args[0].ValueSymbol, args[1].Generic_, args[2].ValueSymbol, args[3].Generic_)
 	case _ReduceInferredToAtomType:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
@@ -4033,27 +4065,27 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = TypeDefType
-		symbol.Generic_, err = reducer.DefinitionToTypeDef(args[0].Generic_, args[1].Generic_, args[2].Generic_, args[3].Generic_)
+		symbol.Generic_, err = reducer.DefinitionToTypeDef(args[0].Generic_, args[1].ValueSymbol, args[2].Generic_, args[3].Generic_)
 	case _ReduceConstrainedDefToTypeDef:
 		args := stack[len(stack)-6:]
 		stack = stack[:len(stack)-6]
 		symbol.SymbolId_ = TypeDefType
-		symbol.Generic_, err = reducer.ConstrainedDefToTypeDef(args[0].Generic_, args[1].Generic_, args[2].Generic_, args[3].Generic_, args[4].Generic_, args[5].Generic_)
+		symbol.Generic_, err = reducer.ConstrainedDefToTypeDef(args[0].Generic_, args[1].ValueSymbol, args[2].Generic_, args[3].Generic_, args[4].Generic_, args[5].Generic_)
 	case _ReduceAliasToTypeDef:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = TypeDefType
-		symbol.Generic_, err = reducer.AliasToTypeDef(args[0].Generic_, args[1].Generic_, args[2].Generic_, args[3].Generic_)
+		symbol.Generic_, err = reducer.AliasToTypeDef(args[0].Generic_, args[1].ValueSymbol, args[2].Generic_, args[3].Generic_)
 	case _ReduceUnconstrainedToGenericParameterDef:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = GenericParameterDefType
-		symbol.Generic_, err = reducer.UnconstrainedToGenericParameterDef(args[0].Generic_)
+		symbol.Generic_, err = reducer.UnconstrainedToGenericParameterDef(args[0].ValueSymbol)
 	case _ReduceConstrainedToGenericParameterDef:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = GenericParameterDefType
-		symbol.Generic_, err = reducer.ConstrainedToGenericParameterDef(args[0].Generic_, args[1].Generic_)
+		symbol.Generic_, err = reducer.ConstrainedToGenericParameterDef(args[0].ValueSymbol, args[1].Generic_)
 	case _ReduceGenericParameterDefToGenericParameterDefs:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -4084,7 +4116,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = FieldDefType
-		symbol.Generic_, err = reducer.ExplicitToFieldDef(args[0].Generic_, args[1].Generic_)
+		symbol.Generic_, err = reducer.ExplicitToFieldDef(args[0].ValueSymbol, args[1].Generic_)
 	case _ReduceImplicitToFieldDef:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -4127,7 +4159,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ExplicitFieldDefsType
-		symbol.Generic_, err = reducer.ImplicitToExplicitFieldDefs(args[0].Generic_, args[1].Generic_, args[2].Generic_)
+		symbol.Generic_, err = reducer.ImplicitToExplicitFieldDefs(args[0].Generic_, args[1].CountSymbol, args[2].Generic_)
 	case _ReduceExplicitToExplicitFieldDefs:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -4180,7 +4212,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ExplicitEnumValueDefsType
-		symbol.Generic_, err = reducer.ImplicitPairToExplicitEnumValueDefs(args[0].Generic_, args[1].Generic_, args[2].Generic_)
+		symbol.Generic_, err = reducer.ImplicitPairToExplicitEnumValueDefs(args[0].Generic_, args[1].CountSymbol, args[2].Generic_)
 	case _ReduceExplicitAddToExplicitEnumValueDefs:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -4190,7 +4222,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ExplicitEnumValueDefsType
-		symbol.Generic_, err = reducer.ImplicitAddToExplicitEnumValueDefs(args[0].Generic_, args[1].Generic_, args[2].Generic_)
+		symbol.Generic_, err = reducer.ImplicitAddToExplicitEnumValueDefs(args[0].Generic_, args[1].CountSymbol, args[2].Generic_)
 	case _ReduceToExplicitEnumDef:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
@@ -4215,7 +4247,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = TraitPropertiesType
-		symbol.Generic_, err = reducer.ImplicitToTraitProperties(args[0].Generic_, args[1].Generic_, args[2].Generic_)
+		symbol.Generic_, err = reducer.ImplicitToTraitProperties(args[0].Generic_, args[1].CountSymbol, args[2].Generic_)
 	case _ReduceExplicitToTraitProperties:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -4246,12 +4278,12 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ParameterDeclType
-		symbol.Generic_, err = reducer.ArgToParameterDecl(args[0].Generic_, args[1].Generic_)
+		symbol.Generic_, err = reducer.ArgToParameterDecl(args[0].ValueSymbol, args[1].Generic_)
 	case _ReduceVarargToParameterDecl:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ParameterDeclType
-		symbol.Generic_, err = reducer.VarargToParameterDecl(args[0].Generic_, args[1].Generic_, args[2].Generic_)
+		symbol.Generic_, err = reducer.VarargToParameterDecl(args[0].ValueSymbol, args[1].Generic_, args[2].Generic_)
 	case _ReduceUnamedToParameterDecl:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -4289,27 +4321,27 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-6:]
 		stack = stack[:len(stack)-6]
 		symbol.SymbolId_ = MethodSignatureType
-		symbol.Generic_, err = reducer.ToMethodSignature(args[0].Generic_, args[1].Generic_, args[2].Generic_, args[3].Generic_, args[4].Generic_, args[5].Generic_)
+		symbol.Generic_, err = reducer.ToMethodSignature(args[0].Generic_, args[1].ValueSymbol, args[2].Generic_, args[3].Generic_, args[4].Generic_, args[5].Generic_)
 	case _ReduceInferredRefArgToParameterDef:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ParameterDefType
-		symbol.Generic_, err = reducer.InferredRefArgToParameterDef(args[0].Generic_)
+		symbol.Generic_, err = reducer.InferredRefArgToParameterDef(args[0].ValueSymbol)
 	case _ReduceInferredRefVarargToParameterDef:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ParameterDefType
-		symbol.Generic_, err = reducer.InferredRefVarargToParameterDef(args[0].Generic_, args[1].Generic_)
+		symbol.Generic_, err = reducer.InferredRefVarargToParameterDef(args[0].ValueSymbol, args[1].Generic_)
 	case _ReduceArgToParameterDef:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ParameterDefType
-		symbol.Generic_, err = reducer.ArgToParameterDef(args[0].Generic_, args[1].Generic_)
+		symbol.Generic_, err = reducer.ArgToParameterDef(args[0].ValueSymbol, args[1].Generic_)
 	case _ReduceVarargToParameterDef:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ParameterDefType
-		symbol.Generic_, err = reducer.VarargToParameterDef(args[0].Generic_, args[1].Generic_, args[2].Generic_)
+		symbol.Generic_, err = reducer.VarargToParameterDef(args[0].ValueSymbol, args[1].Generic_, args[2].Generic_)
 	case _ReduceParameterDefToParameterDefs:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -4332,17 +4364,17 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-8:]
 		stack = stack[:len(stack)-8]
 		symbol.SymbolId_ = NamedFuncDefType
-		symbol.Generic_, err = reducer.FuncDefToNamedFuncDef(args[0].Generic_, args[1].Generic_, args[2].Generic_, args[3].Generic_, args[4].Generic_, args[5].Generic_, args[6].Generic_, args[7].Generic_)
+		symbol.Generic_, err = reducer.FuncDefToNamedFuncDef(args[0].Generic_, args[1].ValueSymbol, args[2].Generic_, args[3].Generic_, args[4].Generic_, args[5].Generic_, args[6].Generic_, args[7].Generic_)
 	case _ReduceMethodDefToNamedFuncDef:
 		args := stack[len(stack)-11:]
 		stack = stack[:len(stack)-11]
 		symbol.SymbolId_ = NamedFuncDefType
-		symbol.Generic_, err = reducer.MethodDefToNamedFuncDef(args[0].Generic_, args[1].Generic_, args[2].Generic_, args[3].Generic_, args[4].Generic_, args[5].Generic_, args[6].Generic_, args[7].Generic_, args[8].Generic_, args[9].Generic_, args[10].Generic_)
+		symbol.Generic_, err = reducer.MethodDefToNamedFuncDef(args[0].Generic_, args[1].Generic_, args[2].Generic_, args[3].Generic_, args[4].ValueSymbol, args[5].Generic_, args[6].Generic_, args[7].Generic_, args[8].Generic_, args[9].Generic_, args[10].Generic_)
 	case _ReduceAliasToNamedFuncDef:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = NamedFuncDefType
-		symbol.Generic_, err = reducer.AliasToNamedFuncDef(args[0].Generic_, args[1].Generic_, args[2].Generic_, args[3].Generic_)
+		symbol.Generic_, err = reducer.AliasToNamedFuncDef(args[0].Generic_, args[1].ValueSymbol, args[2].Generic_, args[3].Generic_)
 	case _ReduceToAnonymousFuncExpr:
 		args := stack[len(stack)-6:]
 		stack = stack[:len(stack)-6]
@@ -5136,10 +5168,10 @@ var _ActionTable = _ActionTableType{
 	{_State5, FuncToken}:                          _GotoState21Action,
 	{_State5, VarToken}:                           _GotoState37Action,
 	{_State5, LetToken}:                           _GotoState27Action,
+	{_State5, NotToken}:                           _GotoState30Action,
 	{_State5, LabelDeclToken}:                     _GotoState25Action,
 	{_State5, LparenToken}:                        _GotoState28Action,
 	{_State5, LbracketToken}:                      _GotoState26Action,
-	{_State5, NotToken}:                           _GotoState30Action,
 	{_State5, SubToken}:                           _GotoState35Action,
 	{_State5, MulToken}:                           _GotoState29Action,
 	{_State5, BitNegToken}:                        _GotoState18Action,
@@ -5198,10 +5230,10 @@ var _ActionTable = _ActionTableType{
 	{_State22, FuncToken}:                         _GotoState21Action,
 	{_State22, VarToken}:                          _GotoState37Action,
 	{_State22, LetToken}:                          _GotoState27Action,
+	{_State22, NotToken}:                          _GotoState30Action,
 	{_State22, LabelDeclToken}:                    _GotoState25Action,
 	{_State22, LparenToken}:                       _GotoState28Action,
 	{_State22, LbracketToken}:                     _GotoState26Action,
-	{_State22, NotToken}:                          _GotoState30Action,
 	{_State22, SubToken}:                          _GotoState35Action,
 	{_State22, MulToken}:                          _GotoState29Action,
 	{_State22, BitNegToken}:                       _GotoState18Action,
@@ -5263,11 +5295,11 @@ var _ActionTable = _ActionTableType{
 	{_State28, FuncToken}:                         _GotoState21Action,
 	{_State28, VarToken}:                          _GotoState37Action,
 	{_State28, LetToken}:                          _GotoState27Action,
+	{_State28, NotToken}:                          _GotoState30Action,
 	{_State28, LabelDeclToken}:                    _GotoState25Action,
 	{_State28, LparenToken}:                       _GotoState28Action,
 	{_State28, LbracketToken}:                     _GotoState26Action,
 	{_State28, DotDotDotToken}:                    _GotoState94Action,
-	{_State28, NotToken}:                          _GotoState30Action,
 	{_State28, SubToken}:                          _GotoState35Action,
 	{_State28, MulToken}:                          _GotoState29Action,
 	{_State28, BitNegToken}:                       _GotoState18Action,
@@ -5345,10 +5377,10 @@ var _ActionTable = _ActionTableType{
 	{_State54, FalseToken}:                        _GotoState19Action,
 	{_State54, StructToken}:                       _GotoState34Action,
 	{_State54, FuncToken}:                         _GotoState21Action,
+	{_State54, NotToken}:                          _GotoState30Action,
 	{_State54, LabelDeclToken}:                    _GotoState25Action,
 	{_State54, LparenToken}:                       _GotoState28Action,
 	{_State54, LbracketToken}:                     _GotoState26Action,
-	{_State54, NotToken}:                          _GotoState30Action,
 	{_State54, SubToken}:                          _GotoState35Action,
 	{_State54, MulToken}:                          _GotoState29Action,
 	{_State54, BitNegToken}:                       _GotoState18Action,
@@ -5620,11 +5652,11 @@ var _ActionTable = _ActionTableType{
 	{_State104, FuncToken}:                        _GotoState21Action,
 	{_State104, VarToken}:                         _GotoState37Action,
 	{_State104, LetToken}:                         _GotoState27Action,
+	{_State104, NotToken}:                         _GotoState30Action,
 	{_State104, LabelDeclToken}:                   _GotoState25Action,
 	{_State104, LparenToken}:                      _GotoState28Action,
 	{_State104, LbracketToken}:                    _GotoState26Action,
 	{_State104, DotDotDotToken}:                   _GotoState94Action,
-	{_State104, NotToken}:                         _GotoState30Action,
 	{_State104, SubToken}:                         _GotoState35Action,
 	{_State104, MulToken}:                         _GotoState29Action,
 	{_State104, BitNegToken}:                      _GotoState18Action,
@@ -5665,10 +5697,10 @@ var _ActionTable = _ActionTableType{
 	{_State111, FalseToken}:                       _GotoState19Action,
 	{_State111, StructToken}:                      _GotoState34Action,
 	{_State111, FuncToken}:                        _GotoState21Action,
+	{_State111, NotToken}:                         _GotoState30Action,
 	{_State111, LabelDeclToken}:                   _GotoState25Action,
 	{_State111, LparenToken}:                      _GotoState28Action,
 	{_State111, LbracketToken}:                    _GotoState26Action,
-	{_State111, NotToken}:                         _GotoState30Action,
 	{_State111, SubToken}:                         _GotoState35Action,
 	{_State111, MulToken}:                         _GotoState29Action,
 	{_State111, BitNegToken}:                      _GotoState18Action,
@@ -5696,10 +5728,10 @@ var _ActionTable = _ActionTableType{
 	{_State112, FalseToken}:                       _GotoState19Action,
 	{_State112, StructToken}:                      _GotoState34Action,
 	{_State112, FuncToken}:                        _GotoState21Action,
+	{_State112, NotToken}:                         _GotoState30Action,
 	{_State112, LabelDeclToken}:                   _GotoState25Action,
 	{_State112, LparenToken}:                      _GotoState28Action,
 	{_State112, LbracketToken}:                    _GotoState26Action,
-	{_State112, NotToken}:                         _GotoState30Action,
 	{_State112, SubToken}:                         _GotoState35Action,
 	{_State112, MulToken}:                         _GotoState29Action,
 	{_State112, BitNegToken}:                      _GotoState18Action,
@@ -5729,10 +5761,10 @@ var _ActionTable = _ActionTableType{
 	{_State119, FalseToken}:                       _GotoState19Action,
 	{_State119, StructToken}:                      _GotoState34Action,
 	{_State119, FuncToken}:                        _GotoState21Action,
+	{_State119, NotToken}:                         _GotoState30Action,
 	{_State119, LabelDeclToken}:                   _GotoState25Action,
 	{_State119, LparenToken}:                      _GotoState28Action,
 	{_State119, LbracketToken}:                    _GotoState26Action,
-	{_State119, NotToken}:                         _GotoState30Action,
 	{_State119, SubToken}:                         _GotoState35Action,
 	{_State119, MulToken}:                         _GotoState29Action,
 	{_State119, BitNegToken}:                      _GotoState18Action,
@@ -5763,11 +5795,11 @@ var _ActionTable = _ActionTableType{
 	{_State120, FuncToken}:                        _GotoState21Action,
 	{_State120, VarToken}:                         _GotoState37Action,
 	{_State120, LetToken}:                         _GotoState27Action,
+	{_State120, NotToken}:                         _GotoState30Action,
 	{_State120, LabelDeclToken}:                   _GotoState25Action,
 	{_State120, LparenToken}:                      _GotoState28Action,
 	{_State120, LbracketToken}:                    _GotoState26Action,
 	{_State120, DotDotDotToken}:                   _GotoState94Action,
-	{_State120, NotToken}:                         _GotoState30Action,
 	{_State120, SubToken}:                         _GotoState35Action,
 	{_State120, MulToken}:                         _GotoState29Action,
 	{_State120, BitNegToken}:                      _GotoState18Action,
@@ -5808,10 +5840,10 @@ var _ActionTable = _ActionTableType{
 	{_State127, FalseToken}:                       _GotoState19Action,
 	{_State127, StructToken}:                      _GotoState34Action,
 	{_State127, FuncToken}:                        _GotoState21Action,
+	{_State127, NotToken}:                         _GotoState30Action,
 	{_State127, LabelDeclToken}:                   _GotoState25Action,
 	{_State127, LparenToken}:                      _GotoState28Action,
 	{_State127, LbracketToken}:                    _GotoState26Action,
-	{_State127, NotToken}:                         _GotoState30Action,
 	{_State127, SubToken}:                         _GotoState35Action,
 	{_State127, MulToken}:                         _GotoState29Action,
 	{_State127, BitNegToken}:                      _GotoState18Action,
@@ -5842,10 +5874,10 @@ var _ActionTable = _ActionTableType{
 	{_State129, FuncToken}:                        _GotoState21Action,
 	{_State129, VarToken}:                         _GotoState37Action,
 	{_State129, LetToken}:                         _GotoState27Action,
+	{_State129, NotToken}:                         _GotoState30Action,
 	{_State129, LabelDeclToken}:                   _GotoState25Action,
 	{_State129, LparenToken}:                      _GotoState28Action,
 	{_State129, LbracketToken}:                    _GotoState26Action,
-	{_State129, NotToken}:                         _GotoState30Action,
 	{_State129, SubToken}:                         _GotoState35Action,
 	{_State129, MulToken}:                         _GotoState29Action,
 	{_State129, BitNegToken}:                      _GotoState18Action,
@@ -5886,10 +5918,10 @@ var _ActionTable = _ActionTableType{
 	{_State130, FuncToken}:                        _GotoState21Action,
 	{_State130, VarToken}:                         _GotoState37Action,
 	{_State130, LetToken}:                         _GotoState27Action,
+	{_State130, NotToken}:                         _GotoState30Action,
 	{_State130, LabelDeclToken}:                   _GotoState25Action,
 	{_State130, LparenToken}:                      _GotoState28Action,
 	{_State130, LbracketToken}:                    _GotoState26Action,
-	{_State130, NotToken}:                         _GotoState30Action,
 	{_State130, SubToken}:                         _GotoState35Action,
 	{_State130, MulToken}:                         _GotoState29Action,
 	{_State130, BitNegToken}:                      _GotoState18Action,
@@ -5928,10 +5960,10 @@ var _ActionTable = _ActionTableType{
 	{_State131, FuncToken}:                        _GotoState21Action,
 	{_State131, VarToken}:                         _GotoState37Action,
 	{_State131, LetToken}:                         _GotoState27Action,
+	{_State131, NotToken}:                         _GotoState30Action,
 	{_State131, LabelDeclToken}:                   _GotoState25Action,
 	{_State131, LparenToken}:                      _GotoState28Action,
 	{_State131, LbracketToken}:                    _GotoState26Action,
-	{_State131, NotToken}:                         _GotoState30Action,
 	{_State131, SubToken}:                         _GotoState35Action,
 	{_State131, MulToken}:                         _GotoState29Action,
 	{_State131, BitNegToken}:                      _GotoState18Action,
@@ -5967,10 +5999,10 @@ var _ActionTable = _ActionTableType{
 	{_State136, FalseToken}:                       _GotoState19Action,
 	{_State136, StructToken}:                      _GotoState34Action,
 	{_State136, FuncToken}:                        _GotoState21Action,
+	{_State136, NotToken}:                         _GotoState30Action,
 	{_State136, LabelDeclToken}:                   _GotoState25Action,
 	{_State136, LparenToken}:                      _GotoState28Action,
 	{_State136, LbracketToken}:                    _GotoState26Action,
-	{_State136, NotToken}:                         _GotoState30Action,
 	{_State136, SubToken}:                         _GotoState35Action,
 	{_State136, MulToken}:                         _GotoState29Action,
 	{_State136, BitNegToken}:                      _GotoState18Action,
@@ -6044,11 +6076,11 @@ var _ActionTable = _ActionTableType{
 	{_State142, DeferToken}:                       _GotoState222Action,
 	{_State142, VarToken}:                         _GotoState37Action,
 	{_State142, LetToken}:                         _GotoState27Action,
+	{_State142, NotToken}:                         _GotoState30Action,
 	{_State142, LabelDeclToken}:                   _GotoState25Action,
 	{_State142, RbraceToken}:                      _GotoState224Action,
 	{_State142, LparenToken}:                      _GotoState28Action,
 	{_State142, LbracketToken}:                    _GotoState26Action,
-	{_State142, NotToken}:                         _GotoState30Action,
 	{_State142, SubToken}:                         _GotoState35Action,
 	{_State142, MulToken}:                         _GotoState29Action,
 	{_State142, BitNegToken}:                      _GotoState18Action,
@@ -6107,10 +6139,10 @@ var _ActionTable = _ActionTableType{
 	{_State145, FuncToken}:                        _GotoState21Action,
 	{_State145, VarToken}:                         _GotoState37Action,
 	{_State145, LetToken}:                         _GotoState27Action,
+	{_State145, NotToken}:                         _GotoState30Action,
 	{_State145, LabelDeclToken}:                   _GotoState25Action,
 	{_State145, LparenToken}:                      _GotoState28Action,
 	{_State145, LbracketToken}:                    _GotoState26Action,
-	{_State145, NotToken}:                         _GotoState30Action,
 	{_State145, SubToken}:                         _GotoState35Action,
 	{_State145, MulToken}:                         _GotoState29Action,
 	{_State145, BitNegToken}:                      _GotoState18Action,
@@ -6201,10 +6233,10 @@ var _ActionTable = _ActionTableType{
 	{_State149, FuncToken}:                        _GotoState21Action,
 	{_State149, VarToken}:                         _GotoState37Action,
 	{_State149, LetToken}:                         _GotoState27Action,
+	{_State149, NotToken}:                         _GotoState30Action,
 	{_State149, LabelDeclToken}:                   _GotoState25Action,
 	{_State149, LparenToken}:                      _GotoState28Action,
 	{_State149, LbracketToken}:                    _GotoState26Action,
-	{_State149, NotToken}:                         _GotoState30Action,
 	{_State149, SubToken}:                         _GotoState35Action,
 	{_State149, MulToken}:                         _GotoState29Action,
 	{_State149, BitNegToken}:                      _GotoState18Action,
@@ -6349,8 +6381,8 @@ var _ActionTable = _ActionTableType{
 	{_State165, LessToken}:                        _GotoState264Action,
 	{_State166, OrToken}:                          _GotoState265Action,
 	{_State167, AssignToken}:                      _GotoState266Action,
-	{_State168, RparenToken}:                      _GotoState268Action,
 	{_State168, OrToken}:                          _GotoState267Action,
+	{_State168, RparenToken}:                      _GotoState268Action,
 	{_State169, CommaToken}:                       _GotoState269Action,
 	{_State170, RparenToken}:                      _GotoState270Action,
 	{_State172, AddToken}:                         _GotoState176Action,
@@ -6492,10 +6524,10 @@ var _ActionTable = _ActionTableType{
 	{_State182, FuncToken}:                        _GotoState21Action,
 	{_State182, VarToken}:                         _GotoState37Action,
 	{_State182, LetToken}:                         _GotoState27Action,
+	{_State182, NotToken}:                         _GotoState30Action,
 	{_State182, LabelDeclToken}:                   _GotoState25Action,
 	{_State182, LparenToken}:                      _GotoState28Action,
 	{_State182, LbracketToken}:                    _GotoState26Action,
-	{_State182, NotToken}:                         _GotoState30Action,
 	{_State182, SubToken}:                         _GotoState35Action,
 	{_State182, MulToken}:                         _GotoState29Action,
 	{_State182, BitNegToken}:                      _GotoState18Action,
@@ -6534,11 +6566,11 @@ var _ActionTable = _ActionTableType{
 	{_State183, FuncToken}:                        _GotoState21Action,
 	{_State183, VarToken}:                         _GotoState37Action,
 	{_State183, LetToken}:                         _GotoState27Action,
+	{_State183, NotToken}:                         _GotoState30Action,
 	{_State183, LabelDeclToken}:                   _GotoState25Action,
 	{_State183, LparenToken}:                      _GotoState28Action,
 	{_State183, LbracketToken}:                    _GotoState26Action,
 	{_State183, DotDotDotToken}:                   _GotoState94Action,
-	{_State183, NotToken}:                         _GotoState30Action,
 	{_State183, SubToken}:                         _GotoState35Action,
 	{_State183, MulToken}:                         _GotoState29Action,
 	{_State183, BitNegToken}:                      _GotoState18Action,
@@ -6580,10 +6612,10 @@ var _ActionTable = _ActionTableType{
 	{_State185, FuncToken}:                        _GotoState21Action,
 	{_State185, VarToken}:                         _GotoState37Action,
 	{_State185, LetToken}:                         _GotoState27Action,
+	{_State185, NotToken}:                         _GotoState30Action,
 	{_State185, LabelDeclToken}:                   _GotoState25Action,
 	{_State185, LparenToken}:                      _GotoState28Action,
 	{_State185, LbracketToken}:                    _GotoState26Action,
-	{_State185, NotToken}:                         _GotoState30Action,
 	{_State185, SubToken}:                         _GotoState35Action,
 	{_State185, MulToken}:                         _GotoState29Action,
 	{_State185, BitNegToken}:                      _GotoState18Action,
@@ -6623,10 +6655,10 @@ var _ActionTable = _ActionTableType{
 	{_State186, FuncToken}:                        _GotoState21Action,
 	{_State186, VarToken}:                         _GotoState37Action,
 	{_State186, LetToken}:                         _GotoState27Action,
+	{_State186, NotToken}:                         _GotoState30Action,
 	{_State186, LabelDeclToken}:                   _GotoState25Action,
 	{_State186, LparenToken}:                      _GotoState28Action,
 	{_State186, LbracketToken}:                    _GotoState26Action,
-	{_State186, NotToken}:                         _GotoState30Action,
 	{_State186, SubToken}:                         _GotoState35Action,
 	{_State186, MulToken}:                         _GotoState29Action,
 	{_State186, BitNegToken}:                      _GotoState18Action,
@@ -6675,11 +6707,11 @@ var _ActionTable = _ActionTableType{
 	{_State195, FuncToken}:                        _GotoState21Action,
 	{_State195, VarToken}:                         _GotoState37Action,
 	{_State195, LetToken}:                         _GotoState27Action,
+	{_State195, NotToken}:                         _GotoState30Action,
 	{_State195, LabelDeclToken}:                   _GotoState25Action,
 	{_State195, LparenToken}:                      _GotoState28Action,
 	{_State195, LbracketToken}:                    _GotoState26Action,
 	{_State195, DotDotDotToken}:                   _GotoState94Action,
-	{_State195, NotToken}:                         _GotoState30Action,
 	{_State195, SubToken}:                         _GotoState35Action,
 	{_State195, MulToken}:                         _GotoState29Action,
 	{_State195, BitNegToken}:                      _GotoState18Action,
@@ -6749,11 +6781,11 @@ var _ActionTable = _ActionTableType{
 	{_State205, FuncToken}:                        _GotoState21Action,
 	{_State205, VarToken}:                         _GotoState302Action,
 	{_State205, LetToken}:                         _GotoState27Action,
+	{_State205, NotToken}:                         _GotoState30Action,
 	{_State205, LabelDeclToken}:                   _GotoState25Action,
 	{_State205, LparenToken}:                      _GotoState28Action,
 	{_State205, LbracketToken}:                    _GotoState26Action,
 	{_State205, DotToken}:                         _GotoState301Action,
-	{_State205, NotToken}:                         _GotoState30Action,
 	{_State205, SubToken}:                         _GotoState35Action,
 	{_State205, MulToken}:                         _GotoState29Action,
 	{_State205, BitNegToken}:                      _GotoState18Action,
@@ -6827,11 +6859,11 @@ var _ActionTable = _ActionTableType{
 	{_State219, FuncToken}:                        _GotoState21Action,
 	{_State219, VarToken}:                         _GotoState302Action,
 	{_State219, LetToken}:                         _GotoState27Action,
+	{_State219, NotToken}:                         _GotoState30Action,
 	{_State219, LabelDeclToken}:                   _GotoState25Action,
 	{_State219, LparenToken}:                      _GotoState28Action,
 	{_State219, LbracketToken}:                    _GotoState26Action,
 	{_State219, DotToken}:                         _GotoState301Action,
-	{_State219, NotToken}:                         _GotoState30Action,
 	{_State219, SubToken}:                         _GotoState35Action,
 	{_State219, MulToken}:                         _GotoState29Action,
 	{_State219, BitNegToken}:                      _GotoState18Action,
@@ -7260,10 +7292,10 @@ var _ActionTable = _ActionTableType{
 	{_State296, FuncToken}:                        _GotoState21Action,
 	{_State296, VarToken}:                         _GotoState37Action,
 	{_State296, LetToken}:                         _GotoState27Action,
+	{_State296, NotToken}:                         _GotoState30Action,
 	{_State296, LabelDeclToken}:                   _GotoState25Action,
 	{_State296, LparenToken}:                      _GotoState28Action,
 	{_State296, LbracketToken}:                    _GotoState26Action,
-	{_State296, NotToken}:                         _GotoState30Action,
 	{_State296, SubToken}:                         _GotoState35Action,
 	{_State296, MulToken}:                         _GotoState29Action,
 	{_State296, BitNegToken}:                      _GotoState18Action,
@@ -7301,10 +7333,10 @@ var _ActionTable = _ActionTableType{
 	{_State297, FuncToken}:                        _GotoState21Action,
 	{_State297, VarToken}:                         _GotoState37Action,
 	{_State297, LetToken}:                         _GotoState27Action,
+	{_State297, NotToken}:                         _GotoState30Action,
 	{_State297, LabelDeclToken}:                   _GotoState25Action,
 	{_State297, LparenToken}:                      _GotoState28Action,
 	{_State297, LbracketToken}:                    _GotoState26Action,
-	{_State297, NotToken}:                         _GotoState30Action,
 	{_State297, SubToken}:                         _GotoState35Action,
 	{_State297, MulToken}:                         _GotoState29Action,
 	{_State297, BitNegToken}:                      _GotoState18Action,
@@ -7342,10 +7374,10 @@ var _ActionTable = _ActionTableType{
 	{_State298, FuncToken}:                        _GotoState21Action,
 	{_State298, VarToken}:                         _GotoState37Action,
 	{_State298, LetToken}:                         _GotoState27Action,
+	{_State298, NotToken}:                         _GotoState30Action,
 	{_State298, LabelDeclToken}:                   _GotoState25Action,
 	{_State298, LparenToken}:                      _GotoState28Action,
 	{_State298, LbracketToken}:                    _GotoState26Action,
-	{_State298, NotToken}:                         _GotoState30Action,
 	{_State298, SubToken}:                         _GotoState35Action,
 	{_State298, MulToken}:                         _GotoState29Action,
 	{_State298, BitNegToken}:                      _GotoState18Action,
@@ -7383,10 +7415,10 @@ var _ActionTable = _ActionTableType{
 	{_State299, FuncToken}:                        _GotoState21Action,
 	{_State299, VarToken}:                         _GotoState37Action,
 	{_State299, LetToken}:                         _GotoState27Action,
+	{_State299, NotToken}:                         _GotoState30Action,
 	{_State299, LabelDeclToken}:                   _GotoState25Action,
 	{_State299, LparenToken}:                      _GotoState28Action,
 	{_State299, LbracketToken}:                    _GotoState26Action,
-	{_State299, NotToken}:                         _GotoState30Action,
 	{_State299, SubToken}:                         _GotoState35Action,
 	{_State299, MulToken}:                         _GotoState29Action,
 	{_State299, BitNegToken}:                      _GotoState18Action,
@@ -7448,10 +7480,10 @@ var _ActionTable = _ActionTableType{
 	{_State315, FuncToken}:                        _GotoState21Action,
 	{_State315, VarToken}:                         _GotoState37Action,
 	{_State315, LetToken}:                         _GotoState27Action,
+	{_State315, NotToken}:                         _GotoState30Action,
 	{_State315, LabelDeclToken}:                   _GotoState25Action,
 	{_State315, LparenToken}:                      _GotoState28Action,
 	{_State315, LbracketToken}:                    _GotoState26Action,
-	{_State315, NotToken}:                         _GotoState30Action,
 	{_State315, SubToken}:                         _GotoState35Action,
 	{_State315, MulToken}:                         _GotoState29Action,
 	{_State315, BitNegToken}:                      _GotoState18Action,
@@ -7494,10 +7526,10 @@ var _ActionTable = _ActionTableType{
 	{_State333, FuncToken}:                        _GotoState21Action,
 	{_State333, VarToken}:                         _GotoState37Action,
 	{_State333, LetToken}:                         _GotoState27Action,
+	{_State333, NotToken}:                         _GotoState30Action,
 	{_State333, LabelDeclToken}:                   _GotoState25Action,
 	{_State333, LparenToken}:                      _GotoState28Action,
 	{_State333, LbracketToken}:                    _GotoState26Action,
-	{_State333, NotToken}:                         _GotoState30Action,
 	{_State333, SubToken}:                         _GotoState35Action,
 	{_State333, MulToken}:                         _GotoState29Action,
 	{_State333, BitNegToken}:                      _GotoState18Action,
@@ -7536,10 +7568,10 @@ var _ActionTable = _ActionTableType{
 	{_State335, FuncToken}:                        _GotoState21Action,
 	{_State335, VarToken}:                         _GotoState37Action,
 	{_State335, LetToken}:                         _GotoState27Action,
+	{_State335, NotToken}:                         _GotoState30Action,
 	{_State335, LabelDeclToken}:                   _GotoState25Action,
 	{_State335, LparenToken}:                      _GotoState28Action,
 	{_State335, LbracketToken}:                    _GotoState26Action,
-	{_State335, NotToken}:                         _GotoState30Action,
 	{_State335, SubToken}:                         _GotoState35Action,
 	{_State335, MulToken}:                         _GotoState29Action,
 	{_State335, BitNegToken}:                      _GotoState18Action,
@@ -7578,10 +7610,10 @@ var _ActionTable = _ActionTableType{
 	{_State336, FuncToken}:                        _GotoState21Action,
 	{_State336, VarToken}:                         _GotoState37Action,
 	{_State336, LetToken}:                         _GotoState27Action,
+	{_State336, NotToken}:                         _GotoState30Action,
 	{_State336, LabelDeclToken}:                   _GotoState25Action,
 	{_State336, LparenToken}:                      _GotoState28Action,
 	{_State336, LbracketToken}:                    _GotoState26Action,
-	{_State336, NotToken}:                         _GotoState30Action,
 	{_State336, SubToken}:                         _GotoState35Action,
 	{_State336, MulToken}:                         _GotoState29Action,
 	{_State336, BitNegToken}:                      _GotoState18Action,
@@ -7620,10 +7652,10 @@ var _ActionTable = _ActionTableType{
 	{_State338, FuncToken}:                        _GotoState21Action,
 	{_State338, VarToken}:                         _GotoState37Action,
 	{_State338, LetToken}:                         _GotoState27Action,
+	{_State338, NotToken}:                         _GotoState30Action,
 	{_State338, LabelDeclToken}:                   _GotoState25Action,
 	{_State338, LparenToken}:                      _GotoState28Action,
 	{_State338, LbracketToken}:                    _GotoState26Action,
-	{_State338, NotToken}:                         _GotoState30Action,
 	{_State338, SubToken}:                         _GotoState35Action,
 	{_State338, MulToken}:                         _GotoState29Action,
 	{_State338, BitNegToken}:                      _GotoState18Action,
@@ -7961,10 +7993,10 @@ var _ActionTable = _ActionTableType{
 	{_State385, FuncToken}:                        _GotoState21Action,
 	{_State385, VarToken}:                         _GotoState37Action,
 	{_State385, LetToken}:                         _GotoState27Action,
+	{_State385, NotToken}:                         _GotoState30Action,
 	{_State385, LabelDeclToken}:                   _GotoState25Action,
 	{_State385, LparenToken}:                      _GotoState28Action,
 	{_State385, LbracketToken}:                    _GotoState26Action,
-	{_State385, NotToken}:                         _GotoState30Action,
 	{_State385, SubToken}:                         _GotoState35Action,
 	{_State385, MulToken}:                         _GotoState29Action,
 	{_State385, BitNegToken}:                      _GotoState18Action,
@@ -8002,11 +8034,11 @@ var _ActionTable = _ActionTableType{
 	{_State386, FuncToken}:                        _GotoState21Action,
 	{_State386, VarToken}:                         _GotoState302Action,
 	{_State386, LetToken}:                         _GotoState27Action,
+	{_State386, NotToken}:                         _GotoState30Action,
 	{_State386, LabelDeclToken}:                   _GotoState25Action,
 	{_State386, LparenToken}:                      _GotoState28Action,
 	{_State386, LbracketToken}:                    _GotoState26Action,
 	{_State386, DotToken}:                         _GotoState301Action,
-	{_State386, NotToken}:                         _GotoState30Action,
 	{_State386, SubToken}:                         _GotoState35Action,
 	{_State386, MulToken}:                         _GotoState29Action,
 	{_State386, BitNegToken}:                      _GotoState18Action,
@@ -8050,10 +8082,10 @@ var _ActionTable = _ActionTableType{
 	{_State390, FuncToken}:                        _GotoState21Action,
 	{_State390, VarToken}:                         _GotoState37Action,
 	{_State390, LetToken}:                         _GotoState27Action,
+	{_State390, NotToken}:                         _GotoState30Action,
 	{_State390, LabelDeclToken}:                   _GotoState25Action,
 	{_State390, LparenToken}:                      _GotoState28Action,
 	{_State390, LbracketToken}:                    _GotoState26Action,
-	{_State390, NotToken}:                         _GotoState30Action,
 	{_State390, SubToken}:                         _GotoState35Action,
 	{_State390, MulToken}:                         _GotoState29Action,
 	{_State390, BitNegToken}:                      _GotoState18Action,
@@ -8161,10 +8193,10 @@ var _ActionTable = _ActionTableType{
 	{_State418, FuncToken}:                        _GotoState21Action,
 	{_State418, VarToken}:                         _GotoState37Action,
 	{_State418, LetToken}:                         _GotoState27Action,
+	{_State418, NotToken}:                         _GotoState30Action,
 	{_State418, LabelDeclToken}:                   _GotoState25Action,
 	{_State418, LparenToken}:                      _GotoState28Action,
 	{_State418, LbracketToken}:                    _GotoState26Action,
-	{_State418, NotToken}:                         _GotoState30Action,
 	{_State418, SubToken}:                         _GotoState35Action,
 	{_State418, MulToken}:                         _GotoState29Action,
 	{_State418, BitNegToken}:                      _GotoState18Action,
@@ -8670,10 +8702,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -8869,10 +8901,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -8983,11 +9015,11 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
       DOT_DOT_DOT -> State 94
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -9276,10 +9308,10 @@ Parser Debug States:
       FALSE -> State 19
       STRUCT -> State 34
       FUNC -> State 21
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -9940,11 +9972,11 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
       DOT_DOT_DOT -> State 94
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -10039,10 +10071,10 @@ Parser Debug States:
       FALSE -> State 19
       STRUCT -> State 34
       FUNC -> State 21
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -10077,10 +10109,10 @@ Parser Debug States:
       FALSE -> State 19
       STRUCT -> State 34
       FUNC -> State 21
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -10165,10 +10197,10 @@ Parser Debug States:
       FALSE -> State 19
       STRUCT -> State 34
       FUNC -> State 21
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -10207,11 +10239,11 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
       DOT_DOT_DOT -> State 94
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -10307,10 +10339,10 @@ Parser Debug States:
       FALSE -> State 19
       STRUCT -> State 34
       FUNC -> State 21
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -10358,10 +10390,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -10411,10 +10443,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -10460,10 +10492,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -10538,10 +10570,10 @@ Parser Debug States:
       FALSE -> State 19
       STRUCT -> State 34
       FUNC -> State 21
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -10661,11 +10693,11 @@ Parser Debug States:
       DEFER -> State 222
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       RBRACE -> State 224
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -10747,10 +10779,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -10870,10 +10902,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -11167,8 +11199,8 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 268
       OR -> State 267
+      RPAREN -> State 268
 
   State 169:
     Kernel Items:
@@ -11416,10 +11448,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -11466,11 +11498,11 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
       DOT_DOT_DOT -> State 94
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -11531,10 +11563,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -11585,10 +11617,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -11710,11 +11742,11 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
       DOT_DOT_DOT -> State 94
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -11864,11 +11896,11 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 302
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
       DOT -> State 301
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -12054,11 +12086,11 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 302
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
       DOT -> State 301
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -13104,10 +13136,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -13152,10 +13184,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -13200,10 +13232,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -13249,10 +13281,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -13443,10 +13475,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -13635,10 +13667,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -13692,10 +13724,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -13741,10 +13773,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -13800,10 +13832,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -14508,10 +14540,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -14556,11 +14588,11 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 302
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
       DOT -> State 301
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -14635,10 +14667,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -14972,10 +15004,10 @@ Parser Debug States:
       FUNC -> State 21
       VAR -> State 37
       LET -> State 27
+      NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      NOT -> State 30
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18

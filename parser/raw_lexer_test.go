@@ -27,7 +27,8 @@ func (s *RawLexerSuite) lex(
 		"source.txt",
 		buffer,
 		RawLexerOptions{
-			InitialPeekWindowSize: 1,
+			PreserveCommentContent: true,
+			initialPeekWindowSize:  1,
 		})
 
 	tokens := []Token{}
@@ -88,6 +89,10 @@ func (s *RawLexerSuite) TestNewlinesTokens(t *testing.T) {
 		tokens := s.lex(
 			t, testInputPrefix+"\r-",
 			AddToken, NewlinesToken, ParseErrorToken, SubToken)
+
+		newlines, ok := tokens[1].(CountSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, i+1, newlines.Count)
 
 		parseError, ok := tokens[2].(ParseErrorSymbol)
 		expect.True(t, ok)
@@ -180,7 +185,6 @@ func (s *RawLexerSuite) TestMulTokens(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestDivTokens(t *testing.T) {
-	// TODO line and block comments
 	s.lex(t, "+/-", AddToken, DivToken, SubToken)
 	s.lex(t, "+/=-", AddToken, DivAssignToken, SubToken)
 }
@@ -338,3 +342,31 @@ func (s *RawLexerSuite) TestKeywordTokens(t *testing.T) {
 		expect.Equal(t, kw+"blah", symbol.Value)
 	}
 }
+
+func (s *RawLexerSuite) TestLineCommentToken(t *testing.T) {
+	comment := "//"
+	for i := 0; i < 101; i++ {
+		tokens := s.lex(t, "+"+comment, AddToken, lineCommentToken)
+		value, ok := tokens[1].(ValueSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, comment, value.Value)
+
+		tokens = s.lex(
+			t, "+"+comment+"\n",
+			AddToken, lineCommentToken, NewlinesToken)
+		value, ok = tokens[1].(ValueSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, comment, value.Value)
+
+		tokens = s.lex(
+			t, "+"+comment+"\r\n",
+			AddToken, lineCommentToken, NewlinesToken)
+		value, ok = tokens[1].(ValueSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, comment, value.Value)
+
+		comment += s.idChar(i)
+	}
+}
+
+// TODO line and block comments

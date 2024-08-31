@@ -9,6 +9,16 @@ func (pe ParseErrorSymbol) Id() SymbolId { return ParseErrorToken }
 
 func (pe ParseErrorSymbol) Loc() Location { return pe.Location }
 
+type CountSymbol struct {
+	SymbolId
+	Location
+	Count int
+}
+
+func (cs CountSymbol) Id() SymbolId { return cs.SymbolId }
+
+func (cs CountSymbol) Loc() Location { return cs.Location }
+
 type ValueSymbol struct {
 	SymbolId
 	Location

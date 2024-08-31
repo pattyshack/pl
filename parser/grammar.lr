@@ -1,4 +1,4 @@
-%token NEWLINES // (\n|\r\n)+
+%token<CountSymbol> NEWLINES // (\n|\r\n)+
 
 %token INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
 
@@ -6,7 +6,7 @@
 // placeholder.  Identifiers with prefix "_" are private to the package.
 // nameing convention is lower camelcase for variables, upper camelcase for
 // types.
-%token IDENTIFIER
+%token<ValueSymbol> IDENTIFIER
 
 %token TRUE FALSE
 
@@ -23,8 +23,8 @@
 
 %token NOT AND OR
 
-%token LABEL_DECL // <identifier>@
-%token JUMP_LABEL // @<identifier>
+%token<ValueSymbol> LABEL_DECL // <identifier>@
+%token<ValueSymbol> JUMP_LABEL // @<identifier>
 
 %token LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
 %token DOT COMMA QUESTION SEMICOLON COLON EXCLAIM
@@ -739,4 +739,6 @@ go:
   package: parser
   value_types:
     ParseError: "ParseErrorSymbol"
+    CountSymbol: "CountSymbol"
+    ValueSymbol: "ValueSymbol"
 }%%

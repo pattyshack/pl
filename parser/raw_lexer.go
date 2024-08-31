@@ -60,7 +60,7 @@ type RawLexerOptions struct {
 
 	// Initial peek window size used for lexing a variable length token
 	// (Only used for testing)
-	InitialPeekWindowSize int
+	initialPeekWindowSize int
 }
 
 type RawLexer struct {
@@ -75,8 +75,8 @@ func NewRawLexer(
 	sourceContent io.Reader,
 	options RawLexerOptions,
 ) RawLexer {
-	if options.InitialPeekWindowSize <= 0 {
-		options.InitialPeekWindowSize = defaultInitialPeekWindowSize
+	if options.initialPeekWindowSize <= 0 {
+		options.initialPeekWindowSize = defaultInitialPeekWindowSize
 	}
 
 	internPool := stringutil.NewInternPool()
@@ -304,7 +304,7 @@ func (lexer *RawLexer) peekNextToken() (SymbolId, int, error) {
 
 func (lexer *RawLexer) lexSpacesToken() (Token, error) {
 	hasMore := true
-	peekSize := lexer.InitialPeekWindowSize
+	peekSize := lexer.initialPeekWindowSize
 	numSpaceBytes := 0
 
 	for hasMore {
@@ -349,8 +349,9 @@ func (lexer *RawLexer) lexSpacesToken() (Token, error) {
 
 func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 	hasMore := true
-	peekSize := lexer.InitialPeekWindowSize
+	peekSize := lexer.initialPeekWindowSize
 	numNewlineBytes := 0
+	numNewlines := 0
 	foundInvalidNewline := false
 
 	for hasMore {
@@ -367,6 +368,7 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 			char := peeked[numNewlineBytes]
 			if char == '\n' {
 				numNewlineBytes++
+				numNewlines++
 
 			} else if char == '\r' {
 				if numNewlineBytes+1 >= len(peeked) {
@@ -379,6 +381,7 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 
 				if peeked[numNewlineBytes+1] == '\n' {
 					numNewlineBytes += 2
+					numNewlines++
 				} else { // '\r' not paired with '\n'
 					foundInvalidNewline = true
 					hasMore = false
@@ -400,9 +403,10 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 			panic("This should never happen")
 		}
 
-		return GenericSymbol{
+		return CountSymbol{
 			SymbolId: NewlinesToken,
 			Location: loc,
+			Count:    numNewlines,
 		}, nil
 	} else if foundInvalidNewline {
 		_, err := lexer.Discard(1)
@@ -420,7 +424,52 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 }
 
 func (lexer *RawLexer) lexLineCommentToken() (Token, error) {
-	panic("TODO")
+	hasMore := true
+	peekSize := lexer.initialPeekWindowSize
+	numCommentBytes := 2 // "//" already peeked by peekNextToken
+
+	for hasMore {
+		peeked, err := lexer.Peek(peekSize)
+		if len(peeked) > 0 && err == io.EOF {
+			hasMore = false
+			err = nil
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		for numCommentBytes < len(peeked) {
+			char := peeked[numCommentBytes]
+			if char == '\n' || char == '\r' {
+				hasMore = false
+				break
+			}
+
+			numCommentBytes++
+		}
+
+		peekSize *= 2
+	}
+
+	loc := Location(lexer.Location)
+
+	value := ""
+	if lexer.PreserveCommentContent {
+		peeked, _ := lexer.Peek(numCommentBytes)
+		// Don't intern comment string since duplicates are unlikely
+		value = string(peeked)
+	}
+
+	_, err := lexer.Discard(numCommentBytes)
+	if err != nil {
+		panic("This should never happen")
+	}
+
+	return ValueSymbol{
+		SymbolId: lineCommentToken,
+		Location: loc,
+		Value:    value,
+	}, nil
 }
 
 func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
@@ -446,7 +495,7 @@ func (lexer *RawLexer) lexStringLiteralToken() (Token, error) {
 // offset = 0 for Identifier, 1 for jump label
 func (lexer *RawLexer) peekIdentifier(offset int) (int, error) {
 	hasMore := true
-	peekSize := lexer.InitialPeekWindowSize
+	peekSize := lexer.initialPeekWindowSize
 	numIdentifierBytes := 0
 
 	for hasMore {
