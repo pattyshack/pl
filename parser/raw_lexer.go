@@ -3,7 +3,6 @@ package parser
 import (
 	"fmt"
 	"io"
-	"unicode"
 	"unicode/utf8"
 
 	"github.com/pattyshack/gt/lexutil"
@@ -304,31 +303,11 @@ func (lexer *RawLexer) peekNextToken() (SymbolId, int, error) {
 }
 
 func (lexer *RawLexer) lexSpacesToken() (Token, error) {
-	hasMore := true
-	peekSize := lexer.initialPeekWindowSize
-	numSpaceBytes := 0
-
-	for hasMore {
-		peeked, err := lexer.Peek(peekSize)
-		if len(peeked) > 0 && err == io.EOF {
-			hasMore = false
-			err = nil
-		}
-		if err != nil {
-			return nil, err
-		}
-
-		for numSpaceBytes < len(peeked) {
-			char := peeked[numSpaceBytes]
-			if char == ' ' || char == '\t' {
-				numSpaceBytes++
-			} else {
-				hasMore = false
-				break
-			}
-		}
-
-		peekSize *= 2
+	numSpaceBytes, err := lexutil.PeekSpaces(
+		lexer.BufferedByteLocationReader,
+		lexer.initialPeekWindowSize)
+	if err != nil {
+		return nil, err
 	}
 
 	if numSpaceBytes == 0 {
@@ -337,7 +316,7 @@ func (lexer *RawLexer) lexSpacesToken() (Token, error) {
 
 	loc := Location(lexer.Location)
 
-	_, err := lexer.Discard(numSpaceBytes)
+	_, err = lexer.Discard(numSpaceBytes)
 	if err != nil {
 		panic("This should never happen")
 	}
@@ -349,52 +328,11 @@ func (lexer *RawLexer) lexSpacesToken() (Token, error) {
 }
 
 func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
-	hasMore := true
-	peekSize := lexer.initialPeekWindowSize
-	numNewlineBytes := 0
-	numNewlines := 0
-	foundInvalidNewline := false
-
-	for hasMore {
-		peeked, err := lexer.Peek(peekSize)
-		if len(peeked) > 0 && err == io.EOF {
-			hasMore = false
-			err = nil
-		}
-		if err != nil {
-			return nil, err
-		}
-
-		for numNewlineBytes < len(peeked) {
-			char := peeked[numNewlineBytes]
-			if char == '\n' {
-				numNewlineBytes++
-				numNewlines++
-
-			} else if char == '\r' {
-				if numNewlineBytes+1 >= len(peeked) {
-					// If hasMore is true, then we may have read half of the \r\n pair.
-					// The next outer loop iteration will take care of this. If hasMore
-					// is false, then this is a lone \r and it should not be included
-					// as part of this token.
-					break
-				}
-
-				if peeked[numNewlineBytes+1] == '\n' {
-					numNewlineBytes += 2
-					numNewlines++
-				} else { // '\r' not paired with '\n'
-					foundInvalidNewline = true
-					hasMore = false
-					break
-				}
-			} else {
-				hasMore = false
-				break
-			}
-		}
-
-		peekSize *= 2
+	numNewlineBytes, numNewlines, foundInvalidNewline, err := lexutil.PeekNewlines(
+		lexer.BufferedByteLocationReader,
+		lexer.initialPeekWindowSize)
+	if err != nil {
+		return nil, err
 	}
 
 	loc := Location(lexer.Location)
@@ -425,31 +363,11 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 }
 
 func (lexer *RawLexer) lexLineCommentToken() (Token, error) {
-	hasMore := true
-	peekSize := lexer.initialPeekWindowSize
-	numCommentBytes := 2 // "//" already peeked by peekNextToken
-
-	for hasMore {
-		peeked, err := lexer.Peek(peekSize)
-		if len(peeked) > 0 && err == io.EOF {
-			hasMore = false
-			err = nil
-		}
-		if err != nil {
-			return nil, err
-		}
-
-		for numCommentBytes < len(peeked) {
-			char := peeked[numCommentBytes]
-			if char == '\n' || char == '\r' {
-				hasMore = false
-				break
-			}
-
-			numCommentBytes++
-		}
-
-		peekSize *= 2
+	numCommentBytes, err := lexutil.PeekLineComment(
+		lexer.BufferedByteLocationReader,
+		lexer.initialPeekWindowSize)
+	if err != nil {
+		return nil, err
 	}
 
 	loc := Location(lexer.Location)
@@ -461,7 +379,7 @@ func (lexer *RawLexer) lexLineCommentToken() (Token, error) {
 		value = string(peeked)
 	}
 
-	_, err := lexer.Discard(numCommentBytes)
+	_, err = lexer.Discard(numCommentBytes)
 	if err != nil {
 		panic("This should never happen")
 	}
@@ -474,52 +392,12 @@ func (lexer *RawLexer) lexLineCommentToken() (Token, error) {
 }
 
 func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
-	hasMore := true
-	peekSize := lexer.initialPeekWindowSize
-	numCommentBytes := 2 // "/*" already peeked by peekNextToken
-	scopeLevel := 1
-
-	for hasMore {
-		peeked, err := lexer.Peek(peekSize)
-		if len(peeked) > 0 && err == io.EOF {
-			hasMore = false
-			err = nil
-		}
-		if err != nil {
-			return nil, err
-		}
-
-		for numCommentBytes < len(peeked) {
-			if numCommentBytes+1 >= len(peeked) {
-				if hasMore {
-					// read more bytes
-					break
-				} else {
-					// reached EOF without finding block comment's closing delimiter.
-					numCommentBytes++
-					break
-				}
-			}
-
-			char := peeked[numCommentBytes]
-			if char == '/' && peeked[numCommentBytes+1] == '*' {
-				numCommentBytes += 2
-				scopeLevel += 1
-
-			} else if char == '*' && peeked[numCommentBytes+1] == '/' {
-				numCommentBytes += 2
-				scopeLevel -= 1
-
-				if scopeLevel == 0 {
-					hasMore = false
-					break
-				}
-			} else {
-				numCommentBytes++
-			}
-		}
-
-		peekSize *= 2
+	numCommentBytes, scopeLevel, err := lexutil.PeekBlockComment(
+		lexer.BufferedByteLocationReader,
+		true,
+		lexer.initialPeekWindowSize)
+	if err != nil {
+		return nil, err
 	}
 
 	loc := Location(lexer.Location)
@@ -531,7 +409,7 @@ func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
 		value = string(peeked)
 	}
 
-	_, err := lexer.Discard(numCommentBytes)
+	_, err = lexer.Discard(numCommentBytes)
 	if err != nil {
 		panic("This should never happen")
 	}
@@ -566,68 +444,13 @@ func (lexer *RawLexer) lexStringLiteralToken() (Token, error) {
 	panic("TODO")
 }
 
-// offset = 0 for Identifier, 1 for jump label
-func (lexer *RawLexer) peekIdentifier(offset int) (int, error) {
-	hasMore := true
-	peekSize := lexer.initialPeekWindowSize
-	numIdentifierBytes := 0
-
-	for hasMore {
-		peeked, err := lexer.Peek(offset + peekSize)
-		if len(peeked) > 0 && err == io.EOF {
-			hasMore = false
-			err = nil
-		}
-		if err != nil {
-			return 0, err
-		}
-
-		if len(peeked) < offset+numIdentifierBytes {
-			panic("should never happen")
-		}
-
-		remaining := peeked[offset+numIdentifierBytes:]
-
-		for len(remaining) > 0 {
-			utf8Char, size := utf8.DecodeRune(remaining)
-			if utf8Char == utf8.RuneError {
-				if len(remaining) < 4 && hasMore {
-					// The rune may have been chopped off in the middle by Peek.  Read
-					// more bytes and try again.
-					break
-				} else {
-					// Encountered a real invalid utf8 byte
-					hasMore = false
-					break
-				}
-			}
-
-			if size == 0 {
-				panic("should never happen")
-			}
-
-			if unicode.IsLetter(utf8Char) ||
-				utf8Char == '_' ||
-				(numIdentifierBytes > 0 && unicode.IsNumber(utf8Char)) {
-
-				numIdentifierBytes += size
-				remaining = remaining[size:]
-			} else {
-				hasMore = false
-				break
-			}
-		}
-
-		peekSize *= 2
-	}
-
-	return numIdentifierBytes, nil
-}
-
 func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
 	// Note: we can skip checking the first byte, which we alreay know is '@'
 
-	size, err := lexer.peekIdentifier(1)
+	size, err := lexutil.PeekIdentifier(
+		lexer.BufferedByteLocationReader,
+		1,
+		lexer.initialPeekWindowSize)
 	if err != nil {
 		return nil, err
 	}
@@ -671,7 +494,10 @@ func (lexer *RawLexer) lexIdentifierKeywordsOrLabelDeclToken() (
 	ValueSymbol,
 	error,
 ) {
-	size, err := lexer.peekIdentifier(0)
+	size, err := lexutil.PeekIdentifier(
+		lexer.BufferedByteLocationReader,
+		0,
+		lexer.initialPeekWindowSize)
 	if err != nil {
 		return ValueSymbol{}, err
 	}
