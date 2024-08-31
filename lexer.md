@@ -19,7 +19,7 @@ go explicitly inserts ';' to terminate statement.  we'll conditionally emit newl
 ### Comment
 Raw comments are folded into other tokens via multi-staged lexing.
 
-Line comments. Terminated by endline or EOF.  Note that the newline/EOF is not part of the comment.
+Line comments. Terminated by '\n', '\r', or EOF.  Note that the '\n'/'\r'/EOF is not part of the comment.
 ```
 // single line comment
 ```
@@ -28,9 +28,9 @@ Block comments.  Begin with /* and end with */.  Block comments are scoped.
 ```
 /*
 block comment 
-/*
-nested scope block comment
-*/
+  /*
+  nested scope block comment.  The indentation is only for clarity
+  */
 */
 ```
 
