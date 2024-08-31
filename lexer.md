@@ -83,8 +83,8 @@ Escaped carriage return sequence "\\\\r" is preserved by interpreted string but 
 
 ```
 "escaped tab \t"
-`can use " without escaping in back quote string`
-"can use ` without escaping in double quote string"
+`can use " without escaping in back quote string, but must escape \` `
+"can use ` without escaping in double quote string, but must escape \" "
 
 """
 string can span
