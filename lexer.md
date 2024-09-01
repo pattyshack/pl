@@ -54,7 +54,7 @@ block comment
 
 - (hex integer)\\.(hex(\_?hex)*)*([pP][+-]?(hex(\_?hex)*))*
 - (hex integer)[pP][+-]?(hex(\_?hex)*)
-- \\.hex(\_?hex)*([pP][+-]?(hex(\_?hex)*))*
+- 0x\\.hex(\_?hex)*([pP][+-]?(hex(\_?hex)*))*
 
 ### Rune Literals
 - '(non-escaped unicode char)'
