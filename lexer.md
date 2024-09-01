@@ -39,17 +39,22 @@ block comment
 - false
 
 ### Integer Literals
-- decimal: 0|\[1-9\](\_?\[0-9\])*
+
+- let hex = [0-9a-fA-F]
+
+- decimal: 0|\[1-9\](\_?\d)*
 - binary: 0\[bB\](\_?[01])+
 - octal: 0\[oO\]?(\_?\[0-7\])+
-- hexadecimal: 0\[xX\](\_?[0-9a-fA-F])+
+- hexadecimal: 0\[xX\](\_?hex)+
 
 ### Float Literals
-- (decimal integer)\\.(\[0-9\](\_?\[0-9\])*)?(\[eE\]\[+-\]?(decimal integer))?
+- (decimal integer)\\.(\d(\_?\d)*)?(\[eE\]\[+-\]?(decimal integer))?
 - (decimal integer)\[eE\]\[+-\]?(decimal integer)
-- \\.\[0-9\](\_?\[0-9\])*(\[eE\]\[+-\]?(decimal integer))?
+- \\.\d(\_?\d)*(\[eE\]\[+-\]?(decimal integer))?
 
-XXX: support hex float representation?
+- (hex integer)\\.(hex(_?hex)*)*([pP][+-]?(hex(_?hex)*))*
+- (hex integer)[pP][+-]?(hex(_?hex)*)
+- \\.hex(_?hex)*([pP][+-]?(hex(_?hex)*))*
 
 ### Rune Literals
 - '(non-escaped unicode char)'
