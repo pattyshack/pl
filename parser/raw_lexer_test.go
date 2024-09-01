@@ -42,6 +42,7 @@ func (s *RawLexerSuite) lex(
 
 		expect.Nil(t, err)
 
+		fmt.Println(token)
 		tokens = append(tokens, token)
 		tokenIds = append(tokenIds, token.Id())
 	}
@@ -56,10 +57,6 @@ func (RawLexerSuite) idChar(idx int) string {
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 		"0123456789_"
 	return string(charSet[idx%len(charSet)])
-}
-
-func (s *RawLexerSuite) TestIntegerLiteralToken(t *testing.T) {
-	// TODO (reminder: need to check for dot prefix variant .123)
 }
 
 func (s *RawLexerSuite) TestFloatLiteralToken(t *testing.T) {
@@ -428,4 +425,338 @@ func (s *RawLexerSuite) TestBlockCommentToken(t *testing.T) {
 		expect.True(t, ok)
 		expect.Equal(t, value.Value, comment)
 	}
+}
+
+func (s *RawLexerSuite) TestBinaryIntegerLiteral(t *testing.T) {
+	tokens := s.lex(t, "+0b", AddToken, ParseErrorToken)
+	parseError, ok := tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "binary integer has no digits")
+
+	tokens = s.lex(t, "+0b-", AddToken, ParseErrorToken, SubToken)
+	parseError, ok = tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "binary integer has no digits")
+
+	tokens = s.lex(
+		t, "+0B_-",
+		AddToken, ParseErrorToken, IdentifierToken, SubToken)
+	parseError, ok = tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "binary integer has no digits")
+
+	tokens = s.lex(
+		t, "+0B2-",
+		AddToken, ParseErrorToken, IntegerLiteralToken, SubToken)
+	parseError, ok = tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "binary integer has no digits")
+
+	literal, ok := tokens[2].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "2", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0b1", AddToken, IntegerLiteralToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0b1", literal.Value)
+	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0B0-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0B0", literal.Value)
+	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
+
+	tokens = s.lex(
+		t, "+0B02-",
+		AddToken, IntegerLiteralToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0B0", literal.Value)
+	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
+
+	literal, ok = tokens[2].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "2", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0b_1-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0b_1", literal.Value)
+	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0B_100_010_111-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0B_100_010_111", literal.Value)
+	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0b011101000-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0b011101000", literal.Value)
+	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
+}
+
+func (s *RawLexerSuite) TestZeroOPrefixedOctalIntegerLiteral(t *testing.T) {
+	tokens := s.lex(t, "+0o", AddToken, ParseErrorToken)
+	parseError, ok := tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "0o-prefixed octal integer has no digits")
+
+	tokens = s.lex(t, "+0o-", AddToken, ParseErrorToken, SubToken)
+	parseError, ok = tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "0o-prefixed octal integer has no digits")
+
+	tokens = s.lex(
+		t, "+0O_-",
+		AddToken, ParseErrorToken, IdentifierToken, SubToken)
+	parseError, ok = tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "0o-prefixed octal integer has no digits")
+
+	tokens = s.lex(
+		t, "+0O8-",
+		AddToken, ParseErrorToken, IntegerLiteralToken, SubToken)
+	parseError, ok = tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "0o-prefixed octal integer has no digits")
+
+	literal, ok := tokens[2].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "8", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0o644", AddToken, IntegerLiteralToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0o644", literal.Value)
+	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0O7-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0O7", literal.Value)
+	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(
+		t, "+0O78-",
+		AddToken, IntegerLiteralToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0O7", literal.Value)
+	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
+
+	literal, ok = tokens[2].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "8", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0o_1-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0o_1", literal.Value)
+	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0O_123_456_701-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0O_123_456_701", literal.Value)
+	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0o012345670-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0o012345670", literal.Value)
+	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
+}
+
+func (s *RawLexerSuite) TestZeroPrefixedOctalIntegerLiteral(t *testing.T) {
+	tokens := s.lex(
+		t, "+08-",
+		AddToken, IntegerLiteralToken, IntegerLiteralToken, SubToken)
+	literal, ok := tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
+	literal, ok = tokens[2].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "8", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0644", AddToken, IntegerLiteralToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0644", literal.Value)
+	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+07-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "07", literal.Value)
+	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(
+		t, "+078-",
+		AddToken, IntegerLiteralToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "07", literal.Value)
+	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
+
+	literal, ok = tokens[2].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "8", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0_1-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0_1", literal.Value)
+	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0_123_456_701-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0_123_456_701", literal.Value)
+	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0012345670-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0012345670", literal.Value)
+	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
+}
+
+func (s *RawLexerSuite) TestDecimalIntegerLiteral(t *testing.T) {
+	for i := 0; i < 20; i++ {
+		value := fmt.Sprintf("%d", i)
+
+		tokens := s.lex(
+			t, "+"+value,
+			AddToken, IntegerLiteralToken)
+		literal, ok := tokens[1].(IntegerLiteralSymbol)
+		expect.True(t, ok)
+		expect.Equal(t, value, literal.Value)
+		expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+	}
+
+	tokens := s.lex(
+		t, "+1234567890-",
+		AddToken, IntegerLiteralToken, SubToken)
+	literal, ok := tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "1234567890", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+644", AddToken, IntegerLiteralToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "644", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+1_2_3_4_5-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "1_2_3_4_5", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+123_456_789_0-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "123_456_789_0", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(
+		t, "+10abc-",
+		AddToken, IntegerLiteralToken, IdentifierToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "10", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
+	value, ok := tokens[2].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "abc", value.Value)
+
+	tokens = s.lex(
+		t, "+5BCD-",
+		AddToken, IntegerLiteralToken, IdentifierToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "5", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
+	value, ok = tokens[2].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "BCD", value.Value)
+}
+
+func (s *RawLexerSuite) TestHexadecimalIntegerLiteral(t *testing.T) {
+	tokens := s.lex(t, "+0x", AddToken, ParseErrorToken)
+	parseError, ok := tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "hexadecimal integer has no digits")
+
+	tokens = s.lex(t, "+0x-", AddToken, ParseErrorToken, SubToken)
+	parseError, ok = tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "hexadecimal integer has no digits")
+
+	tokens = s.lex(
+		t, "+0X_-",
+		AddToken, ParseErrorToken, IdentifierToken, SubToken)
+	parseError, ok = tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "hexadecimal integer has no digits")
+
+	value, ok := tokens[2].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "_", value.Value)
+
+	tokens = s.lex(
+		t, "+0Xg-",
+		AddToken, ParseErrorToken, IdentifierToken, SubToken)
+	parseError, ok = tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "hexadecimal integer has no digits")
+
+	value, ok = tokens[2].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "g", value.Value)
+
+	tokens = s.lex(t, "+0x0123456789", AddToken, IntegerLiteralToken)
+	literal, ok := tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0x0123456789", literal.Value)
+	expect.Equal(t, HexadecimalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0Xabcdef-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0Xabcdef", literal.Value)
+	expect.Equal(t, HexadecimalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(
+		t, "+0X_ABC_DEFG-",
+		AddToken, IntegerLiteralToken, IdentifierToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0X_ABC_DEF", literal.Value)
+	expect.Equal(t, HexadecimalInteger, literal.IntegerSubType)
+
+	value, ok = tokens[2].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "G", value.Value)
+
+	tokens = s.lex(t, "+0X123_ABC_abc-", AddToken, IntegerLiteralToken, SubToken)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0X123_ABC_abc", literal.Value)
+	expect.Equal(t, HexadecimalInteger, literal.IntegerSubType)
 }

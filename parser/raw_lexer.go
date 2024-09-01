@@ -416,7 +416,7 @@ func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
 
 	if scopeLevel > 0 {
 		return ParseErrorSymbol{
-			Error:    fmt.Errorf("comment not terminated"),
+			Error:    fmt.Errorf("block comment not terminated"),
 			Location: loc,
 		}, nil
 	}
@@ -428,8 +428,179 @@ func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
 	}, nil
 }
 
+func (lexer *RawLexer) peekDigits(
+	offset int,
+	isDigit func(byte) bool,
+) (
+	int,
+	error,
+) {
+	hasMore := true
+	peekSize := lexer.initialPeekWindowSize
+	numBytes := 0
+
+	for hasMore {
+		peeked, err := lexer.Peek(offset + peekSize)
+		if len(peeked) >= offset && err == io.EOF {
+			hasMore = false
+			err = nil
+		}
+		if err != nil {
+			return 0, err
+		}
+
+		remaining := peeked[offset+numBytes:]
+		for len(remaining) > 0 {
+			char := remaining[0]
+			if isDigit(char) {
+				numBytes++
+				remaining = remaining[1:]
+			} else if char == '_' {
+				if len(remaining) < 2 {
+					if hasMore {
+						// read more bytes
+						break
+					} else { // the int is followed by a '_'
+						hasMore = false
+						break
+					}
+				}
+
+				if isDigit(remaining[1]) {
+					numBytes += 2
+					remaining = remaining[2:]
+				} else { // the int is followed by a '_'
+					hasMore = false
+					break
+				}
+			} else {
+				hasMore = false
+				break
+			}
+		}
+
+		peekSize *= 2
+	}
+
+	return numBytes, nil
+}
+
+func (lexer *RawLexer) isBinaryDigit(char byte) bool {
+	return char == '0' || char == '1'
+}
+
+func (lexer *RawLexer) isOctalDigit(char byte) bool {
+	return '0' <= char && char <= '7'
+}
+
+func (lexer *RawLexer) isDecimalDigit(char byte) bool {
+	return '0' <= char && char <= '9'
+}
+
+func (lexer *RawLexer) isHexadecimalDigit(char byte) bool {
+	return '0' <= char && char <= '9' ||
+		'A' <= char && char <= 'F' ||
+		'a' <= char && char <= 'f'
+}
+
 func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
-	panic("TODO")
+	peeked, err := lexer.Peek(2)
+	if len(peeked) > 0 && err == io.EOF {
+		err = nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	char := peeked[0]
+	if !lexer.isDecimalDigit(char) {
+		panic("should never happen")
+	}
+
+	loc := Location(lexer.Location)
+	subType := DecimalInteger
+	hasDigits := true
+	totalBytes := 1
+
+	if char != '0' {
+		numBytes, err := lexer.peekDigits(1, lexer.isDecimalDigit)
+		if err != nil {
+			return nil, err
+		}
+
+		totalBytes = numBytes + 1
+	} else if len(peeked) > 1 {
+		switch peeked[1] {
+		case 'b', 'B':
+			numBytes, err := lexer.peekDigits(2, lexer.isBinaryDigit)
+			if err != nil {
+				return nil, err
+			}
+
+			subType = BinaryInteger
+			hasDigits = numBytes != 0
+			totalBytes = numBytes + 2
+		case 'o', 'O':
+			numBytes, err := lexer.peekDigits(2, lexer.isOctalDigit)
+			if err != nil {
+				return nil, err
+			}
+
+			subType = ZeroOPrefixedOctalInteger
+			hasDigits = numBytes != 0
+			totalBytes = numBytes + 2
+		case 'x', 'X':
+			numBytes, err := lexer.peekDigits(2, lexer.isHexadecimalDigit)
+			if err != nil {
+				return nil, err
+			}
+
+			subType = HexadecimalInteger
+			hasDigits = numBytes != 0
+			totalBytes = numBytes + 2
+		default:
+			numBytes, err := lexer.peekDigits(1, lexer.isOctalDigit)
+			if err != nil {
+				return nil, err
+			}
+
+			if numBytes > 0 { // otherwise is a decimal "0"
+				subType = ZeroPrefixedOctalInteger
+				hasDigits = true
+				totalBytes = numBytes + 1
+			}
+		}
+	}
+
+	// TODO handle float
+
+	value := ""
+	if hasDigits {
+		peeked, err = lexer.Peek(totalBytes)
+		if err != nil {
+			panic("should never happen")
+		}
+
+		value = string(peeked)
+	}
+
+	_, err = lexer.Discard(totalBytes)
+	if err != nil {
+		panic("should never happen")
+	}
+
+	if !hasDigits {
+		return ParseErrorSymbol{
+			Location: loc,
+			Error:    fmt.Errorf("%s integer has no digits", subType),
+		}, nil
+	}
+
+	return IntegerLiteralSymbol{
+		Location:       loc,
+		Value:          value,
+		IntegerSubType: subType,
+	}, nil
 }
 
 func (lexer *RawLexer) lexDotDecimalFloatLiteralToken() (Token, error) {

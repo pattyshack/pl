@@ -1,13 +1,27 @@
 package parser
 
+type IntegerSubType string
+
+const (
+	DecimalInteger            = IntegerSubType("decimal")
+	HexadecimalInteger        = IntegerSubType("hexadecimal")
+	ZeroOPrefixedOctalInteger = IntegerSubType("0o-prefixed octal")
+	ZeroPrefixedOctalInteger  = IntegerSubType("0-prefixed octal")
+	BinaryInteger             = IntegerSubType("binary")
+)
+
 type ParseErrorSymbol struct {
-	Error error
 	Location
+	Error error
 }
 
-func (pe ParseErrorSymbol) Id() SymbolId { return ParseErrorToken }
+func (s ParseErrorSymbol) Id() SymbolId { return ParseErrorToken }
 
-func (pe ParseErrorSymbol) Loc() Location { return pe.Location }
+func (s ParseErrorSymbol) Loc() Location { return s.Location }
+
+func (s ParseErrorSymbol) String() string {
+	return s.Error.Error() + " " + s.Location.String()
+}
 
 type CountSymbol struct {
 	SymbolId
@@ -15,9 +29,9 @@ type CountSymbol struct {
 	Count int
 }
 
-func (cs CountSymbol) Id() SymbolId { return cs.SymbolId }
+func (s CountSymbol) Id() SymbolId { return s.SymbolId }
 
-func (cs CountSymbol) Loc() Location { return cs.Location }
+func (s CountSymbol) Loc() Location { return s.Location }
 
 type ValueSymbol struct {
 	SymbolId
@@ -25,6 +39,16 @@ type ValueSymbol struct {
 	Value string
 }
 
-func (vs ValueSymbol) Id() SymbolId { return vs.SymbolId }
+func (s ValueSymbol) Id() SymbolId { return s.SymbolId }
 
-func (vs ValueSymbol) Loc() Location { return vs.Location }
+func (s ValueSymbol) Loc() Location { return s.Location }
+
+type IntegerLiteralSymbol struct {
+	Location
+	Value string
+	IntegerSubType
+}
+
+func (s IntegerLiteralSymbol) Id() SymbolId { return IntegerLiteralToken }
+
+func (s IntegerLiteralSymbol) Loc() Location { return s.Location }
