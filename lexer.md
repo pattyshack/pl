@@ -52,9 +52,10 @@ block comment
 - (decimal integer)\[eE\]\[+-\]?(decimal integer)
 - \\.\d(\_?\d)*(\[eE\]\[+-\]?(decimal integer))?
 
-- (hex integer)\\.(hex(\_?hex)*)*([pP][+-]?(hex(\_?hex)*))*
-- (hex integer)[pP][+-]?(hex(\_?hex)*)
-- 0x\\.hex(\_?hex)*([pP][+-]?(hex(\_?hex)*))*
+
+- (hex integer)\\.(hex(\_?hex)*)*[pP][+-]?(hex(\_?hex)*)
+- (hex integer)[pP][+-]?hex(\_?hex)*
+- 0x\\.hex(\_?hex)*[pP][+-]?hex(\_?hex)*
 
 ### Rune Literals
 - '(non-escaped unicode char)'
