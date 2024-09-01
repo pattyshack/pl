@@ -40,6 +40,8 @@ block comment
 
 ### Integer Literals
 
+Same as golang
+
 - let hex = [0-9a-fA-F]
 
 - decimal: 0|\[1-9\](\_?\d)*
@@ -48,6 +50,8 @@ block comment
 - hexadecimal: 0\[xX\](\_?hex)+
 
 ### Float Literals
+Same as golang
+
 - (decimal integer)\\.(\d(\_?\d)*)?(\[eE\]\[+-\]?(decimal integer))?
 - (decimal integer)\[eE\]\[+-\]?(decimal integer)
 - \\.\d(\_?\d)*(\[eE\]\[+-\]?(decimal integer))?
@@ -58,6 +62,8 @@ block comment
 - 0x\\.hex(\_?hex)*[pP][+-]?hex(\_?hex)*
 
 ### Rune Literals
+Same as golang (except additional escape characters)
+
 - '(non-escaped unicode char)'
 - '(escaped char)'
 - 1 byte oct rune '\\[0-8]{3}'
@@ -182,15 +188,12 @@ var
 
 ### Operators and punctuations
 ```
-// ` string
-// @ label
-// ( ) struct / enum / func paramenters / func arguments
+// @ label decl and jump label
 // _ identifier
-// [ ] array, index
-// { } expr block
 // ' rune
 // " string
-// $[ ] generic parameters
+// ` string
+// unused ascii symbols: \ #
 
 +     +=    ++
 -     -=    --
@@ -219,7 +222,6 @@ var
 !
 $[
 
-// unused ascii symbols: \ #
 ```
 
 XXX: consider adding overflow guard to arithmetic operators, and adding swift style overflow-able arithmetic operator &* &+ &-
