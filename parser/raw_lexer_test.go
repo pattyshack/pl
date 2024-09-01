@@ -42,7 +42,6 @@ func (s *RawLexerSuite) lex(
 
 		expect.Nil(t, err)
 
-		fmt.Println(token)
 		tokens = append(tokens, token)
 		tokenIds = append(tokenIds, token.Id())
 	}
@@ -110,136 +109,210 @@ func (s *RawLexerSuite) TestSpacesTokens(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestLbraceTokens(t *testing.T) {
+	s.lex(t, "{", LbraceToken)
 	s.lex(t, "+{-", AddToken, LbraceToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestRbraceTokens(t *testing.T) {
+	s.lex(t, "}", RbraceToken)
 	s.lex(t, "+}-", AddToken, RbraceToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestLparenTokens(t *testing.T) {
+	s.lex(t, "(", LparenToken)
 	s.lex(t, "+(-", AddToken, LparenToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestRparenTokens(t *testing.T) {
+	s.lex(t, ")", RparenToken)
 	s.lex(t, "+)-", AddToken, RparenToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestLbracketTokens(t *testing.T) {
+	s.lex(t, "[", LbracketToken)
 	s.lex(t, "+[-", AddToken, LbracketToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestRbracketTokens(t *testing.T) {
+	s.lex(t, "]", RbracketToken)
 	s.lex(t, "+]-", AddToken, RbracketToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestDotTokens(t *testing.T) {
+	s.lex(t, ".", DotToken)
 	s.lex(t, "+.-", AddToken, DotToken, SubToken)
+
+	s.lex(t, "...", DotDotDotToken)
 	s.lex(t, "+...-", AddToken, DotDotDotToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestCommaTokens(t *testing.T) {
+	s.lex(t, ",", CommaToken)
 	s.lex(t, "+,-", AddToken, CommaToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestQuestionTokens(t *testing.T) {
+	s.lex(t, "?", QuestionToken)
 	s.lex(t, "+?-", AddToken, QuestionToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestSemicolonTokens(t *testing.T) {
+	s.lex(t, ";", SemicolonToken)
 	s.lex(t, "+;-", AddToken, SemicolonToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestColonTokens(t *testing.T) {
+	s.lex(t, ":", ColonToken)
 	s.lex(t, "+:-", AddToken, ColonToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestDollarTokens(t *testing.T) {
+	s.lex(t, "$[", DollarLbracketToken)
 	s.lex(t, "+$[-", AddToken, DollarLbracketToken, SubToken)
 
-	tokens := s.lex(t, "+$-", AddToken, ParseErrorToken, SubToken)
-	parseError, ok := tokens[1].(ParseErrorSymbol)
-
+	tokens := s.lex(t, "$", ParseErrorToken)
+	parseError, ok := tokens[0].(ParseErrorSymbol)
 	expect.True(t, ok)
+	expect.Error(t, parseError.Error, "unexpected utf8 rune")
 
+	tokens = s.lex(t, "+$-", AddToken, ParseErrorToken, SubToken)
+	parseError, ok = tokens[1].(ParseErrorSymbol)
+	expect.True(t, ok)
 	expect.Error(t, parseError.Error, "unexpected utf8 rune")
 }
 
 func (s *RawLexerSuite) TestAddTokens(t *testing.T) {
+	s.lex(t, "+", AddToken)
 	s.lex(t, "*+/", MulToken, AddToken, DivToken)
+
+	s.lex(t, "++", AddOneAssignToken)
 	s.lex(t, "*++/", MulToken, AddOneAssignToken, DivToken)
+
+	s.lex(t, "+=", AddAssignToken)
 	s.lex(t, "*+=/", MulToken, AddAssignToken, DivToken)
 }
 
 func (s *RawLexerSuite) TestSubTokens(t *testing.T) {
+	s.lex(t, "-", SubToken)
 	s.lex(t, "*-/", MulToken, SubToken, DivToken)
+
+	s.lex(t, "--", SubOneAssignToken)
 	s.lex(t, "*--/", MulToken, SubOneAssignToken, DivToken)
+
+	s.lex(t, "-=", SubAssignToken)
 	s.lex(t, "*-=/", MulToken, SubAssignToken, DivToken)
 }
 
 func (s *RawLexerSuite) TestMulTokens(t *testing.T) {
+	s.lex(t, "*", MulToken)
 	s.lex(t, "+*-", AddToken, MulToken, SubToken)
+
+	s.lex(t, "*=", MulAssignToken)
 	s.lex(t, "+*=-", AddToken, MulAssignToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestDivTokens(t *testing.T) {
+	s.lex(t, "/", DivToken)
 	s.lex(t, "+/-", AddToken, DivToken, SubToken)
+
+	s.lex(t, "/=", DivAssignToken)
 	s.lex(t, "+/=-", AddToken, DivAssignToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestModTokens(t *testing.T) {
+	s.lex(t, "%", ModToken)
 	s.lex(t, "+%-", AddToken, ModToken, SubToken)
+
+	s.lex(t, "%=", ModAssignToken)
 	s.lex(t, "+%=-", AddToken, ModAssignToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestBitNegTokens(t *testing.T) {
+	s.lex(t, "~", BitNegToken)
 	s.lex(t, "+~-", AddToken, BitNegToken, SubToken)
+
+	s.lex(t, "~=", BitNegAssignToken)
 	s.lex(t, "+~=-", AddToken, BitNegAssignToken, SubToken)
+
+	s.lex(t, "~~", TildeTildeToken)
 	s.lex(t, "+~~-", AddToken, TildeTildeToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestBitAndTokens(t *testing.T) {
+	s.lex(t, "&", BitAndToken)
 	s.lex(t, "+&-", AddToken, BitAndToken, SubToken)
+
+	s.lex(t, "&=", BitAndAssignToken)
 	s.lex(t, "+&=-", AddToken, BitAndAssignToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestBitXorTokens(t *testing.T) {
+	s.lex(t, "^", BitXorToken)
 	s.lex(t, "+^-", AddToken, BitXorToken, SubToken)
+
+	s.lex(t, "^=", BitXorAssignToken)
 	s.lex(t, "+^=-", AddToken, BitXorAssignToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestBitOrTokens(t *testing.T) {
+	s.lex(t, "|", BitOrToken)
 	s.lex(t, "+|-", AddToken, BitOrToken, SubToken)
+
+	s.lex(t, "|=", BitOrAssignToken)
 	s.lex(t, "+|=-", AddToken, BitOrAssignToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestEqualTokens(t *testing.T) {
+	s.lex(t, "=", AssignToken)
 	s.lex(t, "(=)", LparenToken, AssignToken, RparenToken)
+
+	s.lex(t, "==", EqualToken)
 	s.lex(t, "(==)", LparenToken, EqualToken, RparenToken)
 }
 
 func (s *RawLexerSuite) TestExclaimTokens(t *testing.T) {
+	s.lex(t, "!", ExclaimToken)
 	s.lex(t, "+!-", AddToken, ExclaimToken, SubToken)
+
+	s.lex(t, "!=", NotEqualToken)
 	s.lex(t, "+!=-", AddToken, NotEqualToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestGreaterTokens(t *testing.T) {
+	s.lex(t, ">", GreaterToken)
 	s.lex(t, "+>-", AddToken, GreaterToken, SubToken)
+
+	s.lex(t, ">=", GreaterOrEqualToken)
 	s.lex(t, "+>=-", AddToken, GreaterOrEqualToken, SubToken)
+
+	s.lex(t, ">>", BitRshiftToken)
 	s.lex(t, "+>>-", AddToken, BitRshiftToken, SubToken)
+
+	s.lex(t, ">>=", BitRshiftAssignToken)
 	s.lex(t, "+>>=-", AddToken, BitRshiftAssignToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestLessTokens(t *testing.T) {
+	s.lex(t, "<", LessToken)
 	s.lex(t, "+<-", AddToken, LessToken, SubToken)
+
+	s.lex(t, "<=", LessOrEqualToken)
 	s.lex(t, "+<=-", AddToken, LessOrEqualToken, SubToken)
+
+	s.lex(t, "<<", BitLshiftToken)
 	s.lex(t, "+<<-", AddToken, BitLshiftToken, SubToken)
+
+	s.lex(t, "<<=", BitLshiftAssignToken)
 	s.lex(t, "+<<=-", AddToken, BitLshiftAssignToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestIdentifierToken(t *testing.T) {
-	testId := ""
+	tokens := s.lex(t, "abc", IdentifierToken)
+	value, ok := tokens[0].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "abc", value.Value)
 
+	testId := ""
 	// Test in loop to check for peek window resizing
 	for i := 0; i < 151; i++ {
 		testId += s.idChar(i)
@@ -254,8 +327,8 @@ func (s *RawLexerSuite) TestIdentifierToken(t *testing.T) {
 		expect.Equal(t, testId, value.Value)
 	}
 
-	tokens := s.lex(t, "+世界", AddToken, IdentifierToken)
-	value, ok := tokens[1].(ValueSymbol)
+	tokens = s.lex(t, "+世界", AddToken, IdentifierToken)
+	value, ok = tokens[1].(ValueSymbol)
 	expect.True(t, ok)
 	expect.Equal(t, "世界", value.Value)
 
@@ -282,8 +355,12 @@ func (s *RawLexerSuite) TestIdentifierToken(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestLabelDeclToken(t *testing.T) {
-	testId := ""
+	tokens := s.lex(t, "abc@", LabelDeclToken)
+	value, ok := tokens[0].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "abc@", value.Value)
 
+	testId := ""
 	// Test in loop to check for peek window resizing
 	for i := 0; i < 151; i++ {
 		testId += s.idChar(i)
@@ -298,8 +375,8 @@ func (s *RawLexerSuite) TestLabelDeclToken(t *testing.T) {
 		expect.Equal(t, testId+"@", value.Value)
 	}
 
-	tokens := s.lex(t, "+世界@", AddToken, LabelDeclToken)
-	value, ok := tokens[1].(ValueSymbol)
+	tokens = s.lex(t, "+世界@", AddToken, LabelDeclToken)
+	value, ok = tokens[1].(ValueSymbol)
 	expect.True(t, ok)
 	expect.Equal(t, "世界@", value.Value)
 
@@ -310,7 +387,12 @@ func (s *RawLexerSuite) TestLabelDeclToken(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestJumpLabelToken(t *testing.T) {
-	tokens := s.lex(t, "+@-", AddToken, ParseErrorToken, SubToken)
+	tokens := s.lex(t, "@abc", JumpLabelToken)
+	value, ok := tokens[0].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "@abc", value.Value)
+
+	tokens = s.lex(t, "+@-", AddToken, ParseErrorToken, SubToken)
 	parseError, ok := tokens[1].(ParseErrorSymbol)
 	expect.True(t, ok)
 	expect.Error(t, parseError.Error, "no label name associated with @")
@@ -342,6 +424,11 @@ func (s *RawLexerSuite) TestKeywordTokens(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestLineCommentToken(t *testing.T) {
+	tokens := s.lex(t, "//", lineCommentToken)
+	value, ok := tokens[0].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "//", value.Value)
+
 	comment := "//"
 	for i := 0; i < 101; i++ {
 		tokens := s.lex(t, "+"+comment, AddToken, lineCommentToken)
@@ -368,6 +455,11 @@ func (s *RawLexerSuite) TestLineCommentToken(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestBlockCommentToken(t *testing.T) {
+	tokens := s.lex(t, "/**/", blockCommentToken)
+	value, ok := tokens[0].(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "/**/", value.Value)
+
 	commentBody := ""
 	for i := 0; i < 151; i++ {
 		tokens := s.lex(t, "+/*"+commentBody, AddToken, ParseErrorToken)
@@ -428,7 +520,13 @@ func (s *RawLexerSuite) TestBlockCommentToken(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestBinaryIntegerLiteral(t *testing.T) {
-	tokens := s.lex(t, "+0b", AddToken, ParseErrorToken)
+	tokens := s.lex(t, "0b101", IntegerLiteralToken)
+	literal, ok := tokens[0].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0b101", literal.Value)
+	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0b", AddToken, ParseErrorToken)
 	parseError, ok := tokens[1].(ParseErrorSymbol)
 	expect.True(t, ok)
 	expect.Error(t, parseError.Error, "binary integer has no digits")
@@ -452,7 +550,7 @@ func (s *RawLexerSuite) TestBinaryIntegerLiteral(t *testing.T) {
 	expect.True(t, ok)
 	expect.Error(t, parseError.Error, "binary integer has no digits")
 
-	literal, ok := tokens[2].(IntegerLiteralSymbol)
+	literal, ok = tokens[2].(IntegerLiteralSymbol)
 	expect.True(t, ok)
 	expect.Equal(t, "2", literal.Value)
 	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
@@ -502,7 +600,13 @@ func (s *RawLexerSuite) TestBinaryIntegerLiteral(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestZeroOPrefixedOctalIntegerLiteral(t *testing.T) {
-	tokens := s.lex(t, "+0o", AddToken, ParseErrorToken)
+	tokens := s.lex(t, "0o135", IntegerLiteralToken)
+	literal, ok := tokens[0].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0o135", literal.Value)
+	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0o", AddToken, ParseErrorToken)
 	parseError, ok := tokens[1].(ParseErrorSymbol)
 	expect.True(t, ok)
 	expect.Error(t, parseError.Error, "0o-prefixed octal integer has no digits")
@@ -526,7 +630,7 @@ func (s *RawLexerSuite) TestZeroOPrefixedOctalIntegerLiteral(t *testing.T) {
 	expect.True(t, ok)
 	expect.Error(t, parseError.Error, "0o-prefixed octal integer has no digits")
 
-	literal, ok := tokens[2].(IntegerLiteralSymbol)
+	literal, ok = tokens[2].(IntegerLiteralSymbol)
 	expect.True(t, ok)
 	expect.Equal(t, "8", literal.Value)
 	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
@@ -576,10 +680,16 @@ func (s *RawLexerSuite) TestZeroOPrefixedOctalIntegerLiteral(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestZeroPrefixedOctalIntegerLiteral(t *testing.T) {
-	tokens := s.lex(
+	tokens := s.lex(t, "0246", IntegerLiteralToken)
+	literal, ok := tokens[0].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0246", literal.Value)
+	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(
 		t, "+08-",
 		AddToken, IntegerLiteralToken, IntegerLiteralToken, SubToken)
-	literal, ok := tokens[1].(IntegerLiteralSymbol)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
 	expect.True(t, ok)
 	expect.Equal(t, "0", literal.Value)
 	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
@@ -634,6 +744,12 @@ func (s *RawLexerSuite) TestZeroPrefixedOctalIntegerLiteral(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestDecimalIntegerLiteral(t *testing.T) {
+	tokens := s.lex(t, "19", IntegerLiteralToken)
+	literal, ok := tokens[0].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "19", literal.Value)
+	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+
 	for i := 0; i < 20; i++ {
 		value := fmt.Sprintf("%d", i)
 
@@ -646,10 +762,10 @@ func (s *RawLexerSuite) TestDecimalIntegerLiteral(t *testing.T) {
 		expect.Equal(t, DecimalInteger, literal.IntegerSubType)
 	}
 
-	tokens := s.lex(
+	tokens = s.lex(
 		t, "+1234567890-",
 		AddToken, IntegerLiteralToken, SubToken)
-	literal, ok := tokens[1].(IntegerLiteralSymbol)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
 	expect.True(t, ok)
 	expect.Equal(t, "1234567890", literal.Value)
 	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
@@ -698,7 +814,13 @@ func (s *RawLexerSuite) TestDecimalIntegerLiteral(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestHexadecimalIntegerLiteral(t *testing.T) {
-	tokens := s.lex(t, "+0x", AddToken, ParseErrorToken)
+	tokens := s.lex(t, "0x19afAF", IntegerLiteralToken)
+	literal, ok := tokens[0].(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, "0x19afAF", literal.Value)
+	expect.Equal(t, HexadecimalInteger, literal.IntegerSubType)
+
+	tokens = s.lex(t, "+0x", AddToken, ParseErrorToken)
 	parseError, ok := tokens[1].(ParseErrorSymbol)
 	expect.True(t, ok)
 	expect.Error(t, parseError.Error, "hexadecimal integer has no digits")
@@ -731,7 +853,7 @@ func (s *RawLexerSuite) TestHexadecimalIntegerLiteral(t *testing.T) {
 	expect.Equal(t, "g", value.Value)
 
 	tokens = s.lex(t, "+0x0123456789", AddToken, IntegerLiteralToken)
-	literal, ok := tokens[1].(IntegerLiteralSymbol)
+	literal, ok = tokens[1].(IntegerLiteralSymbol)
 	expect.True(t, ok)
 	expect.Equal(t, "0x0123456789", literal.Value)
 	expect.Equal(t, HexadecimalInteger, literal.IntegerSubType)
