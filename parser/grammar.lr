@@ -755,4 +755,5 @@ go:
     ParseError: "ParseErrorSymbol"
     CountSymbol: "CountSymbol"
     ValueSymbol: "ValueSymbol"
+  generate_end_pos: True
 }%%

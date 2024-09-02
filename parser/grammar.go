@@ -116,16 +116,20 @@ func (l Location) ShortString() string {
 type Token interface {
 	Id() SymbolId
 	Loc() Location
+	End() Location
 }
 
 type GenericSymbol struct {
 	SymbolId
-	Location
+	StartPos Location
+	EndPos   Location
 }
 
 func (t GenericSymbol) Id() SymbolId { return t.SymbolId }
 
-func (t GenericSymbol) Loc() Location { return t.Location }
+func (t GenericSymbol) Loc() Location { return t.StartPos }
+
+func (t GenericSymbol) End() Location { return t.EndPos }
 
 type Lexer interface {
 	// Note: Return io.EOF to indicate end of stream
@@ -3056,6 +3060,28 @@ func (s *Symbol) Loc() Location {
 	return s.Generic_.Loc()
 }
 
+func (s *Symbol) End() Location {
+	type locator interface{ End() Location }
+	switch s.SymbolId_ {
+	case NewlinesToken:
+		loc, ok := interface{}(s.CountSymbol).(locator)
+		if ok {
+			return loc.End()
+		}
+	case ParseErrorToken:
+		loc, ok := interface{}(s.ParseError).(locator)
+		if ok {
+			return loc.End()
+		}
+	case IdentifierToken, LabelDeclToken, JumpLabelToken:
+		loc, ok := interface{}(s.ValueSymbol).(locator)
+		if ok {
+			return loc.End()
+		}
+	}
+	return s.Generic_.End()
+}
+
 type _PseudoSymbolStack struct {
 	lexer Lexer
 	top   []*Symbol
@@ -3068,7 +3094,10 @@ func (stack *_PseudoSymbolStack) Top() (*Symbol, error) {
 			if err != io.EOF {
 				return nil, fmt.Errorf("Unexpected lex error: %s", err)
 			}
-			token = GenericSymbol{_EndMarker, stack.lexer.CurrentLocation()}
+			token = GenericSymbol{
+				SymbolId: _EndMarker,
+				StartPos: stack.lexer.CurrentLocation(),
+			}
 		}
 		item, err := NewSymbol(token)
 		if err != nil {

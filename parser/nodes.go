@@ -24,48 +24,56 @@ const (
 )
 
 type ParseErrorSymbol struct {
-	Location
-	Error error
+	StartPos Location
+	EndPos   Location
+	Error    error
 }
 
 func (s ParseErrorSymbol) Id() SymbolId { return ParseErrorToken }
 
-func (s ParseErrorSymbol) Loc() Location { return s.Location }
+func (s ParseErrorSymbol) Loc() Location { return s.StartPos }
+func (s ParseErrorSymbol) End() Location { return s.EndPos }
 
 func (s ParseErrorSymbol) String() string {
-	return s.Error.Error() + " " + s.Location.String()
+	return s.Error.Error() + " " + s.StartPos.String()
 }
 
 type CountSymbol struct {
 	SymbolId
-	Location
-	Count int
+	StartPos Location
+	EndPos   Location
+	Count    int
 }
 
 func (s CountSymbol) Id() SymbolId { return s.SymbolId }
 
-func (s CountSymbol) Loc() Location { return s.Location }
+func (s CountSymbol) Loc() Location { return s.StartPos }
+func (s CountSymbol) End() Location { return s.EndPos }
 
 type ValueSymbol struct {
 	SymbolId
-	Location
-	Value string
+	StartPos Location
+	EndPos   Location
+	Value    string
 }
 
 func (s ValueSymbol) Id() SymbolId { return s.SymbolId }
 
-func (s ValueSymbol) Loc() Location { return s.Location }
+func (s ValueSymbol) Loc() Location { return s.StartPos }
+func (s ValueSymbol) End() Location { return s.EndPos }
 
 type LiteralSymbol[T any] struct {
 	SymbolId
-	Location
-	Value   string
-	SubType T
+	StartPos Location
+	EndPos   Location
+	Value    string
+	SubType  T
 }
 
 func (s LiteralSymbol[T]) Id() SymbolId { return s.SymbolId }
 
-func (s LiteralSymbol[T]) Loc() Location { return s.Location }
+func (s LiteralSymbol[T]) Loc() Location { return s.StartPos }
+func (s LiteralSymbol[T]) End() Location { return s.EndPos }
 
 type IntegerLiteralSymbol = LiteralSymbol[IntegerLiteralSubType]
 type RuneLiteralSymbol = LiteralSymbol[struct{}]
