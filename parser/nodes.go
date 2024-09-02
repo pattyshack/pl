@@ -1,13 +1,23 @@
 package parser
 
-type IntegerSubType string
+type IntegerLiteralSubType string
+
+type StringLiteralSubType string
 
 const (
-	DecimalInteger            = IntegerSubType("decimal")
-	HexadecimalInteger        = IntegerSubType("hexadecimal")
-	ZeroOPrefixedOctalInteger = IntegerSubType("0o-prefixed octal")
-	ZeroPrefixedOctalInteger  = IntegerSubType("0-prefixed octal")
-	BinaryInteger             = IntegerSubType("binary")
+	DecimalInteger     = IntegerLiteralSubType("decimal integer literal")
+	HexadecimalInteger = IntegerLiteralSubType(
+		"hexadecimal integer literal")
+	ZeroOPrefixedOctalInteger = IntegerLiteralSubType(
+		"0o-prefixed octal integer literal")
+	ZeroPrefixedOctalInteger = IntegerLiteralSubType(
+		"0-prefixed octal integer literal")
+	BinaryInteger = IntegerLiteralSubType("binary integer literal")
+
+	SingleLineString    = StringLiteralSubType("single line string literal")
+	MultiLineString     = StringLiteralSubType("mutli line string literal")
+	RawSingleLineString = StringLiteralSubType("raw single line string literal")
+	RawMultiLineString  = StringLiteralSubType("raw mutli line string literal")
 )
 
 type ParseErrorSymbol struct {
@@ -43,12 +53,17 @@ func (s ValueSymbol) Id() SymbolId { return s.SymbolId }
 
 func (s ValueSymbol) Loc() Location { return s.Location }
 
-type IntegerLiteralSymbol struct {
+type LiteralSymbol[T any] struct {
+	SymbolId
 	Location
-	Value string
-	IntegerSubType
+	Value   string
+	SubType T
 }
 
-func (s IntegerLiteralSymbol) Id() SymbolId { return IntegerLiteralToken }
+func (s LiteralSymbol[T]) Id() SymbolId { return s.SymbolId }
 
-func (s IntegerLiteralSymbol) Loc() Location { return s.Location }
+func (s LiteralSymbol[T]) Loc() Location { return s.Location }
+
+type IntegerLiteralSymbol = LiteralSymbol[IntegerLiteralSubType]
+type RuneLiteralSymbol = LiteralSymbol[struct{}]
+type StringLiteralSymbol = LiteralSymbol[StringLiteralSubType]

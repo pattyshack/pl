@@ -58,16 +58,58 @@ func (RawLexerSuite) idChar(idx int) string {
 	return string(charSet[idx%len(charSet)])
 }
 
-func (s *RawLexerSuite) TestFloatLiteralToken(t *testing.T) {
+func (s *RawLexerSuite) expectError(t *testing.T, token Token, errMsg string) {
+	pe, ok := token.(ParseErrorSymbol)
+	expect.True(t, ok)
+	expect.Error(t, pe.Error, errMsg)
+}
+
+func (s *RawLexerSuite) expectValue(
+	t *testing.T,
+	expectedValue string,
+	token Token,
+) {
+	value, ok := token.(ValueSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, expectedValue, value.Value)
+}
+
+func (s *RawLexerSuite) expectInt(
+	t *testing.T,
+	expectedValue string,
+	token Token,
+) IntegerLiteralSymbol {
+	value, ok := token.(IntegerLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, expectedValue, value.Value)
+
+	return value
+}
+
+func (s *RawLexerSuite) expectStr(
+	t *testing.T,
+	expectedValue string,
+	token Token,
+) StringLiteralSymbol {
+	value, ok := token.(StringLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, expectedValue, value.Value)
+
+	return value
+}
+
+func (s *RawLexerSuite) expectRune(
+	t *testing.T,
+	expectedRune string,
+	token Token,
+) {
+	value, ok := token.(RuneLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, expectedRune, value.Value)
+}
+
+func (s *RawLexerSuite) TestFloatLiteral(t *testing.T) {
 	// TODO (reminder: need to check for dot prefix variant .123)
-}
-
-func (s *RawLexerSuite) TestRuneLiteralToken(t *testing.T) {
-	// TODO
-}
-
-func (s *RawLexerSuite) TestStringLiteralToken(t *testing.T) {
-	// TODO 4 variants
 }
 
 func (s *RawLexerSuite) TestNewlinesTokens(t *testing.T) {
@@ -91,9 +133,7 @@ func (s *RawLexerSuite) TestNewlinesTokens(t *testing.T) {
 		expect.True(t, ok)
 		expect.Equal(t, i+1, newlines.Count)
 
-		parseError, ok := tokens[2].(ParseErrorSymbol)
-		expect.True(t, ok)
-		expect.Error(t, parseError.Error, "unexpected utf8 rune")
+		s.expectError(t, tokens[2], "unexpected utf8 rune")
 	}
 }
 
@@ -171,14 +211,10 @@ func (s *RawLexerSuite) TestDollarTokens(t *testing.T) {
 	s.lex(t, "+$[-", AddToken, DollarLbracketToken, SubToken)
 
 	tokens := s.lex(t, "$", ParseErrorToken)
-	parseError, ok := tokens[0].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "unexpected utf8 rune")
+	s.expectError(t, tokens[0], "unexpected utf8 rune")
 
 	tokens = s.lex(t, "+$-", AddToken, ParseErrorToken, SubToken)
-	parseError, ok = tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "unexpected utf8 rune")
+	s.expectError(t, tokens[1], "unexpected utf8 rune")
 }
 
 func (s *RawLexerSuite) TestAddTokens(t *testing.T) {
@@ -306,110 +342,76 @@ func (s *RawLexerSuite) TestLessTokens(t *testing.T) {
 	s.lex(t, "+<<=-", AddToken, BitLshiftAssignToken, SubToken)
 }
 
-func (s *RawLexerSuite) TestIdentifierToken(t *testing.T) {
+func (s *RawLexerSuite) TestIdentifier(t *testing.T) {
 	tokens := s.lex(t, "abc", IdentifierToken)
-	value, ok := tokens[0].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "abc", value.Value)
+	s.expectValue(t, "abc", tokens[0])
 
 	testId := ""
 	// Test in loop to check for peek window resizing
 	for i := 0; i < 151; i++ {
 		testId += s.idChar(i)
 		tokens := s.lex(t, "+"+testId, AddToken, IdentifierToken)
-		value, ok := tokens[1].(ValueSymbol)
-		expect.True(t, ok)
-		expect.Equal(t, testId, value.Value)
+		s.expectValue(t, testId, tokens[1])
 
 		tokens = s.lex(t, "+"+testId+"-", AddToken, IdentifierToken, SubToken)
-		value, ok = tokens[1].(ValueSymbol)
-		expect.True(t, ok)
-		expect.Equal(t, testId, value.Value)
+		s.expectValue(t, testId, tokens[1])
 	}
 
 	tokens = s.lex(t, "+世界", AddToken, IdentifierToken)
-	value, ok = tokens[1].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "世界", value.Value)
+	s.expectValue(t, "世界", tokens[1])
 
 	tokens = s.lex(t, "+世界-", AddToken, IdentifierToken, SubToken)
-	value, ok = tokens[1].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "世界", value.Value)
+	s.expectValue(t, "世界", tokens[1])
 
 	tokens = s.lex(
 		// '+' + '世' + (first two bytes of '界') + '-'
 		t, string([]byte{'+', 228, 184, 150, 231, 149, '-'}),
 		AddToken, IdentifierToken, ParseErrorToken, ParseErrorToken, SubToken)
-	value, ok = tokens[1].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "世", value.Value)
+	s.expectValue(t, "世", tokens[1])
 
-	parseError, ok := tokens[2].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "unexpected utf8 rune")
-
-	parseError, ok = tokens[3].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "unexpected utf8 rune")
+	s.expectError(t, tokens[2], "unexpected utf8 rune")
+	s.expectError(t, tokens[3], "unexpected utf8 rune")
 }
 
-func (s *RawLexerSuite) TestLabelDeclToken(t *testing.T) {
+func (s *RawLexerSuite) TestLabelDecl(t *testing.T) {
 	tokens := s.lex(t, "abc@", LabelDeclToken)
-	value, ok := tokens[0].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "abc@", value.Value)
+	s.expectValue(t, "abc@", tokens[0])
 
 	testId := ""
 	// Test in loop to check for peek window resizing
 	for i := 0; i < 151; i++ {
 		testId += s.idChar(i)
 		tokens := s.lex(t, "+"+testId+"@", AddToken, LabelDeclToken)
-		value, ok := tokens[1].(ValueSymbol)
-		expect.True(t, ok)
-		expect.Equal(t, testId+"@", value.Value)
+		s.expectValue(t, testId+"@", tokens[1])
 
 		tokens = s.lex(t, "+"+testId+"@-", AddToken, LabelDeclToken, SubToken)
-		value, ok = tokens[1].(ValueSymbol)
-		expect.True(t, ok)
-		expect.Equal(t, testId+"@", value.Value)
+		s.expectValue(t, testId+"@", tokens[1])
 	}
 
 	tokens = s.lex(t, "+世界@", AddToken, LabelDeclToken)
-	value, ok = tokens[1].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "世界@", value.Value)
+	s.expectValue(t, "世界@", tokens[1])
 
 	tokens = s.lex(t, "+世界@-", AddToken, LabelDeclToken, SubToken)
-	value, ok = tokens[1].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "世界@", value.Value)
+	s.expectValue(t, "世界@", tokens[1])
 }
 
-func (s *RawLexerSuite) TestJumpLabelToken(t *testing.T) {
+func (s *RawLexerSuite) TestJumpLabel(t *testing.T) {
 	tokens := s.lex(t, "@abc", JumpLabelToken)
-	value, ok := tokens[0].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "@abc", value.Value)
+	s.expectValue(t, "@abc", tokens[0])
 
 	tokens = s.lex(t, "+@-", AddToken, ParseErrorToken, SubToken)
-	parseError, ok := tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "no label name associated with @")
+	s.expectError(t, tokens[1], "no label name associated with @")
 
-	//
-	// TODO check for invalid identifier (first char is a number) @0abc
-	//
+	tokens = s.lex(
+		t, "@0abc",
+		ParseErrorToken, IntegerLiteralToken, IdentifierToken)
+	s.expectError(t, tokens[0], "no label name associated with @")
 
 	tokens = s.lex(t, "+@label", AddToken, JumpLabelToken)
-	symbol, ok := tokens[1].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "@label", symbol.Value)
+	s.expectValue(t, "@label", tokens[1])
 
 	tokens = s.lex(t, "+@label-", AddToken, JumpLabelToken, SubToken)
-	symbol, ok = tokens[1].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "@label", symbol.Value)
+	s.expectValue(t, "@label", tokens[1])
 }
 
 func (s *RawLexerSuite) TestKeywordTokens(t *testing.T) {
@@ -417,72 +419,52 @@ func (s *RawLexerSuite) TestKeywordTokens(t *testing.T) {
 		s.lex(t, "+"+kw+"-", AddToken, symbolId, SubToken)
 
 		tokens := s.lex(t, "+"+kw+"blah-", AddToken, IdentifierToken, SubToken)
-		symbol, ok := tokens[1].(ValueSymbol)
-		expect.True(t, ok)
-		expect.Equal(t, kw+"blah", symbol.Value)
+		s.expectValue(t, kw+"blah", tokens[1])
 	}
 }
 
-func (s *RawLexerSuite) TestLineCommentToken(t *testing.T) {
+func (s *RawLexerSuite) TestLineComment(t *testing.T) {
 	tokens := s.lex(t, "//", lineCommentToken)
-	value, ok := tokens[0].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "//", value.Value)
+	s.expectValue(t, "//", tokens[0])
 
 	comment := "//"
 	for i := 0; i < 101; i++ {
 		tokens := s.lex(t, "+"+comment, AddToken, lineCommentToken)
-		value, ok := tokens[1].(ValueSymbol)
-		expect.True(t, ok)
-		expect.Equal(t, comment, value.Value)
+		s.expectValue(t, comment, tokens[1])
 
 		tokens = s.lex(
 			t, "+"+comment+"\n",
 			AddToken, lineCommentToken, NewlinesToken)
-		value, ok = tokens[1].(ValueSymbol)
-		expect.True(t, ok)
-		expect.Equal(t, comment, value.Value)
+		s.expectValue(t, comment, tokens[1])
 
 		tokens = s.lex(
 			t, "+"+comment+"\r\n",
 			AddToken, lineCommentToken, NewlinesToken)
-		value, ok = tokens[1].(ValueSymbol)
-		expect.True(t, ok)
-		expect.Equal(t, comment, value.Value)
+		s.expectValue(t, comment, tokens[1])
 
 		comment += s.idChar(i)
 	}
 }
 
-func (s *RawLexerSuite) TestBlockCommentToken(t *testing.T) {
+func (s *RawLexerSuite) TestBlockComment(t *testing.T) {
 	tokens := s.lex(t, "/**/", blockCommentToken)
-	value, ok := tokens[0].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "/**/", value.Value)
+	s.expectValue(t, "/**/", tokens[0])
 
 	commentBody := ""
 	for i := 0; i < 151; i++ {
 		tokens := s.lex(t, "+/*"+commentBody, AddToken, ParseErrorToken)
-		parseError, ok := tokens[1].(ParseErrorSymbol)
-		expect.True(t, ok)
-		expect.Error(t, parseError.Error, "comment not terminated")
+		s.expectError(t, tokens[1], "comment not terminated")
 
 		tokens = s.lex(t, "+/*"+commentBody+"*", AddToken, ParseErrorToken)
-		parseError, ok = tokens[1].(ParseErrorSymbol)
-		expect.True(t, ok)
-		expect.Error(t, parseError.Error, "comment not terminated")
+		s.expectError(t, tokens[1], "comment not terminated")
 
 		tokens = s.lex(t, "+/*"+commentBody+"*/", AddToken, blockCommentToken)
-		value, ok := tokens[1].(ValueSymbol)
-		expect.True(t, ok)
-		expect.Equal(t, value.Value, "/*"+commentBody+"*/")
+		s.expectValue(t, "/*"+commentBody+"*/", tokens[1])
 
 		tokens = s.lex(
 			t, "+/*"+commentBody+"*/-", AddToken,
 			blockCommentToken, SubToken)
-		value, ok = tokens[1].(ValueSymbol)
-		expect.True(t, ok)
-		expect.Equal(t, value.Value, "/*"+commentBody+"*/")
+		s.expectValue(t, "/*"+commentBody+"*/", tokens[1])
 
 		commentBody += s.idChar(i)
 	}
@@ -490,9 +472,7 @@ func (s *RawLexerSuite) TestBlockCommentToken(t *testing.T) {
 	comment := "/* scope 0 */"
 	for i := 0; i < 10; i++ {
 		tokens := s.lex(t, "+"+comment+"-", AddToken, blockCommentToken, SubToken)
-		value, ok := tokens[1].(ValueSymbol)
-		expect.True(t, ok)
-		expect.Equal(t, value.Value, comment)
+		s.expectValue(t, comment, tokens[1])
 
 		comment = fmt.Sprintf("/* scope %d %s %s */", i+1, comment, comment)
 	}
@@ -506,249 +486,148 @@ func (s *RawLexerSuite) TestBlockCommentToken(t *testing.T) {
 			comment += " */"
 
 			tokens := s.lex(t, "+"+comment, AddToken, ParseErrorToken)
-			parseError, ok := tokens[1].(ParseErrorSymbol)
-			expect.True(t, ok)
-			expect.Error(t, parseError.Error, "comment not terminated")
+			s.expectError(t, tokens[1], "comment not terminated")
 		}
 
 		comment += " */"
 		tokens := s.lex(t, "+"+comment+"-", AddToken, blockCommentToken, SubToken)
-		value, ok := tokens[1].(ValueSymbol)
-		expect.True(t, ok)
-		expect.Equal(t, value.Value, comment)
+		s.expectValue(t, comment, tokens[1])
 	}
 }
 
 func (s *RawLexerSuite) TestBinaryIntegerLiteral(t *testing.T) {
 	tokens := s.lex(t, "0b101", IntegerLiteralToken)
-	literal, ok := tokens[0].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0b101", literal.Value)
-	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
+	literal := s.expectInt(t, "0b101", tokens[0])
+	expect.Equal(t, BinaryInteger, literal.SubType)
 
 	tokens = s.lex(t, "+0b", AddToken, ParseErrorToken)
-	parseError, ok := tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "binary integer has no digits")
+	s.expectError(t, tokens[1], "binary integer literal has no digits")
 
 	tokens = s.lex(t, "+0b-", AddToken, ParseErrorToken, SubToken)
-	parseError, ok = tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "binary integer has no digits")
+	s.expectError(t, tokens[1], "binary integer literal has no digits")
 
 	tokens = s.lex(
 		t, "+0B_-",
 		AddToken, ParseErrorToken, IdentifierToken, SubToken)
-	parseError, ok = tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "binary integer has no digits")
+	s.expectError(t, tokens[1], "binary integer literal has no digits")
 
 	tokens = s.lex(
 		t, "+0B2-",
 		AddToken, ParseErrorToken, IntegerLiteralToken, SubToken)
-	parseError, ok = tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "binary integer has no digits")
+	s.expectError(t, tokens[1], "binary integer literal has no digits")
 
-	literal, ok = tokens[2].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "2", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+	s.expectInt(t, "2", tokens[2])
 
 	tokens = s.lex(t, "+0b1", AddToken, IntegerLiteralToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0b1", literal.Value)
-	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
+	s.expectInt(t, "0b1", tokens[1])
 
 	tokens = s.lex(t, "+0B0-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0B0", literal.Value)
-	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
+	literal = s.expectInt(t, "0B0", tokens[1])
+	expect.Equal(t, BinaryInteger, literal.SubType)
 
 	tokens = s.lex(
 		t, "+0B02-",
 		AddToken, IntegerLiteralToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0B0", literal.Value)
-	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
-
-	literal, ok = tokens[2].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "2", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+	s.expectInt(t, "0B0", tokens[1])
+	s.expectInt(t, "2", tokens[2])
 
 	tokens = s.lex(t, "+0b_1-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0b_1", literal.Value)
-	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
+	s.expectInt(t, "0b_1", tokens[1])
 
 	tokens = s.lex(t, "+0B_100_010_111-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0B_100_010_111", literal.Value)
-	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
+	s.expectInt(t, "0B_100_010_111", tokens[1])
 
 	tokens = s.lex(t, "+0b011101000-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0b011101000", literal.Value)
-	expect.Equal(t, BinaryInteger, literal.IntegerSubType)
+	s.expectInt(t, "0b011101000", tokens[1])
 }
 
 func (s *RawLexerSuite) TestZeroOPrefixedOctalIntegerLiteral(t *testing.T) {
 	tokens := s.lex(t, "0o135", IntegerLiteralToken)
-	literal, ok := tokens[0].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0o135", literal.Value)
-	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
+	literal := s.expectInt(t, "0o135", tokens[0])
+	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.SubType)
 
 	tokens = s.lex(t, "+0o", AddToken, ParseErrorToken)
-	parseError, ok := tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "0o-prefixed octal integer has no digits")
+	s.expectError(t, tokens[1], "0o-prefixed octal integer literal has no digits")
 
 	tokens = s.lex(t, "+0o-", AddToken, ParseErrorToken, SubToken)
-	parseError, ok = tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "0o-prefixed octal integer has no digits")
+	s.expectError(t, tokens[1], "0o-prefixed octal integer literal has no digits")
 
 	tokens = s.lex(
 		t, "+0O_-",
 		AddToken, ParseErrorToken, IdentifierToken, SubToken)
-	parseError, ok = tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "0o-prefixed octal integer has no digits")
+	s.expectError(t, tokens[1], "0o-prefixed octal integer literal has no digits")
 
 	tokens = s.lex(
 		t, "+0O8-",
 		AddToken, ParseErrorToken, IntegerLiteralToken, SubToken)
-	parseError, ok = tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "0o-prefixed octal integer has no digits")
+	s.expectError(t, tokens[1], "0o-prefixed octal integer literal has no digits")
 
-	literal, ok = tokens[2].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "8", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+	s.expectInt(t, "8", tokens[2])
 
 	tokens = s.lex(t, "+0o644", AddToken, IntegerLiteralToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0o644", literal.Value)
-	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
+	literal = s.expectInt(t, "0o644", tokens[1])
+	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.SubType)
 
 	tokens = s.lex(t, "+0O7-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0O7", literal.Value)
-	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
+	s.expectInt(t, "0O7", tokens[1])
+	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.SubType)
 
 	tokens = s.lex(
 		t, "+0O78-",
 		AddToken, IntegerLiteralToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0O7", literal.Value)
-	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
-
-	literal, ok = tokens[2].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "8", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+	s.expectInt(t, "0O7", tokens[1])
+	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.SubType)
+	s.expectInt(t, "8", tokens[2])
 
 	tokens = s.lex(t, "+0o_1-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0o_1", literal.Value)
-	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
+	s.expectInt(t, "0o_1", tokens[1])
 
 	tokens = s.lex(t, "+0O_123_456_701-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0O_123_456_701", literal.Value)
-	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
+	s.expectInt(t, "0O_123_456_701", tokens[1])
 
 	tokens = s.lex(t, "+0o012345670-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0o012345670", literal.Value)
-	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.IntegerSubType)
+	s.expectInt(t, "0o012345670", tokens[1])
 }
 
 func (s *RawLexerSuite) TestZeroPrefixedOctalIntegerLiteral(t *testing.T) {
 	tokens := s.lex(t, "0246", IntegerLiteralToken)
-	literal, ok := tokens[0].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0246", literal.Value)
-	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
+	literal := s.expectInt(t, "0246", tokens[0])
+	expect.Equal(t, ZeroPrefixedOctalInteger, literal.SubType)
 
 	tokens = s.lex(
 		t, "+08-",
 		AddToken, IntegerLiteralToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
-
-	literal, ok = tokens[2].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "8", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+	literal = s.expectInt(t, "0", tokens[1])
+	expect.Equal(t, DecimalInteger, literal.SubType)
+	s.expectInt(t, "8", tokens[2])
 
 	tokens = s.lex(t, "+0644", AddToken, IntegerLiteralToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0644", literal.Value)
-	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
+	s.expectInt(t, "0644", tokens[1])
 
 	tokens = s.lex(t, "+07-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "07", literal.Value)
-	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
+	s.expectInt(t, "07", tokens[1])
 
 	tokens = s.lex(
 		t, "+078-",
 		AddToken, IntegerLiteralToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "07", literal.Value)
-	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
-
-	literal, ok = tokens[2].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "8", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+	s.expectInt(t, "07", tokens[1])
+	s.expectInt(t, "8", tokens[2])
 
 	tokens = s.lex(t, "+0_1-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0_1", literal.Value)
-	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
+	literal = s.expectInt(t, "0_1", tokens[1])
+	expect.Equal(t, ZeroPrefixedOctalInteger, literal.SubType)
 
 	tokens = s.lex(t, "+0_123_456_701-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0_123_456_701", literal.Value)
-	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
+	s.expectInt(t, "0_123_456_701", tokens[1])
 
 	tokens = s.lex(t, "+0012345670-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0012345670", literal.Value)
-	expect.Equal(t, ZeroPrefixedOctalInteger, literal.IntegerSubType)
+	s.expectInt(t, "0012345670", tokens[1])
 }
 
 func (s *RawLexerSuite) TestDecimalIntegerLiteral(t *testing.T) {
 	tokens := s.lex(t, "19", IntegerLiteralToken)
-	literal, ok := tokens[0].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "19", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+	literal := s.expectInt(t, "19", tokens[0])
+	expect.Equal(t, DecimalInteger, literal.SubType)
 
 	for i := 0; i < 20; i++ {
 		value := fmt.Sprintf("%d", i)
@@ -756,129 +635,369 @@ func (s *RawLexerSuite) TestDecimalIntegerLiteral(t *testing.T) {
 		tokens := s.lex(
 			t, "+"+value,
 			AddToken, IntegerLiteralToken)
-		literal, ok := tokens[1].(IntegerLiteralSymbol)
-		expect.True(t, ok)
-		expect.Equal(t, value, literal.Value)
-		expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+		literal = s.expectInt(t, value, tokens[1])
+		expect.Equal(t, DecimalInteger, literal.SubType)
 	}
 
 	tokens = s.lex(
 		t, "+1234567890-",
 		AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "1234567890", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+	s.expectInt(t, "1234567890", tokens[1])
 
 	tokens = s.lex(t, "+644", AddToken, IntegerLiteralToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "644", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+	s.expectInt(t, "644", tokens[1])
 
 	tokens = s.lex(t, "+1_2_3_4_5-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "1_2_3_4_5", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+	s.expectInt(t, "1_2_3_4_5", tokens[1])
 
 	tokens = s.lex(t, "+123_456_789_0-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "123_456_789_0", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
+	s.expectInt(t, "123_456_789_0", tokens[1])
 
 	tokens = s.lex(
 		t, "+10abc-",
 		AddToken, IntegerLiteralToken, IdentifierToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "10", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
-
-	value, ok := tokens[2].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "abc", value.Value)
+	s.expectInt(t, "10", tokens[1])
+	s.expectValue(t, "abc", tokens[2])
 
 	tokens = s.lex(
 		t, "+5BCD-",
 		AddToken, IntegerLiteralToken, IdentifierToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "5", literal.Value)
-	expect.Equal(t, DecimalInteger, literal.IntegerSubType)
-
-	value, ok = tokens[2].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "BCD", value.Value)
+	s.expectInt(t, "5", tokens[1])
+	s.expectValue(t, "BCD", tokens[2])
 }
 
 func (s *RawLexerSuite) TestHexadecimalIntegerLiteral(t *testing.T) {
 	tokens := s.lex(t, "0x19afAF", IntegerLiteralToken)
-	literal, ok := tokens[0].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0x19afAF", literal.Value)
-	expect.Equal(t, HexadecimalInteger, literal.IntegerSubType)
+	literal := s.expectInt(t, "0x19afAF", tokens[0])
+	expect.Equal(t, HexadecimalInteger, literal.SubType)
 
 	tokens = s.lex(t, "+0x", AddToken, ParseErrorToken)
-	parseError, ok := tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "hexadecimal integer has no digits")
+	s.expectError(t, tokens[1], "hexadecimal integer literal has no digits")
 
 	tokens = s.lex(t, "+0x-", AddToken, ParseErrorToken, SubToken)
-	parseError, ok = tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "hexadecimal integer has no digits")
+	s.expectError(t, tokens[1], "hexadecimal integer literal has no digits")
 
 	tokens = s.lex(
 		t, "+0X_-",
 		AddToken, ParseErrorToken, IdentifierToken, SubToken)
-	parseError, ok = tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "hexadecimal integer has no digits")
-
-	value, ok := tokens[2].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "_", value.Value)
+	s.expectError(t, tokens[1], "hexadecimal integer literal has no digits")
+	s.expectValue(t, "_", tokens[2])
 
 	tokens = s.lex(
 		t, "+0Xg-",
 		AddToken, ParseErrorToken, IdentifierToken, SubToken)
-	parseError, ok = tokens[1].(ParseErrorSymbol)
-	expect.True(t, ok)
-	expect.Error(t, parseError.Error, "hexadecimal integer has no digits")
-
-	value, ok = tokens[2].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "g", value.Value)
+	s.expectError(t, tokens[1], "hexadecimal integer literal has no digits")
+	s.expectValue(t, "g", tokens[2])
 
 	tokens = s.lex(t, "+0x0123456789", AddToken, IntegerLiteralToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0x0123456789", literal.Value)
-	expect.Equal(t, HexadecimalInteger, literal.IntegerSubType)
+	s.expectInt(t, "0x0123456789", tokens[1])
 
 	tokens = s.lex(t, "+0Xabcdef-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0Xabcdef", literal.Value)
-	expect.Equal(t, HexadecimalInteger, literal.IntegerSubType)
+	literal = s.expectInt(t, "0Xabcdef", tokens[1])
+	expect.Equal(t, HexadecimalInteger, literal.SubType)
 
 	tokens = s.lex(
 		t, "+0X_ABC_DEFG-",
 		AddToken, IntegerLiteralToken, IdentifierToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0X_ABC_DEF", literal.Value)
-	expect.Equal(t, HexadecimalInteger, literal.IntegerSubType)
-
-	value, ok = tokens[2].(ValueSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "G", value.Value)
+	s.expectInt(t, "0X_ABC_DEF", tokens[1])
+	s.expectValue(t, "G", tokens[2])
 
 	tokens = s.lex(t, "+0X123_ABC_abc-", AddToken, IntegerLiteralToken, SubToken)
-	literal, ok = tokens[1].(IntegerLiteralSymbol)
-	expect.True(t, ok)
-	expect.Equal(t, "0X123_ABC_abc", literal.Value)
-	expect.Equal(t, HexadecimalInteger, literal.IntegerSubType)
+	s.expectInt(t, "0X123_ABC_abc", tokens[1])
+}
+
+func (s *RawLexerSuite) TestRuneLiteral(t *testing.T) {
+	expectInvalidEsc := func(token Token) {
+		s.expectError(t, token, "invalid escaped")
+	}
+
+	expectNotTerminated := func(token Token) {
+		s.expectError(t, token, "rune literal not terminated")
+	}
+
+	// Various errors
+	tokens := s.lex(t, "''", ParseErrorToken)
+	s.expectError(t, tokens[0], "empty rune literal or unescaped '")
+
+	tokens = s.lex(t, "'ab'", ParseErrorToken)
+	s.expectError(t, tokens[0], "more than one character in rune literal")
+
+	tokens = s.lex(t, "'", ParseErrorToken)
+	expectNotTerminated(tokens[0])
+
+	tokens = s.lex(t, "'a", ParseErrorToken)
+	expectNotTerminated(tokens[0])
+
+	tokens = s.lex(t, "'ab", ParseErrorToken)
+	expectNotTerminated(tokens[0])
+
+	tokens = s.lex(t, "'\n", ParseErrorToken, NewlinesToken)
+	expectNotTerminated(tokens[0])
+
+	tokens = s.lex(t, "'\n'", ParseErrorToken, NewlinesToken, ParseErrorToken)
+	expectNotTerminated(tokens[0])
+	expectNotTerminated(tokens[2])
+
+	tokens = s.lex(t, "'\\\n", ParseErrorToken, NewlinesToken)
+	expectInvalidEsc(tokens[0])
+
+	tokens = s.lex(t, "'\\\n'", ParseErrorToken, NewlinesToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[2])
+
+	// invalid escaped character \c
+	tokens = s.lex(t, "'\\c'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped octal \0 (too short)
+	tokens = s.lex(t, "'\\0'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped octal \07 (too short)
+	tokens = s.lex(t, "'\\07'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped octal \078 (wrong digit)
+	tokens = s.lex(
+		t, "'\\078'",
+		ParseErrorToken, IntegerLiteralToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	s.expectInt(t, "8", tokens[1])
+
+	expectNotTerminated(tokens[2])
+
+	// invalid escaped octal \400 (octal value = 256, i.e., out of bound)
+	tokens = s.lex(t, "'\\400'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \x (too short)
+	tokens = s.lex(t, "'\\x'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \xf (too short)
+	tokens = s.lex(t, "'\\xf'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \xfg (wrong digit)
+	tokens = s.lex(
+		t, "'\\xfg'",
+		ParseErrorToken, IdentifierToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	s.expectValue(t, "g", tokens[1])
+	expectNotTerminated(tokens[2])
+
+	// invalid escaped hex \u (too short)
+	tokens = s.lex(t, "'\\u'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \ua (too short)
+	tokens = s.lex(t, "'\\ua'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \uab (too short)
+	tokens = s.lex(t, "'\\uab'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \uabc (too short)
+	tokens = s.lex(t, "'\\uabc'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \uabcg (wrong digit)
+	tokens = s.lex(
+		t, "'\\uabcg'",
+		ParseErrorToken, IdentifierToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	s.expectValue(t, "g", tokens[1])
+	expectNotTerminated(tokens[2])
+
+	// invalid escaped hex \U (too short)
+	tokens = s.lex(t, "'\\U'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \Ua (too short)
+	tokens = s.lex(t, "'\\Ua'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \Uab (too short)
+	tokens = s.lex(t, "'\\Uab'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \Uabc (too short)
+	tokens = s.lex(t, "'\\Uabc'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \uabcd (too short)
+	tokens = s.lex(t, "'\\Uabcd'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \uabcde (too short)
+	tokens = s.lex(t, "'\\Uabcde'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \uabcdef (too short)
+	tokens = s.lex(t, "'\\Uabcdef'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \uabcdef0 (too short)
+	tokens = s.lex(t, "'\\Uabcdef0'", ParseErrorToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	expectNotTerminated(tokens[1])
+
+	// invalid escaped hex \uabcdef0g (wrong digit)
+	tokens = s.lex(
+		t, "'\\Uabcdef0g'",
+		ParseErrorToken, IdentifierToken, ParseErrorToken)
+	expectInvalidEsc(tokens[0])
+	s.expectValue(t, "g", tokens[1])
+	expectNotTerminated(tokens[2])
+
+	// Basic unescaped byte / unicode
+
+	tokens = s.lex(t, "'a'", RuneLiteralToken)
+	s.expectRune(t, "'a'", tokens[0])
+
+	tokens = s.lex(t, "'世'", RuneLiteralToken)
+	s.expectRune(t, "'世'", tokens[0])
+
+	// Escaped character
+
+	for _, char := range "abfnrtv\\'\"`" {
+		escapedChar := fmt.Sprintf("'\\%s'", string(char))
+		tokens = s.lex(t, escapedChar, RuneLiteralToken)
+		s.expectRune(t, escapedChar, tokens[0])
+	}
+
+	// Escaped octal
+
+	// 0377 = 255 (largest valid octal)
+	tokens = s.lex(t, "'\\377'", RuneLiteralToken)
+	s.expectRune(t, "'\\377'", tokens[0])
+
+	tokens = s.lex(t, "'\\000'", RuneLiteralToken)
+	s.expectRune(t, "'\\000'", tokens[0])
+
+	// Escaped \x hex
+
+	tokens = s.lex(t, "'\\xf0'", RuneLiteralToken)
+	s.expectRune(t, "'\\xf0'", tokens[0])
+
+	// Escaped \u hex
+
+	tokens = s.lex(t, "'\\u09af'", RuneLiteralToken)
+	s.expectRune(t, "'\\u09af'", tokens[0])
+
+	// Escaped \U hex
+
+	tokens = s.lex(t, "'\\U09afAF12'", RuneLiteralToken)
+	s.expectRune(t, "'\\U09afAF12'", tokens[0])
+}
+
+func (s *RawLexerSuite) TestSingleLineString(t *testing.T) {
+	tokens := s.lex(t, `"abc`, ParseErrorToken)
+	s.expectError(t, tokens[0], "string literal not terminated")
+
+	tokens = s.lex(
+		t, `"foo\400bar"`,
+		ParseErrorToken, IdentifierToken, ParseErrorToken)
+	s.expectError(t, tokens[0], "invalid escaped")
+	s.expectValue(t, "bar", tokens[1])
+	s.expectError(t, tokens[2], "string literal not terminated")
+
+	tokens = s.lex(t, "`abc\n`", ParseErrorToken, NewlinesToken, ParseErrorToken)
+	s.expectError(t, tokens[0], "string literal not terminated")
+	s.expectError(t, tokens[2], "string literal not terminated")
+
+	tokens = s.lex(t, "`mismatch\"", ParseErrorToken)
+	s.expectError(t, tokens[0], "string literal not terminated")
+
+	content := "a世\\`\\\"\\n\\000\\xaf\\u09AF\\U01234567"
+
+	value := "`" + content + "\"`"
+	tokens = s.lex(t, "+"+value+"-", AddToken, StringLiteralToken, SubToken)
+	str := s.expectStr(t, value, tokens[1])
+	expect.Equal(t, SingleLineString, str.SubType)
+
+	value = "\"" + content + "`\""
+	tokens = s.lex(t, "+"+value+"-", AddToken, StringLiteralToken, SubToken)
+	str = s.expectStr(t, value, tokens[1])
+	expect.Equal(t, SingleLineString, str.SubType)
+}
+
+func (s *RawLexerSuite) TestRawSingleLineString(t *testing.T) {
+	tokens := s.lex(t, `r"abc`, ParseErrorToken)
+	s.expectError(t, tokens[0], "string literal not terminated")
+
+	tokens = s.lex(t, "r`abc\n`", ParseErrorToken, NewlinesToken, ParseErrorToken)
+	s.expectError(t, tokens[0], "string literal not terminated")
+	s.expectError(t, tokens[2], "string literal not terminated")
+
+	tokens = s.lex(t, `r"abc"`, StringLiteralToken)
+	str := s.expectStr(t, `r"abc"`, tokens[0])
+	expect.Equal(t, RawSingleLineString, str.SubType)
+
+	tokens = s.lex(t, "r`abc \\c \\400 ok`", StringLiteralToken)
+	str = s.expectStr(t, "r`abc \\c \\400 ok`", tokens[0])
+	expect.Equal(t, RawSingleLineString, str.SubType)
+
+	tokens = s.lex(t, `r"foo\Uzzz"`, StringLiteralToken)
+	s.expectStr(t, `r"foo\Uzzz"`, tokens[0])
+}
+
+func (s *RawLexerSuite) TestMultiLineString(t *testing.T) {
+	tokens := s.lex(t, `"""abc" ""`, ParseErrorToken)
+	s.expectError(t, tokens[0], "string literal not terminated")
+
+	tokens = s.lex(
+		t, `"""foo\400bar"""`,
+		ParseErrorToken, IdentifierToken, ParseErrorToken)
+	s.expectError(t, tokens[0], "invalid escaped")
+	s.expectValue(t, "bar", tokens[1])
+	s.expectError(t, tokens[2], "string literal not terminated")
+
+	tokens = s.lex(t, "```mismatch\"\"\"", ParseErrorToken)
+	s.expectError(t, tokens[0], "string literal not terminated")
+
+	tokens = s.lex(t, "```\"\"\" \"\" \" ` `` abc\ndef```", StringLiteralToken)
+	str := s.expectStr(t, "```\"\"\" \"\" \" ` `` abc\ndef```", tokens[0])
+	expect.Equal(t, MultiLineString, str.SubType)
+
+	tokens = s.lex(t, "\"\"\"``` \"\" \" ` `` abc\ndef\"\"\"", StringLiteralToken)
+	s.expectStr(t, "\"\"\"``` \"\" \" ` `` abc\ndef\"\"\"", tokens[0])
+}
+
+func (s *RawLexerSuite) TestRawMultiLineString(t *testing.T) {
+	tokens := s.lex(t, `r"""abc" ""`, ParseErrorToken)
+	s.expectError(t, tokens[0], "string literal not terminated")
+
+	tokens = s.lex(t, "r```mismatch\"\"\"", ParseErrorToken)
+	s.expectError(t, tokens[0], "string literal not terminated")
+
+	tokens = s.lex(t, `r"""foo\400bar"""`, StringLiteralToken)
+	str := s.expectStr(t, `r"""foo\400bar"""`, tokens[0])
+	expect.Equal(t, RawMultiLineString, str.SubType)
+
+	tokens = s.lex(t, "r```\"\"\" \"\" \" ` `` abc\ndef```", StringLiteralToken)
+	s.expectStr(t, "r```\"\"\" \"\" \" ` `` abc\ndef```", tokens[0])
+
+	tokens = s.lex(
+		t, "r\"\"\"``` \"\" \" ` `` abc\ndef\"\"\"",
+		StringLiteralToken)
+	s.expectStr(t, "r\"\"\"``` \"\" \" ` `` abc\ndef\"\"\"", tokens[0])
 }
