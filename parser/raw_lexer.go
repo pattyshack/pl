@@ -465,6 +465,7 @@ func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
 func (lexer *RawLexer) peekDigits(
 	offset int,
 	isDigit func(byte) bool,
+	requireLeadingDigit bool,
 ) (
 	int,
 	error,
@@ -490,13 +491,16 @@ func (lexer *RawLexer) peekDigits(
 				numBytes++
 				remaining = remaining[1:]
 			} else if char == '_' {
+				if requireLeadingDigit && numBytes == 0 {
+					return numBytes, nil
+				}
+
 				if len(remaining) < 2 {
 					if hasMore {
 						// read more bytes
 						break
 					} else { // the int is followed by a '_'
-						hasMore = false
-						break
+						return numBytes, nil
 					}
 				}
 
@@ -504,12 +508,10 @@ func (lexer *RawLexer) peekDigits(
 					numBytes += 2
 					remaining = remaining[2:]
 				} else { // the int is followed by a '_'
-					hasMore = false
-					break
+					return numBytes, nil
 				}
 			} else {
-				hasMore = false
-				break
+				return numBytes, nil
 			}
 		}
 
@@ -557,7 +559,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 	totalBytes := 1
 
 	if char != '0' {
-		numBytes, err := lexer.peekDigits(1, isDecimalDigit)
+		numBytes, err := lexer.peekDigits(1, isDecimalDigit, false)
 		if err != nil {
 			return nil, err
 		}
@@ -566,7 +568,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 	} else if len(peeked) > 1 {
 		switch peeked[1] {
 		case 'b', 'B':
-			numBytes, err := lexer.peekDigits(2, isBinaryDigit)
+			numBytes, err := lexer.peekDigits(2, isBinaryDigit, false)
 			if err != nil {
 				return nil, err
 			}
@@ -575,7 +577,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 			hasDigits = numBytes != 0
 			totalBytes = numBytes + 2
 		case 'o', 'O':
-			numBytes, err := lexer.peekDigits(2, isOctalDigit)
+			numBytes, err := lexer.peekDigits(2, isOctalDigit, false)
 			if err != nil {
 				return nil, err
 			}
@@ -584,7 +586,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 			hasDigits = numBytes != 0
 			totalBytes = numBytes + 2
 		case 'x', 'X':
-			numBytes, err := lexer.peekDigits(2, isHexadecimalDigit)
+			numBytes, err := lexer.peekDigits(2, isHexadecimalDigit, false)
 			if err != nil {
 				return nil, err
 			}
@@ -593,7 +595,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 			hasDigits = numBytes != 0
 			totalBytes = numBytes + 2
 		default:
-			numBytes, err := lexer.peekDigits(1, isOctalDigit)
+			numBytes, err := lexer.peekDigits(1, isOctalDigit, false)
 			if err != nil {
 				return nil, err
 			}
