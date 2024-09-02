@@ -832,20 +832,19 @@ func (lexer *RawLexer) lexRuneLiteralToken() (Token, error) {
 	loc := Location(lexer.Location)
 
 	value := ""
-	errMsg := ""
-	if result.errorMsg != "" {
-		errMsg = result.errorMsg
-	} else if result.contentLength > 1 {
-		errMsg = "more than one character in rune literal"
-	} else if result.contentLength < 1 {
-		errMsg = "empty rune literal or unescaped '"
-	} else {
-		peeked, err := lexer.Peek(result.numBytes)
-		if err != nil {
-			panic("should never happen")
-		}
+	if result.errorMsg == "" {
+		if result.contentLength > 1 {
+			result.errorMsg = "more than one character in rune literal"
+		} else if result.contentLength < 1 {
+			result.errorMsg = "empty rune literal or unescaped '"
+		} else {
+			peeked, err := lexer.Peek(result.numBytes)
+			if err != nil {
+				panic("should never happen")
+			}
 
-		value = string(peeked)
+			value = string(peeked)
+		}
 	}
 
 	_, err = lexer.Discard(result.numBytes)
@@ -853,10 +852,10 @@ func (lexer *RawLexer) lexRuneLiteralToken() (Token, error) {
 		panic("should never happen")
 	}
 
-	if errMsg != "" {
+	if result.errorMsg != "" {
 		return ParseErrorSymbol{
 			Location: loc,
-			Error:    fmt.Errorf(errMsg),
+			Error:    fmt.Errorf(result.errorMsg),
 		}, nil
 	}
 
@@ -892,10 +891,7 @@ func (lexer *RawLexer) lexStringLiteralToken(
 	loc := Location(lexer.Location)
 
 	value := ""
-	errMsg := ""
-	if result.errorMsg != "" {
-		errMsg = result.errorMsg
-	} else {
+	if result.errorMsg == "" {
 		peeked, err := lexer.Peek(result.numBytes)
 		if err != nil {
 			panic("should never happen")
@@ -909,10 +905,10 @@ func (lexer *RawLexer) lexStringLiteralToken(
 		panic("should never happen")
 	}
 
-	if errMsg != "" {
+	if result.errorMsg != "" {
 		return ParseErrorSymbol{
 			Location: loc,
-			Error:    fmt.Errorf(errMsg),
+			Error:    fmt.Errorf(result.errorMsg),
 		}, nil
 	}
 
