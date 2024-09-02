@@ -1,8 +1,8 @@
 package parser
 
 type IntegerLiteralSubType string
-
 type StringLiteralSubType string
+type FloatLiteralSubType string
 
 const (
 	DecimalInteger     = IntegerLiteralSubType("decimal integer literal")
@@ -18,6 +18,9 @@ const (
 	MultiLineString     = StringLiteralSubType("mutli line string literal")
 	RawSingleLineString = StringLiteralSubType("raw single line string literal")
 	RawMultiLineString  = StringLiteralSubType("raw mutli line string literal")
+
+	DecimalFloat     = FloatLiteralSubType("decimal float literal")
+	HexadecimalFloat = FloatLiteralSubType("hexadecimal float literal")
 )
 
 type ParseErrorSymbol struct {
@@ -67,3 +70,4 @@ func (s LiteralSymbol[T]) Loc() Location { return s.Location }
 type IntegerLiteralSymbol = LiteralSymbol[IntegerLiteralSubType]
 type RuneLiteralSymbol = LiteralSymbol[struct{}]
 type StringLiteralSymbol = LiteralSymbol[StringLiteralSubType]
+type FloatLiteralSymbol = LiteralSymbol[FloatLiteralSubType]

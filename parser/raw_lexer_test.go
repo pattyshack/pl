@@ -108,8 +108,15 @@ func (s *RawLexerSuite) expectRune(
 	expect.Equal(t, expectedRune, value.Value)
 }
 
-func (s *RawLexerSuite) TestFloatLiteral(t *testing.T) {
-	// TODO (reminder: need to check for dot prefix variant .123)
+func (s *RawLexerSuite) expectFloat(
+	t *testing.T,
+	expectedFloat string,
+	token Token,
+) FloatLiteralSymbol {
+	value, ok := token.(FloatLiteralSymbol)
+	expect.True(t, ok)
+	expect.Equal(t, expectedFloat, value.Value)
+	return value
 }
 
 func (s *RawLexerSuite) TestNewlinesTokens(t *testing.T) {
@@ -1000,4 +1007,207 @@ func (s *RawLexerSuite) TestRawMultiLineString(t *testing.T) {
 		t, "r\"\"\"``` \"\" \" ` `` abc\ndef\"\"\"",
 		StringLiteralToken)
 	s.expectStr(t, "r\"\"\"``` \"\" \" ` `` abc\ndef\"\"\"", tokens[0])
+}
+
+func (s *RawLexerSuite) TestDotDecimalFloat(t *testing.T) {
+	s.lex(t, ".", DotToken)
+	s.lex(t, ".a", DotToken, IdentifierToken)
+
+	for i := 0; i < 10; i++ {
+		value := fmt.Sprintf(".%d", i)
+		tokens := s.lex(t, value, FloatLiteralToken)
+		float := s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, DecimalFloat, float.SubType)
+
+		value = fmt.Sprintf(".01e%d", i)
+		tokens = s.lex(t, value, FloatLiteralToken)
+		float = s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, DecimalFloat, float.SubType)
+
+		value = fmt.Sprintf(".0_2E+0%d", i)
+		tokens = s.lex(t, value, FloatLiteralToken)
+		float = s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, DecimalFloat, float.SubType)
+
+		value = fmt.Sprintf(".0003e-0_0%d", i)
+		tokens = s.lex(t, value, FloatLiteralToken)
+		float = s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, DecimalFloat, float.SubType)
+	}
+
+	tokens := s.lex(t, "._1", DotToken, IdentifierToken)
+	s.expectValue(t, "_1", tokens[1])
+
+	tokens = s.lex(t, ".1e", FloatLiteralToken, IdentifierToken)
+	s.expectFloat(t, ".1", tokens[0])
+	s.expectValue(t, "e", tokens[1])
+
+	tokens = s.lex(t, ".1e_1", FloatLiteralToken, IdentifierToken)
+	s.expectFloat(t, ".1", tokens[0])
+	s.expectValue(t, "e_1", tokens[1])
+
+	tokens = s.lex(
+		t, ".1e+_1",
+		FloatLiteralToken, IdentifierToken, AddToken, IdentifierToken)
+	s.expectFloat(t, ".1", tokens[0])
+	s.expectValue(t, "e", tokens[1])
+	s.expectValue(t, "_1", tokens[3])
+
+	tokens = s.lex(t, ".1ea", FloatLiteralToken, IdentifierToken)
+	s.expectFloat(t, ".1", tokens[0])
+	s.expectValue(t, "ea", tokens[1])
+
+	tokens = s.lex(t, ".1p", FloatLiteralToken, IdentifierToken)
+	s.expectFloat(t, ".1", tokens[0])
+	s.expectValue(t, "p", tokens[1])
+
+	tokens = s.lex(t, ".1p5", FloatLiteralToken, IdentifierToken)
+	s.expectFloat(t, ".1", tokens[0])
+	s.expectValue(t, "p5", tokens[1])
+
+	tokens = s.lex(t, ".e10", DotToken, IdentifierToken)
+	s.expectValue(t, "e10", tokens[1])
+
+	s.lex(t, "+.123-", AddToken, FloatLiteralToken, SubToken)
+}
+
+func (s *RawLexerSuite) TestIntPrefixedDecimalFloat(t *testing.T) {
+	tokens := s.lex(t, "123e+", IntegerLiteralToken, IdentifierToken, AddToken)
+	s.expectInt(t, "123", tokens[0])
+	s.expectValue(t, "e", tokens[1])
+
+	tokens = s.lex(t, "123ea", IntegerLiteralToken, IdentifierToken)
+	s.expectInt(t, "123", tokens[0])
+	s.expectValue(t, "ea", tokens[1])
+
+	tokens = s.lex(t, "123p0", IntegerLiteralToken, IdentifierToken)
+	s.expectInt(t, "123", tokens[0])
+	s.expectValue(t, "p0", tokens[1])
+
+	for i := 0; i < 10; i++ {
+		value := fmt.Sprintf("%d.", i)
+		tokens = s.lex(t, value, FloatLiteralToken)
+		float := s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, DecimalFloat, float.SubType)
+
+		value = fmt.Sprintf("1.%d", i)
+		tokens = s.lex(t, value, FloatLiteralToken)
+		float = s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, DecimalFloat, float.SubType)
+
+		value = fmt.Sprintf("2e%d", i)
+		tokens = s.lex(t, value, FloatLiteralToken)
+		float = s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, DecimalFloat, float.SubType)
+
+		value = fmt.Sprintf("3.E-%d", i)
+		tokens = s.lex(t, value, FloatLiteralToken)
+		float = s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, DecimalFloat, float.SubType)
+
+		value = fmt.Sprintf("4.0_%de+4_4", i)
+		tokens = s.lex(t, value, FloatLiteralToken)
+		float = s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, DecimalFloat, float.SubType)
+	}
+
+	tokens = s.lex(t, "123.", FloatLiteralToken)
+	float := s.expectFloat(t, "123.", tokens[0])
+	expect.Equal(t, DecimalFloat, float.SubType)
+
+	tokens = s.lex(t, "123.456", FloatLiteralToken)
+	float = s.expectFloat(t, "123.456", tokens[0])
+	expect.Equal(t, DecimalFloat, float.SubType)
+
+	tokens = s.lex(t, "123e0", FloatLiteralToken)
+	float = s.expectFloat(t, "123e0", tokens[0])
+	expect.Equal(t, DecimalFloat, float.SubType)
+
+	tokens = s.lex(t, "123.456E789", FloatLiteralToken)
+	float = s.expectFloat(t, "123.456E789", tokens[0])
+	expect.Equal(t, DecimalFloat, float.SubType)
+
+	tokens = s.lex(t, "123.a", FloatLiteralToken, IdentifierToken)
+	s.expectFloat(t, "123.", tokens[0])
+	s.expectValue(t, "a", tokens[1])
+
+	tokens = s.lex(t, "123._0", FloatLiteralToken, IdentifierToken)
+	s.expectFloat(t, "123.", tokens[0])
+	s.expectValue(t, "_0", tokens[1])
+
+	tokens = s.lex(t, "123.0a", FloatLiteralToken, IdentifierToken)
+	s.expectFloat(t, "123.0", tokens[0])
+	s.expectValue(t, "a", tokens[1])
+
+	tokens = s.lex(t, "123.p0", FloatLiteralToken, IdentifierToken)
+	s.expectFloat(t, "123.", tokens[0])
+	s.expectValue(t, "p0", tokens[1])
+}
+
+func (s *RawLexerSuite) TestHexaecimalFloat(t *testing.T) {
+	tokens := s.lex(t, "0xabcp+", IntegerLiteralToken, IdentifierToken, AddToken)
+	s.expectInt(t, "0xabc", tokens[0])
+	s.expectValue(t, "p", tokens[1])
+
+	tokens = s.lex(t, "0xdefpg", IntegerLiteralToken, IdentifierToken)
+	s.expectInt(t, "0xdef", tokens[0])
+	s.expectValue(t, "pg", tokens[1])
+
+	tokens = s.lex(
+		t, "0x123e+0",
+		IntegerLiteralToken, AddToken, IntegerLiteralToken)
+	s.expectInt(t, "0x123e", tokens[0])
+	s.expectInt(t, "0", tokens[2])
+
+	tokens = s.lex(t, "0x.gp0", ParseErrorToken, DotToken, IdentifierToken)
+	s.expectValue(t, "gp0", tokens[2])
+
+	// decimal place leading digit can't be '_'
+	tokens = s.lex(t, "0x._0p0", ParseErrorToken, DotToken, IdentifierToken)
+	s.expectValue(t, "_0p0", tokens[2])
+
+	// missing exponent
+	tokens = s.lex(t, "0x123.", IntegerLiteralToken, DotToken)
+	s.expectInt(t, "0x123", tokens[0])
+
+	/// missing exponent
+	tokens = s.lex(t, "0x.123", ParseErrorToken, FloatLiteralToken)
+	s.expectFloat(t, ".123", tokens[1])
+
+	/// missing exponent
+	tokens = s.lex(
+		t, "0x123.456",
+		IntegerLiteralToken, FloatLiteralToken)
+	s.expectInt(t, "0x123", tokens[0])
+	s.expectFloat(t, ".456", tokens[1])
+
+	for i := 0; i < 10; i++ {
+		value := fmt.Sprintf("0x%dpa", i)
+		tokens = s.lex(t, value, FloatLiteralToken)
+		float := s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, HexadecimalFloat, float.SubType)
+
+		value = fmt.Sprintf("0x_%dP+b", i)
+		tokens = s.lex(t, value, FloatLiteralToken)
+		float = s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, HexadecimalFloat, float.SubType)
+
+		value = fmt.Sprintf("0X%d.p-C", i)
+		tokens = s.lex(t, value, FloatLiteralToken)
+		float = s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, HexadecimalFloat, float.SubType)
+
+		value = fmt.Sprintf("0x%d.0_3p0_D", i)
+		tokens = s.lex(t, value, FloatLiteralToken)
+		float = s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, HexadecimalFloat, float.SubType)
+
+		value = fmt.Sprintf("0x.%dp0E", i)
+		tokens = s.lex(t, value, FloatLiteralToken)
+		float = s.expectFloat(t, value, tokens[0])
+		expect.Equal(t, HexadecimalFloat, float.SubType)
+	}
+
+	tokens = s.lex(t, "0x_0_123.ABC_789p456_DEF", FloatLiteralToken)
+	s.expectFloat(t, "0x_0_123.ABC_789p456_DEF", tokens[0])
 }

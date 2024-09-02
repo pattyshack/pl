@@ -608,7 +608,18 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 		}
 	}
 
-	// TODO handle float
+	if subType == DecimalInteger || subType == HexadecimalInteger {
+		token, err := lexer.maybeLexIntPrefixedFloat(
+			totalBytes,
+			subType == HexadecimalInteger)
+		if err != nil {
+			return nil, err
+		}
+
+		if token != nil {
+			return token, nil
+		}
+	}
 
 	value := ""
 	if hasDigits {
@@ -617,7 +628,11 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 			panic("should never happen")
 		}
 
-		value = string(peeked)
+		if len(peeked) < 3 { // intern short ints
+			value = lexer.InternBytes(peeked)
+		} else {
+			value = string(peeked)
+		}
 	}
 
 	_, err = lexer.Discard(totalBytes)
@@ -640,8 +655,177 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 	}, nil
 }
 
+func (lexer *RawLexer) maybePeekFloat(
+	leadingIntBytes int,
+	isHex bool, // false = decimal
+) (
+	int,
+	error,
+) {
+	isDigit := isDecimalDigit
+	intPrefixLen := 0 // no prefix
+	lowerExp := byte('e')
+	upperExp := byte('E')
+	if isHex {
+		isDigit = isHexadecimalDigit
+		intPrefixLen = 2 // "0x" or "0X"
+		lowerExp = 'p'
+		upperExp = 'P'
+	}
+
+	// peek for (hexa)decimal points of the form DOT digits
+
+	floatBytes := leadingIntBytes
+	peeked, err := lexer.Peek(floatBytes + 1)
+	if len(peeked) > 0 && err == io.EOF {
+		err = nil
+	}
+	if err != nil {
+		return 0, err
+	}
+
+	if len(peeked) <= floatBytes {
+		// can't be a float without decimal point or exponent
+		return 0, nil
+	}
+
+	if peeked[floatBytes] == '.' {
+		floatBytes++
+
+		digitBytes, err := lexer.peekDigits(floatBytes, isDigit, true)
+		if err != nil {
+			return 0, err
+		}
+
+		if digitBytes == 0 && leadingIntBytes == intPrefixLen {
+			// ".", without leading and trailing digits, is not a valid float
+			return 0, err
+		}
+
+		floatBytes += digitBytes
+	}
+
+	// peek for exponent of the form [eEpP][+-]?digits
+
+	peeked, err = lexer.Peek(floatBytes + 2)
+	if len(peeked) > 0 && err == io.EOF {
+		err = nil
+	}
+	if err != nil {
+		return 0, err
+	}
+
+	if len(peeked) <= floatBytes {
+		if isHex { // exponent is not optional for hexadecimal
+			return 0, nil
+		} else if floatBytes > leadingIntBytes {
+			// a valid decimal float without exponent
+			return floatBytes, nil
+		}
+	}
+
+	exp := peeked[floatBytes]
+	if exp == lowerExp || exp == upperExp {
+		prefix := 1
+		if len(peeked) == floatBytes+2 {
+			char := peeked[floatBytes+1]
+			if char == '+' || char == '-' {
+				prefix = 2
+			}
+		}
+
+		exponentDigits, err := lexer.peekDigits(floatBytes+prefix, isDigit, true)
+		if err != nil {
+			return 0, err
+		}
+
+		if exponentDigits > 0 {
+			floatBytes += prefix + exponentDigits
+		} else if isHex { // exponent is not optional for hexadecimal
+			return 0, err
+		}
+	} else if isHex { // exponent is not optional for hexadecimal
+		return 0, err
+	}
+
+	if floatBytes > leadingIntBytes {
+		return floatBytes, nil
+	}
+
+	return 0, nil
+}
+
+func (lexer *RawLexer) maybeLexIntPrefixedFloat(
+	leadingIntBytes int,
+	isHex bool, // false is decimal
+) (
+	Token,
+	error,
+) {
+	numBytes, err := lexer.maybePeekFloat(leadingIntBytes, isHex)
+	if err != nil {
+		return nil, err
+	}
+
+	if numBytes == 0 {
+		return nil, nil
+	}
+
+	peeked, err := lexer.Peek(numBytes)
+	if err != nil {
+		panic("should never happen")
+	}
+
+	loc := Location(lexer.Location)
+	value := string(peeked)
+
+	_, err = lexer.Discard(numBytes)
+	if err != nil {
+		panic("should never happen")
+	}
+
+	subType := DecimalFloat
+	if isHex {
+		subType = HexadecimalFloat
+	}
+
+	return FloatLiteralSymbol{
+		SymbolId: FloatLiteralToken,
+		Location: loc,
+		Value:    value,
+		SubType:  subType,
+	}, nil
+}
+
 func (lexer *RawLexer) lexDotDecimalFloatLiteralToken() (Token, error) {
-	panic("TODO")
+	numBytes, err := lexer.maybePeekFloat(0, false)
+	if err != nil {
+		return nil, err
+	}
+
+	if numBytes == 0 {
+		panic("should never happen")
+	}
+
+	peeked, err := lexer.Peek(numBytes)
+	if err != nil {
+		panic("should never happen")
+	}
+
+	loc := Location(lexer.Location)
+	value := string(peeked)
+
+	_, err = lexer.Discard(numBytes)
+	if err != nil {
+		panic("should never happen")
+	}
+
+	return FloatLiteralSymbol{
+		SymbolId: FloatLiteralToken,
+		Location: loc,
+		Value:    value,
+		SubType:  DecimalFloat,
+	}, nil
 }
 
 type peekStringResult struct {
@@ -845,7 +1029,12 @@ func (lexer *RawLexer) lexRuneLiteralToken() (Token, error) {
 				panic("should never happen")
 			}
 
-			value = string(peeked)
+			if len(peeked) == 3 ||
+				(len(peeked) == 4 && peeked[1] == '/') { // intern ascii
+				value = lexer.InternBytes(peeked)
+			} else {
+				value = string(peeked)
+			}
 		}
 	}
 
@@ -899,7 +1088,11 @@ func (lexer *RawLexer) lexStringLiteralToken(
 			panic("should never happen")
 		}
 
-		value = string(peeked)
+		if len(peeked) == startMarkerLength+endMarkerLength { // intern empty string
+			value = lexer.InternBytes(peeked)
+		} else {
+			value = string(peeked)
+		}
 	}
 
 	_, err = lexer.Discard(result.numBytes)
