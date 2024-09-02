@@ -82,8 +82,8 @@ Special escaped characters
 \v vertical tab
 \\ backslash
 \' single quote
-\" double quote (only within string literals with " as delimiter)
-\` back quote (only within string literals with ` as delimiter)
+\" double quote
+\` back quote
 \{newline} line continuation (only within multi-line strings)
 ```
 

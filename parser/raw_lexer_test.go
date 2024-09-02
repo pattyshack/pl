@@ -974,8 +974,8 @@ func (s *RawLexerSuite) TestMultiLineString(t *testing.T) {
 	tokens = s.lex(t, "```mismatch\"\"\"", ParseErrorToken)
 	s.expectError(t, tokens[0], "string literal not terminated")
 
-	tokens = s.lex(t, "```\"\"\" \"\" \" ` `` abc\ndef```", StringLiteralToken)
-	str := s.expectStr(t, "```\"\"\" \"\" \" ` `` abc\ndef```", tokens[0])
+	tokens = s.lex(t, "```\"\"\" \"\" \" ` ``\\\n abc\ndef```", StringLiteralToken)
+	str := s.expectStr(t, "```\"\"\" \"\" \" ` ``\\\n abc\ndef```", tokens[0])
 	expect.Equal(t, MultiLineString, str.SubType)
 
 	tokens = s.lex(t, "\"\"\"``` \"\" \" ` `` abc\ndef\"\"\"", StringLiteralToken)
