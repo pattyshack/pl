@@ -109,7 +109,6 @@ func (lexer *TrimSpacesLexer) Next() (Token, error) {
 // lineComments if they are separated by a single newline.
 type CommentGroupLexer struct {
 	*lexutil.BufferedReader[Token]
-
 	base Lexer
 }
 
@@ -176,4 +175,101 @@ func (lexer *CommentGroupLexer) Next() (Token, error) {
 	}
 
 	return group, nil
+}
+
+// Associate comment groups to real tokens whenever possible.
+type AssociateCommentGroupsLexer struct {
+	*lexutil.BufferedReader[Token]
+	base Lexer
+}
+
+func NewAssociateCommentGroupsLexer(
+	sourceFileName string,
+	sourceContent io.Reader,
+	options LexerOptions,
+) Lexer {
+	base := NewCommentGroupLexer(sourceFileName, sourceContent, options)
+	return &AssociateCommentGroupsLexer{
+		BufferedReader: lexutil.NewBufferedReader(
+			lexutil.NewLexerReader[Token](base),
+			10),
+		base: base,
+	}
+}
+
+func (lexer *AssociateCommentGroupsLexer) CurrentLocation() Location {
+	peeked, err := lexer.Peek(1)
+	if err != nil || len(peeked) == 0 {
+		return lexer.base.CurrentLocation()
+	}
+
+	return peeked[0].Loc()
+}
+
+func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
+	token, err := readToken(lexer)
+	if err != nil {
+		return nil, err
+	}
+
+	var value ValueSymbol
+	// Handle Leading comment groups
+	if token.Id() == commentGroupToken {
+		groups := CommentGroups{token.(CommentGroup)}
+
+		found := false
+		for !found {
+			peeked, err := lexer.Peek(1)
+			if len(peeked) == 0 || err != nil {
+				// groups not associated with any real token
+				return groups, nil
+			}
+
+			token = peeked[0]
+
+			_, err = lexer.Discard(1)
+			if err != nil {
+				panic("should never happen")
+			}
+
+			switch token.Id() {
+			case NewlinesToken:
+				// drop the newlines token
+			case commentGroupToken:
+				groups = append(groups, token.(CommentGroup))
+			default:
+				// Found a real token
+				found = true
+				value = token.(ValueSymbol)
+				value.LeadingComments = groups
+			}
+		}
+	} else if token.Id() == NewlinesToken {
+		return token, nil
+	} else {
+		value = token.(ValueSymbol)
+	}
+
+	// extract trailing comment groups
+	for {
+		peeked, err := lexer.Peek(1)
+		if len(peeked) == 0 || err != nil {
+			break
+		}
+
+		if peeked[0].Id() != commentGroupToken {
+			break
+		}
+
+		value.TrailingComments = append(
+			value.TrailingComments,
+			peeked[0].(CommentGroup))
+
+		_, err = lexer.Discard(1)
+		if err != nil {
+			panic("should never happen")
+		}
+	}
+
+	return value, nil
 }
