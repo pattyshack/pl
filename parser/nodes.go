@@ -20,6 +20,11 @@ const (
 // separated by single newlines (and spaces).
 type CommentGroup []ValueSymbol
 
+func (CommentGroup) Id() SymbolId { return CommentGroupToken }
+
+func (cg CommentGroup) Loc() Location { return cg[0].Loc() }
+func (cg CommentGroup) End() Location { return cg[len(cg)-1].End() }
+
 // Trailing comment groups are comment groups that immediately follow a
 // symbol, and are on the same line as the symbol.
 //
@@ -78,7 +83,9 @@ type ValueSymbol struct {
 	EndPos   Location
 	CommentGroups
 
-	Value   string
+	// The value string is optional if the value is fully determined by SymbolId.
+	Value string
+	// Used for classifying literal subtypes.
 	SubType string
 }
 

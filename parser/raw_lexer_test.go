@@ -27,7 +27,7 @@ func (s *RawLexerSuite) lex(
 	lexer := NewRawLexer(
 		"source.txt",
 		buffer,
-		RawLexerOptions{
+		LexerOptions{
 			PreserveCommentContent: true,
 			initialPeekWindowSize:  1,
 		})

@@ -66,7 +66,7 @@ var (
 	}
 )
 
-type RawLexerOptions struct {
+type LexerOptions struct {
 	PreserveCommentContent bool
 
 	InitialLookAheadBufferSize int
@@ -77,7 +77,7 @@ type RawLexerOptions struct {
 }
 
 type RawLexer struct {
-	RawLexerOptions
+	LexerOptions
 
 	lexutil.BufferedByteLocationReader
 	*stringutil.InternPool
@@ -86,8 +86,8 @@ type RawLexer struct {
 func NewRawLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
-	options RawLexerOptions,
-) RawLexer {
+	options LexerOptions,
+) *RawLexer {
 	if options.initialPeekWindowSize <= 0 {
 		options.initialPeekWindowSize = defaultInitialPeekWindowSize
 	}
@@ -97,8 +97,8 @@ func NewRawLexer(
 		internPool.Intern(kw)
 	}
 
-	return RawLexer{
-		RawLexerOptions: options,
+	return &RawLexer{
+		LexerOptions: options,
 		BufferedByteLocationReader: lexutil.NewBufferedByteLocationReader(
 			sourceFileName,
 			sourceContent,
