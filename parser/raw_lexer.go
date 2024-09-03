@@ -355,10 +355,11 @@ func (lexer *RawLexer) lexSpacesToken() (Token, error) {
 		panic("This should never happen")
 	}
 
-	return GenericSymbol{
+	return CountSymbol{
 		SymbolId: spacesToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
+		Count:    numSpaceBytes,
 	}, nil
 }
 
@@ -654,7 +655,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 		}, nil
 	}
 
-	return IntegerLiteralSymbol{
+	return ValueSymbol{
 		SymbolId: IntegerLiteralToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -797,7 +798,7 @@ func (lexer *RawLexer) maybeLexIntPrefixedFloat(
 		subType = HexadecimalFloat
 	}
 
-	return FloatLiteralSymbol{
+	return ValueSymbol{
 		SymbolId: FloatLiteralToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -829,7 +830,7 @@ func (lexer *RawLexer) lexDotDecimalFloatLiteralToken() (Token, error) {
 		panic("should never happen")
 	}
 
-	return FloatLiteralSymbol{
+	return ValueSymbol{
 		SymbolId: FloatLiteralToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -1061,7 +1062,7 @@ func (lexer *RawLexer) lexRuneLiteralToken() (Token, error) {
 		}, nil
 	}
 
-	return RuneLiteralSymbol{
+	return ValueSymbol{
 		SymbolId: RuneLiteralToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -1070,7 +1071,7 @@ func (lexer *RawLexer) lexRuneLiteralToken() (Token, error) {
 }
 
 func (lexer *RawLexer) lexStringLiteralToken(
-	subType StringLiteralSubType,
+	subType string,
 	marker byte,
 	startMarkerLength int,
 	endMarkerLength int,
@@ -1081,7 +1082,7 @@ func (lexer *RawLexer) lexStringLiteralToken(
 	error,
 ) {
 	result, err := lexer.peekString(
-		string(subType),
+		subType,
 		marker,
 		startMarkerLength,
 		endMarkerLength,
@@ -1120,7 +1121,7 @@ func (lexer *RawLexer) lexStringLiteralToken(
 		}, nil
 	}
 
-	return StringLiteralSymbol{
+	return ValueSymbol{
 		SymbolId: StringLiteralToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -1251,7 +1252,7 @@ func (lexer *RawLexer) Next() (Token, error) {
 			panic("Should never happen")
 		}
 
-		return GenericSymbol{
+		return ValueSymbol{
 			SymbolId: symbolId,
 			StartPos: loc,
 			EndPos:   Location(lexer.Location),

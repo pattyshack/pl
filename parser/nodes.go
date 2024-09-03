@@ -1,32 +1,54 @@
 package parser
 
-type IntegerLiteralSubType string
-type StringLiteralSubType string
-type FloatLiteralSubType string
-
 const (
-	DecimalInteger     = IntegerLiteralSubType("decimal integer literal")
-	HexadecimalInteger = IntegerLiteralSubType(
-		"hexadecimal integer literal")
-	ZeroOPrefixedOctalInteger = IntegerLiteralSubType(
-		"0o-prefixed octal integer literal")
-	ZeroPrefixedOctalInteger = IntegerLiteralSubType(
-		"0-prefixed octal integer literal")
-	BinaryInteger = IntegerLiteralSubType("binary integer literal")
+	DecimalInteger            = "decimal integer literal"
+	HexadecimalInteger        = "hexadecimal integer literal"
+	ZeroOPrefixedOctalInteger = "0o-prefixed octal integer literal"
+	ZeroPrefixedOctalInteger  = "0-prefixed octal integer literal"
+	BinaryInteger             = "binary integer literal"
 
-	SingleLineString    = StringLiteralSubType("single line string literal")
-	MultiLineString     = StringLiteralSubType("mutli line string literal")
-	RawSingleLineString = StringLiteralSubType("raw single line string literal")
-	RawMultiLineString  = StringLiteralSubType("raw mutli line string literal")
+	SingleLineString    = "single line string literal"
+	MultiLineString     = "mutli line string literal"
+	RawSingleLineString = "raw single line string literal"
+	RawMultiLineString  = "raw mutli line string literal"
 
-	DecimalFloat     = FloatLiteralSubType("decimal float literal")
-	HexadecimalFloat = FloatLiteralSubType("hexadecimal float literal")
+	DecimalFloat     = "decimal float literal"
+	HexadecimalFloat = "hexadecimal float literal"
 )
+
+// A comment group is a single block comment, or a group of line comments
+// separated by single newlines (and spaces).
+type CommentGroup []ValueSymbol
+
+// Trailing comment groups are comment groups that immediately follow a
+// symbol, and are on the same line as the symbol.
+//
+// For example,
+//
+//	OTHER_SYMBOL /* group 0 */
+//	// group 1 line 1
+//	// group 1 line 2
+//
+//	// group 2
+//	/* group 3 */ SYMBOL /* group 4 */ // group 5 line 1
+//	// group 5 line 2
+//
+// // other group 6
+//
+// SYMBOL's leading comment groups are {1, 2, 3}.  SYMBOL's trailing comment
+// groups are {4, 5}. Comment groups {0, 6} belong to other symbols.
+type CommentGroups struct {
+	LeadingComments []CommentGroup
+
+	TrailingComments []CommentGroup
+}
 
 type ParseErrorSymbol struct {
 	StartPos Location
 	EndPos   Location
-	Error    error
+	CommentGroups
+
+	Error error
 }
 
 func (s ParseErrorSymbol) Id() SymbolId { return ParseErrorToken }
@@ -54,28 +76,13 @@ type ValueSymbol struct {
 	SymbolId
 	StartPos Location
 	EndPos   Location
-	Value    string
+	CommentGroups
+
+	Value   string
+	SubType string
 }
 
 func (s ValueSymbol) Id() SymbolId { return s.SymbolId }
 
 func (s ValueSymbol) Loc() Location { return s.StartPos }
 func (s ValueSymbol) End() Location { return s.EndPos }
-
-type LiteralSymbol[T any] struct {
-	SymbolId
-	StartPos Location
-	EndPos   Location
-	Value    string
-	SubType  T
-}
-
-func (s LiteralSymbol[T]) Id() SymbolId { return s.SymbolId }
-
-func (s LiteralSymbol[T]) Loc() Location { return s.StartPos }
-func (s LiteralSymbol[T]) End() Location { return s.EndPos }
-
-type IntegerLiteralSymbol = LiteralSymbol[IntegerLiteralSubType]
-type RuneLiteralSymbol = LiteralSymbol[struct{}]
-type StringLiteralSymbol = LiteralSymbol[StringLiteralSubType]
-type FloatLiteralSymbol = LiteralSymbol[FloatLiteralSubType]
