@@ -360,7 +360,7 @@ func (lexer *RawLexer) lexSpacesToken() (Token, error) {
 		panic("This should never happen")
 	}
 
-	return CountSymbol{
+	return TokenCount{
 		SymbolId: spacesToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -383,7 +383,7 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 			panic("This should never happen")
 		}
 
-		return CountSymbol{
+		return TokenCount{
 			SymbolId: NewlinesToken,
 			StartPos: loc,
 			EndPos:   Location(lexer.Location),
@@ -427,7 +427,7 @@ func (lexer *RawLexer) lexLineCommentToken() (Token, error) {
 		panic("This should never happen")
 	}
 
-	return ValueSymbol{
+	return TokenValue{
 		SymbolId: lineCommentToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -466,7 +466,7 @@ func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
 		}, nil
 	}
 
-	return ValueSymbol{
+	return TokenValue{
 		SymbolId: blockCommentToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -660,7 +660,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 		}, nil
 	}
 
-	return ValueSymbol{
+	return TokenValue{
 		SymbolId: IntegerLiteralToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -803,7 +803,7 @@ func (lexer *RawLexer) maybeLexIntPrefixedFloat(
 		subType = HexadecimalFloat
 	}
 
-	return ValueSymbol{
+	return TokenValue{
 		SymbolId: FloatLiteralToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -835,7 +835,7 @@ func (lexer *RawLexer) lexDotDecimalFloatLiteralToken() (Token, error) {
 		panic("should never happen")
 	}
 
-	return ValueSymbol{
+	return TokenValue{
 		SymbolId: FloatLiteralToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -1067,7 +1067,7 @@ func (lexer *RawLexer) lexRuneLiteralToken() (Token, error) {
 		}, nil
 	}
 
-	return ValueSymbol{
+	return TokenValue{
 		SymbolId: RuneLiteralToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -1126,7 +1126,7 @@ func (lexer *RawLexer) lexStringLiteralToken(
 		}, nil
 	}
 
-	return ValueSymbol{
+	return TokenValue{
 		SymbolId: StringLiteralToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -1175,7 +1175,7 @@ func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
 		panic("Should never happen")
 	}
 
-	return ValueSymbol{
+	return TokenValue{
 		SymbolId: JumpLabelToken,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -1184,7 +1184,7 @@ func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
 }
 
 func (lexer *RawLexer) lexIdentifierKeywordsOrLabelDeclToken() (
-	ValueSymbol,
+	TokenValue,
 	error,
 ) {
 	size, err := lexutil.PeekIdentifier(
@@ -1192,7 +1192,7 @@ func (lexer *RawLexer) lexIdentifierKeywordsOrLabelDeclToken() (
 		0,
 		lexer.initialPeekWindowSize)
 	if err != nil {
-		return ValueSymbol{}, err
+		return TokenValue{}, err
 	}
 
 	if size == 0 {
@@ -1220,7 +1220,7 @@ func (lexer *RawLexer) lexIdentifierKeywordsOrLabelDeclToken() (
 		symbolId = kwSymbolId
 	}
 
-	return ValueSymbol{
+	return TokenValue{
 		SymbolId: symbolId,
 		StartPos: loc,
 		EndPos:   Location(lexer.Location),
@@ -1257,7 +1257,7 @@ func (lexer *RawLexer) Next() (Token, error) {
 			panic("Should never happen")
 		}
 
-		return ValueSymbol{
+		return TokenValue{
 			SymbolId: symbolId,
 			StartPos: loc,
 			EndPos:   Location(lexer.Location),

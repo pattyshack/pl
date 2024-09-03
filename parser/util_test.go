@@ -18,8 +18,8 @@ func expectValue(
 	t *testing.T,
 	expectedValue string,
 	token Token,
-) ValueSymbol {
-	value, ok := token.(ValueSymbol)
+) TokenValue {
+	value, ok := token.(TokenValue)
 	expect.True(t, ok)
 	expect.Equal(t, expectedValue, value.Value)
 	return value
@@ -30,7 +30,7 @@ func expectCount(
 	expectedCount int,
 	token Token,
 ) {
-	count, ok := token.(CountSymbol)
+	count, ok := token.(TokenCount)
 	expect.True(t, ok)
 	expect.Equal(t, expectedCount, count.Count)
 }

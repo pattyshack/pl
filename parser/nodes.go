@@ -18,7 +18,7 @@ const (
 
 // A comment group is a single block comment, or a group of line comments
 // separated by single newlines (ignoring spaces).
-type CommentGroup []ValueSymbol
+type CommentGroup []TokenValue
 
 func (CommentGroup) Id() SymbolId { return commentGroupToken }
 
@@ -45,18 +45,33 @@ func (cg CommentGroup) End() Location { return cg[len(cg)-1].End() }
 //
 // SYMBOL's leading comment groups are {1, 2, 3}.  SYMBOL's trailing comment
 // groups are {4, 5}. Comment groups {0, 6} belong to other symbols.
-type CommentGroups []CommentGroup
+type CommentGroups struct {
+	Groups []CommentGroup
+}
 
 func (CommentGroups) Id() SymbolId { return CommentGroupsToken }
 
-func (cgs CommentGroups) Loc() Location { return cgs[0].Loc() }
-func (cgs CommentGroups) End() Location { return cgs[len(cgs)-1].End() }
+func (cgs CommentGroups) Loc() Location {
+	return cgs.Groups[0].Loc()
+}
+
+func (cgs CommentGroups) End() Location {
+	return cgs.Groups[len(cgs.Groups)-1].End()
+}
+
+func (cgs *CommentGroups) Prepend(other CommentGroups) {
+	cgs.Groups = append(other.Groups, cgs.Groups...)
+}
+
+func (cgs *CommentGroups) Append(other CommentGroups) {
+	cgs.Groups = append(cgs.Groups, other.Groups...)
+}
 
 type ParseErrorSymbol struct {
-	StartPos         Location
-	EndPos           Location
-	LeadingComments  CommentGroups
-	TrailingComments CommentGroups
+	StartPos        Location
+	EndPos          Location
+	LeadingComment  CommentGroups
+	TrailingComment CommentGroups
 
 	Error error
 }
@@ -70,24 +85,24 @@ func (s ParseErrorSymbol) String() string {
 	return s.Error.Error() + " " + s.StartPos.String()
 }
 
-type CountSymbol struct {
+type TokenCount struct {
 	SymbolId
 	StartPos Location
 	EndPos   Location
 	Count    int
 }
 
-func (s CountSymbol) Id() SymbolId { return s.SymbolId }
+func (s TokenCount) Id() SymbolId { return s.SymbolId }
 
-func (s CountSymbol) Loc() Location { return s.StartPos }
-func (s CountSymbol) End() Location { return s.EndPos }
+func (s TokenCount) Loc() Location { return s.StartPos }
+func (s TokenCount) End() Location { return s.EndPos }
 
-type ValueSymbol struct {
+type TokenValue struct {
 	SymbolId
-	StartPos         Location
-	EndPos           Location
-	LeadingComments  CommentGroups
-	TrailingComments CommentGroups
+	StartPos        Location
+	EndPos          Location
+	LeadingComment  CommentGroups
+	TrailingComment CommentGroups
 
 	// The value string is optional if the value is fully determined by SymbolId.
 	Value string
@@ -95,7 +110,7 @@ type ValueSymbol struct {
 	SubType string
 }
 
-func (s ValueSymbol) Id() SymbolId { return s.SymbolId }
+func (s TokenValue) Id() SymbolId { return s.SymbolId }
 
-func (s ValueSymbol) Loc() Location { return s.StartPos }
-func (s ValueSymbol) End() Location { return s.EndPos }
+func (s TokenValue) Loc() Location { return s.StartPos }
+func (s TokenValue) End() Location { return s.EndPos }

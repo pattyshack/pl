@@ -29,7 +29,7 @@ func expectCommentGroups(
 	expected ...[]string,
 ) {
 	commentGroups := [][]string{}
-	for _, group := range groups {
+	for _, group := range groups.Groups {
 		comments := []string{}
 		for _, value := range group {
 			comments = append(comments, value.Value)
@@ -173,24 +173,24 @@ func (s *AssociateCommentGroupsLexerSuite) TestAssociation(t *testing.T) {
 		CommentGroupsToken)
 
 	a := expectValue(t, "a", tokens[0])
-	expect.Nil(t, a.LeadingComments)
+	expect.Nil(t, a.LeadingComment.Groups)
 	expectCommentGroups(
 		t,
-		a.TrailingComments,
+		a.TrailingComment,
 		[]string{"/*a1*/"},
 		[]string{"//a2l1", "//a2l2"})
 
 	b := expectValue(t, "b", tokens[2])
 	expectCommentGroups(
 		t,
-		b.LeadingComments,
+		b.LeadingComment,
 		[]string{"/*b1*/"},
 		[]string{"//b2"},
 		[]string{"//b3l1", "//b3l2"},
 		[]string{"/*b4*/"})
 	expectCommentGroups(
 		t,
-		b.TrailingComments,
+		b.TrailingComment,
 		[]string{"/*b5*/"},
 		[]string{"/*b6*/"},
 		[]string{"/*b7*/"})
@@ -198,9 +198,9 @@ func (s *AssociateCommentGroupsLexerSuite) TestAssociation(t *testing.T) {
 	c := expectValue(t, "c", tokens[4])
 	expectCommentGroups(
 		t,
-		c.LeadingComments,
+		c.LeadingComment,
 		[]string{"//c1"})
-	expect.Nil(t, c.TrailingComments)
+	expect.Nil(t, c.TrailingComment.Groups)
 
 	floating, ok := tokens[6].(CommentGroups)
 	expect.True(t, ok)

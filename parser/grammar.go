@@ -145,7 +145,7 @@ type Reducer interface {
 	ToSource(OptionalDefinitions_ GenericSymbol) (GenericSymbol, error)
 
 	// 55:2: optional_definitions -> NEWLINES: ...
-	NewlinesToOptionalDefinitions(Newlines_ CountSymbol) (GenericSymbol, error)
+	NewlinesToOptionalDefinitions(Newlines_ TokenCount) (GenericSymbol, error)
 
 	// 56:2: optional_definitions -> definitions: ...
 	DefinitionsToOptionalDefinitions(OptionalNewlines_ GenericSymbol, Definitions_ GenericSymbol, OptionalNewlines_2 GenericSymbol) (GenericSymbol, error)
@@ -154,7 +154,7 @@ type Reducer interface {
 	NilToOptionalDefinitions() (GenericSymbol, error)
 
 	// 60:2: optional_newlines -> NEWLINES: ...
-	NewlinesToOptionalNewlines(Newlines_ CountSymbol) (GenericSymbol, error)
+	NewlinesToOptionalNewlines(Newlines_ TokenCount) (GenericSymbol, error)
 
 	// 61:2: optional_newlines -> nil: ...
 	NilToOptionalNewlines() (GenericSymbol, error)
@@ -163,7 +163,7 @@ type Reducer interface {
 	NilToDefinitions(Definition_ GenericSymbol) (GenericSymbol, error)
 
 	// 65:2: definitions -> add: ...
-	AddToDefinitions(Definitions_ GenericSymbol, Newlines_ CountSymbol, Definition_ GenericSymbol) (GenericSymbol, error)
+	AddToDefinitions(Definitions_ GenericSymbol, Newlines_ TokenCount, Definition_ GenericSymbol) (GenericSymbol, error)
 
 	// 69:2: definition -> package_def: ...
 	PackageDefToDefinition(PackageDef_ GenericSymbol) (GenericSymbol, error)
@@ -178,16 +178,16 @@ type Reducer interface {
 	GlobalVarDefToDefinition(VarDeclPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 73:2: definition -> global_var_assignment: ...
-	GlobalVarAssignmentToDefinition(VarDeclPattern_ GenericSymbol, Assign_ ValueSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
+	GlobalVarAssignmentToDefinition(VarDeclPattern_ GenericSymbol, Assign_ TokenValue, Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 76:2: definition -> statement_block: ...
 	StatementBlockToDefinition(StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 80:2: definition -> COMMENT_GROUPS: ...
-	CommentGroupsToDefinition(CommentGroups_ ValueSymbol) (GenericSymbol, error)
+	CommentGroupsToDefinition(CommentGroups_ TokenValue) (GenericSymbol, error)
 
 	// 100:19: statement_block -> ...
-	ToStatementBlock(Lbrace_ ValueSymbol, Statements_ GenericSymbol, Rbrace_ ValueSymbol) (GenericSymbol, error)
+	ToStatementBlock(Lbrace_ TokenValue, Statements_ GenericSymbol, Rbrace_ TokenValue) (GenericSymbol, error)
 
 	// 103:2: statements -> empty_list: ...
 	EmptyListToStatements() (GenericSymbol, error)
@@ -196,10 +196,10 @@ type Reducer interface {
 	AddToStatements(Statements_ GenericSymbol, Statement_ GenericSymbol) (GenericSymbol, error)
 
 	// 107:2: statement -> implicit: ...
-	ImplicitToStatement(StatementBody_ GenericSymbol, Newlines_ CountSymbol) (GenericSymbol, error)
+	ImplicitToStatement(StatementBody_ GenericSymbol, Newlines_ TokenCount) (GenericSymbol, error)
 
 	// 108:2: statement -> explicit: ...
-	ExplicitToStatement(StatementBody_ GenericSymbol, Semicolon_ ValueSymbol) (GenericSymbol, error)
+	ExplicitToStatement(StatementBody_ GenericSymbol, Semicolon_ TokenValue) (GenericSymbol, error)
 
 	// 111:2: simple_statement_body -> unsafe_statement: ...
 	UnsafeStatementToSimpleStatementBody(UnsafeStatement_ GenericSymbol) (GenericSymbol, error)
@@ -208,16 +208,16 @@ type Reducer interface {
 	ExpressionOrImplicitStructToSimpleStatementBody(Expressions_ GenericSymbol) (GenericSymbol, error)
 
 	// 121:2: simple_statement_body -> async: ...
-	AsyncToSimpleStatementBody(Async_ ValueSymbol, CallExpr_ GenericSymbol) (GenericSymbol, error)
+	AsyncToSimpleStatementBody(Async_ TokenValue, CallExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 139:2: simple_statement_body -> defer: ...
-	DeferToSimpleStatementBody(Defer_ ValueSymbol, CallExpr_ GenericSymbol) (GenericSymbol, error)
+	DeferToSimpleStatementBody(Defer_ TokenValue, CallExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 143:2: simple_statement_body -> jump_statement: ...
 	JumpStatementToSimpleStatementBody(JumpType_ GenericSymbol, OptionalJumpLabel_ GenericSymbol, OptionalExpressions_ GenericSymbol) (GenericSymbol, error)
 
 	// 148:2: simple_statement_body -> assign_statement: ...
-	AssignStatementToSimpleStatementBody(AssignPattern_ GenericSymbol, Assign_ ValueSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
+	AssignStatementToSimpleStatementBody(AssignPattern_ GenericSymbol, Assign_ TokenValue, Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 154:2: simple_statement_body -> unary_op_assign_statement: ...
 	UnaryOpAssignStatementToSimpleStatementBody(AccessExpr_ GenericSymbol, UnaryOpAssign_ GenericSymbol) (GenericSymbol, error)
@@ -226,7 +226,7 @@ type Reducer interface {
 	BinaryOpAssignStatementToSimpleStatementBody(AccessExpr_ GenericSymbol, BinaryOpAssign_ GenericSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 159:2: simple_statement_body -> FALLTHROUGH: ...
-	FallthroughToSimpleStatementBody(Fallthrough_ ValueSymbol) (GenericSymbol, error)
+	FallthroughToSimpleStatementBody(Fallthrough_ TokenValue) (GenericSymbol, error)
 
 	// 162:2: statement_body -> simple_statement_body: ...
 	SimpleStatementBodyToStatementBody(SimpleStatementBody_ GenericSymbol) (GenericSymbol, error)
@@ -235,10 +235,10 @@ type Reducer interface {
 	ImportStatementToStatementBody(ImportStatement_ GenericSymbol) (GenericSymbol, error)
 
 	// 170:2: statement_body -> case_branch_statement: ...
-	CaseBranchStatementToStatementBody(Case_ ValueSymbol, CasePatterns_ GenericSymbol, Colon_ ValueSymbol, OptionalSimpleStatementBody_ GenericSymbol) (GenericSymbol, error)
+	CaseBranchStatementToStatementBody(Case_ TokenValue, CasePatterns_ GenericSymbol, Colon_ TokenValue, OptionalSimpleStatementBody_ GenericSymbol) (GenericSymbol, error)
 
 	// 171:2: statement_body -> default_branch_statement: ...
-	DefaultBranchStatementToStatementBody(Default_ ValueSymbol, Colon_ ValueSymbol, OptionalSimpleStatementBody_ GenericSymbol) (GenericSymbol, error)
+	DefaultBranchStatementToStatementBody(Default_ TokenValue, Colon_ TokenValue, OptionalSimpleStatementBody_ GenericSymbol) (GenericSymbol, error)
 
 	// 174:2: optional_simple_statement_body -> simple_statement_body: ...
 	SimpleStatementBodyToOptionalSimpleStatementBody(SimpleStatementBody_ GenericSymbol) (GenericSymbol, error)
@@ -247,58 +247,58 @@ type Reducer interface {
 	NilToOptionalSimpleStatementBody() (GenericSymbol, error)
 
 	// 182:2: unary_op_assign -> ADD_ONE_ASSIGN: ...
-	AddOneAssignToUnaryOpAssign(AddOneAssign_ ValueSymbol) (GenericSymbol, error)
+	AddOneAssignToUnaryOpAssign(AddOneAssign_ TokenValue) (GenericSymbol, error)
 
 	// 183:2: unary_op_assign -> SUB_ONE_ASSIGN: ...
-	SubOneAssignToUnaryOpAssign(SubOneAssign_ ValueSymbol) (GenericSymbol, error)
+	SubOneAssignToUnaryOpAssign(SubOneAssign_ TokenValue) (GenericSymbol, error)
 
 	// 186:2: binary_op_assign -> ADD_ASSIGN: ...
-	AddAssignToBinaryOpAssign(AddAssign_ ValueSymbol) (GenericSymbol, error)
+	AddAssignToBinaryOpAssign(AddAssign_ TokenValue) (GenericSymbol, error)
 
 	// 187:2: binary_op_assign -> SUB_ASSIGN: ...
-	SubAssignToBinaryOpAssign(SubAssign_ ValueSymbol) (GenericSymbol, error)
+	SubAssignToBinaryOpAssign(SubAssign_ TokenValue) (GenericSymbol, error)
 
 	// 188:2: binary_op_assign -> MUL_ASSIGN: ...
-	MulAssignToBinaryOpAssign(MulAssign_ ValueSymbol) (GenericSymbol, error)
+	MulAssignToBinaryOpAssign(MulAssign_ TokenValue) (GenericSymbol, error)
 
 	// 189:2: binary_op_assign -> DIV_ASSIGN: ...
-	DivAssignToBinaryOpAssign(DivAssign_ ValueSymbol) (GenericSymbol, error)
+	DivAssignToBinaryOpAssign(DivAssign_ TokenValue) (GenericSymbol, error)
 
 	// 190:2: binary_op_assign -> MOD_ASSIGN: ...
-	ModAssignToBinaryOpAssign(ModAssign_ ValueSymbol) (GenericSymbol, error)
+	ModAssignToBinaryOpAssign(ModAssign_ TokenValue) (GenericSymbol, error)
 
 	// 191:2: binary_op_assign -> BIT_NEG_ASSIGN: ...
-	BitNegAssignToBinaryOpAssign(BitNegAssign_ ValueSymbol) (GenericSymbol, error)
+	BitNegAssignToBinaryOpAssign(BitNegAssign_ TokenValue) (GenericSymbol, error)
 
 	// 192:2: binary_op_assign -> BIT_AND_ASSIGN: ...
-	BitAndAssignToBinaryOpAssign(BitAndAssign_ ValueSymbol) (GenericSymbol, error)
+	BitAndAssignToBinaryOpAssign(BitAndAssign_ TokenValue) (GenericSymbol, error)
 
 	// 193:2: binary_op_assign -> BIT_OR_ASSIGN: ...
-	BitOrAssignToBinaryOpAssign(BitOrAssign_ ValueSymbol) (GenericSymbol, error)
+	BitOrAssignToBinaryOpAssign(BitOrAssign_ TokenValue) (GenericSymbol, error)
 
 	// 194:2: binary_op_assign -> BIT_XOR_ASSIGN: ...
-	BitXorAssignToBinaryOpAssign(BitXorAssign_ ValueSymbol) (GenericSymbol, error)
+	BitXorAssignToBinaryOpAssign(BitXorAssign_ TokenValue) (GenericSymbol, error)
 
 	// 195:2: binary_op_assign -> BIT_LSHIFT_ASSIGN: ...
-	BitLshiftAssignToBinaryOpAssign(BitLshiftAssign_ ValueSymbol) (GenericSymbol, error)
+	BitLshiftAssignToBinaryOpAssign(BitLshiftAssign_ TokenValue) (GenericSymbol, error)
 
 	// 196:2: binary_op_assign -> BIT_RSHIFT_ASSIGN: ...
-	BitRshiftAssignToBinaryOpAssign(BitRshiftAssign_ ValueSymbol) (GenericSymbol, error)
+	BitRshiftAssignToBinaryOpAssign(BitRshiftAssign_ TokenValue) (GenericSymbol, error)
 
 	// 204:20: unsafe_statement -> ...
-	ToUnsafeStatement(Unsafe_ ValueSymbol, Less_ ValueSymbol, Identifier_ ValueSymbol, Greater_ ValueSymbol, StringLiteral_ GenericSymbol) (GenericSymbol, error)
+	ToUnsafeStatement(Unsafe_ TokenValue, Less_ TokenValue, Identifier_ TokenValue, Greater_ TokenValue, StringLiteral_ GenericSymbol) (GenericSymbol, error)
 
 	// 211:2: jump_type -> RETURN: ...
-	ReturnToJumpType(Return_ ValueSymbol) (GenericSymbol, error)
+	ReturnToJumpType(Return_ TokenValue) (GenericSymbol, error)
 
 	// 212:2: jump_type -> BREAK: ...
-	BreakToJumpType(Break_ ValueSymbol) (GenericSymbol, error)
+	BreakToJumpType(Break_ TokenValue) (GenericSymbol, error)
 
 	// 213:2: jump_type -> CONTINUE: ...
-	ContinueToJumpType(Continue_ ValueSymbol) (GenericSymbol, error)
+	ContinueToJumpType(Continue_ TokenValue) (GenericSymbol, error)
 
 	// 216:2: optional_jump_label -> JUMP_LABEL: ...
-	JumpLabelToOptionalJumpLabel(JumpLabel_ ValueSymbol) (GenericSymbol, error)
+	JumpLabelToOptionalJumpLabel(JumpLabel_ TokenValue) (GenericSymbol, error)
 
 	// 217:2: optional_jump_label -> unlabelled: ...
 	UnlabelledToOptionalJumpLabel() (GenericSymbol, error)
@@ -307,7 +307,7 @@ type Reducer interface {
 	ExpressionToExpressions(Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 221:2: expressions -> add: ...
-	AddToExpressions(Expressions_ GenericSymbol, Comma_ ValueSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
+	AddToExpressions(Expressions_ GenericSymbol, Comma_ TokenValue, Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 224:2: optional_expressions -> expressions: ...
 	ExpressionsToOptionalExpressions(Expressions_ GenericSymbol) (GenericSymbol, error)
@@ -316,22 +316,22 @@ type Reducer interface {
 	NilToOptionalExpressions() (GenericSymbol, error)
 
 	// 232:2: import_statement -> single: ...
-	SingleToImportStatement(Import_ ValueSymbol, ImportClause_ GenericSymbol) (GenericSymbol, error)
+	SingleToImportStatement(Import_ TokenValue, ImportClause_ GenericSymbol) (GenericSymbol, error)
 
 	// 233:2: import_statement -> multiple: ...
-	MultipleToImportStatement(Import_ ValueSymbol, Lparen_ ValueSymbol, ImportClauses_ GenericSymbol, Rparen_ ValueSymbol) (GenericSymbol, error)
+	MultipleToImportStatement(Import_ TokenValue, Lparen_ TokenValue, ImportClauses_ GenericSymbol, Rparen_ TokenValue) (GenericSymbol, error)
 
 	// 236:2: import_clause -> STRING_LITERAL: ...
 	StringLiteralToImportClause(StringLiteral_ GenericSymbol) (GenericSymbol, error)
 
 	// 237:2: import_clause -> alias: ...
-	AliasToImportClause(StringLiteral_ GenericSymbol, As_ ValueSymbol, Identifier_ ValueSymbol) (GenericSymbol, error)
+	AliasToImportClause(StringLiteral_ GenericSymbol, As_ TokenValue, Identifier_ TokenValue) (GenericSymbol, error)
 
 	// 240:2: import_clause_terminal -> implicit: ...
-	ImplicitToImportClauseTerminal(ImportClause_ GenericSymbol, Newlines_ CountSymbol) (GenericSymbol, error)
+	ImplicitToImportClauseTerminal(ImportClause_ GenericSymbol, Newlines_ TokenCount) (GenericSymbol, error)
 
 	// 241:2: import_clause_terminal -> explicit: ...
-	ExplicitToImportClauseTerminal(ImportClause_ GenericSymbol, Comma_ ValueSymbol) (GenericSymbol, error)
+	ExplicitToImportClauseTerminal(ImportClause_ GenericSymbol, Comma_ TokenValue) (GenericSymbol, error)
 
 	// 244:2: import_clauses -> first: ...
 	FirstToImportClauses(ImportClauseTerminal_ GenericSymbol) (GenericSymbol, error)
@@ -343,40 +343,40 @@ type Reducer interface {
 	CasePatternToCasePatterns(CasePattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 253:2: case_patterns -> multiple: ...
-	MultipleToCasePatterns(CasePatterns_ GenericSymbol, Comma_ ValueSymbol, CasePattern_ GenericSymbol) (GenericSymbol, error)
+	MultipleToCasePatterns(CasePatterns_ GenericSymbol, Comma_ TokenValue, CasePattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 262:20: var_decl_pattern -> ...
 	ToVarDeclPattern(VarOrLet_ GenericSymbol, VarPattern_ GenericSymbol, OptionalValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 264:14: var_or_let -> VAR: ...
-	VarToVarOrLet(Var_ ValueSymbol) (GenericSymbol, error)
+	VarToVarOrLet(Var_ TokenValue) (GenericSymbol, error)
 
 	// 264:20: var_or_let -> LET: ...
-	LetToVarOrLet(Let_ ValueSymbol) (GenericSymbol, error)
+	LetToVarOrLet(Let_ TokenValue) (GenericSymbol, error)
 
 	// 267:2: var_pattern -> IDENTIFIER: ...
-	IdentifierToVarPattern(Identifier_ ValueSymbol) (GenericSymbol, error)
+	IdentifierToVarPattern(Identifier_ TokenValue) (GenericSymbol, error)
 
 	// 268:2: var_pattern -> tuple_pattern: ...
 	TuplePatternToVarPattern(TuplePattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 270:17: tuple_pattern -> ...
-	ToTuplePattern(Lparen_ ValueSymbol, FieldVarPatterns_ GenericSymbol, Rparen_ ValueSymbol) (GenericSymbol, error)
+	ToTuplePattern(Lparen_ TokenValue, FieldVarPatterns_ GenericSymbol, Rparen_ TokenValue) (GenericSymbol, error)
 
 	// 273:2: field_var_patterns -> field_var_pattern: ...
 	FieldVarPatternToFieldVarPatterns(FieldVarPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 274:2: field_var_patterns -> add: ...
-	AddToFieldVarPatterns(FieldVarPatterns_ GenericSymbol, Comma_ ValueSymbol, FieldVarPattern_ GenericSymbol) (GenericSymbol, error)
+	AddToFieldVarPatterns(FieldVarPatterns_ GenericSymbol, Comma_ TokenValue, FieldVarPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 277:2: field_var_pattern -> positional: ...
 	PositionalToFieldVarPattern(VarPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 278:2: field_var_pattern -> named: ...
-	NamedToFieldVarPattern(Identifier_ ValueSymbol, Assign_ ValueSymbol, VarPattern_ GenericSymbol) (GenericSymbol, error)
+	NamedToFieldVarPattern(Identifier_ TokenValue, Assign_ TokenValue, VarPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 279:2: field_var_pattern -> DOT_DOT_DOT: ...
-	DotDotDotToFieldVarPattern(DotDotDot_ ValueSymbol) (GenericSymbol, error)
+	DotDotDotToFieldVarPattern(DotDotDot_ TokenValue) (GenericSymbol, error)
 
 	// 282:2: optional_value_type -> value_type: ...
 	ValueTypeToOptionalValueType(ValueType_ GenericSymbol) (GenericSymbol, error)
@@ -391,10 +391,10 @@ type Reducer interface {
 	AssignPatternToCasePattern(AssignPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 299:2: case_pattern -> enum_match_pattern: ...
-	EnumMatchPatternToCasePattern(Dot_ ValueSymbol, Identifier_ ValueSymbol, ImplicitStructExpr_ GenericSymbol) (GenericSymbol, error)
+	EnumMatchPatternToCasePattern(Dot_ TokenValue, Identifier_ TokenValue, ImplicitStructExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 300:2: case_pattern -> enum_var_decl_pattern: ...
-	EnumVarDeclPatternToCasePattern(Var_ ValueSymbol, Dot_ ValueSymbol, Identifier_ ValueSymbol, TuplePattern_ GenericSymbol) (GenericSymbol, error)
+	EnumVarDeclPatternToCasePattern(Var_ TokenValue, Dot_ TokenValue, Identifier_ TokenValue, TuplePattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 307:2: expression -> if_expr: ...
 	IfExprToExpression(OptionalLabelDecl_ GenericSymbol, IfExpr_ GenericSymbol) (GenericSymbol, error)
@@ -409,7 +409,7 @@ type Reducer interface {
 	SequenceExprToExpression(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 313:2: optional_label_decl -> LABEL_DECL: ...
-	LabelDeclToOptionalLabelDecl(LabelDecl_ ValueSymbol) (GenericSymbol, error)
+	LabelDeclToOptionalLabelDecl(LabelDecl_ TokenValue) (GenericSymbol, error)
 
 	// 314:2: optional_label_decl -> unlabelled: ...
 	UnlabelledToOptionalLabelDecl() (GenericSymbol, error)
@@ -421,40 +421,40 @@ type Reducer interface {
 	VarDeclPatternToSequenceExpr(VarDeclPattern_ GenericSymbol) (GenericSymbol, error)
 
 	// 328:2: sequence_expr -> assign_var_pattern: ...
-	AssignVarPatternToSequenceExpr(Greater_ ValueSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
+	AssignVarPatternToSequenceExpr(Greater_ TokenValue, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 337:2: if_expr -> no_else: ...
-	NoElseToIfExpr(If_ ValueSymbol, Condition_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
+	NoElseToIfExpr(If_ TokenValue, Condition_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 338:2: if_expr -> if_else: ...
-	IfElseToIfExpr(If_ ValueSymbol, Condition_ GenericSymbol, StatementBlock_ GenericSymbol, Else_ ValueSymbol, StatementBlock_2 GenericSymbol) (GenericSymbol, error)
+	IfElseToIfExpr(If_ TokenValue, Condition_ GenericSymbol, StatementBlock_ GenericSymbol, Else_ TokenValue, StatementBlock_2 GenericSymbol) (GenericSymbol, error)
 
 	// 339:2: if_expr -> multi_if_else: ...
-	MultiIfElseToIfExpr(If_ ValueSymbol, Condition_ GenericSymbol, StatementBlock_ GenericSymbol, Else_ ValueSymbol, IfExpr_ GenericSymbol) (GenericSymbol, error)
+	MultiIfElseToIfExpr(If_ TokenValue, Condition_ GenericSymbol, StatementBlock_ GenericSymbol, Else_ TokenValue, IfExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 342:2: condition -> sequence_expr: ...
 	SequenceExprToCondition(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 343:2: condition -> case: ...
-	CaseToCondition(Case_ ValueSymbol, CasePatterns_ GenericSymbol, Assign_ ValueSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
+	CaseToCondition(Case_ TokenValue, CasePatterns_ GenericSymbol, Assign_ TokenValue, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 367:15: switch_expr -> ...
-	ToSwitchExpr(Switch_ ValueSymbol, SequenceExpr_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
+	ToSwitchExpr(Switch_ TokenValue, SequenceExpr_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 381:2: loop_expr -> infinite: ...
-	InfiniteToLoopExpr(Do_ ValueSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
+	InfiniteToLoopExpr(Do_ TokenValue, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 382:2: loop_expr -> do_while: ...
-	DoWhileToLoopExpr(Do_ ValueSymbol, StatementBlock_ GenericSymbol, For_ ValueSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
+	DoWhileToLoopExpr(Do_ TokenValue, StatementBlock_ GenericSymbol, For_ TokenValue, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 383:2: loop_expr -> while: ...
-	WhileToLoopExpr(For_ ValueSymbol, SequenceExpr_ GenericSymbol, Do_ ValueSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
+	WhileToLoopExpr(For_ TokenValue, SequenceExpr_ GenericSymbol, Do_ TokenValue, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 384:2: loop_expr -> iterator: ...
-	IteratorToLoopExpr(For_ ValueSymbol, AssignPattern_ GenericSymbol, In_ ValueSymbol, SequenceExpr_ GenericSymbol, Do_ ValueSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
+	IteratorToLoopExpr(For_ TokenValue, AssignPattern_ GenericSymbol, In_ TokenValue, SequenceExpr_ GenericSymbol, Do_ TokenValue, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 385:2: loop_expr -> for: ...
-	ForToLoopExpr(For_ ValueSymbol, ForAssignment_ GenericSymbol, Semicolon_ ValueSymbol, OptionalSequenceExpr_ GenericSymbol, Semicolon_2 ValueSymbol, OptionalSequenceExpr_2 GenericSymbol, Do_ ValueSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
+	ForToLoopExpr(For_ TokenValue, ForAssignment_ GenericSymbol, Semicolon_ TokenValue, OptionalSequenceExpr_ GenericSymbol, Semicolon_2 TokenValue, OptionalSequenceExpr_2 GenericSymbol, Do_ TokenValue, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 388:2: optional_sequence_expr -> sequence_expr: ...
 	SequenceExprToOptionalSequenceExpr(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
@@ -466,13 +466,13 @@ type Reducer interface {
 	SequenceExprToForAssignment(SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 393:2: for_assignment -> assign: ...
-	AssignToForAssignment(AssignPattern_ GenericSymbol, Assign_ ValueSymbol, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
+	AssignToForAssignment(AssignPattern_ GenericSymbol, Assign_ TokenValue, SequenceExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 399:13: call_expr -> ...
-	ToCallExpr(AccessExpr_ GenericSymbol, OptionalGenericBinding_ GenericSymbol, Lparen_ ValueSymbol, OptionalArguments_ GenericSymbol, Rparen_ ValueSymbol) (GenericSymbol, error)
+	ToCallExpr(AccessExpr_ GenericSymbol, OptionalGenericBinding_ GenericSymbol, Lparen_ TokenValue, OptionalArguments_ GenericSymbol, Rparen_ TokenValue) (GenericSymbol, error)
 
 	// 402:2: optional_generic_binding -> binding: ...
-	BindingToOptionalGenericBinding(DollarLbracket_ ValueSymbol, OptionalGenericArguments_ GenericSymbol, Rbracket_ ValueSymbol) (GenericSymbol, error)
+	BindingToOptionalGenericBinding(DollarLbracket_ TokenValue, OptionalGenericArguments_ GenericSymbol, Rbracket_ TokenValue) (GenericSymbol, error)
 
 	// 403:2: optional_generic_binding -> nil: ...
 	NilToOptionalGenericBinding() (GenericSymbol, error)
@@ -487,7 +487,7 @@ type Reducer interface {
 	ValueTypeToGenericArguments(ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 412:2: generic_arguments -> add: ...
-	AddToGenericArguments(GenericArguments_ GenericSymbol, Comma_ ValueSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	AddToGenericArguments(GenericArguments_ GenericSymbol, Comma_ TokenValue, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 415:2: optional_arguments -> arguments: ...
 	ArgumentsToOptionalArguments(Arguments_ GenericSymbol) (GenericSymbol, error)
@@ -499,25 +499,25 @@ type Reducer interface {
 	ArgumentToArguments(Argument_ GenericSymbol) (GenericSymbol, error)
 
 	// 420:2: arguments -> add: ...
-	AddToArguments(Arguments_ GenericSymbol, Comma_ ValueSymbol, Argument_ GenericSymbol) (GenericSymbol, error)
+	AddToArguments(Arguments_ GenericSymbol, Comma_ TokenValue, Argument_ GenericSymbol) (GenericSymbol, error)
 
 	// 423:2: argument -> positional: ...
 	PositionalToArgument(Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 424:2: argument -> named: ...
-	NamedToArgument(Identifier_ ValueSymbol, Assign_ ValueSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
+	NamedToArgument(Identifier_ TokenValue, Assign_ TokenValue, Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 425:2: argument -> colon_expressions: ...
 	ColonExpressionsToArgument(ColonExpressions_ GenericSymbol) (GenericSymbol, error)
 
 	// 428:2: argument -> DOT_DOT_DOT: ...
-	DotDotDotToArgument(DotDotDot_ ValueSymbol) (GenericSymbol, error)
+	DotDotDotToArgument(DotDotDot_ TokenValue) (GenericSymbol, error)
 
 	// 431:2: colon_expressions -> pair: ...
-	PairToColonExpressions(OptionalExpression_ GenericSymbol, Colon_ ValueSymbol, OptionalExpression_2 GenericSymbol) (GenericSymbol, error)
+	PairToColonExpressions(OptionalExpression_ GenericSymbol, Colon_ TokenValue, OptionalExpression_2 GenericSymbol) (GenericSymbol, error)
 
 	// 432:2: colon_expressions -> add: ...
-	AddToColonExpressions(ColonExpressions_ GenericSymbol, Colon_ ValueSymbol, OptionalExpression_ GenericSymbol) (GenericSymbol, error)
+	AddToColonExpressions(ColonExpressions_ GenericSymbol, Colon_ TokenValue, OptionalExpression_ GenericSymbol) (GenericSymbol, error)
 
 	// 435:2: optional_expression -> expression: ...
 	ExpressionToOptionalExpression(Expression_ GenericSymbol) (GenericSymbol, error)
@@ -529,7 +529,7 @@ type Reducer interface {
 	LiteralToAtomExpr(Literal_ GenericSymbol) (GenericSymbol, error)
 
 	// 448:2: atom_expr -> IDENTIFIER: ...
-	IdentifierToAtomExpr(Identifier_ ValueSymbol) (GenericSymbol, error)
+	IdentifierToAtomExpr(Identifier_ TokenValue) (GenericSymbol, error)
 
 	// 449:2: atom_expr -> block_expr: ...
 	BlockExprToAtomExpr(OptionalLabelDecl_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
@@ -538,7 +538,7 @@ type Reducer interface {
 	AnonymousFuncExprToAtomExpr(AnonymousFuncExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 451:2: atom_expr -> initialize_expr: ...
-	InitializeExprToAtomExpr(InitializableType_ GenericSymbol, Lparen_ ValueSymbol, Arguments_ GenericSymbol, Rparen_ ValueSymbol) (GenericSymbol, error)
+	InitializeExprToAtomExpr(InitializableType_ GenericSymbol, Lparen_ TokenValue, Arguments_ GenericSymbol, Rparen_ TokenValue) (GenericSymbol, error)
 
 	// 452:2: atom_expr -> implicit_struct_expr: ...
 	ImplicitStructExprToAtomExpr(ImplicitStructExpr_ GenericSymbol) (GenericSymbol, error)
@@ -547,10 +547,10 @@ type Reducer interface {
 	ParseErrorToAtomExpr(ParseError_ ParseErrorSymbol) (GenericSymbol, error)
 
 	// 456:2: literal -> TRUE: ...
-	TrueToLiteral(True_ ValueSymbol) (GenericSymbol, error)
+	TrueToLiteral(True_ TokenValue) (GenericSymbol, error)
 
 	// 457:2: literal -> FALSE: ...
-	FalseToLiteral(False_ ValueSymbol) (GenericSymbol, error)
+	FalseToLiteral(False_ TokenValue) (GenericSymbol, error)
 
 	// 458:2: literal -> INTEGER_LITERAL: ...
 	IntegerLiteralToLiteral(IntegerLiteral_ GenericSymbol) (GenericSymbol, error)
@@ -565,40 +565,40 @@ type Reducer interface {
 	StringLiteralToLiteral(StringLiteral_ GenericSymbol) (GenericSymbol, error)
 
 	// 463:24: implicit_struct_expr -> ...
-	ToImplicitStructExpr(Lparen_ ValueSymbol, Arguments_ GenericSymbol, Rparen_ ValueSymbol) (GenericSymbol, error)
+	ToImplicitStructExpr(Lparen_ TokenValue, Arguments_ GenericSymbol, Rparen_ TokenValue) (GenericSymbol, error)
 
 	// 466:2: access_expr -> atom_expr: ...
 	AtomExprToAccessExpr(AtomExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 467:2: access_expr -> access: ...
-	AccessToAccessExpr(AccessExpr_ GenericSymbol, Dot_ ValueSymbol, Identifier_ ValueSymbol) (GenericSymbol, error)
+	AccessToAccessExpr(AccessExpr_ GenericSymbol, Dot_ TokenValue, Identifier_ TokenValue) (GenericSymbol, error)
 
 	// 468:2: access_expr -> call_expr: ...
 	CallExprToAccessExpr(CallExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 469:2: access_expr -> index: ...
-	IndexToAccessExpr(AccessExpr_ GenericSymbol, Lbracket_ ValueSymbol, Argument_ GenericSymbol, Rbracket_ ValueSymbol) (GenericSymbol, error)
+	IndexToAccessExpr(AccessExpr_ GenericSymbol, Lbracket_ TokenValue, Argument_ GenericSymbol, Rbracket_ TokenValue) (GenericSymbol, error)
 
 	// 472:2: postfix_unary_expr -> access_expr: ...
 	AccessExprToPostfixUnaryExpr(AccessExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 473:2: postfix_unary_expr -> question: ...
-	QuestionToPostfixUnaryExpr(AccessExpr_ GenericSymbol, Question_ ValueSymbol) (GenericSymbol, error)
+	QuestionToPostfixUnaryExpr(AccessExpr_ GenericSymbol, Question_ TokenValue) (GenericSymbol, error)
 
 	// 476:2: prefix_unary_op -> NOT: ...
-	NotToPrefixUnaryOp(Not_ ValueSymbol) (GenericSymbol, error)
+	NotToPrefixUnaryOp(Not_ TokenValue) (GenericSymbol, error)
 
 	// 477:2: prefix_unary_op -> BIT_NEG: ...
-	BitNegToPrefixUnaryOp(BitNeg_ ValueSymbol) (GenericSymbol, error)
+	BitNegToPrefixUnaryOp(BitNeg_ TokenValue) (GenericSymbol, error)
 
 	// 478:2: prefix_unary_op -> SUB: ...
-	SubToPrefixUnaryOp(Sub_ ValueSymbol) (GenericSymbol, error)
+	SubToPrefixUnaryOp(Sub_ TokenValue) (GenericSymbol, error)
 
 	// 481:2: prefix_unary_op -> MUL: ...
-	MulToPrefixUnaryOp(Mul_ ValueSymbol) (GenericSymbol, error)
+	MulToPrefixUnaryOp(Mul_ TokenValue) (GenericSymbol, error)
 
 	// 484:2: prefix_unary_op -> BIT_AND: ...
-	BitAndToPrefixUnaryOp(BitAnd_ ValueSymbol) (GenericSymbol, error)
+	BitAndToPrefixUnaryOp(BitAnd_ TokenValue) (GenericSymbol, error)
 
 	// 487:2: prefix_unary_expr -> postfix_unary_expr: ...
 	PostfixUnaryExprToPrefixUnaryExpr(PostfixUnaryExpr_ GenericSymbol) (GenericSymbol, error)
@@ -607,22 +607,22 @@ type Reducer interface {
 	PrefixOpToPrefixUnaryExpr(PrefixUnaryOp_ GenericSymbol, PrefixUnaryExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 491:2: mul_op -> MUL: ...
-	MulToMulOp(Mul_ ValueSymbol) (GenericSymbol, error)
+	MulToMulOp(Mul_ TokenValue) (GenericSymbol, error)
 
 	// 492:2: mul_op -> DIV: ...
-	DivToMulOp(Div_ ValueSymbol) (GenericSymbol, error)
+	DivToMulOp(Div_ TokenValue) (GenericSymbol, error)
 
 	// 493:2: mul_op -> MOD: ...
-	ModToMulOp(Mod_ ValueSymbol) (GenericSymbol, error)
+	ModToMulOp(Mod_ TokenValue) (GenericSymbol, error)
 
 	// 494:2: mul_op -> BIT_AND: ...
-	BitAndToMulOp(BitAnd_ ValueSymbol) (GenericSymbol, error)
+	BitAndToMulOp(BitAnd_ TokenValue) (GenericSymbol, error)
 
 	// 495:2: mul_op -> BIT_LSHIFT: ...
-	BitLshiftToMulOp(BitLshift_ ValueSymbol) (GenericSymbol, error)
+	BitLshiftToMulOp(BitLshift_ TokenValue) (GenericSymbol, error)
 
 	// 496:2: mul_op -> BIT_RSHIFT: ...
-	BitRshiftToMulOp(BitRshift_ ValueSymbol) (GenericSymbol, error)
+	BitRshiftToMulOp(BitRshift_ TokenValue) (GenericSymbol, error)
 
 	// 499:2: mul_expr -> prefix_unary_expr: ...
 	PrefixUnaryExprToMulExpr(PrefixUnaryExpr_ GenericSymbol) (GenericSymbol, error)
@@ -631,16 +631,16 @@ type Reducer interface {
 	OpToMulExpr(MulExpr_ GenericSymbol, MulOp_ GenericSymbol, PrefixUnaryExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 503:2: add_op -> ADD: ...
-	AddToAddOp(Add_ ValueSymbol) (GenericSymbol, error)
+	AddToAddOp(Add_ TokenValue) (GenericSymbol, error)
 
 	// 504:2: add_op -> SUB: ...
-	SubToAddOp(Sub_ ValueSymbol) (GenericSymbol, error)
+	SubToAddOp(Sub_ TokenValue) (GenericSymbol, error)
 
 	// 505:2: add_op -> BIT_OR: ...
-	BitOrToAddOp(BitOr_ ValueSymbol) (GenericSymbol, error)
+	BitOrToAddOp(BitOr_ TokenValue) (GenericSymbol, error)
 
 	// 506:2: add_op -> BIT_XOR: ...
-	BitXorToAddOp(BitXor_ ValueSymbol) (GenericSymbol, error)
+	BitXorToAddOp(BitXor_ TokenValue) (GenericSymbol, error)
 
 	// 509:2: add_expr -> mul_expr: ...
 	MulExprToAddExpr(MulExpr_ GenericSymbol) (GenericSymbol, error)
@@ -649,22 +649,22 @@ type Reducer interface {
 	OpToAddExpr(AddExpr_ GenericSymbol, AddOp_ GenericSymbol, MulExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 513:2: cmp_op -> EQUAL: ...
-	EqualToCmpOp(Equal_ ValueSymbol) (GenericSymbol, error)
+	EqualToCmpOp(Equal_ TokenValue) (GenericSymbol, error)
 
 	// 514:2: cmp_op -> NOT_EQUAL: ...
-	NotEqualToCmpOp(NotEqual_ ValueSymbol) (GenericSymbol, error)
+	NotEqualToCmpOp(NotEqual_ TokenValue) (GenericSymbol, error)
 
 	// 515:2: cmp_op -> LESS: ...
-	LessToCmpOp(Less_ ValueSymbol) (GenericSymbol, error)
+	LessToCmpOp(Less_ TokenValue) (GenericSymbol, error)
 
 	// 516:2: cmp_op -> LESS_OR_EQUAL: ...
-	LessOrEqualToCmpOp(LessOrEqual_ ValueSymbol) (GenericSymbol, error)
+	LessOrEqualToCmpOp(LessOrEqual_ TokenValue) (GenericSymbol, error)
 
 	// 517:2: cmp_op -> GREATER: ...
-	GreaterToCmpOp(Greater_ ValueSymbol) (GenericSymbol, error)
+	GreaterToCmpOp(Greater_ TokenValue) (GenericSymbol, error)
 
 	// 518:2: cmp_op -> GREATER_OR_EQUAL: ...
-	GreaterOrEqualToCmpOp(GreaterOrEqual_ ValueSymbol) (GenericSymbol, error)
+	GreaterOrEqualToCmpOp(GreaterOrEqual_ TokenValue) (GenericSymbol, error)
 
 	// 521:2: cmp_expr -> add_expr: ...
 	AddExprToCmpExpr(AddExpr_ GenericSymbol) (GenericSymbol, error)
@@ -676,37 +676,37 @@ type Reducer interface {
 	CmpExprToAndExpr(CmpExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 526:2: and_expr -> op: ...
-	OpToAndExpr(AndExpr_ GenericSymbol, And_ ValueSymbol, CmpExpr_ GenericSymbol) (GenericSymbol, error)
+	OpToAndExpr(AndExpr_ GenericSymbol, And_ TokenValue, CmpExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 529:2: or_expr -> and_expr: ...
 	AndExprToOrExpr(AndExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 530:2: or_expr -> op: ...
-	OpToOrExpr(OrExpr_ GenericSymbol, Or_ ValueSymbol, AndExpr_ GenericSymbol) (GenericSymbol, error)
+	OpToOrExpr(OrExpr_ GenericSymbol, Or_ TokenValue, AndExpr_ GenericSymbol) (GenericSymbol, error)
 
 	// 539:2: initializable_type -> explicit_struct_def: ...
 	ExplicitStructDefToInitializableType(ExplicitStructDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 540:2: initializable_type -> slice: ...
-	SliceToInitializableType(Lbracket_ ValueSymbol, ValueType_ GenericSymbol, Rbracket_ ValueSymbol) (GenericSymbol, error)
+	SliceToInitializableType(Lbracket_ TokenValue, ValueType_ GenericSymbol, Rbracket_ TokenValue) (GenericSymbol, error)
 
 	// 541:2: initializable_type -> array: ...
-	ArrayToInitializableType(Lbracket_ ValueSymbol, ValueType_ GenericSymbol, Comma_ ValueSymbol, IntegerLiteral_ GenericSymbol, Rbracket_ ValueSymbol) (GenericSymbol, error)
+	ArrayToInitializableType(Lbracket_ TokenValue, ValueType_ GenericSymbol, Comma_ TokenValue, IntegerLiteral_ GenericSymbol, Rbracket_ TokenValue) (GenericSymbol, error)
 
 	// 542:2: initializable_type -> map: ...
-	MapToInitializableType(Lbracket_ ValueSymbol, ValueType_ GenericSymbol, Colon_ ValueSymbol, ValueType_2 GenericSymbol, Rbracket_ ValueSymbol) (GenericSymbol, error)
+	MapToInitializableType(Lbracket_ TokenValue, ValueType_ GenericSymbol, Colon_ TokenValue, ValueType_2 GenericSymbol, Rbracket_ TokenValue) (GenericSymbol, error)
 
 	// 545:2: atom_type -> initializable_type: ...
 	InitializableTypeToAtomType(InitializableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 546:2: atom_type -> named: ...
-	NamedToAtomType(Identifier_ ValueSymbol, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
+	NamedToAtomType(Identifier_ TokenValue, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
 
 	// 547:2: atom_type -> extern_named: ...
-	ExternNamedToAtomType(Identifier_ ValueSymbol, Dot_ ValueSymbol, Identifier_2 ValueSymbol, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
+	ExternNamedToAtomType(Identifier_ TokenValue, Dot_ TokenValue, Identifier_2 TokenValue, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
 
 	// 548:2: atom_type -> inferred: ...
-	InferredToAtomType(Dot_ ValueSymbol, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
+	InferredToAtomType(Dot_ TokenValue, OptionalGenericBinding_ GenericSymbol) (GenericSymbol, error)
 
 	// 549:2: atom_type -> implicit_struct_def: ...
 	ImplicitStructDefToAtomType(ImplicitStructDef_ GenericSymbol) (GenericSymbol, error)
@@ -730,52 +730,52 @@ type Reducer interface {
 	AtomTypeToReturnableType(AtomType_ GenericSymbol) (GenericSymbol, error)
 
 	// 561:2: returnable_type -> optional: ...
-	OptionalToReturnableType(Question_ ValueSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
+	OptionalToReturnableType(Question_ TokenValue, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 562:2: returnable_type -> result: ...
-	ResultToReturnableType(Exclaim_ ValueSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
+	ResultToReturnableType(Exclaim_ TokenValue, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 563:2: returnable_type -> reference: ...
-	ReferenceToReturnableType(BitAnd_ ValueSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
+	ReferenceToReturnableType(BitAnd_ TokenValue, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 564:2: returnable_type -> public_methods_trait: ...
-	PublicMethodsTraitToReturnableType(BitNeg_ ValueSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
+	PublicMethodsTraitToReturnableType(BitNeg_ TokenValue, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 565:2: returnable_type -> public_trait: ...
-	PublicTraitToReturnableType(TildeTilde_ ValueSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
+	PublicTraitToReturnableType(TildeTilde_ TokenValue, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 570:2: value_type -> returnable_type: ...
 	ReturnableTypeToValueType(ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 571:2: value_type -> trait_intersect: ...
-	TraitIntersectToValueType(ValueType_ GenericSymbol, Mul_ ValueSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
+	TraitIntersectToValueType(ValueType_ GenericSymbol, Mul_ TokenValue, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 572:2: value_type -> trait_union: ...
-	TraitUnionToValueType(ValueType_ GenericSymbol, Add_ ValueSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
+	TraitUnionToValueType(ValueType_ GenericSymbol, Add_ TokenValue, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 573:2: value_type -> trait_difference: ...
-	TraitDifferenceToValueType(ValueType_ GenericSymbol, Sub_ ValueSymbol, ReturnableType_ GenericSymbol) (GenericSymbol, error)
+	TraitDifferenceToValueType(ValueType_ GenericSymbol, Sub_ TokenValue, ReturnableType_ GenericSymbol) (GenericSymbol, error)
 
 	// 576:2: type_def -> definition: ...
-	DefinitionToTypeDef(Type_ ValueSymbol, Identifier_ ValueSymbol, OptionalGenericParameters_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	DefinitionToTypeDef(Type_ TokenValue, Identifier_ TokenValue, OptionalGenericParameters_ GenericSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 577:2: type_def -> constrained_def: ...
-	ConstrainedDefToTypeDef(Type_ ValueSymbol, Identifier_ ValueSymbol, OptionalGenericParameters_ GenericSymbol, ValueType_ GenericSymbol, Implements_ ValueSymbol, ValueType_2 GenericSymbol) (GenericSymbol, error)
+	ConstrainedDefToTypeDef(Type_ TokenValue, Identifier_ TokenValue, OptionalGenericParameters_ GenericSymbol, ValueType_ GenericSymbol, Implements_ TokenValue, ValueType_2 GenericSymbol) (GenericSymbol, error)
 
 	// 578:2: type_def -> alias: ...
-	AliasToTypeDef(Type_ ValueSymbol, Identifier_ ValueSymbol, Assign_ ValueSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	AliasToTypeDef(Type_ TokenValue, Identifier_ TokenValue, Assign_ TokenValue, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 586:2: generic_parameter_def -> unconstrained: ...
-	UnconstrainedToGenericParameterDef(Identifier_ ValueSymbol) (GenericSymbol, error)
+	UnconstrainedToGenericParameterDef(Identifier_ TokenValue) (GenericSymbol, error)
 
 	// 587:2: generic_parameter_def -> constrained: ...
-	ConstrainedToGenericParameterDef(Identifier_ ValueSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	ConstrainedToGenericParameterDef(Identifier_ TokenValue, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 590:2: generic_parameter_defs -> generic_parameter_def: ...
 	GenericParameterDefToGenericParameterDefs(GenericParameterDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 591:2: generic_parameter_defs -> add: ...
-	AddToGenericParameterDefs(GenericParameterDefs_ GenericSymbol, Comma_ ValueSymbol, GenericParameterDef_ GenericSymbol) (GenericSymbol, error)
+	AddToGenericParameterDefs(GenericParameterDefs_ GenericSymbol, Comma_ TokenValue, GenericParameterDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 594:2: optional_generic_parameter_defs -> generic_parameter_defs: ...
 	GenericParameterDefsToOptionalGenericParameterDefs(GenericParameterDefs_ GenericSymbol) (GenericSymbol, error)
@@ -784,13 +784,13 @@ type Reducer interface {
 	NilToOptionalGenericParameterDefs() (GenericSymbol, error)
 
 	// 598:2: optional_generic_parameters -> generic: ...
-	GenericToOptionalGenericParameters(DollarLbracket_ ValueSymbol, OptionalGenericParameterDefs_ GenericSymbol, Rbracket_ ValueSymbol) (GenericSymbol, error)
+	GenericToOptionalGenericParameters(DollarLbracket_ TokenValue, OptionalGenericParameterDefs_ GenericSymbol, Rbracket_ TokenValue) (GenericSymbol, error)
 
 	// 599:2: optional_generic_parameters -> nil: ...
 	NilToOptionalGenericParameters() (GenericSymbol, error)
 
 	// 606:2: field_def -> explicit: ...
-	ExplicitToFieldDef(Identifier_ ValueSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	ExplicitToFieldDef(Identifier_ TokenValue, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 607:2: field_def -> implicit: ...
 	ImplicitToFieldDef(ValueType_ GenericSymbol) (GenericSymbol, error)
@@ -802,7 +802,7 @@ type Reducer interface {
 	FieldDefToImplicitFieldDefs(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 612:2: implicit_field_defs -> add: ...
-	AddToImplicitFieldDefs(ImplicitFieldDefs_ GenericSymbol, Comma_ ValueSymbol, FieldDef_ GenericSymbol) (GenericSymbol, error)
+	AddToImplicitFieldDefs(ImplicitFieldDefs_ GenericSymbol, Comma_ TokenValue, FieldDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 615:2: optional_implicit_field_defs -> implicit_field_defs: ...
 	ImplicitFieldDefsToOptionalImplicitFieldDefs(ImplicitFieldDefs_ GenericSymbol) (GenericSymbol, error)
@@ -811,16 +811,16 @@ type Reducer interface {
 	NilToOptionalImplicitFieldDefs() (GenericSymbol, error)
 
 	// 618:23: implicit_struct_def -> ...
-	ToImplicitStructDef(Lparen_ ValueSymbol, OptionalImplicitFieldDefs_ GenericSymbol, Rparen_ ValueSymbol) (GenericSymbol, error)
+	ToImplicitStructDef(Lparen_ TokenValue, OptionalImplicitFieldDefs_ GenericSymbol, Rparen_ TokenValue) (GenericSymbol, error)
 
 	// 621:2: explicit_field_defs -> field_def: ...
 	FieldDefToExplicitFieldDefs(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 622:2: explicit_field_defs -> implicit: ...
-	ImplicitToExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol, Newlines_ CountSymbol, FieldDef_ GenericSymbol) (GenericSymbol, error)
+	ImplicitToExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol, Newlines_ TokenCount, FieldDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 623:2: explicit_field_defs -> explicit: ...
-	ExplicitToExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol, Comma_ ValueSymbol, FieldDef_ GenericSymbol) (GenericSymbol, error)
+	ExplicitToExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol, Comma_ TokenValue, FieldDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 626:2: optional_explicit_field_defs -> explicit_field_defs: ...
 	ExplicitFieldDefsToOptionalExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol) (GenericSymbol, error)
@@ -829,37 +829,37 @@ type Reducer interface {
 	NilToOptionalExplicitFieldDefs() (GenericSymbol, error)
 
 	// 629:23: explicit_struct_def -> ...
-	ToExplicitStructDef(Struct_ ValueSymbol, Lparen_ ValueSymbol, OptionalExplicitFieldDefs_ GenericSymbol, Rparen_ ValueSymbol) (GenericSymbol, error)
+	ToExplicitStructDef(Struct_ TokenValue, Lparen_ TokenValue, OptionalExplicitFieldDefs_ GenericSymbol, Rparen_ TokenValue) (GenericSymbol, error)
 
 	// 637:2: enum_value_def -> field_def: ...
 	FieldDefToEnumValueDef(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 638:2: enum_value_def -> default: ...
-	DefaultToEnumValueDef(FieldDef_ GenericSymbol, Assign_ ValueSymbol, Default_ ValueSymbol) (GenericSymbol, error)
+	DefaultToEnumValueDef(FieldDef_ GenericSymbol, Assign_ TokenValue, Default_ TokenValue) (GenericSymbol, error)
 
 	// 650:2: implicit_enum_value_defs -> pair: ...
-	PairToImplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Or_ ValueSymbol, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
+	PairToImplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Or_ TokenValue, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
 	// 651:2: implicit_enum_value_defs -> add: ...
-	AddToImplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Or_ ValueSymbol, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
+	AddToImplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Or_ TokenValue, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 653:21: implicit_enum_def -> ...
-	ToImplicitEnumDef(Lparen_ ValueSymbol, ImplicitEnumValueDefs_ GenericSymbol, Rparen_ ValueSymbol) (GenericSymbol, error)
+	ToImplicitEnumDef(Lparen_ TokenValue, ImplicitEnumValueDefs_ GenericSymbol, Rparen_ TokenValue) (GenericSymbol, error)
 
 	// 656:2: explicit_enum_value_defs -> explicit_pair: ...
-	ExplicitPairToExplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Or_ ValueSymbol, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
+	ExplicitPairToExplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Or_ TokenValue, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
 	// 657:2: explicit_enum_value_defs -> implicit_pair: ...
-	ImplicitPairToExplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Newlines_ CountSymbol, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
+	ImplicitPairToExplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Newlines_ TokenCount, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
 	// 658:2: explicit_enum_value_defs -> explicit_add: ...
-	ExplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Or_ ValueSymbol, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
+	ExplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Or_ TokenValue, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 659:2: explicit_enum_value_defs -> implicit_add: ...
-	ImplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Newlines_ CountSymbol, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
+	ImplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Newlines_ TokenCount, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 661:21: explicit_enum_def -> ...
-	ToExplicitEnumDef(Enum_ ValueSymbol, Lparen_ ValueSymbol, ExplicitEnumValueDefs_ GenericSymbol, Rparen_ ValueSymbol) (GenericSymbol, error)
+	ToExplicitEnumDef(Enum_ TokenValue, Lparen_ TokenValue, ExplicitEnumValueDefs_ GenericSymbol, Rparen_ TokenValue) (GenericSymbol, error)
 
 	// 668:2: trait_property -> field_def: ...
 	FieldDefToTraitProperty(FieldDef_ GenericSymbol) (GenericSymbol, error)
@@ -871,10 +871,10 @@ type Reducer interface {
 	TraitPropertyToTraitProperties(TraitProperty_ GenericSymbol) (GenericSymbol, error)
 
 	// 673:2: trait_properties -> implicit: ...
-	ImplicitToTraitProperties(TraitProperties_ GenericSymbol, Newlines_ CountSymbol, TraitProperty_ GenericSymbol) (GenericSymbol, error)
+	ImplicitToTraitProperties(TraitProperties_ GenericSymbol, Newlines_ TokenCount, TraitProperty_ GenericSymbol) (GenericSymbol, error)
 
 	// 674:2: trait_properties -> explicit: ...
-	ExplicitToTraitProperties(TraitProperties_ GenericSymbol, Comma_ ValueSymbol, TraitProperty_ GenericSymbol) (GenericSymbol, error)
+	ExplicitToTraitProperties(TraitProperties_ GenericSymbol, Comma_ TokenValue, TraitProperty_ GenericSymbol) (GenericSymbol, error)
 
 	// 677:2: optional_trait_properties -> trait_properties: ...
 	TraitPropertiesToOptionalTraitProperties(TraitProperties_ GenericSymbol) (GenericSymbol, error)
@@ -883,7 +883,7 @@ type Reducer interface {
 	NilToOptionalTraitProperties() (GenericSymbol, error)
 
 	// 680:13: trait_def -> ...
-	ToTraitDef(Trait_ ValueSymbol, Lparen_ ValueSymbol, OptionalTraitProperties_ GenericSymbol, Rparen_ ValueSymbol) (GenericSymbol, error)
+	ToTraitDef(Trait_ TokenValue, Lparen_ TokenValue, OptionalTraitProperties_ GenericSymbol, Rparen_ TokenValue) (GenericSymbol, error)
 
 	// 688:2: return_type -> returnable_type: ...
 	ReturnableTypeToReturnType(ReturnableType_ GenericSymbol) (GenericSymbol, error)
@@ -892,22 +892,22 @@ type Reducer interface {
 	NilToReturnType() (GenericSymbol, error)
 
 	// 692:2: parameter_decl -> arg: ...
-	ArgToParameterDecl(Identifier_ ValueSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	ArgToParameterDecl(Identifier_ TokenValue, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 693:2: parameter_decl -> vararg: ...
-	VarargToParameterDecl(Identifier_ ValueSymbol, DotDotDot_ ValueSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	VarargToParameterDecl(Identifier_ TokenValue, DotDotDot_ TokenValue, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 694:2: parameter_decl -> unamed: ...
 	UnamedToParameterDecl(ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 695:2: parameter_decl -> unnamed_vararg: ...
-	UnnamedVarargToParameterDecl(DotDotDot_ ValueSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	UnnamedVarargToParameterDecl(DotDotDot_ TokenValue, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 698:2: parameter_decls -> parameter_decl: ...
 	ParameterDeclToParameterDecls(ParameterDecl_ GenericSymbol) (GenericSymbol, error)
 
 	// 699:2: parameter_decls -> add: ...
-	AddToParameterDecls(ParameterDecls_ GenericSymbol, Comma_ ValueSymbol, ParameterDecl_ GenericSymbol) (GenericSymbol, error)
+	AddToParameterDecls(ParameterDecls_ GenericSymbol, Comma_ TokenValue, ParameterDecl_ GenericSymbol) (GenericSymbol, error)
 
 	// 702:2: optional_parameter_decls -> parameter_decls: ...
 	ParameterDeclsToOptionalParameterDecls(ParameterDecls_ GenericSymbol) (GenericSymbol, error)
@@ -916,28 +916,28 @@ type Reducer interface {
 	NilToOptionalParameterDecls() (GenericSymbol, error)
 
 	// 705:13: func_type -> ...
-	ToFuncType(Func_ ValueSymbol, Lparen_ ValueSymbol, OptionalParameterDecls_ GenericSymbol, Rparen_ ValueSymbol, ReturnType_ GenericSymbol) (GenericSymbol, error)
+	ToFuncType(Func_ TokenValue, Lparen_ TokenValue, OptionalParameterDecls_ GenericSymbol, Rparen_ TokenValue, ReturnType_ GenericSymbol) (GenericSymbol, error)
 
 	// 716:20: method_signature -> ...
-	ToMethodSignature(Func_ ValueSymbol, Identifier_ ValueSymbol, Lparen_ ValueSymbol, OptionalParameterDecls_ GenericSymbol, Rparen_ ValueSymbol, ReturnType_ GenericSymbol) (GenericSymbol, error)
+	ToMethodSignature(Func_ TokenValue, Identifier_ TokenValue, Lparen_ TokenValue, OptionalParameterDecls_ GenericSymbol, Rparen_ TokenValue, ReturnType_ GenericSymbol) (GenericSymbol, error)
 
 	// 722:2: parameter_def -> inferred_ref_arg: ...
-	InferredRefArgToParameterDef(Identifier_ ValueSymbol) (GenericSymbol, error)
+	InferredRefArgToParameterDef(Identifier_ TokenValue) (GenericSymbol, error)
 
 	// 723:2: parameter_def -> inferred_ref_vararg: ...
-	InferredRefVarargToParameterDef(Identifier_ ValueSymbol, DotDotDot_ ValueSymbol) (GenericSymbol, error)
+	InferredRefVarargToParameterDef(Identifier_ TokenValue, DotDotDot_ TokenValue) (GenericSymbol, error)
 
 	// 724:2: parameter_def -> arg: ...
-	ArgToParameterDef(Identifier_ ValueSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	ArgToParameterDef(Identifier_ TokenValue, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 725:2: parameter_def -> vararg: ...
-	VarargToParameterDef(Identifier_ ValueSymbol, DotDotDot_ ValueSymbol, ValueType_ GenericSymbol) (GenericSymbol, error)
+	VarargToParameterDef(Identifier_ TokenValue, DotDotDot_ TokenValue, ValueType_ GenericSymbol) (GenericSymbol, error)
 
 	// 728:2: parameter_defs -> parameter_def: ...
 	ParameterDefToParameterDefs(ParameterDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 729:2: parameter_defs -> add: ...
-	AddToParameterDefs(ParameterDefs_ GenericSymbol, Comma_ ValueSymbol, ParameterDef_ GenericSymbol) (GenericSymbol, error)
+	AddToParameterDefs(ParameterDefs_ GenericSymbol, Comma_ TokenValue, ParameterDef_ GenericSymbol) (GenericSymbol, error)
 
 	// 732:2: optional_parameter_defs -> parameter_defs: ...
 	ParameterDefsToOptionalParameterDefs(ParameterDefs_ GenericSymbol) (GenericSymbol, error)
@@ -946,22 +946,22 @@ type Reducer interface {
 	NilToOptionalParameterDefs() (GenericSymbol, error)
 
 	// 736:2: named_func_def -> func_def: ...
-	FuncDefToNamedFuncDef(Func_ ValueSymbol, Identifier_ ValueSymbol, OptionalGenericParameters_ GenericSymbol, Lparen_ ValueSymbol, OptionalParameterDefs_ GenericSymbol, Rparen_ ValueSymbol, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
+	FuncDefToNamedFuncDef(Func_ TokenValue, Identifier_ TokenValue, OptionalGenericParameters_ GenericSymbol, Lparen_ TokenValue, OptionalParameterDefs_ GenericSymbol, Rparen_ TokenValue, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 737:2: named_func_def -> method_def: ...
-	MethodDefToNamedFuncDef(Func_ ValueSymbol, Lparen_ ValueSymbol, ParameterDef_ GenericSymbol, Rparen_ ValueSymbol, Identifier_ ValueSymbol, OptionalGenericParameters_ GenericSymbol, Lparen_2 ValueSymbol, OptionalParameterDefs_ GenericSymbol, Rparen_2 ValueSymbol, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
+	MethodDefToNamedFuncDef(Func_ TokenValue, Lparen_ TokenValue, ParameterDef_ GenericSymbol, Rparen_ TokenValue, Identifier_ TokenValue, OptionalGenericParameters_ GenericSymbol, Lparen_2 TokenValue, OptionalParameterDefs_ GenericSymbol, Rparen_2 TokenValue, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 738:2: named_func_def -> alias: ...
-	AliasToNamedFuncDef(Func_ ValueSymbol, Identifier_ ValueSymbol, Assign_ ValueSymbol, Expression_ GenericSymbol) (GenericSymbol, error)
+	AliasToNamedFuncDef(Func_ TokenValue, Identifier_ TokenValue, Assign_ TokenValue, Expression_ GenericSymbol) (GenericSymbol, error)
 
 	// 742:2: anonymous_func_expr -> ...
-	ToAnonymousFuncExpr(Func_ ValueSymbol, Lparen_ ValueSymbol, OptionalParameterDefs_ GenericSymbol, Rparen_ ValueSymbol, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
+	ToAnonymousFuncExpr(Func_ TokenValue, Lparen_ TokenValue, OptionalParameterDefs_ GenericSymbol, Rparen_ TokenValue, ReturnType_ GenericSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
 	// 754:2: package_def -> no_spec: ...
-	NoSpecToPackageDef(Package_ ValueSymbol) (GenericSymbol, error)
+	NoSpecToPackageDef(Package_ TokenValue) (GenericSymbol, error)
 
 	// 755:2: package_def -> with_spec: ...
-	WithSpecToPackageDef(Package_ ValueSymbol, StatementBlock_ GenericSymbol) (GenericSymbol, error)
+	WithSpecToPackageDef(Package_ TokenValue, StatementBlock_ GenericSymbol) (GenericSymbol, error)
 }
 
 type ParseErrorHandler interface {
@@ -2985,9 +2985,9 @@ type Symbol struct {
 
 	Generic_ GenericSymbol
 
-	Count      CountSymbol
+	Count      TokenCount
 	ParseError ParseErrorSymbol
-	Value      ValueSymbol
+	Value      TokenValue
 }
 
 func NewSymbol(token Token) (*Symbol, error) {
@@ -2999,11 +2999,11 @@ func NewSymbol(token Token) (*Symbol, error) {
 	symbol = &Symbol{SymbolId_: token.Id()}
 	switch token.Id() {
 	case NewlinesToken:
-		val, ok := token.(CountSymbol)
+		val, ok := token.(TokenCount)
 		if !ok {
 			return nil, fmt.Errorf(
 				"Invalid value type for token %s.  "+
-					"Expecting CountSymbol (%v)",
+					"Expecting TokenCount (%v)",
 				token.Id(),
 				token.Loc())
 		}
@@ -3029,11 +3029,11 @@ func NewSymbol(token Token) (*Symbol, error) {
 		}
 		symbol.ParseError = val
 	case CommentGroupsToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
-		val, ok := token.(ValueSymbol)
+		val, ok := token.(TokenValue)
 		if !ok {
 			return nil, fmt.Errorf(
 				"Invalid value type for token %s.  "+
-					"Expecting ValueSymbol (%v)",
+					"Expecting TokenValue (%v)",
 				token.Id(),
 				token.Loc())
 		}

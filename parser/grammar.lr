@@ -759,7 +759,7 @@ go:
   package: parser
   value_types:
     ParseError: "ParseErrorSymbol"
-    Count: "CountSymbol"
-    Value: "ValueSymbol"
+    Count: "TokenCount"
+    Value: "TokenValue"
   generate_end_pos: True
 }%%

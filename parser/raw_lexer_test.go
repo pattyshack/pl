@@ -40,7 +40,7 @@ func (s *RawLexerSuite) TestNewlinesTokens(t *testing.T) {
 			t, testInputPrefix+"\r-",
 			AddToken, NewlinesToken, ParseErrorToken, SubToken)
 
-		newlines, ok := tokens[1].(CountSymbol)
+		newlines, ok := tokens[1].(TokenCount)
 		expect.True(t, ok)
 		expect.Equal(t, i+1, newlines.Count)
 
