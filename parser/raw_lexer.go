@@ -13,19 +13,20 @@ const (
 	spacesToken       = SymbolId(-1) // [ \t]+
 	lineCommentToken  = SymbolId(-2)
 	blockCommentToken = SymbolId(-3)
+	commentGroupToken = SymbolId(-4)
 
 	// s - single-line  vs m - multiple-line
 	// i - interpreted  vs r - raw string
 	// d - double quote vs b - back quote
 
-	sidStringToken = SymbolId(-4)
-	sibStringToken = SymbolId(-5)
-	srdStringToken = SymbolId(-6)
-	srbStringToken = SymbolId(-7)
-	midStringToken = SymbolId(-8)
-	mibStringToken = SymbolId(-9)
-	mrdStringToken = SymbolId(-10)
-	mrbStringToken = SymbolId(-11)
+	sidStringToken = SymbolId(-10)
+	sibStringToken = SymbolId(-11)
+	srdStringToken = SymbolId(-12)
+	srbStringToken = SymbolId(-13)
+	midStringToken = SymbolId(-14)
+	mibStringToken = SymbolId(-15)
+	mrdStringToken = SymbolId(-16)
+	mrbStringToken = SymbolId(-17)
 
 	defaultInitialPeekWindowSize = 64
 )

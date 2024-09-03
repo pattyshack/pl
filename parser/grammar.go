@@ -12,7 +12,7 @@ type SymbolId int
 
 const (
 	NewlinesToken        = SymbolId(256)
-	CommentGroupToken    = SymbolId(257)
+	CommentGroupsToken   = SymbolId(257)
 	IntegerLiteralToken  = SymbolId(258)
 	FloatLiteralToken    = SymbolId(259)
 	RuneLiteralToken     = SymbolId(260)
@@ -183,8 +183,8 @@ type Reducer interface {
 	// 76:2: definition -> statement_block: ...
 	StatementBlockToDefinition(StatementBlock_ GenericSymbol) (GenericSymbol, error)
 
-	// 80:2: definition -> COMMENT_GROUP: ...
-	CommentGroupToDefinition(CommentGroup_ ValueSymbol) (GenericSymbol, error)
+	// 80:2: definition -> COMMENT_GROUPS: ...
+	CommentGroupsToDefinition(CommentGroups_ ValueSymbol) (GenericSymbol, error)
 
 	// 100:19: statement_block -> ...
 	ToStatementBlock(Lbrace_ ValueSymbol, Statements_ GenericSymbol, Rbrace_ ValueSymbol) (GenericSymbol, error)
@@ -1176,8 +1176,8 @@ func (i SymbolId) String() string {
 		return "*"
 	case NewlinesToken:
 		return "NEWLINES"
-	case CommentGroupToken:
-		return "COMMENT_GROUP"
+	case CommentGroupsToken:
+		return "COMMENT_GROUPS"
 	case IntegerLiteralToken:
 		return "INTEGER_LITERAL"
 	case FloatLiteralToken:
@@ -1704,7 +1704,7 @@ const (
 	_ReduceGlobalVarDefToDefinition                           = _ReduceType(12)
 	_ReduceGlobalVarAssignmentToDefinition                    = _ReduceType(13)
 	_ReduceStatementBlockToDefinition                         = _ReduceType(14)
-	_ReduceCommentGroupToDefinition                           = _ReduceType(15)
+	_ReduceCommentGroupsToDefinition                          = _ReduceType(15)
 	_ReduceToStatementBlock                                   = _ReduceType(16)
 	_ReduceEmptyListToStatements                              = _ReduceType(17)
 	_ReduceAddToStatements                                    = _ReduceType(18)
@@ -1996,8 +1996,8 @@ func (i _ReduceType) String() string {
 		return "GlobalVarAssignmentToDefinition"
 	case _ReduceStatementBlockToDefinition:
 		return "StatementBlockToDefinition"
-	case _ReduceCommentGroupToDefinition:
-		return "CommentGroupToDefinition"
+	case _ReduceCommentGroupsToDefinition:
+		return "CommentGroupsToDefinition"
 	case _ReduceToStatementBlock:
 		return "ToStatementBlock"
 	case _ReduceEmptyListToStatements:
@@ -3028,7 +3028,7 @@ func NewSymbol(token Token) (*Symbol, error) {
 				token.Loc())
 		}
 		symbol.ParseError = val
-	case CommentGroupToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
+	case CommentGroupsToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
 		val, ok := token.(ValueSymbol)
 		if !ok {
 			return nil, fmt.Errorf(
@@ -3061,7 +3061,7 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case CommentGroupToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
+	case CommentGroupsToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
 		loc, ok := interface{}(s.Value).(locator)
 		if ok {
 			return loc.Loc()
@@ -3083,7 +3083,7 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case CommentGroupToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
+	case CommentGroupsToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
 		loc, ok := interface{}(s.Value).(locator)
 		if ok {
 			return loc.End()
@@ -3226,11 +3226,11 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = DefinitionType
 		symbol.Generic_, err = reducer.StatementBlockToDefinition(args[0].Generic_)
-	case _ReduceCommentGroupToDefinition:
+	case _ReduceCommentGroupsToDefinition:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = DefinitionType
-		symbol.Generic_, err = reducer.CommentGroupToDefinition(args[0].Value)
+		symbol.Generic_, err = reducer.CommentGroupsToDefinition(args[0].Value)
 	case _ReduceToStatementBlock:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -4986,7 +4986,7 @@ var (
 	_ReduceGlobalVarDefToDefinitionAction                           = &_Action{_ReduceAction, 0, _ReduceGlobalVarDefToDefinition}
 	_ReduceGlobalVarAssignmentToDefinitionAction                    = &_Action{_ReduceAction, 0, _ReduceGlobalVarAssignmentToDefinition}
 	_ReduceStatementBlockToDefinitionAction                         = &_Action{_ReduceAction, 0, _ReduceStatementBlockToDefinition}
-	_ReduceCommentGroupToDefinitionAction                           = &_Action{_ReduceAction, 0, _ReduceCommentGroupToDefinition}
+	_ReduceCommentGroupsToDefinitionAction                          = &_Action{_ReduceAction, 0, _ReduceCommentGroupsToDefinition}
 	_ReduceToStatementBlockAction                                   = &_Action{_ReduceAction, 0, _ReduceToStatementBlock}
 	_ReduceEmptyListToStatementsAction                              = &_Action{_ReduceAction, 0, _ReduceEmptyListToStatements}
 	_ReduceAddToStatementsAction                                    = &_Action{_ReduceAction, 0, _ReduceAddToStatements}
@@ -5306,7 +5306,7 @@ var _ActionTable = _ActionTableType{
 	{_State5, InitializableTypeType}:              _GotoState47Action,
 	{_State5, ExplicitStructDefType}:              _GotoState45Action,
 	{_State5, AnonymousFuncExprType}:              _GotoState41Action,
-	{_State13, CommentGroupToken}:                 _GotoState58Action,
+	{_State13, CommentGroupsToken}:                _GotoState58Action,
 	{_State13, PackageToken}:                      _GotoState14Action,
 	{_State13, TypeToken}:                         _GotoState15Action,
 	{_State13, FuncToken}:                         _GotoState16Action,
@@ -6225,7 +6225,7 @@ var _ActionTable = _ActionTableType{
 	{_State143, InitializableTypeType}:            _GotoState47Action,
 	{_State143, ExplicitStructDefType}:            _GotoState45Action,
 	{_State143, AnonymousFuncExprType}:            _GotoState41Action,
-	{_State144, CommentGroupToken}:                _GotoState58Action,
+	{_State144, CommentGroupsToken}:               _GotoState58Action,
 	{_State144, PackageToken}:                     _GotoState14Action,
 	{_State144, TypeToken}:                        _GotoState15Action,
 	{_State144, FuncToken}:                        _GotoState16Action,
@@ -8470,7 +8470,7 @@ var _ActionTable = _ActionTableType{
 	{_State54, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State55, _EndMarker}:                        _ReduceSequenceExprToExpressionAction,
 	{_State56, _EndMarker}:                        _ReduceVarDeclPatternToSequenceExprAction,
-	{_State58, _WildcardMarker}:                   _ReduceCommentGroupToDefinitionAction,
+	{_State58, _WildcardMarker}:                   _ReduceCommentGroupsToDefinitionAction,
 	{_State59, _WildcardMarker}:                   _ReduceEmptyListToStatementsAction,
 	{_State60, _WildcardMarker}:                   _ReduceNilToDefinitionsAction,
 	{_State61, _EndMarker}:                        _ReduceNilToOptionalNewlinesAction,
@@ -8945,7 +8945,7 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      COMMENT_GROUP -> State 58
+      COMMENT_GROUPS -> State 58
       PACKAGE -> State 14
       TYPE -> State 15
       FUNC -> State 16
@@ -9507,7 +9507,7 @@ Parser Debug States:
 
   State 58:
     Kernel Items:
-      definition: COMMENT_GROUP., *
+      definition: COMMENT_GROUPS., *
     Reduce:
       * -> [definition]
     Goto:
@@ -10898,7 +10898,7 @@ Parser Debug States:
     Reduce:
       $ -> [optional_newlines]
     Goto:
-      COMMENT_GROUP -> State 58
+      COMMENT_GROUPS -> State 58
       PACKAGE -> State 14
       TYPE -> State 15
       FUNC -> State 16

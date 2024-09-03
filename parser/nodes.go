@@ -20,7 +20,7 @@ const (
 // separated by single newlines (and spaces).
 type CommentGroup []ValueSymbol
 
-func (CommentGroup) Id() SymbolId { return CommentGroupToken }
+func (CommentGroup) Id() SymbolId { return commentGroupToken }
 
 func (cg CommentGroup) Loc() Location { return cg[0].Loc() }
 func (cg CommentGroup) End() Location { return cg[len(cg)-1].End() }

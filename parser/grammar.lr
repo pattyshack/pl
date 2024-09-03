@@ -1,6 +1,6 @@
 %token<Count> NEWLINES // (\n|\r\n)+
 
-%token<Value> COMMENT_GROUP
+%token<Value> COMMENT_GROUPS
 
 %token INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
 
@@ -77,7 +77,7 @@ definition ->
   // Free floating comment groups that are not part of any other symbol.
   // This can happen if the source file only has comments, or if there are
   // comments at the end of the source.
-  COMMENT_GROUP
+  COMMENT_GROUPS
 
 //
 // Statement block
