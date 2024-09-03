@@ -13,8 +13,11 @@ Sequence of '\n' or '\r\n' ('\r' not paired with '\n' is not a newline).  Serve 
 go explicitly inserts ';' to terminate statement.  we'll conditionally emit newline to the parser the same way. newline is emitted if the line's final token is
 1. an identifier
 2. a literal
-3. one of the keywords: `break`, `continue`, `fallthrough`, or `return`
-4. one of: `++`, `--`, `)`, `}`, or `]`
+3. a jump label
+4. one of the keywords: `break`, `continue`, `fallthrough`, `return`, `true`, or `false`
+5. one of: `++`, `--`, `)`, `}`, or `]`
+
+In addition, if the last token before EOF is not a newline, we will explicitly insert a pseudo newline to terminate the statement.
 
 ### Comment
 Raw comments are folded into other tokens via multi-staged lexing.

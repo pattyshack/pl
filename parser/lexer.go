@@ -273,3 +273,93 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 
 	return value, nil
 }
+
+// TerminalNewlinesLexer conditionally emit newline from the underlying lexer to
+// the parser to denote statement termination.  Newline is emitted if the line's
+// final token token is
+//  1. an identifier
+//  2. a literal
+//  3. a jump label
+//  4. one of the keywords: `break`, `continue`, `fallthrough`, `return`,
+//     `true`, or `false`
+//  5. one of: `++`, `--`, `)`, `}`, or `]`
+//
+// In addition, if the last token before EOF is not a newline, the lexer will
+// explicitly insert a pseudo newline to terminate the statement.
+type TerminalNewlinesLexer struct {
+	*lexutil.BufferedReader[Token]
+	base Lexer
+
+	previousId SymbolId
+}
+
+func NewTerminalNewlinesLexer(
+	sourceFileName string,
+	sourceContent io.Reader,
+	options LexerOptions,
+) Lexer {
+	base := NewAssociateCommentGroupsLexer(sourceFileName, sourceContent, options)
+	return &TerminalNewlinesLexer{
+		BufferedReader: lexutil.NewBufferedReader(
+			lexutil.NewLexerReader[Token](base),
+			10),
+		base: base,
+	}
+}
+
+func (lexer *TerminalNewlinesLexer) CurrentLocation() Location {
+	peeked, err := lexer.Peek(1)
+	if err != nil || len(peeked) == 0 {
+		return lexer.base.CurrentLocation()
+	}
+
+	return peeked[0].Loc()
+}
+
+func (lexer *TerminalNewlinesLexer) Next() (Token, error) {
+	var discardedNewlines Token
+	for {
+		token, err := readToken(lexer)
+		if err != nil {
+			if err == io.EOF && lexer.previousId != NewlinesToken {
+				lexer.previousId = NewlinesToken
+
+				// Use the real newlines token whenever possible
+				if discardedNewlines != nil {
+					return discardedNewlines, nil
+				} else {
+					loc := Location(lexer.CurrentLocation())
+					return CountSymbol{
+						SymbolId: NewlinesToken,
+						StartPos: loc,
+						EndPos:   loc,
+						Count:    1,
+					}, nil
+				}
+			}
+
+			return nil, err
+		}
+
+		if token.Id() != NewlinesToken {
+			lexer.previousId = token.Id()
+			return token, nil
+		}
+
+		switch lexer.previousId {
+		case IdentifierToken,
+			IntegerLiteralToken, StringLiteralToken,
+			RuneLiteralToken, FloatLiteralToken,
+			JumpLabelToken,
+			ReturnToken, BreakToken, ContinueToken, FallthroughToken,
+			TrueToken, FalseToken,
+			AddOneAssignToken, SubOneAssignToken,
+			RparenToken, RbraceToken, RbracketToken:
+
+			lexer.previousId = NewlinesToken
+			return token, nil
+		default:
+			discardedNewlines = token
+		}
+	}
+}
