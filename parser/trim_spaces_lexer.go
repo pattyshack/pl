@@ -6,25 +6,13 @@ import (
 	"github.com/pattyshack/gt/lexutil"
 )
 
-type TrimSpacesLexer struct {
-	*lexutil.BufferedReader[Token]
+type TokenPeekDiscarder interface {
+	Peek(int) ([]Token, error)
+	Discard(int) (int, error)
 }
 
-func NewTrimSpacesLexer(
-	sourceFileName string,
-	sourceContent io.Reader,
-	options LexerOptions,
-) TrimSpacesLexer {
-	return TrimSpacesLexer{
-		BufferedReader: lexutil.NewBufferedReader(
-			lexutil.NewLexerReader[Token](
-				NewRawLexer(sourceFileName, sourceContent, options)),
-			100),
-	}
-}
-
-func (lexer *TrimSpacesLexer) read() (Token, error) {
-	peeked, err := lexer.Peek(1)
+func readToken(reader TokenPeekDiscarder) (Token, error) {
+	peeked, err := reader.Peek(1)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +23,7 @@ func (lexer *TrimSpacesLexer) read() (Token, error) {
 
 	token := peeked[0]
 
-	_, err = lexer.Discard(1)
+	_, err = reader.Discard(1)
 	if err != nil {
 		panic("should never happen")
 	}
@@ -43,14 +31,42 @@ func (lexer *TrimSpacesLexer) read() (Token, error) {
 	return token, nil
 }
 
+type TrimSpacesLexer struct {
+	*lexutil.BufferedReader[Token]
+	base Lexer
+}
+
+func NewTrimSpacesLexer(
+	sourceFileName string,
+	sourceContent io.Reader,
+	options LexerOptions,
+) Lexer {
+	base := NewRawLexer(sourceFileName, sourceContent, options)
+	return &TrimSpacesLexer{
+		BufferedReader: lexutil.NewBufferedReader(
+			lexutil.NewLexerReader[Token](base),
+			10),
+		base: base,
+	}
+}
+
+func (lexer *TrimSpacesLexer) CurrentLocation() Location {
+	peeked, err := lexer.Peek(1)
+	if err != nil || len(peeked) == 0 {
+		return (lexer.base.CurrentLocation())
+	}
+
+	return peeked[0].Loc()
+}
+
 func (lexer *TrimSpacesLexer) Next() (Token, error) {
-	token, err := lexer.read()
+	token, err := readToken(lexer)
 	if err != nil {
 		return nil, err
 	}
 
 	if token.Id() == spacesToken {
-		token, err = lexer.read()
+		token, err = readToken(lexer)
 		if err != nil {
 			return nil, err
 		}

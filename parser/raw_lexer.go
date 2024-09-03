@@ -87,7 +87,7 @@ func NewRawLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
 	options LexerOptions,
-) *RawLexer {
+) Lexer {
 	if options.initialPeekWindowSize <= 0 {
 		options.initialPeekWindowSize = defaultInitialPeekWindowSize
 	}
@@ -105,6 +105,10 @@ func NewRawLexer(
 			options.InitialLookAheadBufferSize),
 		InternPool: internPool,
 	}
+}
+
+func (lexer *RawLexer) CurrentLocation() Location {
+	return Location(lexer.Location)
 }
 
 // variable length token will return 0 as length
