@@ -49,7 +49,7 @@
 
 %start source package_def type_def named_func_def expression
 
-source -> optional_definitions
+source<SourceDefinitions> -> optional_definitions
 
 optional_definitions ->
   NEWLINES |
@@ -60,11 +60,11 @@ optional_newlines ->
   NEWLINES |
   nil:
 
-definitions ->
-  nil: definition |
+definitions<SourceDefinitions> ->
+  definition |
   add: definitions NEWLINES definition
 
-definition ->
+definition<SourceDefinition> ->
   // There can only be one package_def per package
   package_def |
   type_def |
@@ -99,15 +99,15 @@ definition ->
 // real value type, or PARSE_ERROR's value type
 statement_block -> LBRACE statements RBRACE
 
-statements ->
+statements<Statements> ->
   empty_list: |
   add: statements statement
 
-statement ->
+statement<Statement> ->
   implicit: statement_body NEWLINES |
   explicit: statement_body SEMICOLON
 
-simple_statement_body ->
+simple_statement_body<Statement> ->
   unsafe_statement |
 
   expression_or_implicit_struct: expressions |
@@ -158,7 +158,7 @@ simple_statement_body ->
   // case branch)
   FALLTHROUGH
 
-statement_body ->
+statement_body<Statement> ->
   simple_statement_body |
 
   // NOTE: Only applicable to package_def
@@ -170,7 +170,7 @@ statement_body ->
   case_branch_statement: CASE case_patterns COLON optional_simple_statement_body |
   default_branch_statement: DEFAULT COLON optional_simple_statement_body
 
-optional_simple_statement_body ->
+optional_simple_statement_body<Statement> ->
   simple_statement_body |
   nil:
 
@@ -178,11 +178,11 @@ optional_simple_statement_body ->
 // Assign statements
 //
 
-unary_op_assign ->
+unary_op_assign<Value> ->
   ADD_ONE_ASSIGN |
   SUB_ONE_ASSIGN
 
-binary_op_assign ->
+binary_op_assign<Value> ->
   ADD_ASSIGN |
   SUB_ASSIGN |
   MUL_ASSIGN |
@@ -201,18 +201,18 @@ binary_op_assign ->
 
 // escape hatch to get a basic compiler/transpiler running.
 // unsafe<go> "emit verbatim go source"
-unsafe_statement -> UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
+unsafe_statement<Statement> -> UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
 
 //
 // Jump statement
 //
 
-jump_type ->
+jump_type<Value> ->
   RETURN |
   BREAK |
   CONTINUE
 
-optional_jump_label ->
+optional_jump_label<Value> ->
   JUMP_LABEL |
   unlabelled:
 
@@ -228,7 +228,7 @@ optional_expressions ->
 // Import statement
 //
 
-import_statement ->
+import_statement<Statement> ->
   single: IMPORT import_clause |
   multiple: IMPORT LPAREN import_clauses RPAREN
 
@@ -261,7 +261,7 @@ case_patterns ->
 // public access to fields, and no mutation methods.
 var_decl_pattern -> var_or_let var_pattern optional_value_type
 
-var_or_let -> VAR | LET
+var_or_let<Value> -> VAR | LET
 
 var_pattern ->
   IDENTIFIER |
@@ -278,7 +278,7 @@ field_var_pattern ->
   named: IDENTIFIER ASSIGN var_pattern |
   DOT_DOT_DOT
 
-optional_value_type ->
+optional_value_type<TypeExpression> ->
   value_type |
   nil:
 
@@ -303,13 +303,13 @@ case_pattern ->
 // Expressions ================================================================
 //
 
-expression ->
+expression<Expression> ->
   if_expr: optional_label_decl if_expr |
   switch_expr: optional_label_decl switch_expr |
   loop_expr: optional_label_decl loop_expr |
   sequence_expr
 
-optional_label_decl ->
+optional_label_decl<Value> ->
   LABEL_DECL |
   unlabelled:
 
@@ -317,7 +317,7 @@ optional_label_decl ->
 // Sequence control flow expression
 //
 
-sequence_expr ->
+sequence_expr<Expression> ->
   or_expr |
   // NOTE: var_decl_pattern is not a real expression.  Unexpected usage in real
   // expressions are rejected during type checking.
@@ -333,7 +333,7 @@ sequence_expr ->
 
 // NOTE: label is applied to the entire if expression rather than individual
 // branches.
-if_expr ->
+if_expr<Expression> ->
   no_else: IF condition statement_block |
   if_else: IF condition statement_block ELSE statement_block |
   multi_if_else: IF condition statement_block ELSE if_expr
@@ -377,14 +377,14 @@ switch_expr -> SWITCH sequence_expr statement_block
 // the while loop grammar is "FOR sequence_expr body_expr".  Then the while
 // loop can be interpreted as an infinite loop "FOR sequence_expr", followed by
 // an sequence statement "body_expr".
-loop_expr ->
+loop_expr<Expression> ->
   infinite: DO statement_block |
   do_while: DO statement_block FOR sequence_expr |
   while: FOR sequence_expr DO statement_block |
   iterator: FOR assign_pattern IN sequence_expr DO statement_block |
   for: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO statement_block
 
-optional_sequence_expr ->
+optional_sequence_expr<Expression> ->
   sequence_expr |
   nil:
 
@@ -396,7 +396,8 @@ for_assignment ->
 // Call expression
 //
 
-call_expr -> access_expr optional_generic_binding LPAREN optional_arguments RPAREN
+call_expr<Expression> ->
+  access_expr optional_generic_binding LPAREN optional_arguments RPAREN
 
 optional_generic_binding ->
   binding: DOLLAR_LBRACKET optional_generic_arguments RBRACKET |
@@ -431,7 +432,7 @@ colon_expressions ->
   pair: optional_expression COLON optional_expression |
   add: colon_expressions COLON optional_expression
 
-optional_expression ->
+optional_expression<Expression> ->
   expression |
   nil:
 
@@ -448,7 +449,7 @@ atom_expr<Expression> ->
   IDENTIFIER |
   block_expr: optional_label_decl statement_block |
   anonymous_func_expr |
-  initialize_expr: initializable_type LPAREN arguments RPAREN |
+  initialize_expr: initializable_type LPAREN optional_arguments RPAREN |
   implicit_struct_expr |
   PARSE_ERROR
 
@@ -460,7 +461,7 @@ literal_expr<Expression> ->
   RUNE_LITERAL |
   STRING_LITERAL
 
-implicit_struct_expr -> LPAREN arguments RPAREN
+implicit_struct_expr<Expression> -> LPAREN optional_arguments RPAREN
 
 access_expr<Expression> ->
   atom_expr |
@@ -572,7 +573,7 @@ value_type<TypeExpression> ->
   trait_union: value_type ADD returnable_type |
   trait_difference: value_type SUB returnable_type
 
-type_def ->
+type_def<SourceDefinition> ->
   definition: TYPE IDENTIFIER optional_generic_parameters value_type |
   constrained_def: TYPE IDENTIFIER optional_generic_parameters value_type IMPLEMENTS value_type |
   alias: TYPE IDENTIFIER ASSIGN value_type
@@ -735,13 +736,13 @@ optional_parameter_defs ->
   parameter_defs |
   nil:
 
-named_func_def ->
+named_func_def<SourceDefinition> ->
   func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type statement_block |
   method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type statement_block |
   alias: FUNC IDENTIFIER ASSIGN expression
 
 
-anonymous_func_expr ->
+anonymous_func_expr<Expression> ->
   FUNC LPAREN optional_parameter_defs RPAREN return_type statement_block
 
 //
@@ -753,7 +754,7 @@ anonymous_func_expr ->
 // "internal" since that's special cased by go.  As an alternative to go's
 // internal, if the package name is a private, it can only be accessed by its
 // parent directory package.
-package_def ->
+package_def<SourceDefinition> ->
   no_spec: PACKAGE |
   with_spec: PACKAGE statement_block
 
@@ -766,5 +767,9 @@ go:
     Value: "TokenValue"
     Expression: "Expression"
     TypeExpression: "TypeExpression"
+    Statement: "Statement"
+    Statements: "[]Statement"
+    SourceDefinition: "SourceDefinition"
+    SourceDefinitions: "[]SourceDefinition"
   generate_end_pos: True
 }%%

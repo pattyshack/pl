@@ -53,6 +53,24 @@ type isTypeExpression struct{}
 
 func (isTypeExpression) IsTypeExpression() {}
 
+type Statement interface {
+	Node
+	IsStatement()
+}
+
+type isStatement struct{}
+
+func (isStatement) IsStatement() {}
+
+type SourceDefinition interface {
+	Node
+	IsSourceDefinition()
+}
+
+type isSourceDefinition struct{}
+
+func (isSourceDefinition) IsSourceDefinition() {}
+
 // A comment group is a single block comment, or a group of line comments
 // separated by single newlines (ignoring spaces).
 type CommentGroup []TokenValue
