@@ -110,53 +110,29 @@ statement<Statement> ->
 simple_statement_body<Statement> ->
   = unsafe_statement |
 
-  expression_or_implicit_struct: expressions |
-
-  // maybe allow pseudo-call such as struct initialization?
-  //
-  // NOTE: call_expr's access_expr and its arguments are evaluated immediately
-  // Only the call itself is async.
-  //
-  // NOTE: Only applicable in expression blocks
-  async: ASYNC call_expr |  // returns an await handler
-
-  // Returns unit
-  //
-  // XXX: maybe make defer's call_expr run on the nearest scope exit rather
-  // than on function scope exit.  Transpiling this semantic to golang would
-  // be annoying since golang's defer operate on function rather than scope
-  // exit.  Maybe just code gen the defer call on every exit point instead of
-  // relying on golang's defer?
-  //
-  // Need to ensure this an actual function call, not a struct initialization.
-  //
-  // NOTE: call_expr's access_expr and its arguments are evaluated immediately.
-  // Only the call itself is deferred.
-  //
-  // NOTE: Only applicable in expression blocks
-  //
-  // NOTE: compiler should optimize away the await handler if it's not used.
-  defer: DEFER call_expr |
-
+  = expression_or_improper_struct_statement |
 
   // NOTE: Only applicable in expression blocks
-  jump_statement: jump_type optional_jump_label optional_expressions |
+  = callback_op_statement |
+
+  // NOTE: Only applicable in expression blocks
+  = jump_statement |
 
   // NOTE: variable declaration without assignment is parsed as an expression.
   //
   // NOTE: package level assign pattern must be a var/let declaration
-  assign_statement: assign_pattern ASSIGN expression |
+  = assign_statement |
 
   // NOTE: assignment can only operate on proper address values.  Additional
   // checks are applied during post analysis.
   //
   // NOTE: Only applicable in expression block
-  unary_op_assign_statement: access_expr unary_op_assign |
-  binary_op_assign_statement: access_expr binary_op_assign expression |
+  = unary_op_assign_statement |
+  = binary_op_assign_statement |
 
   // Only applicable to switch case block (must be the last statement in the
   // case branch)
-  FALLTHROUGH
+  = fallthrough_statement
 
 statement_body<Statement> ->
   = simple_statement_body |
@@ -173,6 +149,38 @@ statement_body<Statement> ->
 optional_simple_statement_body<Statement> ->
   = simple_statement_body |
   nil:
+
+//
+//
+//
+
+expression_or_improper_struct_statement<Statement> -> expressions
+
+//
+// Async / defer statements
+//
+
+callback_op<Value> ->
+  = ASYNC |
+  = DEFER
+
+// async returns an await handler, whereas defer returns unit.
+//
+// XXX: maybe make defer's call_expr run on the nearest scope exit rather
+// than on function scope exit.  Transpiling this semantic to golang would
+// be annoying since golang's defer operate on function rather than scope
+// exit.  Maybe just code gen the defer call on every exit point instead of
+// relying on golang's defer?
+//
+// Need to ensure this an actual function call, not a struct initialization.
+// XXX: maybe allow async to use pseudo-call such as struct initialization?
+//
+// NOTE: compiler should optimize away the async await handler if it's not
+// used.
+//
+// NOTE: call_expr's accessible_expr and its arguments are evaluated immediately
+// Only the call itself is applicable to the callback_op.
+callback_op_statement<Statement> -> callback_op call_expr
 
 //
 // Assign statements
@@ -204,25 +212,35 @@ binary_op_assign<Value> ->
 unsafe_statement<Statement> -> UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
 
 //
-// Jump statement
+// Jump / fallthrough statements
 //
+
+jump_statement<Statement> ->
+  unlabeled_no_value: jump_type |
+  unlabeled_valued: jump_type expressions |
+  labeled_no_value: jump_type JUMP_LABEL |
+  labeled_valued: jump_type JUMP_LABEL expressions
 
 jump_type<Value> ->
   = RETURN |
   = BREAK |
   = CONTINUE
 
-optional_jump_label<Value> ->
-  JUMP_LABEL |
-  unlabelled:
-
 expressions ->
   expression |
   add: expressions COMMA expression
 
-optional_expressions ->
-  expressions |
-  nil:
+fallthrough_statement<Statement> -> FALLTHROUGH
+
+//
+// Assignment statements
+//
+
+assign_statement<Statement> -> assign_pattern ASSIGN expression
+
+unary_op_assign_statement<Statement> -> accessible_expr unary_op_assign
+
+binary_op_assign_statement<Statement> -> accessible_expr binary_op_assign expression
 
 //
 // Import statement
@@ -367,7 +385,7 @@ condition ->
 // }
 
 // Switch need to be exhastive.
-switch_expr -> SWITCH sequence_expr statement_block
+switch_expr<Expression> -> SWITCH sequence_expr statement_block
 
 //
 // For control flow expression
@@ -400,7 +418,7 @@ for_assignment ->
 //
 
 call_expr<Expression> ->
-  access_expr optional_generic_binding LPAREN optional_arguments RPAREN
+  accessible_expr optional_generic_binding LPAREN optional_arguments RPAREN
 
 optional_generic_binding ->
   binding: DOLLAR_LBRACKET optional_generic_arguments RBRACKET |
@@ -448,13 +466,15 @@ optional_expression<Expression> ->
 // TODO is check
 // TODO select (via trait instead of channel)
 atom_expr<Expression> ->
+  = parse_error_expr |
   = literal_expr |
-  IDENTIFIER |
-  block_expr: optional_label_decl statement_block |
+  = identifier_expr |
+  = block_expr |
   = anonymous_func_expr |
-  initialize_expr: initializable_type LPAREN optional_arguments RPAREN |
-  = implicit_struct_expr |
-  PARSE_ERROR
+  = initialize_expr |
+  = implicit_struct_expr
+
+parse_error_expr<Expression> -> PARSE_ERROR
 
 literal_expr<Expression> ->
   TRUE |
@@ -464,17 +484,36 @@ literal_expr<Expression> ->
   RUNE_LITERAL |
   STRING_LITERAL
 
+identifier_expr<Expression> ->  IDENTIFIER
+
+block_expr<Expression> ->  optional_label_decl statement_block
+
+initialize_expr<Expression> ->
+  initializable_type LPAREN optional_arguments RPAREN
+
 implicit_struct_expr<Expression> -> LPAREN optional_arguments RPAREN
 
-access_expr<Expression> ->
+accessible_expr<Expression> ->
   = atom_expr |
-  access: access_expr DOT IDENTIFIER |
-  = call_expr |
-  index: access_expr LBRACKET argument RBRACKET
-
-postfix_unary_expr<Expression> ->
   = access_expr |
-  access_expr QUESTION
+  = call_expr |
+  = index_expr
+
+access_expr<Expression> -> accessible_expr DOT IDENTIFIER
+
+index_expr<Expression> -> accessible_expr LBRACKET argument RBRACKET
+
+postfixable_expr<Expression> ->
+  = accessible_expr |
+  = postfix_unary_expr
+
+postfix_unary_expr<Expression> ->  accessible_expr QUESTION
+
+prefixable_expr<Expression> ->
+  = postfixable_expr |
+  = prefix_unary_expr
+
+prefix_unary_expr<Expression> -> prefix_unary_op prefixable_expr
 
 prefix_unary_op<Value> ->
   = NOT |
@@ -487,9 +526,11 @@ prefix_unary_op<Value> ->
   // applied on either mutable or immutable referenced location.
   = BIT_AND
 
-prefix_unary_expr<Expression> ->
-  = postfix_unary_expr |
-  prefix_unary_op prefix_unary_expr
+mul_expr<Expression> ->
+  = prefixable_expr |
+  = binary_mul_expr
+
+binary_mul_expr<Expression> -> mul_expr mul_op prefixable_expr
 
 mul_op<Value> ->
   = MUL |
@@ -499,9 +540,11 @@ mul_op<Value> ->
   = BIT_LSHIFT |
   = BIT_RSHIFT
 
-mul_expr<Expression> ->
-  = prefix_unary_expr |
-  mul_expr mul_op prefix_unary_expr
+add_expr<Expression> ->
+  = mul_expr |
+  = binary_add_expr
+
+binary_add_expr<Expression> -> add_expr add_op mul_expr
 
 add_op<Value> ->
   = ADD |
@@ -509,9 +552,11 @@ add_op<Value> ->
   = BIT_OR |
   = BIT_XOR
 
-add_expr<Expression> ->
-  = mul_expr |
-  add_expr add_op mul_expr
+cmp_expr<Expression> ->
+  = add_expr |
+  = binary_cmp_expr
+
+binary_cmp_expr<Expression> -> cmp_expr cmp_op add_expr
 
 cmp_op<Value> ->
   = EQUAL |
@@ -521,17 +566,17 @@ cmp_op<Value> ->
   = GREATER |
   = GREATER_OR_EQUAL
 
-cmp_expr<Expression> ->
-  = add_expr |
-  cmp_expr cmp_op add_expr
-
 and_expr<Expression> ->
   = cmp_expr |
-  and_expr AND cmp_expr
+  = binary_and_expr
+
+binary_and_expr<Expression> -> and_expr AND cmp_expr
 
 or_expr<Expression> ->
   = and_expr |
-  or_expr OR and_expr
+  = binary_or_expr
+
+binary_or_expr<Expression> -> or_expr OR and_expr
 
 //
 // Types ======================================================================
@@ -555,26 +600,38 @@ atom_type<TypeExpression> ->
   = implicit_enum_def |
   = trait_def |
   = func_type |
-  PARSE_ERROR
+  = parse_error_type
+
+parse_error_type<TypeExpression> -> PARSE_ERROR
 
 // NOTE: allowing return type to use trait algebra without explicitly wrapping
 // inside a trait() would cause to ambiguity.  e.g.,
 // "func() A + B" could mean func() returning "A + B" or "func() A" + "B"
 returnable_type<TypeExpression> ->
   = atom_type |
-  optional: QUESTION returnable_type | // shorthand for Optional$[ <atom_type> ]
-  result: EXCLAIM returnable_type | // shorthand for Result$[ <atom_type> ]
-  reference: BIT_AND returnable_type |
-  public_methods_trait: BIT_NEG returnable_type |  // type's public methods
-  public_trait: TILDE_TILDE returnable_type  // type's public methods and fields
+  = prefixed_type
+
+prefixed_type<TypeExpression> -> prefix_type_op returnable_type
+
+prefix_type_op<Value> ->
+  = QUESTION | // shorthand for Optional$[ <atom_type> ]
+  = EXCLAIM | // shorthand for Result$[ <atom_type> ]
+  = BIT_AND | // reference type
+  = BIT_NEG | // type's public method signatures trait
+  = TILDE_TILDE // type's public method signatures and fields trait
 
 // NOTE: use explicit trait() to specify op precedence e.g.,
 // trait( trait(A+B) * C)
 value_type<TypeExpression> ->
   = returnable_type |
-  trait_intersect: value_type MUL returnable_type |
-  trait_union: value_type ADD returnable_type |
-  trait_difference: value_type SUB returnable_type
+  = trait_op_type
+
+trait_op_type<TypeExpression> -> value_type trait_op returnable_type
+
+trait_op<Value> ->
+  = MUL | // trait intersect
+  = ADD | // trait union
+  = SUB // trait difference
 
 type_def<SourceDefinition> ->
   definition: TYPE IDENTIFIER optional_generic_parameters value_type |

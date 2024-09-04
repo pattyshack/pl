@@ -207,6 +207,7 @@ func (s TokenValue) End() Location {
 
 type ParseErrorSymbol struct {
 	isExpression
+	isTypeExpression
 
 	StartPos Location
 	EndPos   Location
@@ -235,9 +236,19 @@ type ParseErrorReducer struct {
 	ParseErrors []*ParseErrorSymbol
 }
 
-func (reducer *ParseErrorReducer) ParseErrorToAtomExpr(
+var _ ParseErrorExprReducer = &ParseErrorReducer{}
+
+func (reducer *ParseErrorReducer) ToParseErrorExpr(
 	pe ParseErrorSymbol,
 ) (Expression, error) {
+	ptr := &pe
+	reducer.ParseErrors = append(reducer.ParseErrors, ptr)
+	return ptr, nil
+}
+
+func (reducer *ParseErrorReducer) ToParseErrorType(
+	pe ParseErrorSymbol,
+) (TypeExpression, error) {
 	ptr := &pe
 	reducer.ParseErrors = append(reducer.ParseErrors, ptr)
 	return ptr, nil

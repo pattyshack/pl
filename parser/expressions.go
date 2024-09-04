@@ -96,11 +96,13 @@ type IdentifierExpr struct {
 	TokenValue
 }
 
-type IdentifierExprReducer struct {
+type IdentifierExprReducerImpl struct {
 	IdentifierExprs []*IdentifierExpr
 }
 
-func (reducer *IdentifierExprReducer) ToIdentifierExpr(
+var _ IdentifierExprReducer = &IdentifierExprReducerImpl{}
+
+func (reducer *IdentifierExprReducerImpl) ToIdentifierExpr(
 	value TokenValue,
 ) (Expression, error) {
 	expr := &IdentifierExpr{TokenValue: value}
