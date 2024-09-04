@@ -108,7 +108,7 @@ statement<Statement> ->
   explicit: statement_body SEMICOLON
 
 simple_statement_body<Statement> ->
-  unsafe_statement |
+  = unsafe_statement |
 
   expression_or_implicit_struct: expressions |
 
@@ -159,10 +159,10 @@ simple_statement_body<Statement> ->
   FALLTHROUGH
 
 statement_body<Statement> ->
-  simple_statement_body |
+  = simple_statement_body |
 
   // NOTE: Only applicable to package_def
-  import_statement |
+  = import_statement |
 
   // NOTE: Only applicable to switch case block.
   // Post analysis is needed to associate statements to cases (move trailing
@@ -171,7 +171,7 @@ statement_body<Statement> ->
   default_branch_statement: DEFAULT COLON optional_simple_statement_body
 
 optional_simple_statement_body<Statement> ->
-  simple_statement_body |
+  = simple_statement_body |
   nil:
 
 //
@@ -179,21 +179,21 @@ optional_simple_statement_body<Statement> ->
 //
 
 unary_op_assign<Value> ->
-  ADD_ONE_ASSIGN |
-  SUB_ONE_ASSIGN
+  = ADD_ONE_ASSIGN |
+  = SUB_ONE_ASSIGN
 
 binary_op_assign<Value> ->
-  ADD_ASSIGN |
-  SUB_ASSIGN |
-  MUL_ASSIGN |
-  DIV_ASSIGN |
-  MOD_ASSIGN |
-  BIT_NEG_ASSIGN |
-  BIT_AND_ASSIGN |
-  BIT_OR_ASSIGN |
-  BIT_XOR_ASSIGN |
-  BIT_LSHIFT_ASSIGN |
-  BIT_RSHIFT_ASSIGN
+  = ADD_ASSIGN |
+  = SUB_ASSIGN |
+  = MUL_ASSIGN |
+  = DIV_ASSIGN |
+  = MOD_ASSIGN |
+  = BIT_NEG_ASSIGN |
+  = BIT_AND_ASSIGN |
+  = BIT_OR_ASSIGN |
+  = BIT_XOR_ASSIGN |
+  = BIT_LSHIFT_ASSIGN |
+  = BIT_RSHIFT_ASSIGN
 
 //
 // Unsafe statement
@@ -208,9 +208,9 @@ unsafe_statement<Statement> -> UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
 //
 
 jump_type<Value> ->
-  RETURN |
-  BREAK |
-  CONTINUE
+  = RETURN |
+  = BREAK |
+  = CONTINUE
 
 optional_jump_label<Value> ->
   JUMP_LABEL |
@@ -261,7 +261,9 @@ case_patterns ->
 // public access to fields, and no mutation methods.
 var_decl_pattern -> var_or_let var_pattern optional_value_type
 
-var_or_let<Value> -> VAR | LET
+var_or_let<Value> ->
+  = VAR |
+  = LET
 
 var_pattern ->
   IDENTIFIER |
@@ -279,17 +281,18 @@ field_var_pattern ->
   DOT_DOT_DOT
 
 optional_value_type<TypeExpression> ->
-  value_type |
+  = value_type |
   nil:
 
 // NOTE: expression captures identifier and tuple vars, as well as fully
 // evaluated expressions.  Additional post analysis checks are needed to
 // reject invalid usage, depending on the context (e.g., assignment should
 // only allow identifier expressions)
-assign_pattern -> sequence_expr
+assign_pattern ->
+  sequence_expr
 
 case_pattern ->
-  assign_pattern |
+  = assign_pattern |
 
   // Note: parsing VAR <pkg>.<enum type>.<enum value>(...) is painful using
   // context free grammar (e.g, need to make VAR a prefix op expression instead
@@ -307,7 +310,7 @@ expression<Expression> ->
   if_expr: optional_label_decl if_expr |
   switch_expr: optional_label_decl switch_expr |
   loop_expr: optional_label_decl loop_expr |
-  sequence_expr
+  = sequence_expr
 
 optional_label_decl<Value> ->
   LABEL_DECL |
@@ -318,7 +321,7 @@ optional_label_decl<Value> ->
 //
 
 sequence_expr<Expression> ->
-  or_expr |
+  = or_expr |
   // NOTE: var_decl_pattern is not a real expression.  Unexpected usage in real
   // expressions are rejected during type checking.
   var_decl_pattern |
@@ -445,12 +448,12 @@ optional_expression<Expression> ->
 // TODO is check
 // TODO select (via trait instead of channel)
 atom_expr<Expression> ->
-  literal_expr |
+  = literal_expr |
   IDENTIFIER |
   block_expr: optional_label_decl statement_block |
-  anonymous_func_expr |
+  = anonymous_func_expr |
   initialize_expr: initializable_type LPAREN optional_arguments RPAREN |
-  implicit_struct_expr |
+  = implicit_struct_expr |
   PARSE_ERROR
 
 literal_expr<Expression> ->
@@ -464,71 +467,71 @@ literal_expr<Expression> ->
 implicit_struct_expr<Expression> -> LPAREN optional_arguments RPAREN
 
 access_expr<Expression> ->
-  atom_expr |
+  = atom_expr |
   access: access_expr DOT IDENTIFIER |
-  call_expr |
+  = call_expr |
   index: access_expr LBRACKET argument RBRACKET
 
 postfix_unary_expr<Expression> ->
-  access_expr |
-  question: access_expr QUESTION
+  = access_expr |
+  access_expr QUESTION
 
 prefix_unary_op<Value> ->
-  NOT |
-  BIT_NEG |
-  SUB |
+  = NOT |
+  = BIT_NEG |
+  = SUB |
   // "deref" copies an lvalue object.  The reference can be either mutable or
   // immutable.
-  MUL |
+  = MUL |
   // "ref" returns a mutable reference to the lvalue object.  ref-ing can be
   // applied on either mutable or immutable referenced location.
-  BIT_AND
+  = BIT_AND
 
 prefix_unary_expr<Expression> ->
-  postfix_unary_expr |
-  prefix_op: prefix_unary_op prefix_unary_expr
+  = postfix_unary_expr |
+  prefix_unary_op prefix_unary_expr
 
 mul_op<Value> ->
-  MUL |
-  DIV |
-  MOD |
-  BIT_AND |
-  BIT_LSHIFT |
-  BIT_RSHIFT
+  = MUL |
+  = DIV |
+  = MOD |
+  = BIT_AND |
+  = BIT_LSHIFT |
+  = BIT_RSHIFT
 
 mul_expr<Expression> ->
-  prefix_unary_expr |
-  op: mul_expr mul_op prefix_unary_expr
+  = prefix_unary_expr |
+  mul_expr mul_op prefix_unary_expr
 
 add_op<Value> ->
-  ADD |
-  SUB |
-  BIT_OR |
-  BIT_XOR
+  = ADD |
+  = SUB |
+  = BIT_OR |
+  = BIT_XOR
 
 add_expr<Expression> ->
-  mul_expr |
-  op: add_expr add_op mul_expr
+  = mul_expr |
+  add_expr add_op mul_expr
 
 cmp_op<Value> ->
-  EQUAL |
-  NOT_EQUAL |
-  LESS |
-  LESS_OR_EQUAL |
-  GREATER |
-  GREATER_OR_EQUAL
+  = EQUAL |
+  = NOT_EQUAL |
+  = LESS |
+  = LESS_OR_EQUAL |
+  = GREATER |
+  = GREATER_OR_EQUAL
 
 cmp_expr<Expression> ->
-  add_expr |
-  op: cmp_expr cmp_op add_expr
+  = add_expr |
+  cmp_expr cmp_op add_expr
 
 and_expr<Expression> ->
-  cmp_expr |
-  op: and_expr AND cmp_expr
+  = cmp_expr |
+  and_expr AND cmp_expr
 
 or_expr<Expression> ->
-  and_expr |
-  op: or_expr OR and_expr
+  = and_expr |
+  or_expr OR and_expr
 
 //
 // Types ======================================================================
@@ -537,28 +540,28 @@ or_expr<Expression> ->
 // Note: named type initializations are parsed as call_expr instead of
 // initialize_expr
 initializable_type<TypeExpression> ->
-  explicit_struct_def |
+  = explicit_struct_def |
   slice: LBRACKET value_type RBRACKET |  // shorthand for Slice$[ <value_type> ]
   array: LBRACKET value_type COMMA INTEGER_LITERAL RBRACKET |
   map: LBRACKET value_type COLON value_type RBRACKET // shorthand for Map$[ <value_type> , <value_type> ]
 
 atom_type<TypeExpression> ->
-  initializable_type |
+  = initializable_type |
   named: IDENTIFIER optional_generic_binding |
   extern_named: IDENTIFIER DOT IDENTIFIER optional_generic_binding |
   inferred: DOT optional_generic_binding |  // XXX: maybe use a different token symbol
-  implicit_struct_def |
-  explicit_enum_def |
-  implicit_enum_def |
-  trait_def |
-  func_type |
+  = implicit_struct_def |
+  = explicit_enum_def |
+  = implicit_enum_def |
+  = trait_def |
+  = func_type |
   PARSE_ERROR
 
 // NOTE: allowing return type to use trait algebra without explicitly wrapping
 // inside a trait() would cause to ambiguity.  e.g.,
 // "func() A + B" could mean func() returning "A + B" or "func() A" + "B"
 returnable_type<TypeExpression> ->
-  atom_type |
+  = atom_type |
   optional: QUESTION returnable_type | // shorthand for Optional$[ <atom_type> ]
   result: EXCLAIM returnable_type | // shorthand for Result$[ <atom_type> ]
   reference: BIT_AND returnable_type |
@@ -568,7 +571,7 @@ returnable_type<TypeExpression> ->
 // NOTE: use explicit trait() to specify op precedence e.g.,
 // trait( trait(A+B) * C)
 value_type<TypeExpression> ->
-  returnable_type |
+  = returnable_type |
   trait_intersect: value_type MUL returnable_type |
   trait_union: value_type ADD returnable_type |
   trait_difference: value_type SUB returnable_type
