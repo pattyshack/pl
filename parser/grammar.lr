@@ -2,7 +2,7 @@
 
 %token<Value> COMMENT_GROUPS
 
-%token INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
+%token<Value> INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
 
 // _ is never a real identifier, and is only used as a variable or type
 // placeholder.  Identifiers with prefix "_" are private to the package.
@@ -443,8 +443,8 @@ optional_expression ->
 // TODO type isa check
 // TODO is check
 // TODO select (via trait instead of channel)
-atom_expr ->
-  literal |
+atom_expr<Expression> ->
+  literal_expr |
   IDENTIFIER |
   block_expr: optional_label_decl statement_block |
   anonymous_func_expr |
@@ -452,7 +452,7 @@ atom_expr ->
   implicit_struct_expr |
   PARSE_ERROR
 
-literal ->
+literal_expr<Expression> ->
   TRUE |
   FALSE |
   INTEGER_LITERAL |
@@ -462,17 +462,17 @@ literal ->
 
 implicit_struct_expr -> LPAREN arguments RPAREN
 
-access_expr ->
+access_expr<Expression> ->
   atom_expr |
   access: access_expr DOT IDENTIFIER |
   call_expr |
   index: access_expr LBRACKET argument RBRACKET
 
-postfix_unary_expr ->
+postfix_unary_expr<Expression> ->
   access_expr |
   question: access_expr QUESTION
 
-prefix_unary_op ->
+prefix_unary_op<Value> ->
   NOT |
   BIT_NEG |
   SUB |
@@ -483,11 +483,11 @@ prefix_unary_op ->
   // applied on either mutable or immutable referenced location.
   BIT_AND
 
-prefix_unary_expr ->
+prefix_unary_expr<Expression> ->
   postfix_unary_expr |
   prefix_op: prefix_unary_op prefix_unary_expr
 
-mul_op ->
+mul_op<Value> ->
   MUL |
   DIV |
   MOD |
@@ -495,21 +495,21 @@ mul_op ->
   BIT_LSHIFT |
   BIT_RSHIFT
 
-mul_expr ->
+mul_expr<Expression> ->
   prefix_unary_expr |
   op: mul_expr mul_op prefix_unary_expr
 
-add_op ->
+add_op<Value> ->
   ADD |
   SUB |
   BIT_OR |
   BIT_XOR
 
-add_expr ->
+add_expr<Expression> ->
   mul_expr |
   op: add_expr add_op mul_expr
 
-cmp_op ->
+cmp_op<Value> ->
   EQUAL |
   NOT_EQUAL |
   LESS |
@@ -517,15 +517,15 @@ cmp_op ->
   GREATER |
   GREATER_OR_EQUAL
 
-cmp_expr ->
+cmp_expr<Expression> ->
   add_expr |
   op: cmp_expr cmp_op add_expr
 
-and_expr ->
+and_expr<Expression> ->
   cmp_expr |
   op: and_expr AND cmp_expr
 
-or_expr ->
+or_expr<Expression> ->
   and_expr |
   op: or_expr OR and_expr
 
@@ -535,13 +535,13 @@ or_expr ->
 
 // Note: named type initializations are parsed as call_expr instead of
 // initialize_expr
-initializable_type ->
+initializable_type<TypeExpression> ->
   explicit_struct_def |
   slice: LBRACKET value_type RBRACKET |  // shorthand for Slice$[ <value_type> ]
   array: LBRACKET value_type COMMA INTEGER_LITERAL RBRACKET |
   map: LBRACKET value_type COLON value_type RBRACKET // shorthand for Map$[ <value_type> , <value_type> ]
 
-atom_type ->
+atom_type<TypeExpression> ->
   initializable_type |
   named: IDENTIFIER optional_generic_binding |
   extern_named: IDENTIFIER DOT IDENTIFIER optional_generic_binding |
@@ -556,7 +556,7 @@ atom_type ->
 // NOTE: allowing return type to use trait algebra without explicitly wrapping
 // inside a trait() would cause to ambiguity.  e.g.,
 // "func() A + B" could mean func() returning "A + B" or "func() A" + "B"
-returnable_type ->
+returnable_type<TypeExpression> ->
   atom_type |
   optional: QUESTION returnable_type | // shorthand for Optional$[ <atom_type> ]
   result: EXCLAIM returnable_type | // shorthand for Result$[ <atom_type> ]
@@ -566,7 +566,7 @@ returnable_type ->
 
 // NOTE: use explicit trait() to specify op precedence e.g.,
 // trait( trait(A+B) * C)
-value_type ->
+value_type<TypeExpression> ->
   returnable_type |
   trait_intersect: value_type MUL returnable_type |
   trait_union: value_type ADD returnable_type |
@@ -615,7 +615,8 @@ optional_implicit_field_defs ->
   implicit_field_defs |
   nil:
 
-implicit_struct_def -> LPAREN optional_implicit_field_defs RPAREN
+implicit_struct_def<TypeExpression> ->
+  LPAREN optional_implicit_field_defs RPAREN
 
 explicit_field_defs ->
   field_def |
@@ -626,7 +627,8 @@ optional_explicit_field_defs ->
   explicit_field_defs |
   nil:
 
-explicit_struct_def -> STRUCT LPAREN optional_explicit_field_defs RPAREN
+explicit_struct_def<TypeExpression> ->
+  STRUCT LPAREN optional_explicit_field_defs RPAREN
 
 //
 // Explicit/Implicit enum definition
@@ -650,7 +652,7 @@ implicit_enum_value_defs ->
   pair: enum_value_def OR enum_value_def |
   add: implicit_enum_value_defs OR enum_value_def
 
-implicit_enum_def -> LPAREN implicit_enum_value_defs RPAREN
+implicit_enum_def<TypeExpression> -> LPAREN implicit_enum_value_defs RPAREN
 
 explicit_enum_value_defs ->
   explicit_pair: enum_value_def OR enum_value_def |
@@ -658,7 +660,7 @@ explicit_enum_value_defs ->
   explicit_add: implicit_enum_value_defs OR enum_value_def |
   implicit_add: implicit_enum_value_defs NEWLINES enum_value_def
 
-explicit_enum_def -> ENUM LPAREN explicit_enum_value_defs RPAREN
+explicit_enum_def<TypeExpression> -> ENUM LPAREN explicit_enum_value_defs RPAREN
 
 //
 // Trait definition
@@ -677,14 +679,14 @@ optional_trait_properties ->
   trait_properties |
   nil:
 
-trait_def -> TRAIT LPAREN optional_trait_properties RPAREN
+trait_def<TypeExpression> -> TRAIT LPAREN optional_trait_properties RPAREN
 
 //
 // Function type, definition, trait method signature
 // and anonymous func expression
 //
 
-return_type ->
+return_type<TypeExpression> ->
   returnable_type |
   nil:
 
@@ -702,7 +704,8 @@ optional_parameter_decls ->
   parameter_decls |
   nil:
 
-func_type -> FUNC LPAREN optional_parameter_decls RPAREN return_type
+func_type<TypeExpression> ->
+  FUNC LPAREN optional_parameter_decls RPAREN return_type
 
 // NOTE: FUNC is needed to disambiguate method signature from field def.
 // e.g., Foo (int, int) could mean a field named Foo with type
@@ -761,5 +764,7 @@ go:
     ParseError: "ParseErrorSymbol"
     Count: "TokenCount"
     Value: "TokenValue"
+    Expression: "Expression"
+    TypeExpression: "TypeExpression"
   generate_end_pos: True
 }%%
