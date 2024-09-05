@@ -163,6 +163,67 @@ func (reducer *IdentifierExprReducerImpl) ToIdentifierExpr(
 }
 
 //
+// AccessExpr
+//
+
+type AccessExpr struct {
+	isExpression
+
+	LeadingTrailingComments
+
+	Operand Expression
+	Field   TokenValue
+}
+
+func (expr AccessExpr) Loc() Location {
+	return expr.Operand.Loc()
+}
+
+func (expr AccessExpr) End() Location {
+	return expr.Field.End()
+}
+
+func (expr AccessExpr) String() string {
+	return expr.TreeString("", "")
+}
+
+func (expr AccessExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[AccessExpr: Field=%s\n", indent, label, expr.Field.Value)
+	result += expr.Operand.TreeString(indent+"  ", "Operand=")
+	result += indent + "]"
+	return result
+}
+
+type AccessExprReducerImpl struct {
+	AccessExprs []*AccessExpr
+}
+
+var _ AccessExprReducer = &AccessExprReducerImpl{}
+
+func (reducer *AccessExprReducerImpl) ToAccessExpr(
+	operand Expression,
+	dot TokenValue,
+	field TokenValue,
+) (
+	Expression,
+	error,
+) {
+	expr := &AccessExpr{
+		Operand: operand,
+		Field:   field,
+	}
+
+	expr.LeadingComment = operand.TakeLeading()
+	operand.AppendToTrailing(dot.TakeLeading())
+	field.PrependToLeading(dot.TakeTrailing())
+	expr.TrailingComment = field.TakeTrailing()
+
+	reducer.AccessExprs = append(reducer.AccessExprs, expr)
+	return expr, nil
+}
+
+//
 // UnaryExpr
 //
 
