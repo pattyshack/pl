@@ -446,7 +446,7 @@ func (reducer *BinaryExprReducer) ToBinaryOrExpr(
 }
 
 //
-// Argument / argument list
+// Argument
 //
 
 type ArgumentKind int
@@ -552,50 +552,50 @@ func (ArgumentReducerImpl) ColonExprToArgument(
 }
 
 func (ArgumentReducerImpl) NamedAssignmentToArgument(
-  name TokenValue,
-  assign TokenValue,
+	name TokenValue,
+	assign TokenValue,
 	expr Expression,
 ) (
 	*Argument,
 	error,
 ) {
-  arg := &Argument{
-    StartPos: name.Loc(),
-    EndPos: expr.End(),
-    Kind: NamedAssignmentArgument,
-    Expr: expr,
-    HasEllipsis: false,
-  }
+	arg := &Argument{
+		StartPos:    name.Loc(),
+		EndPos:      expr.End(),
+		Kind:        NamedAssignmentArgument,
+		Expr:        expr,
+		HasEllipsis: false,
+	}
 
-  arg.LeadingComment = name.TakeLeading()
-  // prepend in reverse order
-  expr.PrependToLeading(assign.TakeTrailing())
-  expr.PrependToLeading(assign.TakeLeading())
-  expr.PrependToLeading(name.TakeTrailing())
-  arg.TrailingComment = expr.TakeTrailing()
+	arg.LeadingComment = name.TakeLeading()
+	// prepend in reverse order
+	expr.PrependToLeading(assign.TakeTrailing())
+	expr.PrependToLeading(assign.TakeLeading())
+	expr.PrependToLeading(name.TakeTrailing())
+	arg.TrailingComment = expr.TakeTrailing()
 
-  return arg, nil
+	return arg, nil
 }
 
 func (ArgumentReducerImpl) VarargAssignmentToArgument(
 	expr Expression,
-  ellipsis TokenValue,
+	ellipsis TokenValue,
 ) (
 	*Argument,
 	error,
 ) {
-  arg := &Argument{
-    StartPos: expr.Loc(),
-    EndPos: ellipsis.End(),
-    Kind: VarargAssignmentArgument,
-    Expr: expr,
-    HasEllipsis: true,
-  }
+	arg := &Argument{
+		StartPos:    expr.Loc(),
+		EndPos:      ellipsis.End(),
+		Kind:        VarargAssignmentArgument,
+		Expr:        expr,
+		HasEllipsis: true,
+	}
 
-  arg.LeadingComment = expr.TakeLeading()
-  expr.AppendToTrailing(ellipsis.TakeLeading())
-  arg.TrailingComment = ellipsis.TakeTrailing()
-  return arg, nil
+	arg.LeadingComment = expr.TakeLeading()
+	expr.AppendToTrailing(ellipsis.TakeLeading())
+	arg.TrailingComment = ellipsis.TakeTrailing()
+	return arg, nil
 }
 
 func (ArgumentReducerImpl) SkipPatternToArgument(
@@ -605,12 +605,137 @@ func (ArgumentReducerImpl) SkipPatternToArgument(
 	error,
 ) {
 	return &Argument{
-		StartPos: ellipsis.Loc(),
-		EndPos:   ellipsis.End(),
+		StartPos:                ellipsis.Loc(),
+		EndPos:                  ellipsis.End(),
 		LeadingTrailingComments: ellipsis.LeadingTrailingComments,
-		Kind:        SkipPatternArgument,
-		Expr:        nil,
-		HasEllipsis: true,
+		Kind:                    SkipPatternArgument,
+		Expr:                    nil,
+		HasEllipsis:             true,
 	}, nil
 }
 
+//
+// Argument list
+//
+
+type ArgumentList struct {
+	StartPos Location
+	EndPos   Location
+
+	LeadingTrailingComments
+
+	// MiddleComment is only used when the list is empty, but contains a comment,
+	// e.g., Foo(/*comment*/)
+	MiddleComment CommentGroups
+
+	Arguments []*Argument
+}
+
+var _ Node = &ArgumentList{}
+
+func (args *ArgumentList) Loc() Location {
+	return args.StartPos
+}
+
+func (args *ArgumentList) End() Location {
+	return args.StartPos
+}
+
+func (args *ArgumentList) String() string {
+	return args.TreeString("", "")
+}
+
+func (args *ArgumentList) TreeString(indent string, label string) string {
+	result := fmt.Sprintf("%s%s[ArgumentList:", indent, label)
+	if len(args.Arguments) == 0 {
+		return result + "]"
+	}
+
+	for idx, arg := range args.Arguments {
+		result += "\n" + arg.TreeString(indent+"  ", fmt.Sprintf("Arg %d=", idx))
+	}
+
+	result += "\n" + indent + "]"
+	return result
+}
+
+type ArgumentListReducer struct{}
+
+var _ OptionalArgumentsReducer = &ArgumentListReducer{}
+var _ CommaArgumentsReducer = &ArgumentListReducer{}
+var _ ArgumentsReducer = &ArgumentListReducer{}
+
+func (reducer *ArgumentListReducer) NilToOptionalArguments() (
+	*ArgumentList,
+	error,
+) {
+	return nil, nil
+}
+
+func (reducer *ArgumentListReducer) AddToCommaArguments(
+	args *ArgumentList,
+	comma TokenValue,
+	arg *Argument,
+) (
+	*ArgumentList,
+	error,
+) {
+	arg.PrependToLeading(comma.TakeTrailing())
+
+	if args == nil {
+		args = &ArgumentList{
+			StartPos:  comma.Loc(),
+			EndPos:    arg.End(),
+			Arguments: []*Argument{arg},
+		}
+		args.LeadingComment = comma.TakeLeading()
+	} else {
+		args.EndPos = arg.End()
+		args.Arguments[len(args.Arguments)-1].AppendToTrailing(comma.TakeLeading())
+		args.Arguments = append(args.Arguments, arg)
+	}
+
+	return args, nil
+}
+
+func (reducer *ArgumentListReducer) NilToCommaArguments() (
+	*ArgumentList,
+	error,
+) {
+	return nil, nil
+}
+
+func (reducer *ArgumentListReducer) ProperToArguments(
+	arg *Argument,
+	args *ArgumentList,
+) (
+	*ArgumentList,
+	error,
+) {
+	args.StartPos = arg.Loc()
+
+	arg.AppendToTrailing(args.TakeLeading())
+	args.LeadingComment = arg.TakeLeading()
+
+	args.Arguments = append([]*Argument{arg}, args.Arguments...)
+
+	return args, nil
+}
+
+func (reducer *ArgumentListReducer) ImproperToArguments(
+	arg *Argument,
+	args *ArgumentList,
+	comma TokenValue,
+) (
+	*ArgumentList,
+	error,
+) {
+	args, _ = reducer.ProperToArguments(arg, args)
+
+	args.EndPos = comma.End()
+
+	args.AppendToTrailing(comma.TakeLeading())
+	args.AppendToTrailing(comma.TakeTrailing())
+
+	return args, nil
+}

@@ -472,7 +472,7 @@ type ForAssignmentReducer interface {
 
 type CallExprReducer interface {
 	// 421:2: call_expr -> ...
-	ToCallExpr(AccessibleExpr_ Expression, OptionalGenericBinding_ GenericSymbol, Lparen_ TokenValue, OptionalArguments_ GenericSymbol, Rparen_ TokenValue) (Expression, error)
+	ToCallExpr(AccessibleExpr_ Expression, OptionalGenericBinding_ GenericSymbol, Lparen_ TokenValue, OptionalArguments_ *ArgumentList, Rparen_ TokenValue) (Expression, error)
 }
 
 type OptionalGenericBindingReducer interface {
@@ -500,27 +500,25 @@ type GenericArgumentsReducer interface {
 }
 
 type OptionalArgumentsReducer interface {
-	// 437:2: optional_arguments -> arguments: ...
-	ArgumentsToOptionalArguments(Arguments_ GenericSymbol) (GenericSymbol, error)
 
 	// 438:2: optional_arguments -> nil: ...
-	NilToOptionalArguments() (GenericSymbol, error)
+	NilToOptionalArguments() (*ArgumentList, error)
 }
 
 type CommaArgumentsReducer interface {
 	// 441:2: comma_arguments -> add: ...
-	AddToCommaArguments(CommaArguments_ GenericSymbol, Comma_ TokenValue, Argument_ *Argument) (GenericSymbol, error)
+	AddToCommaArguments(CommaArguments_ *ArgumentList, Comma_ TokenValue, Argument_ *Argument) (*ArgumentList, error)
 
 	// 442:2: comma_arguments -> nil: ...
-	NilToCommaArguments() (GenericSymbol, error)
+	NilToCommaArguments() (*ArgumentList, error)
 }
 
 type ArgumentsReducer interface {
 	// 445:2: arguments -> proper: ...
-	ProperToArguments(Argument_ *Argument, CommaArguments_ GenericSymbol) (GenericSymbol, error)
+	ProperToArguments(Argument_ *Argument, CommaArguments_ *ArgumentList) (*ArgumentList, error)
 
 	// 446:2: arguments -> improper: ...
-	ImproperToArguments(Argument_ *Argument, CommaArguments_ GenericSymbol, Comma_ TokenValue) (GenericSymbol, error)
+	ImproperToArguments(Argument_ *Argument, CommaArguments_ *ArgumentList, Comma_ TokenValue) (*ArgumentList, error)
 }
 
 type ArgumentReducer interface {
@@ -597,12 +595,12 @@ type BlockExprReducer interface {
 
 type InitializeExprReducer interface {
 	// 501:2: initialize_expr -> ...
-	ToInitializeExpr(InitializableType_ TypeExpression, Lparen_ TokenValue, OptionalArguments_ GenericSymbol, Rparen_ TokenValue) (Expression, error)
+	ToInitializeExpr(InitializableType_ TypeExpression, Lparen_ TokenValue, OptionalArguments_ *ArgumentList, Rparen_ TokenValue) (Expression, error)
 }
 
 type ImplicitStructExprReducer interface {
 	// 503:36: implicit_struct_expr -> ...
-	ToImplicitStructExpr(Lparen_ TokenValue, OptionalArguments_ GenericSymbol, Rparen_ TokenValue) (Expression, error)
+	ToImplicitStructExpr(Lparen_ TokenValue, OptionalArguments_ *ArgumentList, Rparen_ TokenValue) (Expression, error)
 }
 
 type AccessExprReducer interface {
@@ -3272,6 +3270,7 @@ type Symbol struct {
 	Generic_ GenericSymbol
 
 	Argument          *Argument
+	ArgumentList      *ArgumentList
 	Count             TokenCount
 	Expression        Expression
 	ParseError        ParseErrorSymbol
@@ -3349,6 +3348,11 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
+	case OptionalArgumentsType, CommaArgumentsType, ArgumentsType:
+		loc, ok := interface{}(s.ArgumentList).(locator)
+		if ok {
+			return loc.Loc()
+		}
 	case NewlinesToken:
 		loc, ok := interface{}(s.Count).(locator)
 		if ok {
@@ -3403,6 +3407,11 @@ func (s *Symbol) End() Location {
 	switch s.SymbolId_ {
 	case ArgumentType:
 		loc, ok := interface{}(s.Argument).(locator)
+		if ok {
+			return loc.End()
+		}
+	case OptionalArgumentsType, CommaArgumentsType, ArgumentsType:
+		loc, ok := interface{}(s.ArgumentList).(locator)
 		if ok {
 			return loc.End()
 		}
@@ -4163,7 +4172,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-5:]
 		stack = stack[:len(stack)-5]
 		symbol.SymbolId_ = CallExprType
-		symbol.Expression, err = reducer.ToCallExpr(args[0].Expression, args[1].Generic_, args[2].Value, args[3].Generic_, args[4].Value)
+		symbol.Expression, err = reducer.ToCallExpr(args[0].Expression, args[1].Generic_, args[2].Value, args[3].ArgumentList, args[4].Value)
 	case _ReduceBindingToOptionalGenericBinding:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -4194,28 +4203,30 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OptionalArgumentsType
-		symbol.Generic_, err = reducer.ArgumentsToOptionalArguments(args[0].Generic_)
+		//line grammar.lr:437:4
+		symbol.ArgumentList = args[0].ArgumentList
+		err = nil
 	case _ReduceNilToOptionalArguments:
 		symbol.SymbolId_ = OptionalArgumentsType
-		symbol.Generic_, err = reducer.NilToOptionalArguments()
+		symbol.ArgumentList, err = reducer.NilToOptionalArguments()
 	case _ReduceAddToCommaArguments:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = CommaArgumentsType
-		symbol.Generic_, err = reducer.AddToCommaArguments(args[0].Generic_, args[1].Value, args[2].Argument)
+		symbol.ArgumentList, err = reducer.AddToCommaArguments(args[0].ArgumentList, args[1].Value, args[2].Argument)
 	case _ReduceNilToCommaArguments:
 		symbol.SymbolId_ = CommaArgumentsType
-		symbol.Generic_, err = reducer.NilToCommaArguments()
+		symbol.ArgumentList, err = reducer.NilToCommaArguments()
 	case _ReduceProperToArguments:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ArgumentsType
-		symbol.Generic_, err = reducer.ProperToArguments(args[0].Argument, args[1].Generic_)
+		symbol.ArgumentList, err = reducer.ProperToArguments(args[0].Argument, args[1].ArgumentList)
 	case _ReduceImproperToArguments:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ArgumentsType
-		symbol.Generic_, err = reducer.ImproperToArguments(args[0].Argument, args[1].Generic_, args[2].Value)
+		symbol.ArgumentList, err = reducer.ImproperToArguments(args[0].Argument, args[1].ArgumentList, args[2].Value)
 	case _ReducePositionalToArgument:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -4369,12 +4380,12 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = InitializeExprType
-		symbol.Expression, err = reducer.ToInitializeExpr(args[0].TypeExpression, args[1].Value, args[2].Generic_, args[3].Value)
+		symbol.Expression, err = reducer.ToInitializeExpr(args[0].TypeExpression, args[1].Value, args[2].ArgumentList, args[3].Value)
 	case _ReduceToImplicitStructExpr:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ImplicitStructExprType
-		symbol.Expression, err = reducer.ToImplicitStructExpr(args[0].Value, args[1].Generic_, args[2].Value)
+		symbol.Expression, err = reducer.ToImplicitStructExpr(args[0].Value, args[1].ArgumentList, args[2].Value)
 	case _ReduceAtomExprToAccessibleExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]

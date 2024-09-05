@@ -10,4 +10,5 @@ type ReducerImpl struct {
 	BinaryExprReducer
 
 	ArgumentReducerImpl
+	ArgumentListReducer
 }

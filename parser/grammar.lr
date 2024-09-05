@@ -433,15 +433,15 @@ generic_arguments ->
   value_type |
   add: generic_arguments COMMA value_type
 
-optional_arguments ->
-  arguments |
+optional_arguments<ArgumentList> ->
+  = arguments |
   nil:
 
-comma_arguments ->
+comma_arguments<ArgumentList> ->
   add: comma_arguments COMMA argument |
   nil:
 
-arguments ->
+arguments<ArgumentList> ->
   proper: argument comma_arguments |
   improper: argument comma_arguments COMMA
 
@@ -843,5 +843,6 @@ go:
     SourceDefinition: "SourceDefinition"
     SourceDefinitions: "[]SourceDefinition"
     Argument: "*Argument"
+    ArgumentList: "*ArgumentList"
   generate_end_pos: True
 }%%
