@@ -425,13 +425,17 @@ optional_generic_binding ->
   nil:
 
 optional_generic_arguments ->
-  generic_arguments |
+  = generic_arguments |
+  nil:
+
+comma_generic_arguments ->
+  add: comma_generic_arguments COMMA value_type |
   nil:
 
 // XXX allow named generic argument?
 generic_arguments ->
-  value_type |
-  add: generic_arguments COMMA value_type
+  proper: value_type comma_generic_arguments |
+  improper: value_type comma_generic_arguments COMMA
 
 optional_arguments<ArgumentList> ->
   = arguments |
@@ -658,9 +662,13 @@ generic_parameter_def ->
   unconstrained: IDENTIFIER |
   constrained: IDENTIFIER value_type
 
+comma_generic_parameter_defs ->
+  add: comma_generic_parameter_defs COMMA generic_parameter_def |
+  nil:
+
 generic_parameter_defs ->
-  generic_parameter_def |
-  add: generic_parameter_defs COMMA generic_parameter_def
+  proper: generic_parameter_def comma_generic_parameter_defs |
+  improper: generic_parameter_def comma_generic_parameter_defs COMMA
 
 optional_generic_parameter_defs ->
   generic_parameter_defs |
@@ -679,9 +687,13 @@ field_def ->
   implicit: value_type |
   unsafe_statement
 
+comma_implicit_field_defs ->
+  add: comma_implicit_field_defs COMMA field_def |
+  nil:
+
 implicit_field_defs ->
-  field_def |
-  add: implicit_field_defs COMMA field_def
+  proper: field_def comma_implicit_field_defs |
+  improper: field_def comma_implicit_field_defs COMMA
 
 optional_implicit_field_defs ->
   implicit_field_defs |
@@ -690,10 +702,15 @@ optional_implicit_field_defs ->
 implicit_struct_def<TypeExpression> ->
   LPAREN optional_implicit_field_defs RPAREN
 
+terminal_explicit_field_defs ->
+  add_implicit: terminal_explicit_field_defs NEWLINES field_def |
+  add_explicit: terminal_explicit_field_defs COMMA field_def |
+  nil:
+
 explicit_field_defs ->
-  field_def |
-  implicit: explicit_field_defs NEWLINES field_def |
-  explicit: explicit_field_defs COMMA field_def
+  proper: field_def terminal_explicit_field_defs |
+  improper_implicit: field_def terminal_explicit_field_defs NEWLINES |
+  improper_explicit: field_def terminal_explicit_field_defs COMMA
 
 optional_explicit_field_defs ->
   explicit_field_defs |
@@ -742,10 +759,15 @@ trait_property ->
   field_def |
   method_signature
 
+terminal_trait_properties ->
+  add_implicit: terminal_trait_properties NEWLINES trait_property |
+  add_explicit: terminal_trait_properties COMMA trait_property |
+  nil:
+
 trait_properties ->
-  trait_property |
-  implicit: trait_properties NEWLINES trait_property |
-  explicit: trait_properties COMMA trait_property
+  proper: trait_property terminal_trait_properties |
+  improper_implicit: trait_property terminal_trait_properties NEWLINES |
+  improper_explicit: trait_property terminal_trait_properties COMMA
 
 optional_trait_properties ->
   trait_properties |
@@ -768,9 +790,13 @@ parameter_decl ->
   unamed: value_type |
   unnamed_vararg: ELLIPSIS value_type
 
+comma_parameter_decls ->
+  add: comma_parameter_decls COMMA parameter_decl |
+  nil:
+
 parameter_decls ->
-  parameter_decl |
-  add: parameter_decls COMMA parameter_decl
+  proper: parameter_decl comma_parameter_decls |
+  improper: parameter_decl comma_parameter_decls COMMA
 
 optional_parameter_decls ->
   parameter_decls |
@@ -799,9 +825,13 @@ parameter_def ->
   arg: IDENTIFIER value_type |
   vararg: IDENTIFIER ELLIPSIS value_type
 
+comma_parameter_defs ->
+  add: comma_parameter_defs COMMA parameter_def |
+  nil:
+
 parameter_defs ->
-  parameter_def |
-  add: parameter_defs COMMA parameter_def
+  proper: parameter_def comma_parameter_defs |
+  improper: parameter_def comma_parameter_defs COMMA
 
 optional_parameter_defs ->
   parameter_defs |
