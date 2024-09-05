@@ -712,12 +712,22 @@ func (reducer *ArgumentListReducer) ProperToArguments(
 	*ArgumentList,
 	error,
 ) {
-	args.StartPos = arg.Loc()
+	if args == nil {
+		args = &ArgumentList{
+			StartPos:  arg.Loc(),
+			EndPos:    arg.End(),
+			Arguments: []*Argument{arg},
+		}
+		args.LeadingComment = arg.TakeLeading()
+		args.TrailingComment = arg.TakeTrailing()
+	} else {
+		args.StartPos = arg.Loc()
 
-	arg.AppendToTrailing(args.TakeLeading())
-	args.LeadingComment = arg.TakeLeading()
+		arg.AppendToTrailing(args.TakeLeading())
+		args.LeadingComment = arg.TakeLeading()
 
-	args.Arguments = append([]*Argument{arg}, args.Arguments...)
+		args.Arguments = append([]*Argument{arg}, args.Arguments...)
+	}
 
 	return args, nil
 }
