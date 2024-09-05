@@ -1,5 +1,9 @@
 package parser
 
+import (
+	"fmt"
+)
+
 const (
 	DecimalInteger            = "decimal integer literal"
 	HexadecimalInteger        = "hexadecimal integer literal"
@@ -20,6 +24,9 @@ type Node interface {
 	Loc() Location
 	End() Location
 
+	String() string
+	TreeString(indent string, label string) string
+
 	PrependToLeading(CommentGroups)
 	AppendToLeading(CommentGroups)
 
@@ -36,11 +43,14 @@ type Node interface {
 }
 
 type Expression interface {
+	Statement
 	Node
 	IsExpression()
 }
 
-type isExpression struct{}
+type isExpression struct {
+	isStatement
+}
 
 func (isExpression) IsExpression() {}
 
@@ -229,7 +239,16 @@ func (s ParseErrorSymbol) End() Location {
 }
 
 func (s ParseErrorSymbol) String() string {
-	return s.Error.Error() + " " + s.StartPos.String()
+	return s.TreeString("", "")
+}
+
+func (s ParseErrorSymbol) TreeString(indent string, label string) string {
+	return fmt.Sprintf(
+		"%s%s[ParseError: %s %s]",
+		indent,
+		label,
+		s.Error,
+		s.StartPos)
 }
 
 type ParseErrorReducer struct {

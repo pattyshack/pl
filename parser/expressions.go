@@ -1,5 +1,9 @@
 package parser
 
+import (
+	"fmt"
+)
+
 //
 // (Bool/Int/Float/Rune/String)LiteralExpr
 //
@@ -9,9 +13,25 @@ type BoolLiteralExpr struct {
 	TokenValue
 }
 
+func (expr BoolLiteralExpr) String() string {
+	return expr.TreeString("", "")
+}
+
+func (expr BoolLiteralExpr) TreeString(indent string, label string) string {
+	return fmt.Sprintf("%s%s[BoolLiteralExpr: %s]", indent, label, expr.Value)
+}
+
 type IntLiteralExpr struct {
 	isExpression
 	TokenValue
+}
+
+func (expr IntLiteralExpr) String() string {
+	return expr.TreeString("", "")
+}
+
+func (expr IntLiteralExpr) TreeString(indent string, label string) string {
+	return fmt.Sprintf("%s%s[IntLiteralExpr: %s]", indent, label, expr.Value)
 }
 
 type FloatLiteralExpr struct {
@@ -19,14 +39,38 @@ type FloatLiteralExpr struct {
 	TokenValue
 }
 
+func (expr FloatLiteralExpr) String() string {
+	return expr.TreeString("", "")
+}
+
+func (expr FloatLiteralExpr) TreeString(indent string, label string) string {
+	return fmt.Sprintf("%s%s[FloatLiteralExpr: %s]", indent, label, expr.Value)
+}
+
 type RuneLiteralExpr struct {
 	isExpression
 	TokenValue
 }
 
+func (expr RuneLiteralExpr) String() string {
+	return expr.TreeString("", "")
+}
+
+func (expr RuneLiteralExpr) TreeString(indent string, label string) string {
+	return fmt.Sprintf("%s%s[RuneLiteralExpr: %s]", indent, label, expr.Value)
+}
+
 type StringLiteralExpr struct {
 	isExpression
 	TokenValue
+}
+
+func (expr StringLiteralExpr) String() string {
+	return expr.TreeString("", "")
+}
+
+func (expr StringLiteralExpr) TreeString(indent string, label string) string {
+	return fmt.Sprintf("%s%s[StringLiteralExpr: %s]", indent, label, expr.Value)
 }
 
 type LiteralExprReducerImpl struct {
@@ -96,6 +140,14 @@ type IdentifierExpr struct {
 	TokenValue
 }
 
+func (expr IdentifierExpr) String() string {
+	return expr.TreeString("", "")
+}
+
+func (expr IdentifierExpr) TreeString(indent string, label string) string {
+	return fmt.Sprintf("%s%s[IdentifierExpr: %s]", indent, label, expr.Value)
+}
+
 type IdentifierExprReducerImpl struct {
 	IdentifierExprs []*IdentifierExpr
 }
@@ -132,6 +184,19 @@ func (expr *BinaryExpr) Loc() Location {
 
 func (expr *BinaryExpr) End() Location {
 	return expr.Right.End()
+}
+
+func (expr BinaryExpr) String() string {
+	return expr.TreeString("", "")
+}
+
+func (expr BinaryExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[BinaryExpr: Op=%s\n", indent, label, SymbolId(expr.Op))
+	result += expr.Left.TreeString(indent+"  ", "Left=") + "\n"
+	result += expr.Right.TreeString(indent+"  ", "Right=") + "\n"
+	result += fmt.Sprintf("%s]", indent)
+	return result
 }
 
 type BinaryExprReducer struct {
