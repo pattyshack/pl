@@ -163,6 +163,103 @@ func (reducer *IdentifierExprReducerImpl) ToIdentifierExpr(
 }
 
 //
+// UnaryExpr
+//
+
+// NOTE: The op's value is the same as the op's token symbol id.
+type UnaryOp SymbolId
+
+type UnaryExpr struct {
+	isExpression
+
+	StartPos Location
+	EndPos   Location
+	LeadingTrailingComments
+
+	IsPrefix bool
+
+	Op      UnaryOp
+	Operand Expression
+}
+
+func (expr UnaryExpr) Loc() Location {
+	return expr.StartPos
+}
+
+func (expr UnaryExpr) End() Location {
+	return expr.EndPos
+}
+
+func (expr UnaryExpr) String() string {
+	return expr.TreeString("", "")
+}
+
+func (expr UnaryExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[UnaryExpr: IsPrefix=%v Op=%s\n",
+		indent,
+		label,
+		expr.IsPrefix,
+		SymbolId(expr.Op))
+	result += expr.Operand.TreeString(indent+"  ", "Operand=") + "\n"
+	result += fmt.Sprintf("%s]", indent)
+	return result
+}
+
+type UnaryExprReducer struct {
+	UnaryExprs []*UnaryExpr
+}
+
+var _ PostfixUnaryExprReducer = &UnaryExprReducer{}
+var _ PrefixUnaryExprReducer = &UnaryExprReducer{}
+
+func (reducer *UnaryExprReducer) ToPostfixUnaryExpr(
+	operand Expression,
+	op TokenValue,
+) (
+	Expression,
+	error,
+) {
+	expr := &UnaryExpr{
+		StartPos: operand.Loc(),
+		EndPos:   op.End(),
+		IsPrefix: false,
+		Op:       UnaryOp(op.SymbolId),
+		Operand:  operand,
+	}
+
+	expr.LeadingComment = operand.TakeLeading()
+	operand.AppendToTrailing(op.TakeLeading())
+	expr.TrailingComment = op.TakeTrailing()
+
+	reducer.UnaryExprs = append(reducer.UnaryExprs, expr)
+	return expr, nil
+}
+
+func (reducer *UnaryExprReducer) ToPrefixUnaryExpr(
+	op TokenValue,
+	operand Expression,
+) (
+	Expression,
+	error,
+) {
+	expr := &UnaryExpr{
+		StartPos: op.Loc(),
+		EndPos:   operand.End(),
+		IsPrefix: true,
+		Op:       UnaryOp(op.SymbolId),
+		Operand:  operand,
+	}
+
+	expr.LeadingComment = op.TakeLeading()
+	operand.PrependToLeading(op.TakeTrailing())
+	expr.TrailingComment = operand.TakeTrailing()
+
+	reducer.UnaryExprs = append(reducer.UnaryExprs, expr)
+	return expr, nil
+}
+
+//
 // BinaryExpr
 //
 
@@ -178,11 +275,11 @@ type BinaryExpr struct {
 	Right Expression
 }
 
-func (expr *BinaryExpr) Loc() Location {
+func (expr BinaryExpr) Loc() Location {
 	return expr.Left.Loc()
 }
 
-func (expr *BinaryExpr) End() Location {
+func (expr BinaryExpr) End() Location {
 	return expr.Right.End()
 }
 
