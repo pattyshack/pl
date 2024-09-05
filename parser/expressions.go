@@ -109,3 +109,115 @@ func (reducer *IdentifierExprReducerImpl) ToIdentifierExpr(
 	reducer.IdentifierExprs = append(reducer.IdentifierExprs, expr)
 	return expr, nil
 }
+
+//
+// BinaryExpr
+//
+
+// NOTE: The op's value is the same as the op's token symbol id.
+type BinaryOp SymbolId
+
+type BinaryExpr struct {
+	isExpression
+	LeadingTrailingComments
+
+	Left  Expression
+	Op    BinaryOp
+	Right Expression
+}
+
+func (expr *BinaryExpr) Loc() Location {
+	return expr.Left.Loc()
+}
+
+func (expr *BinaryExpr) End() Location {
+	return expr.Right.End()
+}
+
+type BinaryExprReducer struct {
+	BinaryExprs []*BinaryExpr
+}
+
+var _ BinaryMulExprReducer = &BinaryExprReducer{}
+var _ BinaryAndExprReducer = &BinaryExprReducer{}
+var _ BinaryCmpExprReducer = &BinaryExprReducer{}
+var _ BinaryAndExprReducer = &BinaryExprReducer{}
+var _ BinaryOrExprReducer = &BinaryExprReducer{}
+
+func (reducer *BinaryExprReducer) toBinaryExpr(
+	left Expression,
+	op TokenValue,
+	right Expression,
+) (
+	Expression,
+	error,
+) {
+	expr := &BinaryExpr{
+		Left:  left,
+		Op:    BinaryOp(op.SymbolId),
+		Right: right,
+	}
+
+	expr.LeadingComment = left.TakeLeading()
+	left.AppendToTrailing(op.TakeLeading())
+	right.PrependToLeading(op.TakeTrailing())
+	expr.TrailingComment = right.TakeTrailing()
+
+	reducer.BinaryExprs = append(reducer.BinaryExprs, expr)
+	return expr, nil
+}
+
+func (reducer *BinaryExprReducer) ToBinaryMulExpr(
+	left Expression,
+	op TokenValue,
+	right Expression,
+) (
+	Expression,
+	error,
+) {
+	return reducer.toBinaryExpr(left, op, right)
+}
+
+func (reducer *BinaryExprReducer) ToBinaryAddExpr(
+	left Expression,
+	op TokenValue,
+	right Expression,
+) (
+	Expression,
+	error,
+) {
+	return reducer.toBinaryExpr(left, op, right)
+}
+
+func (reducer *BinaryExprReducer) ToBinaryCmpExpr(
+	left Expression,
+	op TokenValue,
+	right Expression,
+) (
+	Expression,
+	error,
+) {
+	return reducer.toBinaryExpr(left, op, right)
+}
+
+func (reducer *BinaryExprReducer) ToBinaryAndExpr(
+	left Expression,
+	op TokenValue,
+	right Expression,
+) (
+	Expression,
+	error,
+) {
+	return reducer.toBinaryExpr(left, op, right)
+}
+
+func (reducer *BinaryExprReducer) ToBinaryOrExpr(
+	left Expression,
+	op TokenValue,
+	right Expression,
+) (
+	Expression,
+	error,
+) {
+	return reducer.toBinaryExpr(left, op, right)
+}
