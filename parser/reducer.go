@@ -8,4 +8,6 @@ type ReducerImpl struct {
 	AccessExprReducerImpl
 	UnaryExprReducer
 	BinaryExprReducer
+
+	ArgumentReducerImpl
 }

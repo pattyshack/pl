@@ -509,441 +509,448 @@ type OptionalArgumentsReducer interface {
 
 type ArgumentsReducer interface {
 	// 441:2: arguments -> argument: ...
-	ArgumentToArguments(Argument_ GenericSymbol) (GenericSymbol, error)
+	ArgumentToArguments(Argument_ *Argument) (GenericSymbol, error)
 
 	// 442:2: arguments -> add: ...
-	AddToArguments(Arguments_ GenericSymbol, Comma_ TokenValue, Argument_ GenericSymbol) (GenericSymbol, error)
+	AddToArguments(Arguments_ GenericSymbol, Comma_ TokenValue, Argument_ *Argument) (GenericSymbol, error)
 }
 
 type ArgumentReducer interface {
 	// 445:2: argument -> positional: ...
-	PositionalToArgument(Expression_ Expression) (GenericSymbol, error)
+	PositionalToArgument(Expression_ Expression) (*Argument, error)
 
-	// 446:2: argument -> named: ...
-	NamedToArgument(Identifier_ TokenValue, Assign_ TokenValue, Expression_ Expression) (GenericSymbol, error)
+	// 446:2: argument -> colon_expr: ...
+	ColonExprToArgument(ColonExpr_ Expression) (*Argument, error)
 
-	// 447:2: argument -> colon_expressions: ...
-	ColonExpressionsToArgument(ColonExpressions_ GenericSymbol) (GenericSymbol, error)
+	// 447:2: argument -> named_assignment: ...
+	NamedAssignmentToArgument(Identifier_ TokenValue, Assign_ TokenValue, Expression_ Expression) (*Argument, error)
 
-	// 450:2: argument -> ELLIPSIS: ...
-	EllipsisToArgument(Ellipsis_ TokenValue) (GenericSymbol, error)
+	// 451:2: argument -> vararg_assignment: ...
+	VarargAssignmentToArgument(Expression_ Expression, Ellipsis_ TokenValue) (*Argument, error)
+
+	// 454:2: argument -> skip_pattern: ...
+	SkipPatternToArgument(Ellipsis_ TokenValue) (*Argument, error)
 }
 
-type ColonExpressionsReducer interface {
-	// 453:2: colon_expressions -> pair: ...
-	PairToColonExpressions(OptionalExpression_ Expression, Colon_ TokenValue, OptionalExpression_2 Expression) (GenericSymbol, error)
+type ColonExprReducer interface {
+	// 458:2: colon_expr -> unit_unit_pair: ...
+	UnitUnitPairToColonExpr(Colon_ TokenValue) (Expression, error)
 
-	// 454:2: colon_expressions -> add: ...
-	AddToColonExpressions(ColonExpressions_ GenericSymbol, Colon_ TokenValue, OptionalExpression_ Expression) (GenericSymbol, error)
-}
+	// 459:2: colon_expr -> expr_unit_pair: ...
+	ExprUnitPairToColonExpr(Expression_ Expression, Colon_ TokenValue) (Expression, error)
 
-type OptionalExpressionReducer interface {
-	// 457:2: optional_expression -> expression: ...
-	ExpressionToOptionalExpression(Expression_ Expression) (Expression, error)
+	// 460:2: colon_expr -> unit_expr_pair: ...
+	UnitExprPairToColonExpr(Colon_ TokenValue, Expression_ Expression) (Expression, error)
 
-	// 458:2: optional_expression -> nil: ...
-	NilToOptionalExpression() (Expression, error)
+	// 461:2: colon_expr -> expr_expr_pair: ...
+	ExprExprPairToColonExpr(Expression_ Expression, Colon_ TokenValue, Expression_2 Expression) (Expression, error)
+
+	// 462:2: colon_expr -> colon_expr_unit_tuple: ...
+	ColonExprUnitTupleToColonExpr(ColonExpr_ Expression, Colon_ TokenValue) (Expression, error)
+
+	// 463:2: colon_expr -> colon_expr_expr_tuple: ...
+	ColonExprExprTupleToColonExpr(ColonExpr_ Expression, Colon_ TokenValue, Expression_ Expression) (Expression, error)
 }
 
 type ParseErrorExprReducer interface {
-	// 477:32: parse_error_expr -> ...
+	// 482:32: parse_error_expr -> ...
 	ToParseErrorExpr(ParseError_ ParseErrorSymbol) (Expression, error)
 }
 
 type LiteralExprReducer interface {
-	// 480:2: literal_expr -> TRUE: ...
+	// 485:2: literal_expr -> TRUE: ...
 	TrueToLiteralExpr(True_ TokenValue) (Expression, error)
 
-	// 481:2: literal_expr -> FALSE: ...
+	// 486:2: literal_expr -> FALSE: ...
 	FalseToLiteralExpr(False_ TokenValue) (Expression, error)
 
-	// 482:2: literal_expr -> INTEGER_LITERAL: ...
+	// 487:2: literal_expr -> INTEGER_LITERAL: ...
 	IntegerLiteralToLiteralExpr(IntegerLiteral_ TokenValue) (Expression, error)
 
-	// 483:2: literal_expr -> FLOAT_LITERAL: ...
+	// 488:2: literal_expr -> FLOAT_LITERAL: ...
 	FloatLiteralToLiteralExpr(FloatLiteral_ TokenValue) (Expression, error)
 
-	// 484:2: literal_expr -> RUNE_LITERAL: ...
+	// 489:2: literal_expr -> RUNE_LITERAL: ...
 	RuneLiteralToLiteralExpr(RuneLiteral_ TokenValue) (Expression, error)
 
-	// 485:2: literal_expr -> STRING_LITERAL: ...
+	// 490:2: literal_expr -> STRING_LITERAL: ...
 	StringLiteralToLiteralExpr(StringLiteral_ TokenValue) (Expression, error)
 }
 
 type IdentifierExprReducer interface {
-	// 487:32: identifier_expr -> ...
+	// 492:32: identifier_expr -> ...
 	ToIdentifierExpr(Identifier_ TokenValue) (Expression, error)
 }
 
 type BlockExprReducer interface {
-	// 489:27: block_expr -> ...
+	// 494:27: block_expr -> ...
 	ToBlockExpr(OptionalLabelDecl_ TokenValue, StatementBlock_ GenericSymbol) (Expression, error)
 }
 
 type InitializeExprReducer interface {
-	// 492:2: initialize_expr -> ...
+	// 497:2: initialize_expr -> ...
 	ToInitializeExpr(InitializableType_ TypeExpression, Lparen_ TokenValue, OptionalArguments_ GenericSymbol, Rparen_ TokenValue) (Expression, error)
 }
 
 type ImplicitStructExprReducer interface {
-	// 494:36: implicit_struct_expr -> ...
+	// 499:36: implicit_struct_expr -> ...
 	ToImplicitStructExpr(Lparen_ TokenValue, OptionalArguments_ GenericSymbol, Rparen_ TokenValue) (Expression, error)
 }
 
 type AccessExprReducer interface {
-	// 502:27: access_expr -> ...
+	// 507:27: access_expr -> ...
 	ToAccessExpr(AccessibleExpr_ Expression, Dot_ TokenValue, Identifier_ TokenValue) (Expression, error)
 }
 
 type IndexExprReducer interface {
-	// 506:26: index_expr -> ...
-	ToIndexExpr(AccessibleExpr_ Expression, Lbracket_ TokenValue, Argument_ GenericSymbol, Rbracket_ TokenValue) (Expression, error)
+	// 511:26: index_expr -> ...
+	ToIndexExpr(AccessibleExpr_ Expression, Lbracket_ TokenValue, Argument_ *Argument, Rbracket_ TokenValue) (Expression, error)
 }
 
 type PostfixUnaryExprReducer interface {
-	// 512:35: postfix_unary_expr -> ...
+	// 517:35: postfix_unary_expr -> ...
 	ToPostfixUnaryExpr(AccessibleExpr_ Expression, Question_ TokenValue) (Expression, error)
 }
 
 type PrefixUnaryExprReducer interface {
-	// 518:33: prefix_unary_expr -> ...
+	// 523:33: prefix_unary_expr -> ...
 	ToPrefixUnaryExpr(PrefixUnaryOp_ TokenValue, PrefixableExpr_ Expression) (Expression, error)
 }
 
 type BinaryMulExprReducer interface {
-	// 535:31: binary_mul_expr -> ...
+	// 540:31: binary_mul_expr -> ...
 	ToBinaryMulExpr(MulExpr_ Expression, MulOp_ TokenValue, PrefixableExpr_ Expression) (Expression, error)
 }
 
 type BinaryAddExprReducer interface {
-	// 549:31: binary_add_expr -> ...
+	// 554:31: binary_add_expr -> ...
 	ToBinaryAddExpr(AddExpr_ Expression, AddOp_ TokenValue, MulExpr_ Expression) (Expression, error)
 }
 
 type BinaryCmpExprReducer interface {
-	// 561:31: binary_cmp_expr -> ...
+	// 566:31: binary_cmp_expr -> ...
 	ToBinaryCmpExpr(CmpExpr_ Expression, CmpOp_ TokenValue, AddExpr_ Expression) (Expression, error)
 }
 
 type BinaryAndExprReducer interface {
-	// 575:31: binary_and_expr -> ...
+	// 580:31: binary_and_expr -> ...
 	ToBinaryAndExpr(AndExpr_ Expression, And_ TokenValue, CmpExpr_ Expression) (Expression, error)
 }
 
 type BinaryOrExprReducer interface {
-	// 581:30: binary_or_expr -> ...
+	// 586:30: binary_or_expr -> ...
 	ToBinaryOrExpr(OrExpr_ Expression, Or_ TokenValue, AndExpr_ Expression) (Expression, error)
 }
 
 type InitializableTypeReducer interface {
 
-	// 591:2: initializable_type -> slice: ...
+	// 596:2: initializable_type -> slice: ...
 	SliceToInitializableType(Lbracket_ TokenValue, ValueType_ TypeExpression, Rbracket_ TokenValue) (TypeExpression, error)
 
-	// 592:2: initializable_type -> array: ...
+	// 597:2: initializable_type -> array: ...
 	ArrayToInitializableType(Lbracket_ TokenValue, ValueType_ TypeExpression, Comma_ TokenValue, IntegerLiteral_ TokenValue, Rbracket_ TokenValue) (TypeExpression, error)
 
-	// 593:2: initializable_type -> map: ...
+	// 598:2: initializable_type -> map: ...
 	MapToInitializableType(Lbracket_ TokenValue, ValueType_ TypeExpression, Colon_ TokenValue, ValueType_2 TypeExpression, Rbracket_ TokenValue) (TypeExpression, error)
 }
 
 type AtomTypeReducer interface {
 
-	// 597:2: atom_type -> named: ...
+	// 602:2: atom_type -> named: ...
 	NamedToAtomType(Identifier_ TokenValue, OptionalGenericBinding_ GenericSymbol) (TypeExpression, error)
 
-	// 598:2: atom_type -> extern_named: ...
+	// 603:2: atom_type -> extern_named: ...
 	ExternNamedToAtomType(Identifier_ TokenValue, Dot_ TokenValue, Identifier_2 TokenValue, OptionalGenericBinding_ GenericSymbol) (TypeExpression, error)
 
-	// 599:2: atom_type -> inferred: ...
+	// 604:2: atom_type -> inferred: ...
 	InferredToAtomType(Dot_ TokenValue, OptionalGenericBinding_ GenericSymbol) (TypeExpression, error)
 }
 
 type ParseErrorTypeReducer interface {
-	// 607:36: parse_error_type -> ...
+	// 612:36: parse_error_type -> ...
 	ToParseErrorType(ParseError_ ParseErrorSymbol) (TypeExpression, error)
 }
 
 type PrefixedTypeReducer interface {
-	// 616:33: prefixed_type -> ...
+	// 621:33: prefixed_type -> ...
 	ToPrefixedType(PrefixTypeOp_ TokenValue, ReturnableType_ TypeExpression) (TypeExpression, error)
 }
 
 type TraitOpTypeReducer interface {
-	// 631:33: trait_op_type -> ...
+	// 636:33: trait_op_type -> ...
 	ToTraitOpType(ValueType_ TypeExpression, TraitOp_ TokenValue, ReturnableType_ TypeExpression) (TypeExpression, error)
 }
 
 type TypeDefReducer interface {
-	// 639:2: type_def -> definition: ...
+	// 644:2: type_def -> definition: ...
 	DefinitionToTypeDef(Type_ TokenValue, Identifier_ TokenValue, OptionalGenericParameters_ GenericSymbol, ValueType_ TypeExpression) (SourceDefinition, error)
 
-	// 640:2: type_def -> constrained_def: ...
+	// 645:2: type_def -> constrained_def: ...
 	ConstrainedDefToTypeDef(Type_ TokenValue, Identifier_ TokenValue, OptionalGenericParameters_ GenericSymbol, ValueType_ TypeExpression, Implements_ TokenValue, ValueType_2 TypeExpression) (SourceDefinition, error)
 
-	// 641:2: type_def -> alias: ...
+	// 646:2: type_def -> alias: ...
 	AliasToTypeDef(Type_ TokenValue, Identifier_ TokenValue, Assign_ TokenValue, ValueType_ TypeExpression) (SourceDefinition, error)
 }
 
 type GenericParameterDefReducer interface {
-	// 649:2: generic_parameter_def -> unconstrained: ...
+	// 654:2: generic_parameter_def -> unconstrained: ...
 	UnconstrainedToGenericParameterDef(Identifier_ TokenValue) (GenericSymbol, error)
 
-	// 650:2: generic_parameter_def -> constrained: ...
+	// 655:2: generic_parameter_def -> constrained: ...
 	ConstrainedToGenericParameterDef(Identifier_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 }
 
 type GenericParameterDefsReducer interface {
-	// 653:2: generic_parameter_defs -> generic_parameter_def: ...
+	// 658:2: generic_parameter_defs -> generic_parameter_def: ...
 	GenericParameterDefToGenericParameterDefs(GenericParameterDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 654:2: generic_parameter_defs -> add: ...
+	// 659:2: generic_parameter_defs -> add: ...
 	AddToGenericParameterDefs(GenericParameterDefs_ GenericSymbol, Comma_ TokenValue, GenericParameterDef_ GenericSymbol) (GenericSymbol, error)
 }
 
 type OptionalGenericParameterDefsReducer interface {
-	// 657:2: optional_generic_parameter_defs -> generic_parameter_defs: ...
+	// 662:2: optional_generic_parameter_defs -> generic_parameter_defs: ...
 	GenericParameterDefsToOptionalGenericParameterDefs(GenericParameterDefs_ GenericSymbol) (GenericSymbol, error)
 
-	// 658:2: optional_generic_parameter_defs -> nil: ...
+	// 663:2: optional_generic_parameter_defs -> nil: ...
 	NilToOptionalGenericParameterDefs() (GenericSymbol, error)
 }
 
 type OptionalGenericParametersReducer interface {
-	// 661:2: optional_generic_parameters -> generic: ...
+	// 666:2: optional_generic_parameters -> generic: ...
 	GenericToOptionalGenericParameters(DollarLbracket_ TokenValue, OptionalGenericParameterDefs_ GenericSymbol, Rbracket_ TokenValue) (GenericSymbol, error)
 
-	// 662:2: optional_generic_parameters -> nil: ...
+	// 667:2: optional_generic_parameters -> nil: ...
 	NilToOptionalGenericParameters() (GenericSymbol, error)
 }
 
 type FieldDefReducer interface {
-	// 669:2: field_def -> explicit: ...
+	// 674:2: field_def -> explicit: ...
 	ExplicitToFieldDef(Identifier_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 
-	// 670:2: field_def -> implicit: ...
+	// 675:2: field_def -> implicit: ...
 	ImplicitToFieldDef(ValueType_ TypeExpression) (GenericSymbol, error)
 
-	// 671:2: field_def -> unsafe_statement: ...
+	// 676:2: field_def -> unsafe_statement: ...
 	UnsafeStatementToFieldDef(UnsafeStatement_ Statement) (GenericSymbol, error)
 }
 
 type ImplicitFieldDefsReducer interface {
-	// 674:2: implicit_field_defs -> field_def: ...
+	// 679:2: implicit_field_defs -> field_def: ...
 	FieldDefToImplicitFieldDefs(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 675:2: implicit_field_defs -> add: ...
+	// 680:2: implicit_field_defs -> add: ...
 	AddToImplicitFieldDefs(ImplicitFieldDefs_ GenericSymbol, Comma_ TokenValue, FieldDef_ GenericSymbol) (GenericSymbol, error)
 }
 
 type OptionalImplicitFieldDefsReducer interface {
-	// 678:2: optional_implicit_field_defs -> implicit_field_defs: ...
+	// 683:2: optional_implicit_field_defs -> implicit_field_defs: ...
 	ImplicitFieldDefsToOptionalImplicitFieldDefs(ImplicitFieldDefs_ GenericSymbol) (GenericSymbol, error)
 
-	// 679:2: optional_implicit_field_defs -> nil: ...
+	// 684:2: optional_implicit_field_defs -> nil: ...
 	NilToOptionalImplicitFieldDefs() (GenericSymbol, error)
 }
 
 type ImplicitStructDefReducer interface {
-	// 682:2: implicit_struct_def -> ...
+	// 687:2: implicit_struct_def -> ...
 	ToImplicitStructDef(Lparen_ TokenValue, OptionalImplicitFieldDefs_ GenericSymbol, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type ExplicitFieldDefsReducer interface {
-	// 685:2: explicit_field_defs -> field_def: ...
+	// 690:2: explicit_field_defs -> field_def: ...
 	FieldDefToExplicitFieldDefs(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 686:2: explicit_field_defs -> implicit: ...
+	// 691:2: explicit_field_defs -> implicit: ...
 	ImplicitToExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol, Newlines_ TokenCount, FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 687:2: explicit_field_defs -> explicit: ...
+	// 692:2: explicit_field_defs -> explicit: ...
 	ExplicitToExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol, Comma_ TokenValue, FieldDef_ GenericSymbol) (GenericSymbol, error)
 }
 
 type OptionalExplicitFieldDefsReducer interface {
-	// 690:2: optional_explicit_field_defs -> explicit_field_defs: ...
+	// 695:2: optional_explicit_field_defs -> explicit_field_defs: ...
 	ExplicitFieldDefsToOptionalExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol) (GenericSymbol, error)
 
-	// 691:2: optional_explicit_field_defs -> nil: ...
+	// 696:2: optional_explicit_field_defs -> nil: ...
 	NilToOptionalExplicitFieldDefs() (GenericSymbol, error)
 }
 
 type ExplicitStructDefReducer interface {
-	// 694:2: explicit_struct_def -> ...
+	// 699:2: explicit_struct_def -> ...
 	ToExplicitStructDef(Struct_ TokenValue, Lparen_ TokenValue, OptionalExplicitFieldDefs_ GenericSymbol, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type EnumValueDefReducer interface {
-	// 702:2: enum_value_def -> field_def: ...
+	// 707:2: enum_value_def -> field_def: ...
 	FieldDefToEnumValueDef(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 703:2: enum_value_def -> default: ...
+	// 708:2: enum_value_def -> default: ...
 	DefaultToEnumValueDef(FieldDef_ GenericSymbol, Assign_ TokenValue, Default_ TokenValue) (GenericSymbol, error)
 }
 
 type ImplicitEnumValueDefsReducer interface {
-	// 715:2: implicit_enum_value_defs -> pair: ...
+	// 720:2: implicit_enum_value_defs -> pair: ...
 	PairToImplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Or_ TokenValue, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
-	// 716:2: implicit_enum_value_defs -> add: ...
+	// 721:2: implicit_enum_value_defs -> add: ...
 	AddToImplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Or_ TokenValue, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 }
 
 type ImplicitEnumDefReducer interface {
-	// 718:37: implicit_enum_def -> ...
+	// 723:37: implicit_enum_def -> ...
 	ToImplicitEnumDef(Lparen_ TokenValue, ImplicitEnumValueDefs_ GenericSymbol, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type ExplicitEnumValueDefsReducer interface {
-	// 721:2: explicit_enum_value_defs -> explicit_pair: ...
+	// 726:2: explicit_enum_value_defs -> explicit_pair: ...
 	ExplicitPairToExplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Or_ TokenValue, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
-	// 722:2: explicit_enum_value_defs -> implicit_pair: ...
+	// 727:2: explicit_enum_value_defs -> implicit_pair: ...
 	ImplicitPairToExplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Newlines_ TokenCount, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
-	// 723:2: explicit_enum_value_defs -> explicit_add: ...
+	// 728:2: explicit_enum_value_defs -> explicit_add: ...
 	ExplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Or_ TokenValue, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 724:2: explicit_enum_value_defs -> implicit_add: ...
+	// 729:2: explicit_enum_value_defs -> implicit_add: ...
 	ImplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Newlines_ TokenCount, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 }
 
 type ExplicitEnumDefReducer interface {
-	// 726:37: explicit_enum_def -> ...
+	// 731:37: explicit_enum_def -> ...
 	ToExplicitEnumDef(Enum_ TokenValue, Lparen_ TokenValue, ExplicitEnumValueDefs_ GenericSymbol, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type TraitPropertyReducer interface {
-	// 733:2: trait_property -> field_def: ...
+	// 738:2: trait_property -> field_def: ...
 	FieldDefToTraitProperty(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 734:2: trait_property -> method_signature: ...
+	// 739:2: trait_property -> method_signature: ...
 	MethodSignatureToTraitProperty(MethodSignature_ GenericSymbol) (GenericSymbol, error)
 }
 
 type TraitPropertiesReducer interface {
-	// 737:2: trait_properties -> trait_property: ...
+	// 742:2: trait_properties -> trait_property: ...
 	TraitPropertyToTraitProperties(TraitProperty_ GenericSymbol) (GenericSymbol, error)
 
-	// 738:2: trait_properties -> implicit: ...
+	// 743:2: trait_properties -> implicit: ...
 	ImplicitToTraitProperties(TraitProperties_ GenericSymbol, Newlines_ TokenCount, TraitProperty_ GenericSymbol) (GenericSymbol, error)
 
-	// 739:2: trait_properties -> explicit: ...
+	// 744:2: trait_properties -> explicit: ...
 	ExplicitToTraitProperties(TraitProperties_ GenericSymbol, Comma_ TokenValue, TraitProperty_ GenericSymbol) (GenericSymbol, error)
 }
 
 type OptionalTraitPropertiesReducer interface {
-	// 742:2: optional_trait_properties -> trait_properties: ...
+	// 747:2: optional_trait_properties -> trait_properties: ...
 	TraitPropertiesToOptionalTraitProperties(TraitProperties_ GenericSymbol) (GenericSymbol, error)
 
-	// 743:2: optional_trait_properties -> nil: ...
+	// 748:2: optional_trait_properties -> nil: ...
 	NilToOptionalTraitProperties() (GenericSymbol, error)
 }
 
 type TraitDefReducer interface {
-	// 745:29: trait_def -> ...
+	// 750:29: trait_def -> ...
 	ToTraitDef(Trait_ TokenValue, Lparen_ TokenValue, OptionalTraitProperties_ GenericSymbol, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type ReturnTypeReducer interface {
-	// 753:2: return_type -> returnable_type: ...
+	// 758:2: return_type -> returnable_type: ...
 	ReturnableTypeToReturnType(ReturnableType_ TypeExpression) (TypeExpression, error)
 
-	// 754:2: return_type -> nil: ...
+	// 759:2: return_type -> nil: ...
 	NilToReturnType() (TypeExpression, error)
 }
 
 type ParameterDeclReducer interface {
-	// 757:2: parameter_decl -> arg: ...
+	// 762:2: parameter_decl -> arg: ...
 	ArgToParameterDecl(Identifier_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 
-	// 758:2: parameter_decl -> vararg: ...
+	// 763:2: parameter_decl -> vararg: ...
 	VarargToParameterDecl(Identifier_ TokenValue, Ellipsis_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 
-	// 759:2: parameter_decl -> unamed: ...
+	// 764:2: parameter_decl -> unamed: ...
 	UnamedToParameterDecl(ValueType_ TypeExpression) (GenericSymbol, error)
 
-	// 760:2: parameter_decl -> unnamed_vararg: ...
+	// 765:2: parameter_decl -> unnamed_vararg: ...
 	UnnamedVarargToParameterDecl(Ellipsis_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 }
 
 type ParameterDeclsReducer interface {
-	// 763:2: parameter_decls -> parameter_decl: ...
+	// 768:2: parameter_decls -> parameter_decl: ...
 	ParameterDeclToParameterDecls(ParameterDecl_ GenericSymbol) (GenericSymbol, error)
 
-	// 764:2: parameter_decls -> add: ...
+	// 769:2: parameter_decls -> add: ...
 	AddToParameterDecls(ParameterDecls_ GenericSymbol, Comma_ TokenValue, ParameterDecl_ GenericSymbol) (GenericSymbol, error)
 }
 
 type OptionalParameterDeclsReducer interface {
-	// 767:2: optional_parameter_decls -> parameter_decls: ...
+	// 772:2: optional_parameter_decls -> parameter_decls: ...
 	ParameterDeclsToOptionalParameterDecls(ParameterDecls_ GenericSymbol) (GenericSymbol, error)
 
-	// 768:2: optional_parameter_decls -> nil: ...
+	// 773:2: optional_parameter_decls -> nil: ...
 	NilToOptionalParameterDecls() (GenericSymbol, error)
 }
 
 type FuncTypeReducer interface {
-	// 771:2: func_type -> ...
+	// 776:2: func_type -> ...
 	ToFuncType(Func_ TokenValue, Lparen_ TokenValue, OptionalParameterDecls_ GenericSymbol, Rparen_ TokenValue, ReturnType_ TypeExpression) (TypeExpression, error)
 }
 
 type MethodSignatureReducer interface {
-	// 782:20: method_signature -> ...
+	// 787:20: method_signature -> ...
 	ToMethodSignature(Func_ TokenValue, Identifier_ TokenValue, Lparen_ TokenValue, OptionalParameterDecls_ GenericSymbol, Rparen_ TokenValue, ReturnType_ TypeExpression) (GenericSymbol, error)
 }
 
 type ParameterDefReducer interface {
-	// 788:2: parameter_def -> inferred_ref_arg: ...
+	// 793:2: parameter_def -> inferred_ref_arg: ...
 	InferredRefArgToParameterDef(Identifier_ TokenValue) (GenericSymbol, error)
 
-	// 789:2: parameter_def -> inferred_ref_vararg: ...
+	// 794:2: parameter_def -> inferred_ref_vararg: ...
 	InferredRefVarargToParameterDef(Identifier_ TokenValue, Ellipsis_ TokenValue) (GenericSymbol, error)
 
-	// 790:2: parameter_def -> arg: ...
+	// 795:2: parameter_def -> arg: ...
 	ArgToParameterDef(Identifier_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 
-	// 791:2: parameter_def -> vararg: ...
+	// 796:2: parameter_def -> vararg: ...
 	VarargToParameterDef(Identifier_ TokenValue, Ellipsis_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 }
 
 type ParameterDefsReducer interface {
-	// 794:2: parameter_defs -> parameter_def: ...
+	// 799:2: parameter_defs -> parameter_def: ...
 	ParameterDefToParameterDefs(ParameterDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 795:2: parameter_defs -> add: ...
+	// 800:2: parameter_defs -> add: ...
 	AddToParameterDefs(ParameterDefs_ GenericSymbol, Comma_ TokenValue, ParameterDef_ GenericSymbol) (GenericSymbol, error)
 }
 
 type OptionalParameterDefsReducer interface {
-	// 798:2: optional_parameter_defs -> parameter_defs: ...
+	// 803:2: optional_parameter_defs -> parameter_defs: ...
 	ParameterDefsToOptionalParameterDefs(ParameterDefs_ GenericSymbol) (GenericSymbol, error)
 
-	// 799:2: optional_parameter_defs -> nil: ...
+	// 804:2: optional_parameter_defs -> nil: ...
 	NilToOptionalParameterDefs() (GenericSymbol, error)
 }
 
 type NamedFuncDefReducer interface {
-	// 802:2: named_func_def -> func_def: ...
+	// 807:2: named_func_def -> func_def: ...
 	FuncDefToNamedFuncDef(Func_ TokenValue, Identifier_ TokenValue, OptionalGenericParameters_ GenericSymbol, Lparen_ TokenValue, OptionalParameterDefs_ GenericSymbol, Rparen_ TokenValue, ReturnType_ TypeExpression, StatementBlock_ GenericSymbol) (SourceDefinition, error)
 
-	// 803:2: named_func_def -> method_def: ...
+	// 808:2: named_func_def -> method_def: ...
 	MethodDefToNamedFuncDef(Func_ TokenValue, Lparen_ TokenValue, ParameterDef_ GenericSymbol, Rparen_ TokenValue, Identifier_ TokenValue, OptionalGenericParameters_ GenericSymbol, Lparen_2 TokenValue, OptionalParameterDefs_ GenericSymbol, Rparen_2 TokenValue, ReturnType_ TypeExpression, StatementBlock_ GenericSymbol) (SourceDefinition, error)
 
-	// 804:2: named_func_def -> alias: ...
+	// 809:2: named_func_def -> alias: ...
 	AliasToNamedFuncDef(Func_ TokenValue, Identifier_ TokenValue, Assign_ TokenValue, Expression_ Expression) (SourceDefinition, error)
 }
 
 type AnonymousFuncExprReducer interface {
-	// 808:2: anonymous_func_expr -> ...
+	// 813:2: anonymous_func_expr -> ...
 	ToAnonymousFuncExpr(Func_ TokenValue, Lparen_ TokenValue, OptionalParameterDefs_ GenericSymbol, Rparen_ TokenValue, ReturnType_ TypeExpression, StatementBlock_ GenericSymbol) (Expression, error)
 }
 
 type PackageDefReducer interface {
-	// 820:2: package_def -> no_spec: ...
+	// 825:2: package_def -> no_spec: ...
 	NoSpecToPackageDef(Package_ TokenValue) (SourceDefinition, error)
 
-	// 821:2: package_def -> with_spec: ...
+	// 826:2: package_def -> with_spec: ...
 	WithSpecToPackageDef(Package_ TokenValue, StatementBlock_ GenericSymbol) (SourceDefinition, error)
 }
 
@@ -996,8 +1003,7 @@ type Reducer interface {
 	OptionalArgumentsReducer
 	ArgumentsReducer
 	ArgumentReducer
-	ColonExpressionsReducer
-	OptionalExpressionReducer
+	ColonExprReducer
 	ParseErrorExprReducer
 	LiteralExprReducer
 	IdentifierExprReducer
@@ -1545,10 +1551,8 @@ func (i SymbolId) String() string {
 		return "arguments"
 	case ArgumentType:
 		return "argument"
-	case ColonExpressionsType:
-		return "colon_expressions"
-	case OptionalExpressionType:
-		return "optional_expression"
+	case ColonExprType:
+		return "colon_expr"
 	case AtomExprType:
 		return "atom_expr"
 	case ParseErrorExprType:
@@ -1752,78 +1756,77 @@ const (
 	OptionalArgumentsType                   = SymbolId(394)
 	ArgumentsType                           = SymbolId(395)
 	ArgumentType                            = SymbolId(396)
-	ColonExpressionsType                    = SymbolId(397)
-	OptionalExpressionType                  = SymbolId(398)
-	AtomExprType                            = SymbolId(399)
-	ParseErrorExprType                      = SymbolId(400)
-	LiteralExprType                         = SymbolId(401)
-	IdentifierExprType                      = SymbolId(402)
-	BlockExprType                           = SymbolId(403)
-	InitializeExprType                      = SymbolId(404)
-	ImplicitStructExprType                  = SymbolId(405)
-	AccessibleExprType                      = SymbolId(406)
-	AccessExprType                          = SymbolId(407)
-	IndexExprType                           = SymbolId(408)
-	PostfixableExprType                     = SymbolId(409)
-	PostfixUnaryExprType                    = SymbolId(410)
-	PrefixableExprType                      = SymbolId(411)
-	PrefixUnaryExprType                     = SymbolId(412)
-	PrefixUnaryOpType                       = SymbolId(413)
-	MulExprType                             = SymbolId(414)
-	BinaryMulExprType                       = SymbolId(415)
-	MulOpType                               = SymbolId(416)
-	AddExprType                             = SymbolId(417)
-	BinaryAddExprType                       = SymbolId(418)
-	AddOpType                               = SymbolId(419)
-	CmpExprType                             = SymbolId(420)
-	BinaryCmpExprType                       = SymbolId(421)
-	CmpOpType                               = SymbolId(422)
-	AndExprType                             = SymbolId(423)
-	BinaryAndExprType                       = SymbolId(424)
-	OrExprType                              = SymbolId(425)
-	BinaryOrExprType                        = SymbolId(426)
-	InitializableTypeType                   = SymbolId(427)
-	AtomTypeType                            = SymbolId(428)
-	ParseErrorTypeType                      = SymbolId(429)
-	ReturnableTypeType                      = SymbolId(430)
-	PrefixedTypeType                        = SymbolId(431)
-	PrefixTypeOpType                        = SymbolId(432)
-	ValueTypeType                           = SymbolId(433)
-	TraitOpTypeType                         = SymbolId(434)
-	TraitOpType                             = SymbolId(435)
-	TypeDefType                             = SymbolId(436)
-	GenericParameterDefType                 = SymbolId(437)
-	GenericParameterDefsType                = SymbolId(438)
-	OptionalGenericParameterDefsType        = SymbolId(439)
-	OptionalGenericParametersType           = SymbolId(440)
-	FieldDefType                            = SymbolId(441)
-	ImplicitFieldDefsType                   = SymbolId(442)
-	OptionalImplicitFieldDefsType           = SymbolId(443)
-	ImplicitStructDefType                   = SymbolId(444)
-	ExplicitFieldDefsType                   = SymbolId(445)
-	OptionalExplicitFieldDefsType           = SymbolId(446)
-	ExplicitStructDefType                   = SymbolId(447)
-	EnumValueDefType                        = SymbolId(448)
-	ImplicitEnumValueDefsType               = SymbolId(449)
-	ImplicitEnumDefType                     = SymbolId(450)
-	ExplicitEnumValueDefsType               = SymbolId(451)
-	ExplicitEnumDefType                     = SymbolId(452)
-	TraitPropertyType                       = SymbolId(453)
-	TraitPropertiesType                     = SymbolId(454)
-	OptionalTraitPropertiesType             = SymbolId(455)
-	TraitDefType                            = SymbolId(456)
-	ReturnTypeType                          = SymbolId(457)
-	ParameterDeclType                       = SymbolId(458)
-	ParameterDeclsType                      = SymbolId(459)
-	OptionalParameterDeclsType              = SymbolId(460)
-	FuncTypeType                            = SymbolId(461)
-	MethodSignatureType                     = SymbolId(462)
-	ParameterDefType                        = SymbolId(463)
-	ParameterDefsType                       = SymbolId(464)
-	OptionalParameterDefsType               = SymbolId(465)
-	NamedFuncDefType                        = SymbolId(466)
-	AnonymousFuncExprType                   = SymbolId(467)
-	PackageDefType                          = SymbolId(468)
+	ColonExprType                           = SymbolId(397)
+	AtomExprType                            = SymbolId(398)
+	ParseErrorExprType                      = SymbolId(399)
+	LiteralExprType                         = SymbolId(400)
+	IdentifierExprType                      = SymbolId(401)
+	BlockExprType                           = SymbolId(402)
+	InitializeExprType                      = SymbolId(403)
+	ImplicitStructExprType                  = SymbolId(404)
+	AccessibleExprType                      = SymbolId(405)
+	AccessExprType                          = SymbolId(406)
+	IndexExprType                           = SymbolId(407)
+	PostfixableExprType                     = SymbolId(408)
+	PostfixUnaryExprType                    = SymbolId(409)
+	PrefixableExprType                      = SymbolId(410)
+	PrefixUnaryExprType                     = SymbolId(411)
+	PrefixUnaryOpType                       = SymbolId(412)
+	MulExprType                             = SymbolId(413)
+	BinaryMulExprType                       = SymbolId(414)
+	MulOpType                               = SymbolId(415)
+	AddExprType                             = SymbolId(416)
+	BinaryAddExprType                       = SymbolId(417)
+	AddOpType                               = SymbolId(418)
+	CmpExprType                             = SymbolId(419)
+	BinaryCmpExprType                       = SymbolId(420)
+	CmpOpType                               = SymbolId(421)
+	AndExprType                             = SymbolId(422)
+	BinaryAndExprType                       = SymbolId(423)
+	OrExprType                              = SymbolId(424)
+	BinaryOrExprType                        = SymbolId(425)
+	InitializableTypeType                   = SymbolId(426)
+	AtomTypeType                            = SymbolId(427)
+	ParseErrorTypeType                      = SymbolId(428)
+	ReturnableTypeType                      = SymbolId(429)
+	PrefixedTypeType                        = SymbolId(430)
+	PrefixTypeOpType                        = SymbolId(431)
+	ValueTypeType                           = SymbolId(432)
+	TraitOpTypeType                         = SymbolId(433)
+	TraitOpType                             = SymbolId(434)
+	TypeDefType                             = SymbolId(435)
+	GenericParameterDefType                 = SymbolId(436)
+	GenericParameterDefsType                = SymbolId(437)
+	OptionalGenericParameterDefsType        = SymbolId(438)
+	OptionalGenericParametersType           = SymbolId(439)
+	FieldDefType                            = SymbolId(440)
+	ImplicitFieldDefsType                   = SymbolId(441)
+	OptionalImplicitFieldDefsType           = SymbolId(442)
+	ImplicitStructDefType                   = SymbolId(443)
+	ExplicitFieldDefsType                   = SymbolId(444)
+	OptionalExplicitFieldDefsType           = SymbolId(445)
+	ExplicitStructDefType                   = SymbolId(446)
+	EnumValueDefType                        = SymbolId(447)
+	ImplicitEnumValueDefsType               = SymbolId(448)
+	ImplicitEnumDefType                     = SymbolId(449)
+	ExplicitEnumValueDefsType               = SymbolId(450)
+	ExplicitEnumDefType                     = SymbolId(451)
+	TraitPropertyType                       = SymbolId(452)
+	TraitPropertiesType                     = SymbolId(453)
+	OptionalTraitPropertiesType             = SymbolId(454)
+	TraitDefType                            = SymbolId(455)
+	ReturnTypeType                          = SymbolId(456)
+	ParameterDeclType                       = SymbolId(457)
+	ParameterDeclsType                      = SymbolId(458)
+	OptionalParameterDeclsType              = SymbolId(459)
+	FuncTypeType                            = SymbolId(460)
+	MethodSignatureType                     = SymbolId(461)
+	ParameterDefType                        = SymbolId(462)
+	ParameterDefsType                       = SymbolId(463)
+	OptionalParameterDefsType               = SymbolId(464)
+	NamedFuncDefType                        = SymbolId(465)
+	AnonymousFuncExprType                   = SymbolId(466)
+	PackageDefType                          = SymbolId(467)
 )
 
 type _ActionType int
@@ -1979,177 +1982,180 @@ const (
 	_ReduceArgumentToArguments                                      = _ReduceType(126)
 	_ReduceAddToArguments                                           = _ReduceType(127)
 	_ReducePositionalToArgument                                     = _ReduceType(128)
-	_ReduceNamedToArgument                                          = _ReduceType(129)
-	_ReduceColonExpressionsToArgument                               = _ReduceType(130)
-	_ReduceEllipsisToArgument                                       = _ReduceType(131)
-	_ReducePairToColonExpressions                                   = _ReduceType(132)
-	_ReduceAddToColonExpressions                                    = _ReduceType(133)
-	_ReduceExpressionToOptionalExpression                           = _ReduceType(134)
-	_ReduceNilToOptionalExpression                                  = _ReduceType(135)
-	_ReduceParseErrorExprToAtomExpr                                 = _ReduceType(136)
-	_ReduceLiteralExprToAtomExpr                                    = _ReduceType(137)
-	_ReduceIdentifierExprToAtomExpr                                 = _ReduceType(138)
-	_ReduceBlockExprToAtomExpr                                      = _ReduceType(139)
-	_ReduceAnonymousFuncExprToAtomExpr                              = _ReduceType(140)
-	_ReduceInitializeExprToAtomExpr                                 = _ReduceType(141)
-	_ReduceImplicitStructExprToAtomExpr                             = _ReduceType(142)
-	_ReduceToParseErrorExpr                                         = _ReduceType(143)
-	_ReduceTrueToLiteralExpr                                        = _ReduceType(144)
-	_ReduceFalseToLiteralExpr                                       = _ReduceType(145)
-	_ReduceIntegerLiteralToLiteralExpr                              = _ReduceType(146)
-	_ReduceFloatLiteralToLiteralExpr                                = _ReduceType(147)
-	_ReduceRuneLiteralToLiteralExpr                                 = _ReduceType(148)
-	_ReduceStringLiteralToLiteralExpr                               = _ReduceType(149)
-	_ReduceToIdentifierExpr                                         = _ReduceType(150)
-	_ReduceToBlockExpr                                              = _ReduceType(151)
-	_ReduceToInitializeExpr                                         = _ReduceType(152)
-	_ReduceToImplicitStructExpr                                     = _ReduceType(153)
-	_ReduceAtomExprToAccessibleExpr                                 = _ReduceType(154)
-	_ReduceAccessExprToAccessibleExpr                               = _ReduceType(155)
-	_ReduceCallExprToAccessibleExpr                                 = _ReduceType(156)
-	_ReduceIndexExprToAccessibleExpr                                = _ReduceType(157)
-	_ReduceToAccessExpr                                             = _ReduceType(158)
-	_ReduceToIndexExpr                                              = _ReduceType(159)
-	_ReduceAccessibleExprToPostfixableExpr                          = _ReduceType(160)
-	_ReducePostfixUnaryExprToPostfixableExpr                        = _ReduceType(161)
-	_ReduceToPostfixUnaryExpr                                       = _ReduceType(162)
-	_ReducePostfixableExprToPrefixableExpr                          = _ReduceType(163)
-	_ReducePrefixUnaryExprToPrefixableExpr                          = _ReduceType(164)
-	_ReduceToPrefixUnaryExpr                                        = _ReduceType(165)
-	_ReduceNotToPrefixUnaryOp                                       = _ReduceType(166)
-	_ReduceBitNegToPrefixUnaryOp                                    = _ReduceType(167)
-	_ReduceSubToPrefixUnaryOp                                       = _ReduceType(168)
-	_ReduceMulToPrefixUnaryOp                                       = _ReduceType(169)
-	_ReduceBitAndToPrefixUnaryOp                                    = _ReduceType(170)
-	_ReducePrefixableExprToMulExpr                                  = _ReduceType(171)
-	_ReduceBinaryMulExprToMulExpr                                   = _ReduceType(172)
-	_ReduceToBinaryMulExpr                                          = _ReduceType(173)
-	_ReduceMulToMulOp                                               = _ReduceType(174)
-	_ReduceDivToMulOp                                               = _ReduceType(175)
-	_ReduceModToMulOp                                               = _ReduceType(176)
-	_ReduceBitAndToMulOp                                            = _ReduceType(177)
-	_ReduceBitLshiftToMulOp                                         = _ReduceType(178)
-	_ReduceBitRshiftToMulOp                                         = _ReduceType(179)
-	_ReduceMulExprToAddExpr                                         = _ReduceType(180)
-	_ReduceBinaryAddExprToAddExpr                                   = _ReduceType(181)
-	_ReduceToBinaryAddExpr                                          = _ReduceType(182)
-	_ReduceAddToAddOp                                               = _ReduceType(183)
-	_ReduceSubToAddOp                                               = _ReduceType(184)
-	_ReduceBitOrToAddOp                                             = _ReduceType(185)
-	_ReduceBitXorToAddOp                                            = _ReduceType(186)
-	_ReduceAddExprToCmpExpr                                         = _ReduceType(187)
-	_ReduceBinaryCmpExprToCmpExpr                                   = _ReduceType(188)
-	_ReduceToBinaryCmpExpr                                          = _ReduceType(189)
-	_ReduceEqualToCmpOp                                             = _ReduceType(190)
-	_ReduceNotEqualToCmpOp                                          = _ReduceType(191)
-	_ReduceLessToCmpOp                                              = _ReduceType(192)
-	_ReduceLessOrEqualToCmpOp                                       = _ReduceType(193)
-	_ReduceGreaterToCmpOp                                           = _ReduceType(194)
-	_ReduceGreaterOrEqualToCmpOp                                    = _ReduceType(195)
-	_ReduceCmpExprToAndExpr                                         = _ReduceType(196)
-	_ReduceBinaryAndExprToAndExpr                                   = _ReduceType(197)
-	_ReduceToBinaryAndExpr                                          = _ReduceType(198)
-	_ReduceAndExprToOrExpr                                          = _ReduceType(199)
-	_ReduceBinaryOrExprToOrExpr                                     = _ReduceType(200)
-	_ReduceToBinaryOrExpr                                           = _ReduceType(201)
-	_ReduceExplicitStructDefToInitializableType                     = _ReduceType(202)
-	_ReduceSliceToInitializableType                                 = _ReduceType(203)
-	_ReduceArrayToInitializableType                                 = _ReduceType(204)
-	_ReduceMapToInitializableType                                   = _ReduceType(205)
-	_ReduceInitializableTypeToAtomType                              = _ReduceType(206)
-	_ReduceNamedToAtomType                                          = _ReduceType(207)
-	_ReduceExternNamedToAtomType                                    = _ReduceType(208)
-	_ReduceInferredToAtomType                                       = _ReduceType(209)
-	_ReduceImplicitStructDefToAtomType                              = _ReduceType(210)
-	_ReduceExplicitEnumDefToAtomType                                = _ReduceType(211)
-	_ReduceImplicitEnumDefToAtomType                                = _ReduceType(212)
-	_ReduceTraitDefToAtomType                                       = _ReduceType(213)
-	_ReduceFuncTypeToAtomType                                       = _ReduceType(214)
-	_ReduceParseErrorTypeToAtomType                                 = _ReduceType(215)
-	_ReduceToParseErrorType                                         = _ReduceType(216)
-	_ReduceAtomTypeToReturnableType                                 = _ReduceType(217)
-	_ReducePrefixedTypeToReturnableType                             = _ReduceType(218)
-	_ReduceToPrefixedType                                           = _ReduceType(219)
-	_ReduceQuestionToPrefixTypeOp                                   = _ReduceType(220)
-	_ReduceExclaimToPrefixTypeOp                                    = _ReduceType(221)
-	_ReduceBitAndToPrefixTypeOp                                     = _ReduceType(222)
-	_ReduceBitNegToPrefixTypeOp                                     = _ReduceType(223)
-	_ReduceTildeTildeToPrefixTypeOp                                 = _ReduceType(224)
-	_ReduceReturnableTypeToValueType                                = _ReduceType(225)
-	_ReduceTraitOpTypeToValueType                                   = _ReduceType(226)
-	_ReduceToTraitOpType                                            = _ReduceType(227)
-	_ReduceMulToTraitOp                                             = _ReduceType(228)
-	_ReduceAddToTraitOp                                             = _ReduceType(229)
-	_ReduceSubToTraitOp                                             = _ReduceType(230)
-	_ReduceDefinitionToTypeDef                                      = _ReduceType(231)
-	_ReduceConstrainedDefToTypeDef                                  = _ReduceType(232)
-	_ReduceAliasToTypeDef                                           = _ReduceType(233)
-	_ReduceUnconstrainedToGenericParameterDef                       = _ReduceType(234)
-	_ReduceConstrainedToGenericParameterDef                         = _ReduceType(235)
-	_ReduceGenericParameterDefToGenericParameterDefs                = _ReduceType(236)
-	_ReduceAddToGenericParameterDefs                                = _ReduceType(237)
-	_ReduceGenericParameterDefsToOptionalGenericParameterDefs       = _ReduceType(238)
-	_ReduceNilToOptionalGenericParameterDefs                        = _ReduceType(239)
-	_ReduceGenericToOptionalGenericParameters                       = _ReduceType(240)
-	_ReduceNilToOptionalGenericParameters                           = _ReduceType(241)
-	_ReduceExplicitToFieldDef                                       = _ReduceType(242)
-	_ReduceImplicitToFieldDef                                       = _ReduceType(243)
-	_ReduceUnsafeStatementToFieldDef                                = _ReduceType(244)
-	_ReduceFieldDefToImplicitFieldDefs                              = _ReduceType(245)
-	_ReduceAddToImplicitFieldDefs                                   = _ReduceType(246)
-	_ReduceImplicitFieldDefsToOptionalImplicitFieldDefs             = _ReduceType(247)
-	_ReduceNilToOptionalImplicitFieldDefs                           = _ReduceType(248)
-	_ReduceToImplicitStructDef                                      = _ReduceType(249)
-	_ReduceFieldDefToExplicitFieldDefs                              = _ReduceType(250)
-	_ReduceImplicitToExplicitFieldDefs                              = _ReduceType(251)
-	_ReduceExplicitToExplicitFieldDefs                              = _ReduceType(252)
-	_ReduceExplicitFieldDefsToOptionalExplicitFieldDefs             = _ReduceType(253)
-	_ReduceNilToOptionalExplicitFieldDefs                           = _ReduceType(254)
-	_ReduceToExplicitStructDef                                      = _ReduceType(255)
-	_ReduceFieldDefToEnumValueDef                                   = _ReduceType(256)
-	_ReduceDefaultToEnumValueDef                                    = _ReduceType(257)
-	_ReducePairToImplicitEnumValueDefs                              = _ReduceType(258)
-	_ReduceAddToImplicitEnumValueDefs                               = _ReduceType(259)
-	_ReduceToImplicitEnumDef                                        = _ReduceType(260)
-	_ReduceExplicitPairToExplicitEnumValueDefs                      = _ReduceType(261)
-	_ReduceImplicitPairToExplicitEnumValueDefs                      = _ReduceType(262)
-	_ReduceExplicitAddToExplicitEnumValueDefs                       = _ReduceType(263)
-	_ReduceImplicitAddToExplicitEnumValueDefs                       = _ReduceType(264)
-	_ReduceToExplicitEnumDef                                        = _ReduceType(265)
-	_ReduceFieldDefToTraitProperty                                  = _ReduceType(266)
-	_ReduceMethodSignatureToTraitProperty                           = _ReduceType(267)
-	_ReduceTraitPropertyToTraitProperties                           = _ReduceType(268)
-	_ReduceImplicitToTraitProperties                                = _ReduceType(269)
-	_ReduceExplicitToTraitProperties                                = _ReduceType(270)
-	_ReduceTraitPropertiesToOptionalTraitProperties                 = _ReduceType(271)
-	_ReduceNilToOptionalTraitProperties                             = _ReduceType(272)
-	_ReduceToTraitDef                                               = _ReduceType(273)
-	_ReduceReturnableTypeToReturnType                               = _ReduceType(274)
-	_ReduceNilToReturnType                                          = _ReduceType(275)
-	_ReduceArgToParameterDecl                                       = _ReduceType(276)
-	_ReduceVarargToParameterDecl                                    = _ReduceType(277)
-	_ReduceUnamedToParameterDecl                                    = _ReduceType(278)
-	_ReduceUnnamedVarargToParameterDecl                             = _ReduceType(279)
-	_ReduceParameterDeclToParameterDecls                            = _ReduceType(280)
-	_ReduceAddToParameterDecls                                      = _ReduceType(281)
-	_ReduceParameterDeclsToOptionalParameterDecls                   = _ReduceType(282)
-	_ReduceNilToOptionalParameterDecls                              = _ReduceType(283)
-	_ReduceToFuncType                                               = _ReduceType(284)
-	_ReduceToMethodSignature                                        = _ReduceType(285)
-	_ReduceInferredRefArgToParameterDef                             = _ReduceType(286)
-	_ReduceInferredRefVarargToParameterDef                          = _ReduceType(287)
-	_ReduceArgToParameterDef                                        = _ReduceType(288)
-	_ReduceVarargToParameterDef                                     = _ReduceType(289)
-	_ReduceParameterDefToParameterDefs                              = _ReduceType(290)
-	_ReduceAddToParameterDefs                                       = _ReduceType(291)
-	_ReduceParameterDefsToOptionalParameterDefs                     = _ReduceType(292)
-	_ReduceNilToOptionalParameterDefs                               = _ReduceType(293)
-	_ReduceFuncDefToNamedFuncDef                                    = _ReduceType(294)
-	_ReduceMethodDefToNamedFuncDef                                  = _ReduceType(295)
-	_ReduceAliasToNamedFuncDef                                      = _ReduceType(296)
-	_ReduceToAnonymousFuncExpr                                      = _ReduceType(297)
-	_ReduceNoSpecToPackageDef                                       = _ReduceType(298)
-	_ReduceWithSpecToPackageDef                                     = _ReduceType(299)
+	_ReduceColonExprToArgument                                      = _ReduceType(129)
+	_ReduceNamedAssignmentToArgument                                = _ReduceType(130)
+	_ReduceVarargAssignmentToArgument                               = _ReduceType(131)
+	_ReduceSkipPatternToArgument                                    = _ReduceType(132)
+	_ReduceUnitUnitPairToColonExpr                                  = _ReduceType(133)
+	_ReduceExprUnitPairToColonExpr                                  = _ReduceType(134)
+	_ReduceUnitExprPairToColonExpr                                  = _ReduceType(135)
+	_ReduceExprExprPairToColonExpr                                  = _ReduceType(136)
+	_ReduceColonExprUnitTupleToColonExpr                            = _ReduceType(137)
+	_ReduceColonExprExprTupleToColonExpr                            = _ReduceType(138)
+	_ReduceParseErrorExprToAtomExpr                                 = _ReduceType(139)
+	_ReduceLiteralExprToAtomExpr                                    = _ReduceType(140)
+	_ReduceIdentifierExprToAtomExpr                                 = _ReduceType(141)
+	_ReduceBlockExprToAtomExpr                                      = _ReduceType(142)
+	_ReduceAnonymousFuncExprToAtomExpr                              = _ReduceType(143)
+	_ReduceInitializeExprToAtomExpr                                 = _ReduceType(144)
+	_ReduceImplicitStructExprToAtomExpr                             = _ReduceType(145)
+	_ReduceToParseErrorExpr                                         = _ReduceType(146)
+	_ReduceTrueToLiteralExpr                                        = _ReduceType(147)
+	_ReduceFalseToLiteralExpr                                       = _ReduceType(148)
+	_ReduceIntegerLiteralToLiteralExpr                              = _ReduceType(149)
+	_ReduceFloatLiteralToLiteralExpr                                = _ReduceType(150)
+	_ReduceRuneLiteralToLiteralExpr                                 = _ReduceType(151)
+	_ReduceStringLiteralToLiteralExpr                               = _ReduceType(152)
+	_ReduceToIdentifierExpr                                         = _ReduceType(153)
+	_ReduceToBlockExpr                                              = _ReduceType(154)
+	_ReduceToInitializeExpr                                         = _ReduceType(155)
+	_ReduceToImplicitStructExpr                                     = _ReduceType(156)
+	_ReduceAtomExprToAccessibleExpr                                 = _ReduceType(157)
+	_ReduceAccessExprToAccessibleExpr                               = _ReduceType(158)
+	_ReduceCallExprToAccessibleExpr                                 = _ReduceType(159)
+	_ReduceIndexExprToAccessibleExpr                                = _ReduceType(160)
+	_ReduceToAccessExpr                                             = _ReduceType(161)
+	_ReduceToIndexExpr                                              = _ReduceType(162)
+	_ReduceAccessibleExprToPostfixableExpr                          = _ReduceType(163)
+	_ReducePostfixUnaryExprToPostfixableExpr                        = _ReduceType(164)
+	_ReduceToPostfixUnaryExpr                                       = _ReduceType(165)
+	_ReducePostfixableExprToPrefixableExpr                          = _ReduceType(166)
+	_ReducePrefixUnaryExprToPrefixableExpr                          = _ReduceType(167)
+	_ReduceToPrefixUnaryExpr                                        = _ReduceType(168)
+	_ReduceNotToPrefixUnaryOp                                       = _ReduceType(169)
+	_ReduceBitNegToPrefixUnaryOp                                    = _ReduceType(170)
+	_ReduceSubToPrefixUnaryOp                                       = _ReduceType(171)
+	_ReduceMulToPrefixUnaryOp                                       = _ReduceType(172)
+	_ReduceBitAndToPrefixUnaryOp                                    = _ReduceType(173)
+	_ReducePrefixableExprToMulExpr                                  = _ReduceType(174)
+	_ReduceBinaryMulExprToMulExpr                                   = _ReduceType(175)
+	_ReduceToBinaryMulExpr                                          = _ReduceType(176)
+	_ReduceMulToMulOp                                               = _ReduceType(177)
+	_ReduceDivToMulOp                                               = _ReduceType(178)
+	_ReduceModToMulOp                                               = _ReduceType(179)
+	_ReduceBitAndToMulOp                                            = _ReduceType(180)
+	_ReduceBitLshiftToMulOp                                         = _ReduceType(181)
+	_ReduceBitRshiftToMulOp                                         = _ReduceType(182)
+	_ReduceMulExprToAddExpr                                         = _ReduceType(183)
+	_ReduceBinaryAddExprToAddExpr                                   = _ReduceType(184)
+	_ReduceToBinaryAddExpr                                          = _ReduceType(185)
+	_ReduceAddToAddOp                                               = _ReduceType(186)
+	_ReduceSubToAddOp                                               = _ReduceType(187)
+	_ReduceBitOrToAddOp                                             = _ReduceType(188)
+	_ReduceBitXorToAddOp                                            = _ReduceType(189)
+	_ReduceAddExprToCmpExpr                                         = _ReduceType(190)
+	_ReduceBinaryCmpExprToCmpExpr                                   = _ReduceType(191)
+	_ReduceToBinaryCmpExpr                                          = _ReduceType(192)
+	_ReduceEqualToCmpOp                                             = _ReduceType(193)
+	_ReduceNotEqualToCmpOp                                          = _ReduceType(194)
+	_ReduceLessToCmpOp                                              = _ReduceType(195)
+	_ReduceLessOrEqualToCmpOp                                       = _ReduceType(196)
+	_ReduceGreaterToCmpOp                                           = _ReduceType(197)
+	_ReduceGreaterOrEqualToCmpOp                                    = _ReduceType(198)
+	_ReduceCmpExprToAndExpr                                         = _ReduceType(199)
+	_ReduceBinaryAndExprToAndExpr                                   = _ReduceType(200)
+	_ReduceToBinaryAndExpr                                          = _ReduceType(201)
+	_ReduceAndExprToOrExpr                                          = _ReduceType(202)
+	_ReduceBinaryOrExprToOrExpr                                     = _ReduceType(203)
+	_ReduceToBinaryOrExpr                                           = _ReduceType(204)
+	_ReduceExplicitStructDefToInitializableType                     = _ReduceType(205)
+	_ReduceSliceToInitializableType                                 = _ReduceType(206)
+	_ReduceArrayToInitializableType                                 = _ReduceType(207)
+	_ReduceMapToInitializableType                                   = _ReduceType(208)
+	_ReduceInitializableTypeToAtomType                              = _ReduceType(209)
+	_ReduceNamedToAtomType                                          = _ReduceType(210)
+	_ReduceExternNamedToAtomType                                    = _ReduceType(211)
+	_ReduceInferredToAtomType                                       = _ReduceType(212)
+	_ReduceImplicitStructDefToAtomType                              = _ReduceType(213)
+	_ReduceExplicitEnumDefToAtomType                                = _ReduceType(214)
+	_ReduceImplicitEnumDefToAtomType                                = _ReduceType(215)
+	_ReduceTraitDefToAtomType                                       = _ReduceType(216)
+	_ReduceFuncTypeToAtomType                                       = _ReduceType(217)
+	_ReduceParseErrorTypeToAtomType                                 = _ReduceType(218)
+	_ReduceToParseErrorType                                         = _ReduceType(219)
+	_ReduceAtomTypeToReturnableType                                 = _ReduceType(220)
+	_ReducePrefixedTypeToReturnableType                             = _ReduceType(221)
+	_ReduceToPrefixedType                                           = _ReduceType(222)
+	_ReduceQuestionToPrefixTypeOp                                   = _ReduceType(223)
+	_ReduceExclaimToPrefixTypeOp                                    = _ReduceType(224)
+	_ReduceBitAndToPrefixTypeOp                                     = _ReduceType(225)
+	_ReduceBitNegToPrefixTypeOp                                     = _ReduceType(226)
+	_ReduceTildeTildeToPrefixTypeOp                                 = _ReduceType(227)
+	_ReduceReturnableTypeToValueType                                = _ReduceType(228)
+	_ReduceTraitOpTypeToValueType                                   = _ReduceType(229)
+	_ReduceToTraitOpType                                            = _ReduceType(230)
+	_ReduceMulToTraitOp                                             = _ReduceType(231)
+	_ReduceAddToTraitOp                                             = _ReduceType(232)
+	_ReduceSubToTraitOp                                             = _ReduceType(233)
+	_ReduceDefinitionToTypeDef                                      = _ReduceType(234)
+	_ReduceConstrainedDefToTypeDef                                  = _ReduceType(235)
+	_ReduceAliasToTypeDef                                           = _ReduceType(236)
+	_ReduceUnconstrainedToGenericParameterDef                       = _ReduceType(237)
+	_ReduceConstrainedToGenericParameterDef                         = _ReduceType(238)
+	_ReduceGenericParameterDefToGenericParameterDefs                = _ReduceType(239)
+	_ReduceAddToGenericParameterDefs                                = _ReduceType(240)
+	_ReduceGenericParameterDefsToOptionalGenericParameterDefs       = _ReduceType(241)
+	_ReduceNilToOptionalGenericParameterDefs                        = _ReduceType(242)
+	_ReduceGenericToOptionalGenericParameters                       = _ReduceType(243)
+	_ReduceNilToOptionalGenericParameters                           = _ReduceType(244)
+	_ReduceExplicitToFieldDef                                       = _ReduceType(245)
+	_ReduceImplicitToFieldDef                                       = _ReduceType(246)
+	_ReduceUnsafeStatementToFieldDef                                = _ReduceType(247)
+	_ReduceFieldDefToImplicitFieldDefs                              = _ReduceType(248)
+	_ReduceAddToImplicitFieldDefs                                   = _ReduceType(249)
+	_ReduceImplicitFieldDefsToOptionalImplicitFieldDefs             = _ReduceType(250)
+	_ReduceNilToOptionalImplicitFieldDefs                           = _ReduceType(251)
+	_ReduceToImplicitStructDef                                      = _ReduceType(252)
+	_ReduceFieldDefToExplicitFieldDefs                              = _ReduceType(253)
+	_ReduceImplicitToExplicitFieldDefs                              = _ReduceType(254)
+	_ReduceExplicitToExplicitFieldDefs                              = _ReduceType(255)
+	_ReduceExplicitFieldDefsToOptionalExplicitFieldDefs             = _ReduceType(256)
+	_ReduceNilToOptionalExplicitFieldDefs                           = _ReduceType(257)
+	_ReduceToExplicitStructDef                                      = _ReduceType(258)
+	_ReduceFieldDefToEnumValueDef                                   = _ReduceType(259)
+	_ReduceDefaultToEnumValueDef                                    = _ReduceType(260)
+	_ReducePairToImplicitEnumValueDefs                              = _ReduceType(261)
+	_ReduceAddToImplicitEnumValueDefs                               = _ReduceType(262)
+	_ReduceToImplicitEnumDef                                        = _ReduceType(263)
+	_ReduceExplicitPairToExplicitEnumValueDefs                      = _ReduceType(264)
+	_ReduceImplicitPairToExplicitEnumValueDefs                      = _ReduceType(265)
+	_ReduceExplicitAddToExplicitEnumValueDefs                       = _ReduceType(266)
+	_ReduceImplicitAddToExplicitEnumValueDefs                       = _ReduceType(267)
+	_ReduceToExplicitEnumDef                                        = _ReduceType(268)
+	_ReduceFieldDefToTraitProperty                                  = _ReduceType(269)
+	_ReduceMethodSignatureToTraitProperty                           = _ReduceType(270)
+	_ReduceTraitPropertyToTraitProperties                           = _ReduceType(271)
+	_ReduceImplicitToTraitProperties                                = _ReduceType(272)
+	_ReduceExplicitToTraitProperties                                = _ReduceType(273)
+	_ReduceTraitPropertiesToOptionalTraitProperties                 = _ReduceType(274)
+	_ReduceNilToOptionalTraitProperties                             = _ReduceType(275)
+	_ReduceToTraitDef                                               = _ReduceType(276)
+	_ReduceReturnableTypeToReturnType                               = _ReduceType(277)
+	_ReduceNilToReturnType                                          = _ReduceType(278)
+	_ReduceArgToParameterDecl                                       = _ReduceType(279)
+	_ReduceVarargToParameterDecl                                    = _ReduceType(280)
+	_ReduceUnamedToParameterDecl                                    = _ReduceType(281)
+	_ReduceUnnamedVarargToParameterDecl                             = _ReduceType(282)
+	_ReduceParameterDeclToParameterDecls                            = _ReduceType(283)
+	_ReduceAddToParameterDecls                                      = _ReduceType(284)
+	_ReduceParameterDeclsToOptionalParameterDecls                   = _ReduceType(285)
+	_ReduceNilToOptionalParameterDecls                              = _ReduceType(286)
+	_ReduceToFuncType                                               = _ReduceType(287)
+	_ReduceToMethodSignature                                        = _ReduceType(288)
+	_ReduceInferredRefArgToParameterDef                             = _ReduceType(289)
+	_ReduceInferredRefVarargToParameterDef                          = _ReduceType(290)
+	_ReduceArgToParameterDef                                        = _ReduceType(291)
+	_ReduceVarargToParameterDef                                     = _ReduceType(292)
+	_ReduceParameterDefToParameterDefs                              = _ReduceType(293)
+	_ReduceAddToParameterDefs                                       = _ReduceType(294)
+	_ReduceParameterDefsToOptionalParameterDefs                     = _ReduceType(295)
+	_ReduceNilToOptionalParameterDefs                               = _ReduceType(296)
+	_ReduceFuncDefToNamedFuncDef                                    = _ReduceType(297)
+	_ReduceMethodDefToNamedFuncDef                                  = _ReduceType(298)
+	_ReduceAliasToNamedFuncDef                                      = _ReduceType(299)
+	_ReduceToAnonymousFuncExpr                                      = _ReduceType(300)
+	_ReduceNoSpecToPackageDef                                       = _ReduceType(301)
+	_ReduceWithSpecToPackageDef                                     = _ReduceType(302)
 )
 
 func (i _ReduceType) String() string {
@@ -2410,20 +2416,26 @@ func (i _ReduceType) String() string {
 		return "AddToArguments"
 	case _ReducePositionalToArgument:
 		return "PositionalToArgument"
-	case _ReduceNamedToArgument:
-		return "NamedToArgument"
-	case _ReduceColonExpressionsToArgument:
-		return "ColonExpressionsToArgument"
-	case _ReduceEllipsisToArgument:
-		return "EllipsisToArgument"
-	case _ReducePairToColonExpressions:
-		return "PairToColonExpressions"
-	case _ReduceAddToColonExpressions:
-		return "AddToColonExpressions"
-	case _ReduceExpressionToOptionalExpression:
-		return "ExpressionToOptionalExpression"
-	case _ReduceNilToOptionalExpression:
-		return "NilToOptionalExpression"
+	case _ReduceColonExprToArgument:
+		return "ColonExprToArgument"
+	case _ReduceNamedAssignmentToArgument:
+		return "NamedAssignmentToArgument"
+	case _ReduceVarargAssignmentToArgument:
+		return "VarargAssignmentToArgument"
+	case _ReduceSkipPatternToArgument:
+		return "SkipPatternToArgument"
+	case _ReduceUnitUnitPairToColonExpr:
+		return "UnitUnitPairToColonExpr"
+	case _ReduceExprUnitPairToColonExpr:
+		return "ExprUnitPairToColonExpr"
+	case _ReduceUnitExprPairToColonExpr:
+		return "UnitExprPairToColonExpr"
+	case _ReduceExprExprPairToColonExpr:
+		return "ExprExprPairToColonExpr"
+	case _ReduceColonExprUnitTupleToColonExpr:
+		return "ColonExprUnitTupleToColonExpr"
+	case _ReduceColonExprExprTupleToColonExpr:
+		return "ColonExprExprTupleToColonExpr"
 	case _ReduceParseErrorExprToAtomExpr:
 		return "ParseErrorExprToAtomExpr"
 	case _ReduceLiteralExprToAtomExpr:
@@ -3232,6 +3244,7 @@ const (
 	_State466 = _StateId(466)
 	_State467 = _StateId(467)
 	_State468 = _StateId(468)
+	_State469 = _StateId(469)
 )
 
 type Symbol struct {
@@ -3239,6 +3252,7 @@ type Symbol struct {
 
 	Generic_ GenericSymbol
 
+	Argument          *Argument
 	Count             TokenCount
 	Expression        Expression
 	ParseError        ParseErrorSymbol
@@ -3311,12 +3325,17 @@ func (s *Symbol) Id() SymbolId {
 func (s *Symbol) Loc() Location {
 	type locator interface{ Loc() Location }
 	switch s.SymbolId_ {
+	case ArgumentType:
+		loc, ok := interface{}(s.Argument).(locator)
+		if ok {
+			return loc.Loc()
+		}
 	case NewlinesToken:
 		loc, ok := interface{}(s.Count).(locator)
 		if ok {
 			return loc.Loc()
 		}
-	case ExpressionType, SequenceExprType, IfExprType, SwitchExprType, LoopExprType, OptionalSequenceExprType, CallExprType, OptionalExpressionType, AtomExprType, ParseErrorExprType, LiteralExprType, IdentifierExprType, BlockExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, AnonymousFuncExprType:
+	case ExpressionType, SequenceExprType, IfExprType, SwitchExprType, LoopExprType, OptionalSequenceExprType, CallExprType, ColonExprType, AtomExprType, ParseErrorExprType, LiteralExprType, IdentifierExprType, BlockExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
 		if ok {
 			return loc.Loc()
@@ -3363,12 +3382,17 @@ func (s *Symbol) Loc() Location {
 func (s *Symbol) End() Location {
 	type locator interface{ End() Location }
 	switch s.SymbolId_ {
+	case ArgumentType:
+		loc, ok := interface{}(s.Argument).(locator)
+		if ok {
+			return loc.End()
+		}
 	case NewlinesToken:
 		loc, ok := interface{}(s.Count).(locator)
 		if ok {
 			return loc.End()
 		}
-	case ExpressionType, SequenceExprType, IfExprType, SwitchExprType, LoopExprType, OptionalSequenceExprType, CallExprType, OptionalExpressionType, AtomExprType, ParseErrorExprType, LiteralExprType, IdentifierExprType, BlockExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, AnonymousFuncExprType:
+	case ExpressionType, SequenceExprType, IfExprType, SwitchExprType, LoopExprType, OptionalSequenceExprType, CallExprType, ColonExprType, AtomExprType, ParseErrorExprType, LiteralExprType, IdentifierExprType, BlockExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
 		if ok {
 			return loc.End()
@@ -4159,97 +4183,114 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ArgumentsType
-		symbol.Generic_, err = reducer.ArgumentToArguments(args[0].Generic_)
+		symbol.Generic_, err = reducer.ArgumentToArguments(args[0].Argument)
 	case _ReduceAddToArguments:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ArgumentsType
-		symbol.Generic_, err = reducer.AddToArguments(args[0].Generic_, args[1].Value, args[2].Generic_)
+		symbol.Generic_, err = reducer.AddToArguments(args[0].Generic_, args[1].Value, args[2].Argument)
 	case _ReducePositionalToArgument:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ArgumentType
-		symbol.Generic_, err = reducer.PositionalToArgument(args[0].Expression)
-	case _ReduceNamedToArgument:
-		args := stack[len(stack)-3:]
-		stack = stack[:len(stack)-3]
-		symbol.SymbolId_ = ArgumentType
-		symbol.Generic_, err = reducer.NamedToArgument(args[0].Value, args[1].Value, args[2].Expression)
-	case _ReduceColonExpressionsToArgument:
+		symbol.Argument, err = reducer.PositionalToArgument(args[0].Expression)
+	case _ReduceColonExprToArgument:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ArgumentType
-		symbol.Generic_, err = reducer.ColonExpressionsToArgument(args[0].Generic_)
-	case _ReduceEllipsisToArgument:
+		symbol.Argument, err = reducer.ColonExprToArgument(args[0].Expression)
+	case _ReduceNamedAssignmentToArgument:
+		args := stack[len(stack)-3:]
+		stack = stack[:len(stack)-3]
+		symbol.SymbolId_ = ArgumentType
+		symbol.Argument, err = reducer.NamedAssignmentToArgument(args[0].Value, args[1].Value, args[2].Expression)
+	case _ReduceVarargAssignmentToArgument:
+		args := stack[len(stack)-2:]
+		stack = stack[:len(stack)-2]
+		symbol.SymbolId_ = ArgumentType
+		symbol.Argument, err = reducer.VarargAssignmentToArgument(args[0].Expression, args[1].Value)
+	case _ReduceSkipPatternToArgument:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ArgumentType
-		symbol.Generic_, err = reducer.EllipsisToArgument(args[0].Value)
-	case _ReducePairToColonExpressions:
-		args := stack[len(stack)-3:]
-		stack = stack[:len(stack)-3]
-		symbol.SymbolId_ = ColonExpressionsType
-		symbol.Generic_, err = reducer.PairToColonExpressions(args[0].Expression, args[1].Value, args[2].Expression)
-	case _ReduceAddToColonExpressions:
-		args := stack[len(stack)-3:]
-		stack = stack[:len(stack)-3]
-		symbol.SymbolId_ = ColonExpressionsType
-		symbol.Generic_, err = reducer.AddToColonExpressions(args[0].Generic_, args[1].Value, args[2].Expression)
-	case _ReduceExpressionToOptionalExpression:
+		symbol.Argument, err = reducer.SkipPatternToArgument(args[0].Value)
+	case _ReduceUnitUnitPairToColonExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = OptionalExpressionType
-		symbol.Expression, err = reducer.ExpressionToOptionalExpression(args[0].Expression)
-	case _ReduceNilToOptionalExpression:
-		symbol.SymbolId_ = OptionalExpressionType
-		symbol.Expression, err = reducer.NilToOptionalExpression()
+		symbol.SymbolId_ = ColonExprType
+		symbol.Expression, err = reducer.UnitUnitPairToColonExpr(args[0].Value)
+	case _ReduceExprUnitPairToColonExpr:
+		args := stack[len(stack)-2:]
+		stack = stack[:len(stack)-2]
+		symbol.SymbolId_ = ColonExprType
+		symbol.Expression, err = reducer.ExprUnitPairToColonExpr(args[0].Expression, args[1].Value)
+	case _ReduceUnitExprPairToColonExpr:
+		args := stack[len(stack)-2:]
+		stack = stack[:len(stack)-2]
+		symbol.SymbolId_ = ColonExprType
+		symbol.Expression, err = reducer.UnitExprPairToColonExpr(args[0].Value, args[1].Expression)
+	case _ReduceExprExprPairToColonExpr:
+		args := stack[len(stack)-3:]
+		stack = stack[:len(stack)-3]
+		symbol.SymbolId_ = ColonExprType
+		symbol.Expression, err = reducer.ExprExprPairToColonExpr(args[0].Expression, args[1].Value, args[2].Expression)
+	case _ReduceColonExprUnitTupleToColonExpr:
+		args := stack[len(stack)-2:]
+		stack = stack[:len(stack)-2]
+		symbol.SymbolId_ = ColonExprType
+		symbol.Expression, err = reducer.ColonExprUnitTupleToColonExpr(args[0].Expression, args[1].Value)
+	case _ReduceColonExprExprTupleToColonExpr:
+		args := stack[len(stack)-3:]
+		stack = stack[:len(stack)-3]
+		symbol.SymbolId_ = ColonExprType
+		symbol.Expression, err = reducer.ColonExprExprTupleToColonExpr(args[0].Expression, args[1].Value, args[2].Expression)
 	case _ReduceParseErrorExprToAtomExpr:
-		args := stack[len(stack)-1:]
-		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = AtomExprType
-		//line grammar.lr:469:4
-		symbol.Expression = args[0].Expression
-		err = nil
-	case _ReduceLiteralExprToAtomExpr:
-		args := stack[len(stack)-1:]
-		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = AtomExprType
-		//line grammar.lr:470:4
-		symbol.Expression = args[0].Expression
-		err = nil
-	case _ReduceIdentifierExprToAtomExpr:
-		args := stack[len(stack)-1:]
-		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = AtomExprType
-		//line grammar.lr:471:4
-		symbol.Expression = args[0].Expression
-		err = nil
-	case _ReduceBlockExprToAtomExpr:
-		args := stack[len(stack)-1:]
-		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = AtomExprType
-		//line grammar.lr:472:4
-		symbol.Expression = args[0].Expression
-		err = nil
-	case _ReduceAnonymousFuncExprToAtomExpr:
-		args := stack[len(stack)-1:]
-		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = AtomExprType
-		//line grammar.lr:473:4
-		symbol.Expression = args[0].Expression
-		err = nil
-	case _ReduceInitializeExprToAtomExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomExprType
 		//line grammar.lr:474:4
 		symbol.Expression = args[0].Expression
 		err = nil
-	case _ReduceImplicitStructExprToAtomExpr:
+	case _ReduceLiteralExprToAtomExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomExprType
 		//line grammar.lr:475:4
+		symbol.Expression = args[0].Expression
+		err = nil
+	case _ReduceIdentifierExprToAtomExpr:
+		args := stack[len(stack)-1:]
+		stack = stack[:len(stack)-1]
+		symbol.SymbolId_ = AtomExprType
+		//line grammar.lr:476:4
+		symbol.Expression = args[0].Expression
+		err = nil
+	case _ReduceBlockExprToAtomExpr:
+		args := stack[len(stack)-1:]
+		stack = stack[:len(stack)-1]
+		symbol.SymbolId_ = AtomExprType
+		//line grammar.lr:477:4
+		symbol.Expression = args[0].Expression
+		err = nil
+	case _ReduceAnonymousFuncExprToAtomExpr:
+		args := stack[len(stack)-1:]
+		stack = stack[:len(stack)-1]
+		symbol.SymbolId_ = AtomExprType
+		//line grammar.lr:478:4
+		symbol.Expression = args[0].Expression
+		err = nil
+	case _ReduceInitializeExprToAtomExpr:
+		args := stack[len(stack)-1:]
+		stack = stack[:len(stack)-1]
+		symbol.SymbolId_ = AtomExprType
+		//line grammar.lr:479:4
+		symbol.Expression = args[0].Expression
+		err = nil
+	case _ReduceImplicitStructExprToAtomExpr:
+		args := stack[len(stack)-1:]
+		stack = stack[:len(stack)-1]
+		symbol.SymbolId_ = AtomExprType
+		//line grammar.lr:480:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToParseErrorExpr:
@@ -4311,28 +4352,28 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AccessibleExprType
-		//line grammar.lr:497:4
+		//line grammar.lr:502:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceAccessExprToAccessibleExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AccessibleExprType
-		//line grammar.lr:498:4
+		//line grammar.lr:503:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceCallExprToAccessibleExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AccessibleExprType
-		//line grammar.lr:499:4
+		//line grammar.lr:504:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceIndexExprToAccessibleExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AccessibleExprType
-		//line grammar.lr:500:4
+		//line grammar.lr:505:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToAccessExpr:
@@ -4344,19 +4385,19 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = IndexExprType
-		symbol.Expression, err = reducer.ToIndexExpr(args[0].Expression, args[1].Value, args[2].Generic_, args[3].Value)
+		symbol.Expression, err = reducer.ToIndexExpr(args[0].Expression, args[1].Value, args[2].Argument, args[3].Value)
 	case _ReduceAccessibleExprToPostfixableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixableExprType
-		//line grammar.lr:509:4
+		//line grammar.lr:514:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReducePostfixUnaryExprToPostfixableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixableExprType
-		//line grammar.lr:510:4
+		//line grammar.lr:515:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToPostfixUnaryExpr:
@@ -4368,14 +4409,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixableExprType
-		//line grammar.lr:515:4
+		//line grammar.lr:520:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReducePrefixUnaryExprToPrefixableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixableExprType
-		//line grammar.lr:516:4
+		//line grammar.lr:521:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToPrefixUnaryExpr:
@@ -4387,49 +4428,49 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:521:4
+		//line grammar.lr:526:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitNegToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:522:4
+		//line grammar.lr:527:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:523:4
+		//line grammar.lr:528:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceMulToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:526:4
+		//line grammar.lr:531:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:529:4
+		//line grammar.lr:534:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReducePrefixableExprToMulExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulExprType
-		//line grammar.lr:532:4
+		//line grammar.lr:537:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryMulExprToMulExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulExprType
-		//line grammar.lr:533:4
+		//line grammar.lr:538:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryMulExpr:
@@ -4441,56 +4482,56 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:538:4
+		//line grammar.lr:543:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDivToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:539:4
+		//line grammar.lr:544:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceModToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:540:4
+		//line grammar.lr:545:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:541:4
+		//line grammar.lr:546:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitLshiftToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:542:4
+		//line grammar.lr:547:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitRshiftToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:543:4
+		//line grammar.lr:548:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceMulExprToAddExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddExprType
-		//line grammar.lr:546:4
+		//line grammar.lr:551:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryAddExprToAddExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddExprType
-		//line grammar.lr:547:4
+		//line grammar.lr:552:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryAddExpr:
@@ -4502,42 +4543,42 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:552:4
+		//line grammar.lr:557:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:553:4
+		//line grammar.lr:558:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitOrToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:554:4
+		//line grammar.lr:559:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitXorToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:555:4
+		//line grammar.lr:560:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAddExprToCmpExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpExprType
-		//line grammar.lr:558:4
+		//line grammar.lr:563:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryCmpExprToCmpExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpExprType
-		//line grammar.lr:559:4
+		//line grammar.lr:564:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryCmpExpr:
@@ -4549,56 +4590,56 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:564:4
+		//line grammar.lr:569:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceNotEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:565:4
+		//line grammar.lr:570:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceLessToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:566:4
+		//line grammar.lr:571:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceLessOrEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:567:4
+		//line grammar.lr:572:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceGreaterToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:568:4
+		//line grammar.lr:573:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceGreaterOrEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:569:4
+		//line grammar.lr:574:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceCmpExprToAndExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AndExprType
-		//line grammar.lr:572:4
+		//line grammar.lr:577:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryAndExprToAndExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AndExprType
-		//line grammar.lr:573:4
+		//line grammar.lr:578:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryAndExpr:
@@ -4610,14 +4651,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OrExprType
-		//line grammar.lr:578:4
+		//line grammar.lr:583:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryOrExprToOrExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OrExprType
-		//line grammar.lr:579:4
+		//line grammar.lr:584:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryOrExpr:
@@ -4629,7 +4670,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = InitializableTypeType
-		//line grammar.lr:590:4
+		//line grammar.lr:595:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceSliceToInitializableType:
@@ -4651,7 +4692,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:596:4
+		//line grammar.lr:601:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceNamedToAtomType:
@@ -4673,42 +4714,42 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:600:4
+		//line grammar.lr:605:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceExplicitEnumDefToAtomType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:601:4
+		//line grammar.lr:606:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceImplicitEnumDefToAtomType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:602:4
+		//line grammar.lr:607:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceTraitDefToAtomType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:603:4
+		//line grammar.lr:608:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceFuncTypeToAtomType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:604:4
+		//line grammar.lr:609:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceParseErrorTypeToAtomType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:605:4
+		//line grammar.lr:610:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceToParseErrorType:
@@ -4720,14 +4761,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnableTypeType
-		//line grammar.lr:613:4
+		//line grammar.lr:618:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReducePrefixedTypeToReturnableType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnableTypeType
-		//line grammar.lr:614:4
+		//line grammar.lr:619:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceToPrefixedType:
@@ -4739,49 +4780,49 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixTypeOpType
-		//line grammar.lr:619:4
+		//line grammar.lr:624:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceExclaimToPrefixTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixTypeOpType
-		//line grammar.lr:620:4
+		//line grammar.lr:625:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToPrefixTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixTypeOpType
-		//line grammar.lr:621:4
+		//line grammar.lr:626:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitNegToPrefixTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixTypeOpType
-		//line grammar.lr:622:4
+		//line grammar.lr:627:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceTildeTildeToPrefixTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixTypeOpType
-		//line grammar.lr:623:4
+		//line grammar.lr:628:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceReturnableTypeToValueType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ValueTypeType
-		//line grammar.lr:628:4
+		//line grammar.lr:633:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceTraitOpTypeToValueType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ValueTypeType
-		//line grammar.lr:629:4
+		//line grammar.lr:634:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceToTraitOpType:
@@ -4793,21 +4834,21 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TraitOpType
-		//line grammar.lr:634:4
+		//line grammar.lr:639:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAddToTraitOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TraitOpType
-		//line grammar.lr:635:4
+		//line grammar.lr:640:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubToTraitOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TraitOpType
-		//line grammar.lr:636:4
+		//line grammar.lr:641:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDefinitionToTypeDef:
@@ -5641,6 +5682,7 @@ var (
 	_GotoState466Action                                                   = &_Action{_ShiftAction, _State466, 0}
 	_GotoState467Action                                                   = &_Action{_ShiftAction, _State467, 0}
 	_GotoState468Action                                                   = &_Action{_ShiftAction, _State468, 0}
+	_GotoState469Action                                                   = &_Action{_ShiftAction, _State469, 0}
 	_ReduceToSourceAction                                                 = &_Action{_ReduceAction, 0, _ReduceToSource}
 	_ReduceNewlinesToOptionalDefinitionsAction                            = &_Action{_ReduceAction, 0, _ReduceNewlinesToOptionalDefinitions}
 	_ReduceDefinitionsToOptionalDefinitionsAction                         = &_Action{_ReduceAction, 0, _ReduceDefinitionsToOptionalDefinitions}
@@ -5769,13 +5811,16 @@ var (
 	_ReduceArgumentToArgumentsAction                                      = &_Action{_ReduceAction, 0, _ReduceArgumentToArguments}
 	_ReduceAddToArgumentsAction                                           = &_Action{_ReduceAction, 0, _ReduceAddToArguments}
 	_ReducePositionalToArgumentAction                                     = &_Action{_ReduceAction, 0, _ReducePositionalToArgument}
-	_ReduceNamedToArgumentAction                                          = &_Action{_ReduceAction, 0, _ReduceNamedToArgument}
-	_ReduceColonExpressionsToArgumentAction                               = &_Action{_ReduceAction, 0, _ReduceColonExpressionsToArgument}
-	_ReduceEllipsisToArgumentAction                                       = &_Action{_ReduceAction, 0, _ReduceEllipsisToArgument}
-	_ReducePairToColonExpressionsAction                                   = &_Action{_ReduceAction, 0, _ReducePairToColonExpressions}
-	_ReduceAddToColonExpressionsAction                                    = &_Action{_ReduceAction, 0, _ReduceAddToColonExpressions}
-	_ReduceExpressionToOptionalExpressionAction                           = &_Action{_ReduceAction, 0, _ReduceExpressionToOptionalExpression}
-	_ReduceNilToOptionalExpressionAction                                  = &_Action{_ReduceAction, 0, _ReduceNilToOptionalExpression}
+	_ReduceColonExprToArgumentAction                                      = &_Action{_ReduceAction, 0, _ReduceColonExprToArgument}
+	_ReduceNamedAssignmentToArgumentAction                                = &_Action{_ReduceAction, 0, _ReduceNamedAssignmentToArgument}
+	_ReduceVarargAssignmentToArgumentAction                               = &_Action{_ReduceAction, 0, _ReduceVarargAssignmentToArgument}
+	_ReduceSkipPatternToArgumentAction                                    = &_Action{_ReduceAction, 0, _ReduceSkipPatternToArgument}
+	_ReduceUnitUnitPairToColonExprAction                                  = &_Action{_ReduceAction, 0, _ReduceUnitUnitPairToColonExpr}
+	_ReduceExprUnitPairToColonExprAction                                  = &_Action{_ReduceAction, 0, _ReduceExprUnitPairToColonExpr}
+	_ReduceUnitExprPairToColonExprAction                                  = &_Action{_ReduceAction, 0, _ReduceUnitExprPairToColonExpr}
+	_ReduceExprExprPairToColonExprAction                                  = &_Action{_ReduceAction, 0, _ReduceExprExprPairToColonExpr}
+	_ReduceColonExprUnitTupleToColonExprAction                            = &_Action{_ReduceAction, 0, _ReduceColonExprUnitTupleToColonExpr}
+	_ReduceColonExprExprTupleToColonExprAction                            = &_Action{_ReduceAction, 0, _ReduceColonExprExprTupleToColonExpr}
 	_ReduceParseErrorExprToAtomExprAction                                 = &_Action{_ReduceAction, 0, _ReduceParseErrorExprToAtomExpr}
 	_ReduceLiteralExprToAtomExprAction                                    = &_Action{_ReduceAction, 0, _ReduceLiteralExprToAtomExpr}
 	_ReduceIdentifierExprToAtomExprAction                                 = &_Action{_ReduceAction, 0, _ReduceIdentifierExprToAtomExpr}
@@ -6120,7 +6165,7 @@ var _ActionTable = _ActionTableType{
 	{_State28, FloatLiteralToken}:                        _GotoState20Action,
 	{_State28, RuneLiteralToken}:                         _GotoState32Action,
 	{_State28, StringLiteralToken}:                       _GotoState33Action,
-	{_State28, IdentifierToken}:                          _GotoState113Action,
+	{_State28, IdentifierToken}:                          _GotoState114Action,
 	{_State28, TrueToken}:                                _GotoState36Action,
 	{_State28, FalseToken}:                               _GotoState19Action,
 	{_State28, StructToken}:                              _GotoState34Action,
@@ -6131,7 +6176,8 @@ var _ActionTable = _ActionTableType{
 	{_State28, LabelDeclToken}:                           _GotoState25Action,
 	{_State28, LparenToken}:                              _GotoState28Action,
 	{_State28, LbracketToken}:                            _GotoState26Action,
-	{_State28, EllipsisToken}:                            _GotoState112Action,
+	{_State28, ColonToken}:                               _GotoState112Action,
+	{_State28, EllipsisToken}:                            _GotoState113Action,
 	{_State28, SubToken}:                                 _GotoState35Action,
 	{_State28, MulToken}:                                 _GotoState29Action,
 	{_State28, BitNegToken}:                              _GotoState18Action,
@@ -6140,15 +6186,14 @@ var _ActionTable = _ActionTableType{
 	{_State28, ParseErrorToken}:                          _GotoState31Action,
 	{_State28, VarDeclPatternType}:                       _GotoState69Action,
 	{_State28, VarOrLetType}:                             _GotoState70Action,
-	{_State28, ExpressionType}:                           _GotoState117Action,
+	{_State28, ExpressionType}:                           _GotoState118Action,
 	{_State28, OptionalLabelDeclType}:                    _GotoState60Action,
 	{_State28, SequenceExprType}:                         _GotoState68Action,
 	{_State28, CallExprType}:                             _GotoState50Action,
-	{_State28, OptionalArgumentsType}:                    _GotoState118Action,
-	{_State28, ArgumentsType}:                            _GotoState115Action,
-	{_State28, ArgumentType}:                             _GotoState114Action,
-	{_State28, ColonExpressionsType}:                     _GotoState116Action,
-	{_State28, OptionalExpressionType}:                   _GotoState119Action,
+	{_State28, OptionalArgumentsType}:                    _GotoState119Action,
+	{_State28, ArgumentsType}:                            _GotoState116Action,
+	{_State28, ArgumentType}:                             _GotoState115Action,
+	{_State28, ColonExprType}:                            _GotoState117Action,
 	{_State28, AtomExprType}:                             _GotoState43Action,
 	{_State28, ParseErrorExprType}:                       _GotoState62Action,
 	{_State28, LiteralExprType}:                          _GotoState58Action,
@@ -6350,11 +6395,67 @@ var _ActionTable = _ActionTableType{
 	{_State111, SubToken}:                                _GotoState196Action,
 	{_State111, MulToken}:                                _GotoState194Action,
 	{_State111, TraitOpType}:                             _GotoState197Action,
-	{_State113, AssignToken}:                             _GotoState198Action,
-	{_State115, CommaToken}:                              _GotoState199Action,
-	{_State116, ColonToken}:                              _GotoState200Action,
-	{_State118, RparenToken}:                             _GotoState201Action,
-	{_State119, ColonToken}:                              _GotoState202Action,
+	{_State112, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State112, FloatLiteralToken}:                       _GotoState20Action,
+	{_State112, RuneLiteralToken}:                        _GotoState32Action,
+	{_State112, StringLiteralToken}:                      _GotoState33Action,
+	{_State112, IdentifierToken}:                         _GotoState23Action,
+	{_State112, TrueToken}:                               _GotoState36Action,
+	{_State112, FalseToken}:                              _GotoState19Action,
+	{_State112, StructToken}:                             _GotoState34Action,
+	{_State112, FuncToken}:                               _GotoState21Action,
+	{_State112, VarToken}:                                _GotoState37Action,
+	{_State112, LetToken}:                                _GotoState27Action,
+	{_State112, NotToken}:                                _GotoState30Action,
+	{_State112, LabelDeclToken}:                          _GotoState25Action,
+	{_State112, LparenToken}:                             _GotoState28Action,
+	{_State112, LbracketToken}:                           _GotoState26Action,
+	{_State112, SubToken}:                                _GotoState35Action,
+	{_State112, MulToken}:                                _GotoState29Action,
+	{_State112, BitNegToken}:                             _GotoState18Action,
+	{_State112, BitAndToken}:                             _GotoState17Action,
+	{_State112, GreaterToken}:                            _GotoState22Action,
+	{_State112, ParseErrorToken}:                         _GotoState31Action,
+	{_State112, VarDeclPatternType}:                      _GotoState69Action,
+	{_State112, VarOrLetType}:                            _GotoState70Action,
+	{_State112, ExpressionType}:                          _GotoState198Action,
+	{_State112, OptionalLabelDeclType}:                   _GotoState60Action,
+	{_State112, SequenceExprType}:                        _GotoState68Action,
+	{_State112, CallExprType}:                            _GotoState50Action,
+	{_State112, AtomExprType}:                            _GotoState43Action,
+	{_State112, ParseErrorExprType}:                      _GotoState62Action,
+	{_State112, LiteralExprType}:                         _GotoState58Action,
+	{_State112, IdentifierExprType}:                      _GotoState53Action,
+	{_State112, BlockExprType}:                           _GotoState49Action,
+	{_State112, InitializeExprType}:                      _GotoState57Action,
+	{_State112, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State112, AccessibleExprType}:                      _GotoState39Action,
+	{_State112, AccessExprType}:                          _GotoState38Action,
+	{_State112, IndexExprType}:                           _GotoState55Action,
+	{_State112, PostfixableExprType}:                     _GotoState64Action,
+	{_State112, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State112, PrefixableExprType}:                      _GotoState67Action,
+	{_State112, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State112, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State112, MulExprType}:                             _GotoState59Action,
+	{_State112, BinaryMulExprType}:                       _GotoState47Action,
+	{_State112, AddExprType}:                             _GotoState40Action,
+	{_State112, BinaryAddExprType}:                       _GotoState44Action,
+	{_State112, CmpExprType}:                             _GotoState51Action,
+	{_State112, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State112, AndExprType}:                             _GotoState41Action,
+	{_State112, BinaryAndExprType}:                       _GotoState45Action,
+	{_State112, OrExprType}:                              _GotoState61Action,
+	{_State112, BinaryOrExprType}:                        _GotoState48Action,
+	{_State112, InitializableTypeType}:                   _GotoState56Action,
+	{_State112, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State112, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State114, AssignToken}:                             _GotoState199Action,
+	{_State116, CommaToken}:                              _GotoState200Action,
+	{_State117, ColonToken}:                              _GotoState201Action,
+	{_State118, ColonToken}:                              _GotoState202Action,
+	{_State118, EllipsisToken}:                           _GotoState203Action,
+	{_State119, RparenToken}:                             _GotoState204Action,
 	{_State120, IdentifierToken}:                         _GotoState180Action,
 	{_State120, UnsafeToken}:                             _GotoState181Action,
 	{_State120, StructToken}:                             _GotoState34Action,
@@ -6379,10 +6480,10 @@ var _ActionTable = _ActionTableType{
 	{_State120, PrefixTypeOpType}:                        _GotoState106Action,
 	{_State120, ValueTypeType}:                           _GotoState188Action,
 	{_State120, TraitOpTypeType}:                         _GotoState110Action,
-	{_State120, FieldDefType}:                            _GotoState204Action,
+	{_State120, FieldDefType}:                            _GotoState206Action,
 	{_State120, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State120, ExplicitFieldDefsType}:                   _GotoState203Action,
-	{_State120, OptionalExplicitFieldDefsType}:           _GotoState205Action,
+	{_State120, ExplicitFieldDefsType}:                   _GotoState205Action,
+	{_State120, OptionalExplicitFieldDefsType}:           _GotoState207Action,
 	{_State120, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State120, ImplicitEnumDefType}:                     _GotoState102Action,
 	{_State120, ExplicitEnumDefType}:                     _GotoState100Action,
@@ -6402,15 +6503,15 @@ var _ActionTable = _ActionTableType{
 	{_State121, BitNegToken}:                             _GotoState88Action,
 	{_State121, BitAndToken}:                             _GotoState87Action,
 	{_State121, ParseErrorToken}:                         _GotoState95Action,
-	{_State121, OptionalGenericArgumentsType}:            _GotoState207Action,
-	{_State121, GenericArgumentsType}:                    _GotoState206Action,
+	{_State121, OptionalGenericArgumentsType}:            _GotoState209Action,
+	{_State121, GenericArgumentsType}:                    _GotoState208Action,
 	{_State121, InitializableTypeType}:                   _GotoState104Action,
 	{_State121, AtomTypeType}:                            _GotoState99Action,
 	{_State121, ParseErrorTypeType}:                      _GotoState105Action,
 	{_State121, ReturnableTypeType}:                      _GotoState108Action,
 	{_State121, PrefixedTypeType}:                        _GotoState107Action,
 	{_State121, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State121, ValueTypeType}:                           _GotoState208Action,
+	{_State121, ValueTypeType}:                           _GotoState210Action,
 	{_State121, TraitOpTypeType}:                         _GotoState110Action,
 	{_State121, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State121, ExplicitStructDefType}:                   _GotoState52Action,
@@ -6418,12 +6519,12 @@ var _ActionTable = _ActionTableType{
 	{_State121, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State121, TraitDefType}:                            _GotoState109Action,
 	{_State121, FuncTypeType}:                            _GotoState101Action,
-	{_State122, IdentifierToken}:                         _GotoState209Action,
+	{_State122, IdentifierToken}:                         _GotoState211Action,
 	{_State123, IntegerLiteralToken}:                     _GotoState24Action,
 	{_State123, FloatLiteralToken}:                       _GotoState20Action,
 	{_State123, RuneLiteralToken}:                        _GotoState32Action,
 	{_State123, StringLiteralToken}:                      _GotoState33Action,
-	{_State123, IdentifierToken}:                         _GotoState113Action,
+	{_State123, IdentifierToken}:                         _GotoState114Action,
 	{_State123, TrueToken}:                               _GotoState36Action,
 	{_State123, FalseToken}:                              _GotoState19Action,
 	{_State123, StructToken}:                             _GotoState34Action,
@@ -6434,7 +6535,8 @@ var _ActionTable = _ActionTableType{
 	{_State123, LabelDeclToken}:                          _GotoState25Action,
 	{_State123, LparenToken}:                             _GotoState28Action,
 	{_State123, LbracketToken}:                           _GotoState26Action,
-	{_State123, EllipsisToken}:                           _GotoState112Action,
+	{_State123, ColonToken}:                              _GotoState112Action,
+	{_State123, EllipsisToken}:                           _GotoState113Action,
 	{_State123, SubToken}:                                _GotoState35Action,
 	{_State123, MulToken}:                                _GotoState29Action,
 	{_State123, BitNegToken}:                             _GotoState18Action,
@@ -6443,13 +6545,12 @@ var _ActionTable = _ActionTableType{
 	{_State123, ParseErrorToken}:                         _GotoState31Action,
 	{_State123, VarDeclPatternType}:                      _GotoState69Action,
 	{_State123, VarOrLetType}:                            _GotoState70Action,
-	{_State123, ExpressionType}:                          _GotoState117Action,
+	{_State123, ExpressionType}:                          _GotoState118Action,
 	{_State123, OptionalLabelDeclType}:                   _GotoState60Action,
 	{_State123, SequenceExprType}:                        _GotoState68Action,
 	{_State123, CallExprType}:                            _GotoState50Action,
-	{_State123, ArgumentType}:                            _GotoState210Action,
-	{_State123, ColonExpressionsType}:                    _GotoState116Action,
-	{_State123, OptionalExpressionType}:                  _GotoState119Action,
+	{_State123, ArgumentType}:                            _GotoState212Action,
+	{_State123, ColonExprType}:                           _GotoState117Action,
 	{_State123, AtomExprType}:                            _GotoState43Action,
 	{_State123, ParseErrorExprType}:                      _GotoState62Action,
 	{_State123, LiteralExprType}:                         _GotoState58Action,
@@ -6478,7 +6579,7 @@ var _ActionTable = _ActionTableType{
 	{_State123, InitializableTypeType}:                   _GotoState56Action,
 	{_State123, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State123, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State125, LparenToken}:                             _GotoState211Action,
+	{_State125, LparenToken}:                             _GotoState213Action,
 	{_State130, IntegerLiteralToken}:                     _GotoState24Action,
 	{_State130, FloatLiteralToken}:                       _GotoState20Action,
 	{_State130, RuneLiteralToken}:                        _GotoState32Action,
@@ -6514,7 +6615,7 @@ var _ActionTable = _ActionTableType{
 	{_State130, PrefixableExprType}:                      _GotoState67Action,
 	{_State130, PrefixUnaryExprType}:                     _GotoState65Action,
 	{_State130, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State130, MulExprType}:                             _GotoState212Action,
+	{_State130, MulExprType}:                             _GotoState214Action,
 	{_State130, BinaryMulExprType}:                       _GotoState47Action,
 	{_State130, InitializableTypeType}:                   _GotoState56Action,
 	{_State130, ExplicitStructDefType}:                   _GotoState52Action,
@@ -6558,7 +6659,7 @@ var _ActionTable = _ActionTableType{
 	{_State131, BinaryMulExprType}:                       _GotoState47Action,
 	{_State131, AddExprType}:                             _GotoState40Action,
 	{_State131, BinaryAddExprType}:                       _GotoState44Action,
-	{_State131, CmpExprType}:                             _GotoState213Action,
+	{_State131, CmpExprType}:                             _GotoState215Action,
 	{_State131, BinaryCmpExprType}:                       _GotoState46Action,
 	{_State131, InitializableTypeType}:                   _GotoState56Action,
 	{_State131, ExplicitStructDefType}:                   _GotoState52Action,
@@ -6600,7 +6701,7 @@ var _ActionTable = _ActionTableType{
 	{_State138, PrefixUnaryOpType}:                       _GotoState66Action,
 	{_State138, MulExprType}:                             _GotoState59Action,
 	{_State138, BinaryMulExprType}:                       _GotoState47Action,
-	{_State138, AddExprType}:                             _GotoState214Action,
+	{_State138, AddExprType}:                             _GotoState216Action,
 	{_State138, BinaryAddExprType}:                       _GotoState44Action,
 	{_State138, InitializableTypeType}:                   _GotoState56Action,
 	{_State138, ExplicitStructDefType}:                   _GotoState52Action,
@@ -6609,7 +6710,7 @@ var _ActionTable = _ActionTableType{
 	{_State139, FloatLiteralToken}:                       _GotoState20Action,
 	{_State139, RuneLiteralToken}:                        _GotoState32Action,
 	{_State139, StringLiteralToken}:                      _GotoState33Action,
-	{_State139, IdentifierToken}:                         _GotoState113Action,
+	{_State139, IdentifierToken}:                         _GotoState114Action,
 	{_State139, TrueToken}:                               _GotoState36Action,
 	{_State139, FalseToken}:                              _GotoState19Action,
 	{_State139, StructToken}:                             _GotoState34Action,
@@ -6620,7 +6721,8 @@ var _ActionTable = _ActionTableType{
 	{_State139, LabelDeclToken}:                          _GotoState25Action,
 	{_State139, LparenToken}:                             _GotoState28Action,
 	{_State139, LbracketToken}:                           _GotoState26Action,
-	{_State139, EllipsisToken}:                           _GotoState112Action,
+	{_State139, ColonToken}:                              _GotoState112Action,
+	{_State139, EllipsisToken}:                           _GotoState113Action,
 	{_State139, SubToken}:                                _GotoState35Action,
 	{_State139, MulToken}:                                _GotoState29Action,
 	{_State139, BitNegToken}:                             _GotoState18Action,
@@ -6629,15 +6731,14 @@ var _ActionTable = _ActionTableType{
 	{_State139, ParseErrorToken}:                         _GotoState31Action,
 	{_State139, VarDeclPatternType}:                      _GotoState69Action,
 	{_State139, VarOrLetType}:                            _GotoState70Action,
-	{_State139, ExpressionType}:                          _GotoState117Action,
+	{_State139, ExpressionType}:                          _GotoState118Action,
 	{_State139, OptionalLabelDeclType}:                   _GotoState60Action,
 	{_State139, SequenceExprType}:                        _GotoState68Action,
 	{_State139, CallExprType}:                            _GotoState50Action,
-	{_State139, OptionalArgumentsType}:                   _GotoState215Action,
-	{_State139, ArgumentsType}:                           _GotoState115Action,
-	{_State139, ArgumentType}:                            _GotoState114Action,
-	{_State139, ColonExpressionsType}:                    _GotoState116Action,
-	{_State139, OptionalExpressionType}:                  _GotoState119Action,
+	{_State139, OptionalArgumentsType}:                   _GotoState217Action,
+	{_State139, ArgumentsType}:                           _GotoState116Action,
+	{_State139, ArgumentType}:                            _GotoState115Action,
+	{_State139, ColonExprType}:                           _GotoState117Action,
 	{_State139, AtomExprType}:                            _GotoState43Action,
 	{_State139, ParseErrorExprType}:                      _GotoState62Action,
 	{_State139, LiteralExprType}:                         _GotoState58Action,
@@ -6698,14 +6799,14 @@ var _ActionTable = _ActionTableType{
 	{_State146, IndexExprType}:                           _GotoState55Action,
 	{_State146, PostfixableExprType}:                     _GotoState64Action,
 	{_State146, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State146, PrefixableExprType}:                      _GotoState216Action,
+	{_State146, PrefixableExprType}:                      _GotoState218Action,
 	{_State146, PrefixUnaryExprType}:                     _GotoState65Action,
 	{_State146, PrefixUnaryOpType}:                       _GotoState66Action,
 	{_State146, InitializableTypeType}:                   _GotoState56Action,
 	{_State146, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State146, AnonymousFuncExprType}:                   _GotoState42Action,
 	{_State147, LbraceToken}:                             _GotoState72Action,
-	{_State147, StatementBlockType}:                      _GotoState217Action,
+	{_State147, StatementBlockType}:                      _GotoState219Action,
 	{_State148, IntegerLiteralToken}:                     _GotoState24Action,
 	{_State148, FloatLiteralToken}:                       _GotoState20Action,
 	{_State148, RuneLiteralToken}:                        _GotoState32Action,
@@ -6729,10 +6830,10 @@ var _ActionTable = _ActionTableType{
 	{_State148, ParseErrorToken}:                         _GotoState31Action,
 	{_State148, VarDeclPatternType}:                      _GotoState69Action,
 	{_State148, VarOrLetType}:                            _GotoState70Action,
-	{_State148, AssignPatternType}:                       _GotoState218Action,
+	{_State148, AssignPatternType}:                       _GotoState220Action,
 	{_State148, OptionalLabelDeclType}:                   _GotoState85Action,
-	{_State148, SequenceExprType}:                        _GotoState220Action,
-	{_State148, ForAssignmentType}:                       _GotoState219Action,
+	{_State148, SequenceExprType}:                        _GotoState222Action,
+	{_State148, ForAssignmentType}:                       _GotoState221Action,
 	{_State148, CallExprType}:                            _GotoState50Action,
 	{_State148, AtomExprType}:                            _GotoState43Action,
 	{_State148, ParseErrorExprType}:                      _GotoState62Action,
@@ -6769,7 +6870,7 @@ var _ActionTable = _ActionTableType{
 	{_State149, IdentifierToken}:                         _GotoState23Action,
 	{_State149, TrueToken}:                               _GotoState36Action,
 	{_State149, FalseToken}:                              _GotoState19Action,
-	{_State149, CaseToken}:                               _GotoState221Action,
+	{_State149, CaseToken}:                               _GotoState223Action,
 	{_State149, StructToken}:                             _GotoState34Action,
 	{_State149, FuncToken}:                               _GotoState21Action,
 	{_State149, VarToken}:                                _GotoState37Action,
@@ -6787,8 +6888,8 @@ var _ActionTable = _ActionTableType{
 	{_State149, VarDeclPatternType}:                      _GotoState69Action,
 	{_State149, VarOrLetType}:                            _GotoState70Action,
 	{_State149, OptionalLabelDeclType}:                   _GotoState85Action,
-	{_State149, SequenceExprType}:                        _GotoState223Action,
-	{_State149, ConditionType}:                           _GotoState222Action,
+	{_State149, SequenceExprType}:                        _GotoState225Action,
+	{_State149, ConditionType}:                           _GotoState224Action,
 	{_State149, CallExprType}:                            _GotoState50Action,
 	{_State149, AtomExprType}:                            _GotoState43Action,
 	{_State149, ParseErrorExprType}:                      _GotoState62Action,
@@ -6842,7 +6943,7 @@ var _ActionTable = _ActionTableType{
 	{_State150, VarDeclPatternType}:                      _GotoState69Action,
 	{_State150, VarOrLetType}:                            _GotoState70Action,
 	{_State150, OptionalLabelDeclType}:                   _GotoState85Action,
-	{_State150, SequenceExprType}:                        _GotoState224Action,
+	{_State150, SequenceExprType}:                        _GotoState226Action,
 	{_State150, CallExprType}:                            _GotoState50Action,
 	{_State150, AtomExprType}:                            _GotoState43Action,
 	{_State150, ParseErrorExprType}:                      _GotoState62Action,
@@ -6913,18 +7014,18 @@ var _ActionTable = _ActionTableType{
 	{_State155, BinaryAddExprType}:                       _GotoState44Action,
 	{_State155, CmpExprType}:                             _GotoState51Action,
 	{_State155, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State155, AndExprType}:                             _GotoState225Action,
+	{_State155, AndExprType}:                             _GotoState227Action,
 	{_State155, BinaryAndExprType}:                       _GotoState45Action,
 	{_State155, InitializableTypeType}:                   _GotoState56Action,
 	{_State155, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State155, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State158, IdentifierToken}:                         _GotoState227Action,
+	{_State158, IdentifierToken}:                         _GotoState229Action,
 	{_State158, LparenToken}:                             _GotoState158Action,
-	{_State158, EllipsisToken}:                           _GotoState226Action,
-	{_State158, VarPatternType}:                          _GotoState230Action,
+	{_State158, EllipsisToken}:                           _GotoState228Action,
+	{_State158, VarPatternType}:                          _GotoState232Action,
 	{_State158, TuplePatternType}:                        _GotoState159Action,
-	{_State158, FieldVarPatternsType}:                    _GotoState229Action,
-	{_State158, FieldVarPatternType}:                     _GotoState228Action,
+	{_State158, FieldVarPatternsType}:                    _GotoState231Action,
+	{_State158, FieldVarPatternType}:                     _GotoState230Action,
 	{_State160, IdentifierToken}:                         _GotoState93Action,
 	{_State160, StructToken}:                             _GotoState34Action,
 	{_State160, EnumToken}:                               _GotoState90Action,
@@ -6939,14 +7040,14 @@ var _ActionTable = _ActionTableType{
 	{_State160, BitNegToken}:                             _GotoState88Action,
 	{_State160, BitAndToken}:                             _GotoState87Action,
 	{_State160, ParseErrorToken}:                         _GotoState95Action,
-	{_State160, OptionalValueTypeType}:                   _GotoState231Action,
+	{_State160, OptionalValueTypeType}:                   _GotoState233Action,
 	{_State160, InitializableTypeType}:                   _GotoState104Action,
 	{_State160, AtomTypeType}:                            _GotoState99Action,
 	{_State160, ParseErrorTypeType}:                      _GotoState105Action,
 	{_State160, ReturnableTypeType}:                      _GotoState108Action,
 	{_State160, PrefixedTypeType}:                        _GotoState107Action,
 	{_State160, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State160, ValueTypeType}:                           _GotoState232Action,
+	{_State160, ValueTypeType}:                           _GotoState234Action,
 	{_State160, TraitOpTypeType}:                         _GotoState110Action,
 	{_State160, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State160, ExplicitStructDefType}:                   _GotoState52Action,
@@ -6961,23 +7062,23 @@ var _ActionTable = _ActionTableType{
 	{_State161, IdentifierToken}:                         _GotoState23Action,
 	{_State161, TrueToken}:                               _GotoState36Action,
 	{_State161, FalseToken}:                              _GotoState19Action,
-	{_State161, CaseToken}:                               _GotoState235Action,
-	{_State161, DefaultToken}:                            _GotoState237Action,
-	{_State161, ReturnToken}:                             _GotoState242Action,
-	{_State161, BreakToken}:                              _GotoState234Action,
-	{_State161, ContinueToken}:                           _GotoState236Action,
-	{_State161, FallthroughToken}:                        _GotoState239Action,
-	{_State161, ImportToken}:                             _GotoState240Action,
+	{_State161, CaseToken}:                               _GotoState237Action,
+	{_State161, DefaultToken}:                            _GotoState239Action,
+	{_State161, ReturnToken}:                             _GotoState244Action,
+	{_State161, BreakToken}:                              _GotoState236Action,
+	{_State161, ContinueToken}:                           _GotoState238Action,
+	{_State161, FallthroughToken}:                        _GotoState241Action,
+	{_State161, ImportToken}:                             _GotoState242Action,
 	{_State161, UnsafeToken}:                             _GotoState181Action,
 	{_State161, StructToken}:                             _GotoState34Action,
 	{_State161, FuncToken}:                               _GotoState21Action,
-	{_State161, AsyncToken}:                              _GotoState233Action,
-	{_State161, DeferToken}:                              _GotoState238Action,
+	{_State161, AsyncToken}:                              _GotoState235Action,
+	{_State161, DeferToken}:                              _GotoState240Action,
 	{_State161, VarToken}:                                _GotoState37Action,
 	{_State161, LetToken}:                                _GotoState27Action,
 	{_State161, NotToken}:                                _GotoState30Action,
 	{_State161, LabelDeclToken}:                          _GotoState25Action,
-	{_State161, RbraceToken}:                             _GotoState241Action,
+	{_State161, RbraceToken}:                             _GotoState243Action,
 	{_State161, LparenToken}:                             _GotoState28Action,
 	{_State161, LbracketToken}:                           _GotoState26Action,
 	{_State161, SubToken}:                                _GotoState35Action,
@@ -6986,27 +7087,27 @@ var _ActionTable = _ActionTableType{
 	{_State161, BitAndToken}:                             _GotoState17Action,
 	{_State161, GreaterToken}:                            _GotoState22Action,
 	{_State161, ParseErrorToken}:                         _GotoState31Action,
-	{_State161, StatementType}:                           _GotoState258Action,
-	{_State161, SimpleStatementBodyType}:                 _GotoState257Action,
-	{_State161, StatementBodyType}:                       _GotoState259Action,
-	{_State161, ExpressionOrImproperStructStatementType}: _GotoState250Action,
-	{_State161, CallbackOpType}:                          _GotoState247Action,
-	{_State161, CallbackOpStatementType}:                 _GotoState248Action,
-	{_State161, UnsafeStatementType}:                     _GotoState261Action,
-	{_State161, JumpStatementType}:                       _GotoState254Action,
-	{_State161, JumpTypeType}:                            _GotoState255Action,
-	{_State161, ExpressionsType}:                         _GotoState251Action,
-	{_State161, FallthroughStatementType}:                _GotoState252Action,
-	{_State161, AssignStatementType}:                     _GotoState245Action,
-	{_State161, UnaryOpAssignStatementType}:              _GotoState260Action,
-	{_State161, BinaryOpAssignStatementType}:             _GotoState246Action,
-	{_State161, ImportStatementType}:                     _GotoState253Action,
+	{_State161, StatementType}:                           _GotoState260Action,
+	{_State161, SimpleStatementBodyType}:                 _GotoState259Action,
+	{_State161, StatementBodyType}:                       _GotoState261Action,
+	{_State161, ExpressionOrImproperStructStatementType}: _GotoState252Action,
+	{_State161, CallbackOpType}:                          _GotoState249Action,
+	{_State161, CallbackOpStatementType}:                 _GotoState250Action,
+	{_State161, UnsafeStatementType}:                     _GotoState263Action,
+	{_State161, JumpStatementType}:                       _GotoState256Action,
+	{_State161, JumpTypeType}:                            _GotoState257Action,
+	{_State161, ExpressionsType}:                         _GotoState253Action,
+	{_State161, FallthroughStatementType}:                _GotoState254Action,
+	{_State161, AssignStatementType}:                     _GotoState247Action,
+	{_State161, UnaryOpAssignStatementType}:              _GotoState262Action,
+	{_State161, BinaryOpAssignStatementType}:             _GotoState248Action,
+	{_State161, ImportStatementType}:                     _GotoState255Action,
 	{_State161, VarDeclPatternType}:                      _GotoState69Action,
 	{_State161, VarOrLetType}:                            _GotoState70Action,
-	{_State161, AssignPatternType}:                       _GotoState244Action,
-	{_State161, ExpressionType}:                          _GotoState249Action,
+	{_State161, AssignPatternType}:                       _GotoState246Action,
+	{_State161, ExpressionType}:                          _GotoState251Action,
 	{_State161, OptionalLabelDeclType}:                   _GotoState60Action,
-	{_State161, SequenceExprType}:                        _GotoState256Action,
+	{_State161, SequenceExprType}:                        _GotoState258Action,
 	{_State161, CallExprType}:                            _GotoState50Action,
 	{_State161, AtomExprType}:                            _GotoState43Action,
 	{_State161, ParseErrorExprType}:                      _GotoState62Action,
@@ -7015,7 +7116,7 @@ var _ActionTable = _ActionTableType{
 	{_State161, BlockExprType}:                           _GotoState49Action,
 	{_State161, InitializeExprType}:                      _GotoState57Action,
 	{_State161, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State161, AccessibleExprType}:                      _GotoState243Action,
+	{_State161, AccessibleExprType}:                      _GotoState245Action,
 	{_State161, AccessExprType}:                          _GotoState38Action,
 	{_State161, IndexExprType}:                           _GotoState55Action,
 	{_State161, PostfixableExprType}:                     _GotoState64Action,
@@ -7043,7 +7144,7 @@ var _ActionTable = _ActionTableType{
 	{_State162, VarToken}:                                _GotoState37Action,
 	{_State162, LetToken}:                                _GotoState27Action,
 	{_State162, LbraceToken}:                             _GotoState72Action,
-	{_State162, DefinitionType}:                          _GotoState262Action,
+	{_State162, DefinitionType}:                          _GotoState264Action,
 	{_State162, StatementBlockType}:                      _GotoState77Action,
 	{_State162, VarDeclPatternType}:                      _GotoState79Action,
 	{_State162, VarOrLetType}:                            _GotoState70Action,
@@ -7073,7 +7174,7 @@ var _ActionTable = _ActionTableType{
 	{_State164, ParseErrorToken}:                         _GotoState31Action,
 	{_State164, VarDeclPatternType}:                      _GotoState69Action,
 	{_State164, VarOrLetType}:                            _GotoState70Action,
-	{_State164, ExpressionType}:                          _GotoState263Action,
+	{_State164, ExpressionType}:                          _GotoState265Action,
 	{_State164, OptionalLabelDeclType}:                   _GotoState60Action,
 	{_State164, SequenceExprType}:                        _GotoState68Action,
 	{_State164, CallExprType}:                            _GotoState50Action,
@@ -7125,7 +7226,7 @@ var _ActionTable = _ActionTableType{
 	{_State165, ReturnableTypeType}:                      _GotoState108Action,
 	{_State165, PrefixedTypeType}:                        _GotoState107Action,
 	{_State165, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State165, ValueTypeType}:                           _GotoState264Action,
+	{_State165, ValueTypeType}:                           _GotoState266Action,
 	{_State165, TraitOpTypeType}:                         _GotoState110Action,
 	{_State165, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State165, ExplicitStructDefType}:                   _GotoState52Action,
@@ -7133,10 +7234,10 @@ var _ActionTable = _ActionTableType{
 	{_State165, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State165, TraitDefType}:                            _GotoState109Action,
 	{_State165, FuncTypeType}:                            _GotoState101Action,
-	{_State166, IdentifierToken}:                         _GotoState265Action,
-	{_State166, GenericParameterDefType}:                 _GotoState266Action,
-	{_State166, GenericParameterDefsType}:                _GotoState267Action,
-	{_State166, OptionalGenericParameterDefsType}:        _GotoState268Action,
+	{_State166, IdentifierToken}:                         _GotoState267Action,
+	{_State166, GenericParameterDefType}:                 _GotoState268Action,
+	{_State166, GenericParameterDefsType}:                _GotoState269Action,
+	{_State166, OptionalGenericParameterDefsType}:        _GotoState270Action,
 	{_State167, IdentifierToken}:                         _GotoState93Action,
 	{_State167, StructToken}:                             _GotoState34Action,
 	{_State167, EnumToken}:                               _GotoState90Action,
@@ -7157,7 +7258,7 @@ var _ActionTable = _ActionTableType{
 	{_State167, ReturnableTypeType}:                      _GotoState108Action,
 	{_State167, PrefixedTypeType}:                        _GotoState107Action,
 	{_State167, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State167, ValueTypeType}:                           _GotoState269Action,
+	{_State167, ValueTypeType}:                           _GotoState271Action,
 	{_State167, TraitOpTypeType}:                         _GotoState110Action,
 	{_State167, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State167, ExplicitStructDefType}:                   _GotoState52Action,
@@ -7188,7 +7289,7 @@ var _ActionTable = _ActionTableType{
 	{_State168, ParseErrorToken}:                         _GotoState31Action,
 	{_State168, VarDeclPatternType}:                      _GotoState69Action,
 	{_State168, VarOrLetType}:                            _GotoState70Action,
-	{_State168, ExpressionType}:                          _GotoState270Action,
+	{_State168, ExpressionType}:                          _GotoState272Action,
 	{_State168, OptionalLabelDeclType}:                   _GotoState60Action,
 	{_State168, SequenceExprType}:                        _GotoState68Action,
 	{_State168, CallExprType}:                            _GotoState50Action,
@@ -7220,7 +7321,7 @@ var _ActionTable = _ActionTableType{
 	{_State168, InitializableTypeType}:                   _GotoState56Action,
 	{_State168, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State168, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State169, LparenToken}:                             _GotoState271Action,
+	{_State169, LparenToken}:                             _GotoState273Action,
 	{_State170, IdentifierToken}:                         _GotoState93Action,
 	{_State170, StructToken}:                             _GotoState34Action,
 	{_State170, EnumToken}:                               _GotoState90Action,
@@ -7231,7 +7332,7 @@ var _ActionTable = _ActionTableType{
 	{_State170, DotToken}:                                _GotoState89Action,
 	{_State170, QuestionToken}:                           _GotoState96Action,
 	{_State170, ExclaimToken}:                            _GotoState91Action,
-	{_State170, EllipsisToken}:                           _GotoState272Action,
+	{_State170, EllipsisToken}:                           _GotoState274Action,
 	{_State170, TildeTildeToken}:                         _GotoState97Action,
 	{_State170, BitNegToken}:                             _GotoState88Action,
 	{_State170, BitAndToken}:                             _GotoState87Action,
@@ -7242,7 +7343,7 @@ var _ActionTable = _ActionTableType{
 	{_State170, ReturnableTypeType}:                      _GotoState108Action,
 	{_State170, PrefixedTypeType}:                        _GotoState107Action,
 	{_State170, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State170, ValueTypeType}:                           _GotoState273Action,
+	{_State170, ValueTypeType}:                           _GotoState275Action,
 	{_State170, TraitOpTypeType}:                         _GotoState110Action,
 	{_State170, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State170, ExplicitStructDefType}:                   _GotoState52Action,
@@ -7250,9 +7351,9 @@ var _ActionTable = _ActionTableType{
 	{_State170, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State170, TraitDefType}:                            _GotoState109Action,
 	{_State170, FuncTypeType}:                            _GotoState101Action,
-	{_State171, RparenToken}:                             _GotoState274Action,
-	{_State172, RparenToken}:                             _GotoState275Action,
-	{_State174, CommaToken}:                              _GotoState276Action,
+	{_State171, RparenToken}:                             _GotoState276Action,
+	{_State172, RparenToken}:                             _GotoState277Action,
+	{_State174, CommaToken}:                              _GotoState278Action,
 	{_State176, IdentifierToken}:                         _GotoState180Action,
 	{_State176, UnsafeToken}:                             _GotoState181Action,
 	{_State176, StructToken}:                             _GotoState34Action,
@@ -7277,17 +7378,17 @@ var _ActionTable = _ActionTableType{
 	{_State176, PrefixTypeOpType}:                        _GotoState106Action,
 	{_State176, ValueTypeType}:                           _GotoState188Action,
 	{_State176, TraitOpTypeType}:                         _GotoState110Action,
-	{_State176, FieldDefType}:                            _GotoState279Action,
+	{_State176, FieldDefType}:                            _GotoState281Action,
 	{_State176, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State176, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State176, EnumValueDefType}:                        _GotoState277Action,
-	{_State176, ImplicitEnumValueDefsType}:               _GotoState280Action,
+	{_State176, EnumValueDefType}:                        _GotoState279Action,
+	{_State176, ImplicitEnumValueDefsType}:               _GotoState282Action,
 	{_State176, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State176, ExplicitEnumValueDefsType}:               _GotoState278Action,
+	{_State176, ExplicitEnumValueDefsType}:               _GotoState280Action,
 	{_State176, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State176, TraitDefType}:                            _GotoState109Action,
 	{_State176, FuncTypeType}:                            _GotoState101Action,
-	{_State177, IdentifierToken}:                         _GotoState282Action,
+	{_State177, IdentifierToken}:                         _GotoState284Action,
 	{_State177, StructToken}:                             _GotoState34Action,
 	{_State177, EnumToken}:                               _GotoState90Action,
 	{_State177, TraitToken}:                              _GotoState98Action,
@@ -7297,7 +7398,7 @@ var _ActionTable = _ActionTableType{
 	{_State177, DotToken}:                                _GotoState89Action,
 	{_State177, QuestionToken}:                           _GotoState96Action,
 	{_State177, ExclaimToken}:                            _GotoState91Action,
-	{_State177, EllipsisToken}:                           _GotoState281Action,
+	{_State177, EllipsisToken}:                           _GotoState283Action,
 	{_State177, TildeTildeToken}:                         _GotoState97Action,
 	{_State177, BitNegToken}:                             _GotoState88Action,
 	{_State177, BitAndToken}:                             _GotoState87Action,
@@ -7308,18 +7409,18 @@ var _ActionTable = _ActionTableType{
 	{_State177, ReturnableTypeType}:                      _GotoState108Action,
 	{_State177, PrefixedTypeType}:                        _GotoState107Action,
 	{_State177, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State177, ValueTypeType}:                           _GotoState286Action,
+	{_State177, ValueTypeType}:                           _GotoState288Action,
 	{_State177, TraitOpTypeType}:                         _GotoState110Action,
 	{_State177, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State177, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State177, ImplicitEnumDefType}:                     _GotoState102Action,
 	{_State177, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State177, TraitDefType}:                            _GotoState109Action,
-	{_State177, ParameterDeclType}:                       _GotoState284Action,
-	{_State177, ParameterDeclsType}:                      _GotoState285Action,
-	{_State177, OptionalParameterDeclsType}:              _GotoState283Action,
+	{_State177, ParameterDeclType}:                       _GotoState286Action,
+	{_State177, ParameterDeclsType}:                      _GotoState287Action,
+	{_State177, OptionalParameterDeclsType}:              _GotoState285Action,
 	{_State177, FuncTypeType}:                            _GotoState101Action,
-	{_State178, IdentifierToken}:                         _GotoState287Action,
+	{_State178, IdentifierToken}:                         _GotoState289Action,
 	{_State180, IdentifierToken}:                         _GotoState93Action,
 	{_State180, StructToken}:                             _GotoState34Action,
 	{_State180, EnumToken}:                               _GotoState90Action,
@@ -7327,7 +7428,7 @@ var _ActionTable = _ActionTableType{
 	{_State180, FuncToken}:                               _GotoState92Action,
 	{_State180, LparenToken}:                             _GotoState94Action,
 	{_State180, LbracketToken}:                           _GotoState26Action,
-	{_State180, DotToken}:                                _GotoState288Action,
+	{_State180, DotToken}:                                _GotoState290Action,
 	{_State180, QuestionToken}:                           _GotoState96Action,
 	{_State180, ExclaimToken}:                            _GotoState91Action,
 	{_State180, DollarLbracketToken}:                     _GotoState121Action,
@@ -7342,7 +7443,7 @@ var _ActionTable = _ActionTableType{
 	{_State180, ReturnableTypeType}:                      _GotoState108Action,
 	{_State180, PrefixedTypeType}:                        _GotoState107Action,
 	{_State180, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State180, ValueTypeType}:                           _GotoState289Action,
+	{_State180, ValueTypeType}:                           _GotoState291Action,
 	{_State180, TraitOpTypeType}:                         _GotoState110Action,
 	{_State180, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State180, ExplicitStructDefType}:                   _GotoState52Action,
@@ -7350,13 +7451,13 @@ var _ActionTable = _ActionTableType{
 	{_State180, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State180, TraitDefType}:                            _GotoState109Action,
 	{_State180, FuncTypeType}:                            _GotoState101Action,
-	{_State181, LessToken}:                               _GotoState290Action,
-	{_State182, OrToken}:                                 _GotoState291Action,
-	{_State183, AssignToken}:                             _GotoState292Action,
-	{_State184, OrToken}:                                 _GotoState293Action,
-	{_State184, RparenToken}:                             _GotoState294Action,
-	{_State185, CommaToken}:                              _GotoState295Action,
-	{_State186, RparenToken}:                             _GotoState296Action,
+	{_State181, LessToken}:                               _GotoState292Action,
+	{_State182, OrToken}:                                 _GotoState293Action,
+	{_State183, AssignToken}:                             _GotoState294Action,
+	{_State184, OrToken}:                                 _GotoState295Action,
+	{_State184, RparenToken}:                             _GotoState296Action,
+	{_State185, CommaToken}:                              _GotoState297Action,
+	{_State186, RparenToken}:                             _GotoState298Action,
 	{_State188, AddToken}:                                _GotoState191Action,
 	{_State188, SubToken}:                                _GotoState196Action,
 	{_State188, MulToken}:                                _GotoState194Action,
@@ -7366,7 +7467,7 @@ var _ActionTable = _ActionTableType{
 	{_State189, StructToken}:                             _GotoState34Action,
 	{_State189, EnumToken}:                               _GotoState90Action,
 	{_State189, TraitToken}:                              _GotoState98Action,
-	{_State189, FuncToken}:                               _GotoState297Action,
+	{_State189, FuncToken}:                               _GotoState299Action,
 	{_State189, LparenToken}:                             _GotoState94Action,
 	{_State189, LbracketToken}:                           _GotoState26Action,
 	{_State189, DotToken}:                                _GotoState89Action,
@@ -7385,17 +7486,17 @@ var _ActionTable = _ActionTableType{
 	{_State189, PrefixTypeOpType}:                        _GotoState106Action,
 	{_State189, ValueTypeType}:                           _GotoState188Action,
 	{_State189, TraitOpTypeType}:                         _GotoState110Action,
-	{_State189, FieldDefType}:                            _GotoState298Action,
+	{_State189, FieldDefType}:                            _GotoState300Action,
 	{_State189, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State189, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State189, ImplicitEnumDefType}:                     _GotoState102Action,
 	{_State189, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State189, TraitPropertyType}:                       _GotoState302Action,
-	{_State189, TraitPropertiesType}:                     _GotoState301Action,
-	{_State189, OptionalTraitPropertiesType}:             _GotoState300Action,
+	{_State189, TraitPropertyType}:                       _GotoState304Action,
+	{_State189, TraitPropertiesType}:                     _GotoState303Action,
+	{_State189, OptionalTraitPropertiesType}:             _GotoState302Action,
 	{_State189, TraitDefType}:                            _GotoState109Action,
 	{_State189, FuncTypeType}:                            _GotoState101Action,
-	{_State189, MethodSignatureType}:                     _GotoState299Action,
+	{_State189, MethodSignatureType}:                     _GotoState301Action,
 	{_State192, IdentifierToken}:                         _GotoState93Action,
 	{_State192, StructToken}:                             _GotoState34Action,
 	{_State192, EnumToken}:                               _GotoState90Action,
@@ -7416,7 +7517,7 @@ var _ActionTable = _ActionTableType{
 	{_State192, ReturnableTypeType}:                      _GotoState108Action,
 	{_State192, PrefixedTypeType}:                        _GotoState107Action,
 	{_State192, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State192, ValueTypeType}:                           _GotoState303Action,
+	{_State192, ValueTypeType}:                           _GotoState305Action,
 	{_State192, TraitOpTypeType}:                         _GotoState110Action,
 	{_State192, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State192, ExplicitStructDefType}:                   _GotoState52Action,
@@ -7424,7 +7525,7 @@ var _ActionTable = _ActionTableType{
 	{_State192, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State192, TraitDefType}:                            _GotoState109Action,
 	{_State192, FuncTypeType}:                            _GotoState101Action,
-	{_State193, IntegerLiteralToken}:                     _GotoState304Action,
+	{_State193, IntegerLiteralToken}:                     _GotoState306Action,
 	{_State197, IdentifierToken}:                         _GotoState93Action,
 	{_State197, StructToken}:                             _GotoState34Action,
 	{_State197, EnumToken}:                               _GotoState90Action,
@@ -7442,7 +7543,7 @@ var _ActionTable = _ActionTableType{
 	{_State197, InitializableTypeType}:                   _GotoState104Action,
 	{_State197, AtomTypeType}:                            _GotoState99Action,
 	{_State197, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State197, ReturnableTypeType}:                      _GotoState305Action,
+	{_State197, ReturnableTypeType}:                      _GotoState307Action,
 	{_State197, PrefixedTypeType}:                        _GotoState107Action,
 	{_State197, PrefixTypeOpType}:                        _GotoState106Action,
 	{_State197, ImplicitStructDefType}:                   _GotoState103Action,
@@ -7451,66 +7552,11 @@ var _ActionTable = _ActionTableType{
 	{_State197, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State197, TraitDefType}:                            _GotoState109Action,
 	{_State197, FuncTypeType}:                            _GotoState101Action,
-	{_State198, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State198, FloatLiteralToken}:                       _GotoState20Action,
-	{_State198, RuneLiteralToken}:                        _GotoState32Action,
-	{_State198, StringLiteralToken}:                      _GotoState33Action,
-	{_State198, IdentifierToken}:                         _GotoState23Action,
-	{_State198, TrueToken}:                               _GotoState36Action,
-	{_State198, FalseToken}:                              _GotoState19Action,
-	{_State198, StructToken}:                             _GotoState34Action,
-	{_State198, FuncToken}:                               _GotoState21Action,
-	{_State198, VarToken}:                                _GotoState37Action,
-	{_State198, LetToken}:                                _GotoState27Action,
-	{_State198, NotToken}:                                _GotoState30Action,
-	{_State198, LabelDeclToken}:                          _GotoState25Action,
-	{_State198, LparenToken}:                             _GotoState28Action,
-	{_State198, LbracketToken}:                           _GotoState26Action,
-	{_State198, SubToken}:                                _GotoState35Action,
-	{_State198, MulToken}:                                _GotoState29Action,
-	{_State198, BitNegToken}:                             _GotoState18Action,
-	{_State198, BitAndToken}:                             _GotoState17Action,
-	{_State198, GreaterToken}:                            _GotoState22Action,
-	{_State198, ParseErrorToken}:                         _GotoState31Action,
-	{_State198, VarDeclPatternType}:                      _GotoState69Action,
-	{_State198, VarOrLetType}:                            _GotoState70Action,
-	{_State198, ExpressionType}:                          _GotoState306Action,
-	{_State198, OptionalLabelDeclType}:                   _GotoState60Action,
-	{_State198, SequenceExprType}:                        _GotoState68Action,
-	{_State198, CallExprType}:                            _GotoState50Action,
-	{_State198, AtomExprType}:                            _GotoState43Action,
-	{_State198, ParseErrorExprType}:                      _GotoState62Action,
-	{_State198, LiteralExprType}:                         _GotoState58Action,
-	{_State198, IdentifierExprType}:                      _GotoState53Action,
-	{_State198, BlockExprType}:                           _GotoState49Action,
-	{_State198, InitializeExprType}:                      _GotoState57Action,
-	{_State198, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State198, AccessibleExprType}:                      _GotoState39Action,
-	{_State198, AccessExprType}:                          _GotoState38Action,
-	{_State198, IndexExprType}:                           _GotoState55Action,
-	{_State198, PostfixableExprType}:                     _GotoState64Action,
-	{_State198, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State198, PrefixableExprType}:                      _GotoState67Action,
-	{_State198, PrefixUnaryExprType}:                     _GotoState65Action,
-	{_State198, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State198, MulExprType}:                             _GotoState59Action,
-	{_State198, BinaryMulExprType}:                       _GotoState47Action,
-	{_State198, AddExprType}:                             _GotoState40Action,
-	{_State198, BinaryAddExprType}:                       _GotoState44Action,
-	{_State198, CmpExprType}:                             _GotoState51Action,
-	{_State198, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State198, AndExprType}:                             _GotoState41Action,
-	{_State198, BinaryAndExprType}:                       _GotoState45Action,
-	{_State198, OrExprType}:                              _GotoState61Action,
-	{_State198, BinaryOrExprType}:                        _GotoState48Action,
-	{_State198, InitializableTypeType}:                   _GotoState56Action,
-	{_State198, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State198, AnonymousFuncExprType}:                   _GotoState42Action,
 	{_State199, IntegerLiteralToken}:                     _GotoState24Action,
 	{_State199, FloatLiteralToken}:                       _GotoState20Action,
 	{_State199, RuneLiteralToken}:                        _GotoState32Action,
 	{_State199, StringLiteralToken}:                      _GotoState33Action,
-	{_State199, IdentifierToken}:                         _GotoState113Action,
+	{_State199, IdentifierToken}:                         _GotoState23Action,
 	{_State199, TrueToken}:                               _GotoState36Action,
 	{_State199, FalseToken}:                              _GotoState19Action,
 	{_State199, StructToken}:                             _GotoState34Action,
@@ -7521,7 +7567,6 @@ var _ActionTable = _ActionTableType{
 	{_State199, LabelDeclToken}:                          _GotoState25Action,
 	{_State199, LparenToken}:                             _GotoState28Action,
 	{_State199, LbracketToken}:                           _GotoState26Action,
-	{_State199, EllipsisToken}:                           _GotoState112Action,
 	{_State199, SubToken}:                                _GotoState35Action,
 	{_State199, MulToken}:                                _GotoState29Action,
 	{_State199, BitNegToken}:                             _GotoState18Action,
@@ -7530,13 +7575,10 @@ var _ActionTable = _ActionTableType{
 	{_State199, ParseErrorToken}:                         _GotoState31Action,
 	{_State199, VarDeclPatternType}:                      _GotoState69Action,
 	{_State199, VarOrLetType}:                            _GotoState70Action,
-	{_State199, ExpressionType}:                          _GotoState117Action,
+	{_State199, ExpressionType}:                          _GotoState308Action,
 	{_State199, OptionalLabelDeclType}:                   _GotoState60Action,
 	{_State199, SequenceExprType}:                        _GotoState68Action,
 	{_State199, CallExprType}:                            _GotoState50Action,
-	{_State199, ArgumentType}:                            _GotoState307Action,
-	{_State199, ColonExpressionsType}:                    _GotoState116Action,
-	{_State199, OptionalExpressionType}:                  _GotoState119Action,
 	{_State199, AtomExprType}:                            _GotoState43Action,
 	{_State199, ParseErrorExprType}:                      _GotoState62Action,
 	{_State199, LiteralExprType}:                         _GotoState58Action,
@@ -7569,7 +7611,7 @@ var _ActionTable = _ActionTableType{
 	{_State200, FloatLiteralToken}:                       _GotoState20Action,
 	{_State200, RuneLiteralToken}:                        _GotoState32Action,
 	{_State200, StringLiteralToken}:                      _GotoState33Action,
-	{_State200, IdentifierToken}:                         _GotoState23Action,
+	{_State200, IdentifierToken}:                         _GotoState114Action,
 	{_State200, TrueToken}:                               _GotoState36Action,
 	{_State200, FalseToken}:                              _GotoState19Action,
 	{_State200, StructToken}:                             _GotoState34Action,
@@ -7580,6 +7622,8 @@ var _ActionTable = _ActionTableType{
 	{_State200, LabelDeclToken}:                          _GotoState25Action,
 	{_State200, LparenToken}:                             _GotoState28Action,
 	{_State200, LbracketToken}:                           _GotoState26Action,
+	{_State200, ColonToken}:                              _GotoState112Action,
+	{_State200, EllipsisToken}:                           _GotoState113Action,
 	{_State200, SubToken}:                                _GotoState35Action,
 	{_State200, MulToken}:                                _GotoState29Action,
 	{_State200, BitNegToken}:                             _GotoState18Action,
@@ -7588,11 +7632,12 @@ var _ActionTable = _ActionTableType{
 	{_State200, ParseErrorToken}:                         _GotoState31Action,
 	{_State200, VarDeclPatternType}:                      _GotoState69Action,
 	{_State200, VarOrLetType}:                            _GotoState70Action,
-	{_State200, ExpressionType}:                          _GotoState308Action,
+	{_State200, ExpressionType}:                          _GotoState118Action,
 	{_State200, OptionalLabelDeclType}:                   _GotoState60Action,
 	{_State200, SequenceExprType}:                        _GotoState68Action,
 	{_State200, CallExprType}:                            _GotoState50Action,
-	{_State200, OptionalExpressionType}:                  _GotoState309Action,
+	{_State200, ArgumentType}:                            _GotoState309Action,
+	{_State200, ColonExprType}:                           _GotoState117Action,
 	{_State200, AtomExprType}:                            _GotoState43Action,
 	{_State200, ParseErrorExprType}:                      _GotoState62Action,
 	{_State200, LiteralExprType}:                         _GotoState58Action,
@@ -7621,6 +7666,61 @@ var _ActionTable = _ActionTableType{
 	{_State200, InitializableTypeType}:                   _GotoState56Action,
 	{_State200, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State200, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State201, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State201, FloatLiteralToken}:                       _GotoState20Action,
+	{_State201, RuneLiteralToken}:                        _GotoState32Action,
+	{_State201, StringLiteralToken}:                      _GotoState33Action,
+	{_State201, IdentifierToken}:                         _GotoState23Action,
+	{_State201, TrueToken}:                               _GotoState36Action,
+	{_State201, FalseToken}:                              _GotoState19Action,
+	{_State201, StructToken}:                             _GotoState34Action,
+	{_State201, FuncToken}:                               _GotoState21Action,
+	{_State201, VarToken}:                                _GotoState37Action,
+	{_State201, LetToken}:                                _GotoState27Action,
+	{_State201, NotToken}:                                _GotoState30Action,
+	{_State201, LabelDeclToken}:                          _GotoState25Action,
+	{_State201, LparenToken}:                             _GotoState28Action,
+	{_State201, LbracketToken}:                           _GotoState26Action,
+	{_State201, SubToken}:                                _GotoState35Action,
+	{_State201, MulToken}:                                _GotoState29Action,
+	{_State201, BitNegToken}:                             _GotoState18Action,
+	{_State201, BitAndToken}:                             _GotoState17Action,
+	{_State201, GreaterToken}:                            _GotoState22Action,
+	{_State201, ParseErrorToken}:                         _GotoState31Action,
+	{_State201, VarDeclPatternType}:                      _GotoState69Action,
+	{_State201, VarOrLetType}:                            _GotoState70Action,
+	{_State201, ExpressionType}:                          _GotoState310Action,
+	{_State201, OptionalLabelDeclType}:                   _GotoState60Action,
+	{_State201, SequenceExprType}:                        _GotoState68Action,
+	{_State201, CallExprType}:                            _GotoState50Action,
+	{_State201, AtomExprType}:                            _GotoState43Action,
+	{_State201, ParseErrorExprType}:                      _GotoState62Action,
+	{_State201, LiteralExprType}:                         _GotoState58Action,
+	{_State201, IdentifierExprType}:                      _GotoState53Action,
+	{_State201, BlockExprType}:                           _GotoState49Action,
+	{_State201, InitializeExprType}:                      _GotoState57Action,
+	{_State201, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State201, AccessibleExprType}:                      _GotoState39Action,
+	{_State201, AccessExprType}:                          _GotoState38Action,
+	{_State201, IndexExprType}:                           _GotoState55Action,
+	{_State201, PostfixableExprType}:                     _GotoState64Action,
+	{_State201, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State201, PrefixableExprType}:                      _GotoState67Action,
+	{_State201, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State201, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State201, MulExprType}:                             _GotoState59Action,
+	{_State201, BinaryMulExprType}:                       _GotoState47Action,
+	{_State201, AddExprType}:                             _GotoState40Action,
+	{_State201, BinaryAddExprType}:                       _GotoState44Action,
+	{_State201, CmpExprType}:                             _GotoState51Action,
+	{_State201, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State201, AndExprType}:                             _GotoState41Action,
+	{_State201, BinaryAndExprType}:                       _GotoState45Action,
+	{_State201, OrExprType}:                              _GotoState61Action,
+	{_State201, BinaryOrExprType}:                        _GotoState48Action,
+	{_State201, InitializableTypeType}:                   _GotoState56Action,
+	{_State201, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State201, AnonymousFuncExprType}:                   _GotoState42Action,
 	{_State202, IntegerLiteralToken}:                     _GotoState24Action,
 	{_State202, FloatLiteralToken}:                       _GotoState20Action,
 	{_State202, RuneLiteralToken}:                        _GotoState32Action,
@@ -7644,11 +7744,10 @@ var _ActionTable = _ActionTableType{
 	{_State202, ParseErrorToken}:                         _GotoState31Action,
 	{_State202, VarDeclPatternType}:                      _GotoState69Action,
 	{_State202, VarOrLetType}:                            _GotoState70Action,
-	{_State202, ExpressionType}:                          _GotoState308Action,
+	{_State202, ExpressionType}:                          _GotoState311Action,
 	{_State202, OptionalLabelDeclType}:                   _GotoState60Action,
 	{_State202, SequenceExprType}:                        _GotoState68Action,
 	{_State202, CallExprType}:                            _GotoState50Action,
-	{_State202, OptionalExpressionType}:                  _GotoState310Action,
 	{_State202, AtomExprType}:                            _GotoState43Action,
 	{_State202, ParseErrorExprType}:                      _GotoState62Action,
 	{_State202, LiteralExprType}:                         _GotoState58Action,
@@ -7677,562 +7776,529 @@ var _ActionTable = _ActionTableType{
 	{_State202, InitializableTypeType}:                   _GotoState56Action,
 	{_State202, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State202, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State203, NewlinesToken}:                           _GotoState312Action,
-	{_State203, CommaToken}:                              _GotoState311Action,
-	{_State205, RparenToken}:                             _GotoState313Action,
-	{_State206, CommaToken}:                              _GotoState314Action,
-	{_State207, RbracketToken}:                           _GotoState315Action,
-	{_State208, AddToken}:                                _GotoState191Action,
-	{_State208, SubToken}:                                _GotoState196Action,
-	{_State208, MulToken}:                                _GotoState194Action,
-	{_State208, TraitOpType}:                             _GotoState197Action,
-	{_State210, RbracketToken}:                           _GotoState316Action,
-	{_State211, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State211, FloatLiteralToken}:                       _GotoState20Action,
-	{_State211, RuneLiteralToken}:                        _GotoState32Action,
-	{_State211, StringLiteralToken}:                      _GotoState33Action,
-	{_State211, IdentifierToken}:                         _GotoState113Action,
-	{_State211, TrueToken}:                               _GotoState36Action,
-	{_State211, FalseToken}:                              _GotoState19Action,
-	{_State211, StructToken}:                             _GotoState34Action,
-	{_State211, FuncToken}:                               _GotoState21Action,
-	{_State211, VarToken}:                                _GotoState37Action,
-	{_State211, LetToken}:                                _GotoState27Action,
-	{_State211, NotToken}:                                _GotoState30Action,
-	{_State211, LabelDeclToken}:                          _GotoState25Action,
-	{_State211, LparenToken}:                             _GotoState28Action,
-	{_State211, LbracketToken}:                           _GotoState26Action,
-	{_State211, EllipsisToken}:                           _GotoState112Action,
-	{_State211, SubToken}:                                _GotoState35Action,
-	{_State211, MulToken}:                                _GotoState29Action,
-	{_State211, BitNegToken}:                             _GotoState18Action,
-	{_State211, BitAndToken}:                             _GotoState17Action,
-	{_State211, GreaterToken}:                            _GotoState22Action,
-	{_State211, ParseErrorToken}:                         _GotoState31Action,
-	{_State211, VarDeclPatternType}:                      _GotoState69Action,
-	{_State211, VarOrLetType}:                            _GotoState70Action,
-	{_State211, ExpressionType}:                          _GotoState117Action,
-	{_State211, OptionalLabelDeclType}:                   _GotoState60Action,
-	{_State211, SequenceExprType}:                        _GotoState68Action,
-	{_State211, CallExprType}:                            _GotoState50Action,
-	{_State211, OptionalArgumentsType}:                   _GotoState317Action,
-	{_State211, ArgumentsType}:                           _GotoState115Action,
-	{_State211, ArgumentType}:                            _GotoState114Action,
-	{_State211, ColonExpressionsType}:                    _GotoState116Action,
-	{_State211, OptionalExpressionType}:                  _GotoState119Action,
-	{_State211, AtomExprType}:                            _GotoState43Action,
-	{_State211, ParseErrorExprType}:                      _GotoState62Action,
-	{_State211, LiteralExprType}:                         _GotoState58Action,
-	{_State211, IdentifierExprType}:                      _GotoState53Action,
-	{_State211, BlockExprType}:                           _GotoState49Action,
-	{_State211, InitializeExprType}:                      _GotoState57Action,
-	{_State211, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State211, AccessibleExprType}:                      _GotoState39Action,
-	{_State211, AccessExprType}:                          _GotoState38Action,
-	{_State211, IndexExprType}:                           _GotoState55Action,
-	{_State211, PostfixableExprType}:                     _GotoState64Action,
-	{_State211, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State211, PrefixableExprType}:                      _GotoState67Action,
-	{_State211, PrefixUnaryExprType}:                     _GotoState65Action,
-	{_State211, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State211, MulExprType}:                             _GotoState59Action,
-	{_State211, BinaryMulExprType}:                       _GotoState47Action,
-	{_State211, AddExprType}:                             _GotoState40Action,
-	{_State211, BinaryAddExprType}:                       _GotoState44Action,
-	{_State211, CmpExprType}:                             _GotoState51Action,
-	{_State211, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State211, AndExprType}:                             _GotoState41Action,
-	{_State211, BinaryAndExprType}:                       _GotoState45Action,
-	{_State211, OrExprType}:                              _GotoState61Action,
-	{_State211, BinaryOrExprType}:                        _GotoState48Action,
-	{_State211, InitializableTypeType}:                   _GotoState56Action,
-	{_State211, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State211, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State212, MulToken}:                                _GotoState145Action,
-	{_State212, DivToken}:                                _GotoState143Action,
-	{_State212, ModToken}:                                _GotoState144Action,
-	{_State212, BitAndToken}:                             _GotoState140Action,
-	{_State212, BitLshiftToken}:                          _GotoState141Action,
-	{_State212, BitRshiftToken}:                          _GotoState142Action,
-	{_State212, MulOpType}:                               _GotoState146Action,
-	{_State213, EqualToken}:                              _GotoState132Action,
-	{_State213, NotEqualToken}:                           _GotoState137Action,
-	{_State213, LessToken}:                               _GotoState135Action,
-	{_State213, LessOrEqualToken}:                        _GotoState136Action,
-	{_State213, GreaterToken}:                            _GotoState133Action,
-	{_State213, GreaterOrEqualToken}:                     _GotoState134Action,
-	{_State213, CmpOpType}:                               _GotoState138Action,
-	{_State214, AddToken}:                                _GotoState126Action,
-	{_State214, SubToken}:                                _GotoState129Action,
-	{_State214, BitXorToken}:                             _GotoState128Action,
-	{_State214, BitOrToken}:                              _GotoState127Action,
-	{_State214, AddOpType}:                               _GotoState130Action,
-	{_State215, RparenToken}:                             _GotoState318Action,
-	{_State217, ForToken}:                                _GotoState319Action,
-	{_State218, InToken}:                                 _GotoState321Action,
-	{_State218, AssignToken}:                             _GotoState320Action,
-	{_State219, SemicolonToken}:                          _GotoState322Action,
-	{_State220, DoToken}:                                 _GotoState323Action,
-	{_State221, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State221, FloatLiteralToken}:                       _GotoState20Action,
-	{_State221, RuneLiteralToken}:                        _GotoState32Action,
-	{_State221, StringLiteralToken}:                      _GotoState33Action,
-	{_State221, IdentifierToken}:                         _GotoState23Action,
-	{_State221, TrueToken}:                               _GotoState36Action,
-	{_State221, FalseToken}:                              _GotoState19Action,
-	{_State221, StructToken}:                             _GotoState34Action,
-	{_State221, FuncToken}:                               _GotoState21Action,
-	{_State221, VarToken}:                                _GotoState325Action,
-	{_State221, LetToken}:                                _GotoState27Action,
-	{_State221, NotToken}:                                _GotoState30Action,
-	{_State221, LabelDeclToken}:                          _GotoState25Action,
-	{_State221, LparenToken}:                             _GotoState28Action,
-	{_State221, LbracketToken}:                           _GotoState26Action,
-	{_State221, DotToken}:                                _GotoState324Action,
-	{_State221, SubToken}:                                _GotoState35Action,
-	{_State221, MulToken}:                                _GotoState29Action,
-	{_State221, BitNegToken}:                             _GotoState18Action,
-	{_State221, BitAndToken}:                             _GotoState17Action,
-	{_State221, GreaterToken}:                            _GotoState22Action,
-	{_State221, ParseErrorToken}:                         _GotoState31Action,
-	{_State221, CasePatternsType}:                        _GotoState328Action,
-	{_State221, VarDeclPatternType}:                      _GotoState69Action,
-	{_State221, VarOrLetType}:                            _GotoState70Action,
-	{_State221, AssignPatternType}:                       _GotoState326Action,
-	{_State221, CasePatternType}:                         _GotoState327Action,
-	{_State221, OptionalLabelDeclType}:                   _GotoState85Action,
-	{_State221, SequenceExprType}:                        _GotoState329Action,
-	{_State221, CallExprType}:                            _GotoState50Action,
-	{_State221, AtomExprType}:                            _GotoState43Action,
-	{_State221, ParseErrorExprType}:                      _GotoState62Action,
-	{_State221, LiteralExprType}:                         _GotoState58Action,
-	{_State221, IdentifierExprType}:                      _GotoState53Action,
-	{_State221, BlockExprType}:                           _GotoState49Action,
-	{_State221, InitializeExprType}:                      _GotoState57Action,
-	{_State221, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State221, AccessibleExprType}:                      _GotoState39Action,
-	{_State221, AccessExprType}:                          _GotoState38Action,
-	{_State221, IndexExprType}:                           _GotoState55Action,
-	{_State221, PostfixableExprType}:                     _GotoState64Action,
-	{_State221, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State221, PrefixableExprType}:                      _GotoState67Action,
-	{_State221, PrefixUnaryExprType}:                     _GotoState65Action,
-	{_State221, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State221, MulExprType}:                             _GotoState59Action,
-	{_State221, BinaryMulExprType}:                       _GotoState47Action,
-	{_State221, AddExprType}:                             _GotoState40Action,
-	{_State221, BinaryAddExprType}:                       _GotoState44Action,
-	{_State221, CmpExprType}:                             _GotoState51Action,
-	{_State221, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State221, AndExprType}:                             _GotoState41Action,
-	{_State221, BinaryAndExprType}:                       _GotoState45Action,
-	{_State221, OrExprType}:                              _GotoState61Action,
-	{_State221, BinaryOrExprType}:                        _GotoState48Action,
-	{_State221, InitializableTypeType}:                   _GotoState56Action,
-	{_State221, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State221, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State222, LbraceToken}:                             _GotoState72Action,
-	{_State222, StatementBlockType}:                      _GotoState330Action,
+	{_State205, NewlinesToken}:                           _GotoState313Action,
+	{_State205, CommaToken}:                              _GotoState312Action,
+	{_State207, RparenToken}:                             _GotoState314Action,
+	{_State208, CommaToken}:                              _GotoState315Action,
+	{_State209, RbracketToken}:                           _GotoState316Action,
+	{_State210, AddToken}:                                _GotoState191Action,
+	{_State210, SubToken}:                                _GotoState196Action,
+	{_State210, MulToken}:                                _GotoState194Action,
+	{_State210, TraitOpType}:                             _GotoState197Action,
+	{_State212, RbracketToken}:                           _GotoState317Action,
+	{_State213, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State213, FloatLiteralToken}:                       _GotoState20Action,
+	{_State213, RuneLiteralToken}:                        _GotoState32Action,
+	{_State213, StringLiteralToken}:                      _GotoState33Action,
+	{_State213, IdentifierToken}:                         _GotoState114Action,
+	{_State213, TrueToken}:                               _GotoState36Action,
+	{_State213, FalseToken}:                              _GotoState19Action,
+	{_State213, StructToken}:                             _GotoState34Action,
+	{_State213, FuncToken}:                               _GotoState21Action,
+	{_State213, VarToken}:                                _GotoState37Action,
+	{_State213, LetToken}:                                _GotoState27Action,
+	{_State213, NotToken}:                                _GotoState30Action,
+	{_State213, LabelDeclToken}:                          _GotoState25Action,
+	{_State213, LparenToken}:                             _GotoState28Action,
+	{_State213, LbracketToken}:                           _GotoState26Action,
+	{_State213, ColonToken}:                              _GotoState112Action,
+	{_State213, EllipsisToken}:                           _GotoState113Action,
+	{_State213, SubToken}:                                _GotoState35Action,
+	{_State213, MulToken}:                                _GotoState29Action,
+	{_State213, BitNegToken}:                             _GotoState18Action,
+	{_State213, BitAndToken}:                             _GotoState17Action,
+	{_State213, GreaterToken}:                            _GotoState22Action,
+	{_State213, ParseErrorToken}:                         _GotoState31Action,
+	{_State213, VarDeclPatternType}:                      _GotoState69Action,
+	{_State213, VarOrLetType}:                            _GotoState70Action,
+	{_State213, ExpressionType}:                          _GotoState118Action,
+	{_State213, OptionalLabelDeclType}:                   _GotoState60Action,
+	{_State213, SequenceExprType}:                        _GotoState68Action,
+	{_State213, CallExprType}:                            _GotoState50Action,
+	{_State213, OptionalArgumentsType}:                   _GotoState318Action,
+	{_State213, ArgumentsType}:                           _GotoState116Action,
+	{_State213, ArgumentType}:                            _GotoState115Action,
+	{_State213, ColonExprType}:                           _GotoState117Action,
+	{_State213, AtomExprType}:                            _GotoState43Action,
+	{_State213, ParseErrorExprType}:                      _GotoState62Action,
+	{_State213, LiteralExprType}:                         _GotoState58Action,
+	{_State213, IdentifierExprType}:                      _GotoState53Action,
+	{_State213, BlockExprType}:                           _GotoState49Action,
+	{_State213, InitializeExprType}:                      _GotoState57Action,
+	{_State213, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State213, AccessibleExprType}:                      _GotoState39Action,
+	{_State213, AccessExprType}:                          _GotoState38Action,
+	{_State213, IndexExprType}:                           _GotoState55Action,
+	{_State213, PostfixableExprType}:                     _GotoState64Action,
+	{_State213, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State213, PrefixableExprType}:                      _GotoState67Action,
+	{_State213, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State213, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State213, MulExprType}:                             _GotoState59Action,
+	{_State213, BinaryMulExprType}:                       _GotoState47Action,
+	{_State213, AddExprType}:                             _GotoState40Action,
+	{_State213, BinaryAddExprType}:                       _GotoState44Action,
+	{_State213, CmpExprType}:                             _GotoState51Action,
+	{_State213, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State213, AndExprType}:                             _GotoState41Action,
+	{_State213, BinaryAndExprType}:                       _GotoState45Action,
+	{_State213, OrExprType}:                              _GotoState61Action,
+	{_State213, BinaryOrExprType}:                        _GotoState48Action,
+	{_State213, InitializableTypeType}:                   _GotoState56Action,
+	{_State213, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State213, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State214, MulToken}:                                _GotoState145Action,
+	{_State214, DivToken}:                                _GotoState143Action,
+	{_State214, ModToken}:                                _GotoState144Action,
+	{_State214, BitAndToken}:                             _GotoState140Action,
+	{_State214, BitLshiftToken}:                          _GotoState141Action,
+	{_State214, BitRshiftToken}:                          _GotoState142Action,
+	{_State214, MulOpType}:                               _GotoState146Action,
+	{_State215, EqualToken}:                              _GotoState132Action,
+	{_State215, NotEqualToken}:                           _GotoState137Action,
+	{_State215, LessToken}:                               _GotoState135Action,
+	{_State215, LessOrEqualToken}:                        _GotoState136Action,
+	{_State215, GreaterToken}:                            _GotoState133Action,
+	{_State215, GreaterOrEqualToken}:                     _GotoState134Action,
+	{_State215, CmpOpType}:                               _GotoState138Action,
+	{_State216, AddToken}:                                _GotoState126Action,
+	{_State216, SubToken}:                                _GotoState129Action,
+	{_State216, BitXorToken}:                             _GotoState128Action,
+	{_State216, BitOrToken}:                              _GotoState127Action,
+	{_State216, AddOpType}:                               _GotoState130Action,
+	{_State217, RparenToken}:                             _GotoState319Action,
+	{_State219, ForToken}:                                _GotoState320Action,
+	{_State220, InToken}:                                 _GotoState322Action,
+	{_State220, AssignToken}:                             _GotoState321Action,
+	{_State221, SemicolonToken}:                          _GotoState323Action,
+	{_State222, DoToken}:                                 _GotoState324Action,
+	{_State223, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State223, FloatLiteralToken}:                       _GotoState20Action,
+	{_State223, RuneLiteralToken}:                        _GotoState32Action,
+	{_State223, StringLiteralToken}:                      _GotoState33Action,
+	{_State223, IdentifierToken}:                         _GotoState23Action,
+	{_State223, TrueToken}:                               _GotoState36Action,
+	{_State223, FalseToken}:                              _GotoState19Action,
+	{_State223, StructToken}:                             _GotoState34Action,
+	{_State223, FuncToken}:                               _GotoState21Action,
+	{_State223, VarToken}:                                _GotoState326Action,
+	{_State223, LetToken}:                                _GotoState27Action,
+	{_State223, NotToken}:                                _GotoState30Action,
+	{_State223, LabelDeclToken}:                          _GotoState25Action,
+	{_State223, LparenToken}:                             _GotoState28Action,
+	{_State223, LbracketToken}:                           _GotoState26Action,
+	{_State223, DotToken}:                                _GotoState325Action,
+	{_State223, SubToken}:                                _GotoState35Action,
+	{_State223, MulToken}:                                _GotoState29Action,
+	{_State223, BitNegToken}:                             _GotoState18Action,
+	{_State223, BitAndToken}:                             _GotoState17Action,
+	{_State223, GreaterToken}:                            _GotoState22Action,
+	{_State223, ParseErrorToken}:                         _GotoState31Action,
+	{_State223, CasePatternsType}:                        _GotoState329Action,
+	{_State223, VarDeclPatternType}:                      _GotoState69Action,
+	{_State223, VarOrLetType}:                            _GotoState70Action,
+	{_State223, AssignPatternType}:                       _GotoState327Action,
+	{_State223, CasePatternType}:                         _GotoState328Action,
+	{_State223, OptionalLabelDeclType}:                   _GotoState85Action,
+	{_State223, SequenceExprType}:                        _GotoState330Action,
+	{_State223, CallExprType}:                            _GotoState50Action,
+	{_State223, AtomExprType}:                            _GotoState43Action,
+	{_State223, ParseErrorExprType}:                      _GotoState62Action,
+	{_State223, LiteralExprType}:                         _GotoState58Action,
+	{_State223, IdentifierExprType}:                      _GotoState53Action,
+	{_State223, BlockExprType}:                           _GotoState49Action,
+	{_State223, InitializeExprType}:                      _GotoState57Action,
+	{_State223, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State223, AccessibleExprType}:                      _GotoState39Action,
+	{_State223, AccessExprType}:                          _GotoState38Action,
+	{_State223, IndexExprType}:                           _GotoState55Action,
+	{_State223, PostfixableExprType}:                     _GotoState64Action,
+	{_State223, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State223, PrefixableExprType}:                      _GotoState67Action,
+	{_State223, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State223, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State223, MulExprType}:                             _GotoState59Action,
+	{_State223, BinaryMulExprType}:                       _GotoState47Action,
+	{_State223, AddExprType}:                             _GotoState40Action,
+	{_State223, BinaryAddExprType}:                       _GotoState44Action,
+	{_State223, CmpExprType}:                             _GotoState51Action,
+	{_State223, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State223, AndExprType}:                             _GotoState41Action,
+	{_State223, BinaryAndExprType}:                       _GotoState45Action,
+	{_State223, OrExprType}:                              _GotoState61Action,
+	{_State223, BinaryOrExprType}:                        _GotoState48Action,
+	{_State223, InitializableTypeType}:                   _GotoState56Action,
+	{_State223, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State223, AnonymousFuncExprType}:                   _GotoState42Action,
 	{_State224, LbraceToken}:                             _GotoState72Action,
 	{_State224, StatementBlockType}:                      _GotoState331Action,
-	{_State225, AndToken}:                                _GotoState131Action,
-	{_State227, AssignToken}:                             _GotoState332Action,
-	{_State229, RparenToken}:                             _GotoState334Action,
-	{_State229, CommaToken}:                              _GotoState333Action,
-	{_State232, AddToken}:                                _GotoState191Action,
-	{_State232, SubToken}:                                _GotoState196Action,
-	{_State232, MulToken}:                                _GotoState194Action,
-	{_State232, TraitOpType}:                             _GotoState197Action,
-	{_State235, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State235, FloatLiteralToken}:                       _GotoState20Action,
-	{_State235, RuneLiteralToken}:                        _GotoState32Action,
-	{_State235, StringLiteralToken}:                      _GotoState33Action,
-	{_State235, IdentifierToken}:                         _GotoState23Action,
-	{_State235, TrueToken}:                               _GotoState36Action,
-	{_State235, FalseToken}:                              _GotoState19Action,
-	{_State235, StructToken}:                             _GotoState34Action,
-	{_State235, FuncToken}:                               _GotoState21Action,
-	{_State235, VarToken}:                                _GotoState325Action,
-	{_State235, LetToken}:                                _GotoState27Action,
-	{_State235, NotToken}:                                _GotoState30Action,
-	{_State235, LabelDeclToken}:                          _GotoState25Action,
-	{_State235, LparenToken}:                             _GotoState28Action,
-	{_State235, LbracketToken}:                           _GotoState26Action,
-	{_State235, DotToken}:                                _GotoState324Action,
-	{_State235, SubToken}:                                _GotoState35Action,
-	{_State235, MulToken}:                                _GotoState29Action,
-	{_State235, BitNegToken}:                             _GotoState18Action,
-	{_State235, BitAndToken}:                             _GotoState17Action,
-	{_State235, GreaterToken}:                            _GotoState22Action,
-	{_State235, ParseErrorToken}:                         _GotoState31Action,
-	{_State235, CasePatternsType}:                        _GotoState335Action,
-	{_State235, VarDeclPatternType}:                      _GotoState69Action,
-	{_State235, VarOrLetType}:                            _GotoState70Action,
-	{_State235, AssignPatternType}:                       _GotoState326Action,
-	{_State235, CasePatternType}:                         _GotoState327Action,
-	{_State235, OptionalLabelDeclType}:                   _GotoState85Action,
-	{_State235, SequenceExprType}:                        _GotoState329Action,
-	{_State235, CallExprType}:                            _GotoState50Action,
-	{_State235, AtomExprType}:                            _GotoState43Action,
-	{_State235, ParseErrorExprType}:                      _GotoState62Action,
-	{_State235, LiteralExprType}:                         _GotoState58Action,
-	{_State235, IdentifierExprType}:                      _GotoState53Action,
-	{_State235, BlockExprType}:                           _GotoState49Action,
-	{_State235, InitializeExprType}:                      _GotoState57Action,
-	{_State235, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State235, AccessibleExprType}:                      _GotoState39Action,
-	{_State235, AccessExprType}:                          _GotoState38Action,
-	{_State235, IndexExprType}:                           _GotoState55Action,
-	{_State235, PostfixableExprType}:                     _GotoState64Action,
-	{_State235, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State235, PrefixableExprType}:                      _GotoState67Action,
-	{_State235, PrefixUnaryExprType}:                     _GotoState65Action,
-	{_State235, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State235, MulExprType}:                             _GotoState59Action,
-	{_State235, BinaryMulExprType}:                       _GotoState47Action,
-	{_State235, AddExprType}:                             _GotoState40Action,
-	{_State235, BinaryAddExprType}:                       _GotoState44Action,
-	{_State235, CmpExprType}:                             _GotoState51Action,
-	{_State235, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State235, AndExprType}:                             _GotoState41Action,
-	{_State235, BinaryAndExprType}:                       _GotoState45Action,
-	{_State235, OrExprType}:                              _GotoState61Action,
-	{_State235, BinaryOrExprType}:                        _GotoState48Action,
-	{_State235, InitializableTypeType}:                   _GotoState56Action,
-	{_State235, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State235, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State237, ColonToken}:                              _GotoState336Action,
-	{_State240, StringLiteralToken}:                      _GotoState338Action,
-	{_State240, LparenToken}:                             _GotoState337Action,
-	{_State240, ImportClauseType}:                        _GotoState339Action,
-	{_State243, LbracketToken}:                           _GotoState123Action,
-	{_State243, DotToken}:                                _GotoState122Action,
-	{_State243, QuestionToken}:                           _GotoState124Action,
-	{_State243, DollarLbracketToken}:                     _GotoState121Action,
-	{_State243, AddAssignToken}:                          _GotoState340Action,
-	{_State243, SubAssignToken}:                          _GotoState351Action,
-	{_State243, MulAssignToken}:                          _GotoState350Action,
-	{_State243, DivAssignToken}:                          _GotoState348Action,
-	{_State243, ModAssignToken}:                          _GotoState349Action,
-	{_State243, AddOneAssignToken}:                       _GotoState341Action,
-	{_State243, SubOneAssignToken}:                       _GotoState352Action,
-	{_State243, BitNegAssignToken}:                       _GotoState344Action,
-	{_State243, BitAndAssignToken}:                       _GotoState342Action,
-	{_State243, BitOrAssignToken}:                        _GotoState345Action,
-	{_State243, BitXorAssignToken}:                       _GotoState347Action,
-	{_State243, BitLshiftAssignToken}:                    _GotoState343Action,
-	{_State243, BitRshiftAssignToken}:                    _GotoState346Action,
-	{_State243, UnaryOpAssignType}:                       _GotoState354Action,
-	{_State243, BinaryOpAssignType}:                      _GotoState353Action,
-	{_State243, OptionalGenericBindingType}:              _GotoState125Action,
-	{_State244, AssignToken}:                             _GotoState355Action,
-	{_State247, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State247, FloatLiteralToken}:                       _GotoState20Action,
-	{_State247, RuneLiteralToken}:                        _GotoState32Action,
-	{_State247, StringLiteralToken}:                      _GotoState33Action,
-	{_State247, IdentifierToken}:                         _GotoState23Action,
-	{_State247, TrueToken}:                               _GotoState36Action,
-	{_State247, FalseToken}:                              _GotoState19Action,
-	{_State247, StructToken}:                             _GotoState34Action,
-	{_State247, FuncToken}:                               _GotoState21Action,
-	{_State247, LabelDeclToken}:                          _GotoState25Action,
-	{_State247, LparenToken}:                             _GotoState28Action,
-	{_State247, LbracketToken}:                           _GotoState26Action,
-	{_State247, ParseErrorToken}:                         _GotoState31Action,
-	{_State247, OptionalLabelDeclType}:                   _GotoState85Action,
-	{_State247, CallExprType}:                            _GotoState357Action,
-	{_State247, AtomExprType}:                            _GotoState43Action,
-	{_State247, ParseErrorExprType}:                      _GotoState62Action,
-	{_State247, LiteralExprType}:                         _GotoState58Action,
-	{_State247, IdentifierExprType}:                      _GotoState53Action,
-	{_State247, BlockExprType}:                           _GotoState49Action,
-	{_State247, InitializeExprType}:                      _GotoState57Action,
-	{_State247, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State247, AccessibleExprType}:                      _GotoState356Action,
-	{_State247, AccessExprType}:                          _GotoState38Action,
-	{_State247, IndexExprType}:                           _GotoState55Action,
-	{_State247, InitializableTypeType}:                   _GotoState56Action,
-	{_State247, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State247, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State251, CommaToken}:                              _GotoState358Action,
-	{_State255, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State255, FloatLiteralToken}:                       _GotoState20Action,
-	{_State255, RuneLiteralToken}:                        _GotoState32Action,
-	{_State255, StringLiteralToken}:                      _GotoState33Action,
-	{_State255, IdentifierToken}:                         _GotoState23Action,
-	{_State255, TrueToken}:                               _GotoState36Action,
-	{_State255, FalseToken}:                              _GotoState19Action,
-	{_State255, StructToken}:                             _GotoState34Action,
-	{_State255, FuncToken}:                               _GotoState21Action,
-	{_State255, VarToken}:                                _GotoState37Action,
-	{_State255, LetToken}:                                _GotoState27Action,
-	{_State255, NotToken}:                                _GotoState30Action,
-	{_State255, LabelDeclToken}:                          _GotoState25Action,
-	{_State255, JumpLabelToken}:                          _GotoState359Action,
-	{_State255, LparenToken}:                             _GotoState28Action,
-	{_State255, LbracketToken}:                           _GotoState26Action,
-	{_State255, SubToken}:                                _GotoState35Action,
-	{_State255, MulToken}:                                _GotoState29Action,
-	{_State255, BitNegToken}:                             _GotoState18Action,
-	{_State255, BitAndToken}:                             _GotoState17Action,
-	{_State255, GreaterToken}:                            _GotoState22Action,
-	{_State255, ParseErrorToken}:                         _GotoState31Action,
-	{_State255, ExpressionsType}:                         _GotoState360Action,
-	{_State255, VarDeclPatternType}:                      _GotoState69Action,
-	{_State255, VarOrLetType}:                            _GotoState70Action,
-	{_State255, ExpressionType}:                          _GotoState249Action,
-	{_State255, OptionalLabelDeclType}:                   _GotoState60Action,
-	{_State255, SequenceExprType}:                        _GotoState68Action,
-	{_State255, CallExprType}:                            _GotoState50Action,
-	{_State255, AtomExprType}:                            _GotoState43Action,
-	{_State255, ParseErrorExprType}:                      _GotoState62Action,
-	{_State255, LiteralExprType}:                         _GotoState58Action,
-	{_State255, IdentifierExprType}:                      _GotoState53Action,
-	{_State255, BlockExprType}:                           _GotoState49Action,
-	{_State255, InitializeExprType}:                      _GotoState57Action,
-	{_State255, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State255, AccessibleExprType}:                      _GotoState39Action,
-	{_State255, AccessExprType}:                          _GotoState38Action,
-	{_State255, IndexExprType}:                           _GotoState55Action,
-	{_State255, PostfixableExprType}:                     _GotoState64Action,
-	{_State255, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State255, PrefixableExprType}:                      _GotoState67Action,
-	{_State255, PrefixUnaryExprType}:                     _GotoState65Action,
-	{_State255, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State255, MulExprType}:                             _GotoState59Action,
-	{_State255, BinaryMulExprType}:                       _GotoState47Action,
-	{_State255, AddExprType}:                             _GotoState40Action,
-	{_State255, BinaryAddExprType}:                       _GotoState44Action,
-	{_State255, CmpExprType}:                             _GotoState51Action,
-	{_State255, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State255, AndExprType}:                             _GotoState41Action,
-	{_State255, BinaryAndExprType}:                       _GotoState45Action,
-	{_State255, OrExprType}:                              _GotoState61Action,
-	{_State255, BinaryOrExprType}:                        _GotoState48Action,
-	{_State255, InitializableTypeType}:                   _GotoState56Action,
-	{_State255, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State255, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State259, NewlinesToken}:                           _GotoState361Action,
-	{_State259, SemicolonToken}:                          _GotoState362Action,
-	{_State264, AddToken}:                                _GotoState191Action,
-	{_State264, SubToken}:                                _GotoState196Action,
-	{_State264, MulToken}:                                _GotoState194Action,
-	{_State264, TraitOpType}:                             _GotoState197Action,
-	{_State265, IdentifierToken}:                         _GotoState93Action,
-	{_State265, StructToken}:                             _GotoState34Action,
-	{_State265, EnumToken}:                               _GotoState90Action,
-	{_State265, TraitToken}:                              _GotoState98Action,
-	{_State265, FuncToken}:                               _GotoState92Action,
-	{_State265, LparenToken}:                             _GotoState94Action,
-	{_State265, LbracketToken}:                           _GotoState26Action,
-	{_State265, DotToken}:                                _GotoState89Action,
-	{_State265, QuestionToken}:                           _GotoState96Action,
-	{_State265, ExclaimToken}:                            _GotoState91Action,
-	{_State265, TildeTildeToken}:                         _GotoState97Action,
-	{_State265, BitNegToken}:                             _GotoState88Action,
-	{_State265, BitAndToken}:                             _GotoState87Action,
-	{_State265, ParseErrorToken}:                         _GotoState95Action,
-	{_State265, InitializableTypeType}:                   _GotoState104Action,
-	{_State265, AtomTypeType}:                            _GotoState99Action,
-	{_State265, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State265, ReturnableTypeType}:                      _GotoState108Action,
-	{_State265, PrefixedTypeType}:                        _GotoState107Action,
-	{_State265, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State265, ValueTypeType}:                           _GotoState363Action,
-	{_State265, TraitOpTypeType}:                         _GotoState110Action,
-	{_State265, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State265, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State265, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State265, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State265, TraitDefType}:                            _GotoState109Action,
-	{_State265, FuncTypeType}:                            _GotoState101Action,
-	{_State267, CommaToken}:                              _GotoState364Action,
-	{_State268, RbracketToken}:                           _GotoState365Action,
-	{_State269, ImplementsToken}:                         _GotoState366Action,
-	{_State269, AddToken}:                                _GotoState191Action,
-	{_State269, SubToken}:                                _GotoState196Action,
-	{_State269, MulToken}:                                _GotoState194Action,
-	{_State269, TraitOpType}:                             _GotoState197Action,
-	{_State271, IdentifierToken}:                         _GotoState170Action,
-	{_State271, ParameterDefType}:                        _GotoState173Action,
-	{_State271, ParameterDefsType}:                       _GotoState174Action,
-	{_State271, OptionalParameterDefsType}:               _GotoState367Action,
-	{_State272, IdentifierToken}:                         _GotoState93Action,
-	{_State272, StructToken}:                             _GotoState34Action,
-	{_State272, EnumToken}:                               _GotoState90Action,
-	{_State272, TraitToken}:                              _GotoState98Action,
-	{_State272, FuncToken}:                               _GotoState92Action,
-	{_State272, LparenToken}:                             _GotoState94Action,
-	{_State272, LbracketToken}:                           _GotoState26Action,
-	{_State272, DotToken}:                                _GotoState89Action,
-	{_State272, QuestionToken}:                           _GotoState96Action,
-	{_State272, ExclaimToken}:                            _GotoState91Action,
-	{_State272, TildeTildeToken}:                         _GotoState97Action,
-	{_State272, BitNegToken}:                             _GotoState88Action,
-	{_State272, BitAndToken}:                             _GotoState87Action,
-	{_State272, ParseErrorToken}:                         _GotoState95Action,
-	{_State272, InitializableTypeType}:                   _GotoState104Action,
-	{_State272, AtomTypeType}:                            _GotoState99Action,
-	{_State272, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State272, ReturnableTypeType}:                      _GotoState108Action,
-	{_State272, PrefixedTypeType}:                        _GotoState107Action,
-	{_State272, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State272, ValueTypeType}:                           _GotoState368Action,
-	{_State272, TraitOpTypeType}:                         _GotoState110Action,
-	{_State272, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State272, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State272, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State272, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State272, TraitDefType}:                            _GotoState109Action,
-	{_State272, FuncTypeType}:                            _GotoState101Action,
-	{_State273, AddToken}:                                _GotoState191Action,
-	{_State273, SubToken}:                                _GotoState196Action,
-	{_State273, MulToken}:                                _GotoState194Action,
-	{_State273, TraitOpType}:                             _GotoState197Action,
-	{_State274, IdentifierToken}:                         _GotoState369Action,
-	{_State275, IdentifierToken}:                         _GotoState93Action,
-	{_State275, StructToken}:                             _GotoState34Action,
-	{_State275, EnumToken}:                               _GotoState90Action,
-	{_State275, TraitToken}:                              _GotoState98Action,
-	{_State275, FuncToken}:                               _GotoState92Action,
-	{_State275, LparenToken}:                             _GotoState94Action,
-	{_State275, LbracketToken}:                           _GotoState26Action,
-	{_State275, DotToken}:                                _GotoState89Action,
-	{_State275, QuestionToken}:                           _GotoState96Action,
-	{_State275, ExclaimToken}:                            _GotoState91Action,
-	{_State275, TildeTildeToken}:                         _GotoState97Action,
-	{_State275, BitNegToken}:                             _GotoState88Action,
-	{_State275, BitAndToken}:                             _GotoState87Action,
-	{_State275, ParseErrorToken}:                         _GotoState95Action,
-	{_State275, InitializableTypeType}:                   _GotoState104Action,
-	{_State275, AtomTypeType}:                            _GotoState99Action,
-	{_State275, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State275, ReturnableTypeType}:                      _GotoState371Action,
-	{_State275, PrefixedTypeType}:                        _GotoState107Action,
-	{_State275, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State275, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State275, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State275, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State275, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State275, TraitDefType}:                            _GotoState109Action,
-	{_State275, ReturnTypeType}:                          _GotoState370Action,
-	{_State275, FuncTypeType}:                            _GotoState101Action,
-	{_State276, IdentifierToken}:                         _GotoState170Action,
-	{_State276, ParameterDefType}:                        _GotoState372Action,
-	{_State277, NewlinesToken}:                           _GotoState373Action,
-	{_State277, OrToken}:                                 _GotoState374Action,
-	{_State278, RparenToken}:                             _GotoState375Action,
-	{_State279, AssignToken}:                             _GotoState292Action,
-	{_State280, NewlinesToken}:                           _GotoState376Action,
-	{_State280, OrToken}:                                 _GotoState377Action,
-	{_State281, IdentifierToken}:                         _GotoState93Action,
-	{_State281, StructToken}:                             _GotoState34Action,
-	{_State281, EnumToken}:                               _GotoState90Action,
-	{_State281, TraitToken}:                              _GotoState98Action,
-	{_State281, FuncToken}:                               _GotoState92Action,
-	{_State281, LparenToken}:                             _GotoState94Action,
-	{_State281, LbracketToken}:                           _GotoState26Action,
-	{_State281, DotToken}:                                _GotoState89Action,
-	{_State281, QuestionToken}:                           _GotoState96Action,
-	{_State281, ExclaimToken}:                            _GotoState91Action,
-	{_State281, TildeTildeToken}:                         _GotoState97Action,
-	{_State281, BitNegToken}:                             _GotoState88Action,
-	{_State281, BitAndToken}:                             _GotoState87Action,
-	{_State281, ParseErrorToken}:                         _GotoState95Action,
-	{_State281, InitializableTypeType}:                   _GotoState104Action,
-	{_State281, AtomTypeType}:                            _GotoState99Action,
-	{_State281, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State281, ReturnableTypeType}:                      _GotoState108Action,
-	{_State281, PrefixedTypeType}:                        _GotoState107Action,
-	{_State281, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State281, ValueTypeType}:                           _GotoState378Action,
-	{_State281, TraitOpTypeType}:                         _GotoState110Action,
-	{_State281, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State281, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State281, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State281, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State281, TraitDefType}:                            _GotoState109Action,
-	{_State281, FuncTypeType}:                            _GotoState101Action,
-	{_State282, IdentifierToken}:                         _GotoState93Action,
-	{_State282, StructToken}:                             _GotoState34Action,
-	{_State282, EnumToken}:                               _GotoState90Action,
-	{_State282, TraitToken}:                              _GotoState98Action,
-	{_State282, FuncToken}:                               _GotoState92Action,
-	{_State282, LparenToken}:                             _GotoState94Action,
-	{_State282, LbracketToken}:                           _GotoState26Action,
-	{_State282, DotToken}:                                _GotoState288Action,
-	{_State282, QuestionToken}:                           _GotoState96Action,
-	{_State282, ExclaimToken}:                            _GotoState91Action,
-	{_State282, DollarLbracketToken}:                     _GotoState121Action,
-	{_State282, EllipsisToken}:                           _GotoState379Action,
-	{_State282, TildeTildeToken}:                         _GotoState97Action,
-	{_State282, BitNegToken}:                             _GotoState88Action,
-	{_State282, BitAndToken}:                             _GotoState87Action,
-	{_State282, ParseErrorToken}:                         _GotoState95Action,
-	{_State282, OptionalGenericBindingType}:              _GotoState179Action,
-	{_State282, InitializableTypeType}:                   _GotoState104Action,
-	{_State282, AtomTypeType}:                            _GotoState99Action,
-	{_State282, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State282, ReturnableTypeType}:                      _GotoState108Action,
-	{_State282, PrefixedTypeType}:                        _GotoState107Action,
-	{_State282, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State282, ValueTypeType}:                           _GotoState380Action,
-	{_State282, TraitOpTypeType}:                         _GotoState110Action,
-	{_State282, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State282, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State282, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State282, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State282, TraitDefType}:                            _GotoState109Action,
-	{_State282, FuncTypeType}:                            _GotoState101Action,
-	{_State283, RparenToken}:                             _GotoState381Action,
-	{_State285, CommaToken}:                              _GotoState382Action,
-	{_State286, AddToken}:                                _GotoState191Action,
-	{_State286, SubToken}:                                _GotoState196Action,
-	{_State286, MulToken}:                                _GotoState194Action,
-	{_State286, TraitOpType}:                             _GotoState197Action,
-	{_State287, DollarLbracketToken}:                     _GotoState121Action,
-	{_State287, OptionalGenericBindingType}:              _GotoState383Action,
-	{_State288, IdentifierToken}:                         _GotoState287Action,
-	{_State288, DollarLbracketToken}:                     _GotoState121Action,
-	{_State288, OptionalGenericBindingType}:              _GotoState175Action,
-	{_State289, AddToken}:                                _GotoState191Action,
-	{_State289, SubToken}:                                _GotoState196Action,
-	{_State289, MulToken}:                                _GotoState194Action,
-	{_State289, TraitOpType}:                             _GotoState197Action,
-	{_State290, IdentifierToken}:                         _GotoState384Action,
-	{_State291, IdentifierToken}:                         _GotoState180Action,
-	{_State291, UnsafeToken}:                             _GotoState181Action,
-	{_State291, StructToken}:                             _GotoState34Action,
-	{_State291, EnumToken}:                               _GotoState90Action,
-	{_State291, TraitToken}:                              _GotoState98Action,
-	{_State291, FuncToken}:                               _GotoState92Action,
-	{_State291, LparenToken}:                             _GotoState94Action,
-	{_State291, LbracketToken}:                           _GotoState26Action,
-	{_State291, DotToken}:                                _GotoState89Action,
-	{_State291, QuestionToken}:                           _GotoState96Action,
-	{_State291, ExclaimToken}:                            _GotoState91Action,
-	{_State291, TildeTildeToken}:                         _GotoState97Action,
-	{_State291, BitNegToken}:                             _GotoState88Action,
-	{_State291, BitAndToken}:                             _GotoState87Action,
-	{_State291, ParseErrorToken}:                         _GotoState95Action,
-	{_State291, UnsafeStatementType}:                     _GotoState187Action,
-	{_State291, InitializableTypeType}:                   _GotoState104Action,
-	{_State291, AtomTypeType}:                            _GotoState99Action,
-	{_State291, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State291, ReturnableTypeType}:                      _GotoState108Action,
-	{_State291, PrefixedTypeType}:                        _GotoState107Action,
-	{_State291, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State291, ValueTypeType}:                           _GotoState188Action,
-	{_State291, TraitOpTypeType}:                         _GotoState110Action,
-	{_State291, FieldDefType}:                            _GotoState279Action,
-	{_State291, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State291, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State291, EnumValueDefType}:                        _GotoState385Action,
-	{_State291, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State291, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State291, TraitDefType}:                            _GotoState109Action,
-	{_State291, FuncTypeType}:                            _GotoState101Action,
-	{_State292, DefaultToken}:                            _GotoState386Action,
+	{_State226, LbraceToken}:                             _GotoState72Action,
+	{_State226, StatementBlockType}:                      _GotoState332Action,
+	{_State227, AndToken}:                                _GotoState131Action,
+	{_State229, AssignToken}:                             _GotoState333Action,
+	{_State231, RparenToken}:                             _GotoState335Action,
+	{_State231, CommaToken}:                              _GotoState334Action,
+	{_State234, AddToken}:                                _GotoState191Action,
+	{_State234, SubToken}:                                _GotoState196Action,
+	{_State234, MulToken}:                                _GotoState194Action,
+	{_State234, TraitOpType}:                             _GotoState197Action,
+	{_State237, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State237, FloatLiteralToken}:                       _GotoState20Action,
+	{_State237, RuneLiteralToken}:                        _GotoState32Action,
+	{_State237, StringLiteralToken}:                      _GotoState33Action,
+	{_State237, IdentifierToken}:                         _GotoState23Action,
+	{_State237, TrueToken}:                               _GotoState36Action,
+	{_State237, FalseToken}:                              _GotoState19Action,
+	{_State237, StructToken}:                             _GotoState34Action,
+	{_State237, FuncToken}:                               _GotoState21Action,
+	{_State237, VarToken}:                                _GotoState326Action,
+	{_State237, LetToken}:                                _GotoState27Action,
+	{_State237, NotToken}:                                _GotoState30Action,
+	{_State237, LabelDeclToken}:                          _GotoState25Action,
+	{_State237, LparenToken}:                             _GotoState28Action,
+	{_State237, LbracketToken}:                           _GotoState26Action,
+	{_State237, DotToken}:                                _GotoState325Action,
+	{_State237, SubToken}:                                _GotoState35Action,
+	{_State237, MulToken}:                                _GotoState29Action,
+	{_State237, BitNegToken}:                             _GotoState18Action,
+	{_State237, BitAndToken}:                             _GotoState17Action,
+	{_State237, GreaterToken}:                            _GotoState22Action,
+	{_State237, ParseErrorToken}:                         _GotoState31Action,
+	{_State237, CasePatternsType}:                        _GotoState336Action,
+	{_State237, VarDeclPatternType}:                      _GotoState69Action,
+	{_State237, VarOrLetType}:                            _GotoState70Action,
+	{_State237, AssignPatternType}:                       _GotoState327Action,
+	{_State237, CasePatternType}:                         _GotoState328Action,
+	{_State237, OptionalLabelDeclType}:                   _GotoState85Action,
+	{_State237, SequenceExprType}:                        _GotoState330Action,
+	{_State237, CallExprType}:                            _GotoState50Action,
+	{_State237, AtomExprType}:                            _GotoState43Action,
+	{_State237, ParseErrorExprType}:                      _GotoState62Action,
+	{_State237, LiteralExprType}:                         _GotoState58Action,
+	{_State237, IdentifierExprType}:                      _GotoState53Action,
+	{_State237, BlockExprType}:                           _GotoState49Action,
+	{_State237, InitializeExprType}:                      _GotoState57Action,
+	{_State237, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State237, AccessibleExprType}:                      _GotoState39Action,
+	{_State237, AccessExprType}:                          _GotoState38Action,
+	{_State237, IndexExprType}:                           _GotoState55Action,
+	{_State237, PostfixableExprType}:                     _GotoState64Action,
+	{_State237, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State237, PrefixableExprType}:                      _GotoState67Action,
+	{_State237, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State237, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State237, MulExprType}:                             _GotoState59Action,
+	{_State237, BinaryMulExprType}:                       _GotoState47Action,
+	{_State237, AddExprType}:                             _GotoState40Action,
+	{_State237, BinaryAddExprType}:                       _GotoState44Action,
+	{_State237, CmpExprType}:                             _GotoState51Action,
+	{_State237, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State237, AndExprType}:                             _GotoState41Action,
+	{_State237, BinaryAndExprType}:                       _GotoState45Action,
+	{_State237, OrExprType}:                              _GotoState61Action,
+	{_State237, BinaryOrExprType}:                        _GotoState48Action,
+	{_State237, InitializableTypeType}:                   _GotoState56Action,
+	{_State237, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State237, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State239, ColonToken}:                              _GotoState337Action,
+	{_State242, StringLiteralToken}:                      _GotoState339Action,
+	{_State242, LparenToken}:                             _GotoState338Action,
+	{_State242, ImportClauseType}:                        _GotoState340Action,
+	{_State245, LbracketToken}:                           _GotoState123Action,
+	{_State245, DotToken}:                                _GotoState122Action,
+	{_State245, QuestionToken}:                           _GotoState124Action,
+	{_State245, DollarLbracketToken}:                     _GotoState121Action,
+	{_State245, AddAssignToken}:                          _GotoState341Action,
+	{_State245, SubAssignToken}:                          _GotoState352Action,
+	{_State245, MulAssignToken}:                          _GotoState351Action,
+	{_State245, DivAssignToken}:                          _GotoState349Action,
+	{_State245, ModAssignToken}:                          _GotoState350Action,
+	{_State245, AddOneAssignToken}:                       _GotoState342Action,
+	{_State245, SubOneAssignToken}:                       _GotoState353Action,
+	{_State245, BitNegAssignToken}:                       _GotoState345Action,
+	{_State245, BitAndAssignToken}:                       _GotoState343Action,
+	{_State245, BitOrAssignToken}:                        _GotoState346Action,
+	{_State245, BitXorAssignToken}:                       _GotoState348Action,
+	{_State245, BitLshiftAssignToken}:                    _GotoState344Action,
+	{_State245, BitRshiftAssignToken}:                    _GotoState347Action,
+	{_State245, UnaryOpAssignType}:                       _GotoState355Action,
+	{_State245, BinaryOpAssignType}:                      _GotoState354Action,
+	{_State245, OptionalGenericBindingType}:              _GotoState125Action,
+	{_State246, AssignToken}:                             _GotoState356Action,
+	{_State249, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State249, FloatLiteralToken}:                       _GotoState20Action,
+	{_State249, RuneLiteralToken}:                        _GotoState32Action,
+	{_State249, StringLiteralToken}:                      _GotoState33Action,
+	{_State249, IdentifierToken}:                         _GotoState23Action,
+	{_State249, TrueToken}:                               _GotoState36Action,
+	{_State249, FalseToken}:                              _GotoState19Action,
+	{_State249, StructToken}:                             _GotoState34Action,
+	{_State249, FuncToken}:                               _GotoState21Action,
+	{_State249, LabelDeclToken}:                          _GotoState25Action,
+	{_State249, LparenToken}:                             _GotoState28Action,
+	{_State249, LbracketToken}:                           _GotoState26Action,
+	{_State249, ParseErrorToken}:                         _GotoState31Action,
+	{_State249, OptionalLabelDeclType}:                   _GotoState85Action,
+	{_State249, CallExprType}:                            _GotoState358Action,
+	{_State249, AtomExprType}:                            _GotoState43Action,
+	{_State249, ParseErrorExprType}:                      _GotoState62Action,
+	{_State249, LiteralExprType}:                         _GotoState58Action,
+	{_State249, IdentifierExprType}:                      _GotoState53Action,
+	{_State249, BlockExprType}:                           _GotoState49Action,
+	{_State249, InitializeExprType}:                      _GotoState57Action,
+	{_State249, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State249, AccessibleExprType}:                      _GotoState357Action,
+	{_State249, AccessExprType}:                          _GotoState38Action,
+	{_State249, IndexExprType}:                           _GotoState55Action,
+	{_State249, InitializableTypeType}:                   _GotoState56Action,
+	{_State249, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State249, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State253, CommaToken}:                              _GotoState359Action,
+	{_State257, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State257, FloatLiteralToken}:                       _GotoState20Action,
+	{_State257, RuneLiteralToken}:                        _GotoState32Action,
+	{_State257, StringLiteralToken}:                      _GotoState33Action,
+	{_State257, IdentifierToken}:                         _GotoState23Action,
+	{_State257, TrueToken}:                               _GotoState36Action,
+	{_State257, FalseToken}:                              _GotoState19Action,
+	{_State257, StructToken}:                             _GotoState34Action,
+	{_State257, FuncToken}:                               _GotoState21Action,
+	{_State257, VarToken}:                                _GotoState37Action,
+	{_State257, LetToken}:                                _GotoState27Action,
+	{_State257, NotToken}:                                _GotoState30Action,
+	{_State257, LabelDeclToken}:                          _GotoState25Action,
+	{_State257, JumpLabelToken}:                          _GotoState360Action,
+	{_State257, LparenToken}:                             _GotoState28Action,
+	{_State257, LbracketToken}:                           _GotoState26Action,
+	{_State257, SubToken}:                                _GotoState35Action,
+	{_State257, MulToken}:                                _GotoState29Action,
+	{_State257, BitNegToken}:                             _GotoState18Action,
+	{_State257, BitAndToken}:                             _GotoState17Action,
+	{_State257, GreaterToken}:                            _GotoState22Action,
+	{_State257, ParseErrorToken}:                         _GotoState31Action,
+	{_State257, ExpressionsType}:                         _GotoState361Action,
+	{_State257, VarDeclPatternType}:                      _GotoState69Action,
+	{_State257, VarOrLetType}:                            _GotoState70Action,
+	{_State257, ExpressionType}:                          _GotoState251Action,
+	{_State257, OptionalLabelDeclType}:                   _GotoState60Action,
+	{_State257, SequenceExprType}:                        _GotoState68Action,
+	{_State257, CallExprType}:                            _GotoState50Action,
+	{_State257, AtomExprType}:                            _GotoState43Action,
+	{_State257, ParseErrorExprType}:                      _GotoState62Action,
+	{_State257, LiteralExprType}:                         _GotoState58Action,
+	{_State257, IdentifierExprType}:                      _GotoState53Action,
+	{_State257, BlockExprType}:                           _GotoState49Action,
+	{_State257, InitializeExprType}:                      _GotoState57Action,
+	{_State257, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State257, AccessibleExprType}:                      _GotoState39Action,
+	{_State257, AccessExprType}:                          _GotoState38Action,
+	{_State257, IndexExprType}:                           _GotoState55Action,
+	{_State257, PostfixableExprType}:                     _GotoState64Action,
+	{_State257, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State257, PrefixableExprType}:                      _GotoState67Action,
+	{_State257, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State257, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State257, MulExprType}:                             _GotoState59Action,
+	{_State257, BinaryMulExprType}:                       _GotoState47Action,
+	{_State257, AddExprType}:                             _GotoState40Action,
+	{_State257, BinaryAddExprType}:                       _GotoState44Action,
+	{_State257, CmpExprType}:                             _GotoState51Action,
+	{_State257, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State257, AndExprType}:                             _GotoState41Action,
+	{_State257, BinaryAndExprType}:                       _GotoState45Action,
+	{_State257, OrExprType}:                              _GotoState61Action,
+	{_State257, BinaryOrExprType}:                        _GotoState48Action,
+	{_State257, InitializableTypeType}:                   _GotoState56Action,
+	{_State257, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State257, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State261, NewlinesToken}:                           _GotoState362Action,
+	{_State261, SemicolonToken}:                          _GotoState363Action,
+	{_State266, AddToken}:                                _GotoState191Action,
+	{_State266, SubToken}:                                _GotoState196Action,
+	{_State266, MulToken}:                                _GotoState194Action,
+	{_State266, TraitOpType}:                             _GotoState197Action,
+	{_State267, IdentifierToken}:                         _GotoState93Action,
+	{_State267, StructToken}:                             _GotoState34Action,
+	{_State267, EnumToken}:                               _GotoState90Action,
+	{_State267, TraitToken}:                              _GotoState98Action,
+	{_State267, FuncToken}:                               _GotoState92Action,
+	{_State267, LparenToken}:                             _GotoState94Action,
+	{_State267, LbracketToken}:                           _GotoState26Action,
+	{_State267, DotToken}:                                _GotoState89Action,
+	{_State267, QuestionToken}:                           _GotoState96Action,
+	{_State267, ExclaimToken}:                            _GotoState91Action,
+	{_State267, TildeTildeToken}:                         _GotoState97Action,
+	{_State267, BitNegToken}:                             _GotoState88Action,
+	{_State267, BitAndToken}:                             _GotoState87Action,
+	{_State267, ParseErrorToken}:                         _GotoState95Action,
+	{_State267, InitializableTypeType}:                   _GotoState104Action,
+	{_State267, AtomTypeType}:                            _GotoState99Action,
+	{_State267, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State267, ReturnableTypeType}:                      _GotoState108Action,
+	{_State267, PrefixedTypeType}:                        _GotoState107Action,
+	{_State267, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State267, ValueTypeType}:                           _GotoState364Action,
+	{_State267, TraitOpTypeType}:                         _GotoState110Action,
+	{_State267, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State267, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State267, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State267, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State267, TraitDefType}:                            _GotoState109Action,
+	{_State267, FuncTypeType}:                            _GotoState101Action,
+	{_State269, CommaToken}:                              _GotoState365Action,
+	{_State270, RbracketToken}:                           _GotoState366Action,
+	{_State271, ImplementsToken}:                         _GotoState367Action,
+	{_State271, AddToken}:                                _GotoState191Action,
+	{_State271, SubToken}:                                _GotoState196Action,
+	{_State271, MulToken}:                                _GotoState194Action,
+	{_State271, TraitOpType}:                             _GotoState197Action,
+	{_State273, IdentifierToken}:                         _GotoState170Action,
+	{_State273, ParameterDefType}:                        _GotoState173Action,
+	{_State273, ParameterDefsType}:                       _GotoState174Action,
+	{_State273, OptionalParameterDefsType}:               _GotoState368Action,
+	{_State274, IdentifierToken}:                         _GotoState93Action,
+	{_State274, StructToken}:                             _GotoState34Action,
+	{_State274, EnumToken}:                               _GotoState90Action,
+	{_State274, TraitToken}:                              _GotoState98Action,
+	{_State274, FuncToken}:                               _GotoState92Action,
+	{_State274, LparenToken}:                             _GotoState94Action,
+	{_State274, LbracketToken}:                           _GotoState26Action,
+	{_State274, DotToken}:                                _GotoState89Action,
+	{_State274, QuestionToken}:                           _GotoState96Action,
+	{_State274, ExclaimToken}:                            _GotoState91Action,
+	{_State274, TildeTildeToken}:                         _GotoState97Action,
+	{_State274, BitNegToken}:                             _GotoState88Action,
+	{_State274, BitAndToken}:                             _GotoState87Action,
+	{_State274, ParseErrorToken}:                         _GotoState95Action,
+	{_State274, InitializableTypeType}:                   _GotoState104Action,
+	{_State274, AtomTypeType}:                            _GotoState99Action,
+	{_State274, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State274, ReturnableTypeType}:                      _GotoState108Action,
+	{_State274, PrefixedTypeType}:                        _GotoState107Action,
+	{_State274, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State274, ValueTypeType}:                           _GotoState369Action,
+	{_State274, TraitOpTypeType}:                         _GotoState110Action,
+	{_State274, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State274, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State274, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State274, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State274, TraitDefType}:                            _GotoState109Action,
+	{_State274, FuncTypeType}:                            _GotoState101Action,
+	{_State275, AddToken}:                                _GotoState191Action,
+	{_State275, SubToken}:                                _GotoState196Action,
+	{_State275, MulToken}:                                _GotoState194Action,
+	{_State275, TraitOpType}:                             _GotoState197Action,
+	{_State276, IdentifierToken}:                         _GotoState370Action,
+	{_State277, IdentifierToken}:                         _GotoState93Action,
+	{_State277, StructToken}:                             _GotoState34Action,
+	{_State277, EnumToken}:                               _GotoState90Action,
+	{_State277, TraitToken}:                              _GotoState98Action,
+	{_State277, FuncToken}:                               _GotoState92Action,
+	{_State277, LparenToken}:                             _GotoState94Action,
+	{_State277, LbracketToken}:                           _GotoState26Action,
+	{_State277, DotToken}:                                _GotoState89Action,
+	{_State277, QuestionToken}:                           _GotoState96Action,
+	{_State277, ExclaimToken}:                            _GotoState91Action,
+	{_State277, TildeTildeToken}:                         _GotoState97Action,
+	{_State277, BitNegToken}:                             _GotoState88Action,
+	{_State277, BitAndToken}:                             _GotoState87Action,
+	{_State277, ParseErrorToken}:                         _GotoState95Action,
+	{_State277, InitializableTypeType}:                   _GotoState104Action,
+	{_State277, AtomTypeType}:                            _GotoState99Action,
+	{_State277, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State277, ReturnableTypeType}:                      _GotoState372Action,
+	{_State277, PrefixedTypeType}:                        _GotoState107Action,
+	{_State277, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State277, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State277, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State277, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State277, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State277, TraitDefType}:                            _GotoState109Action,
+	{_State277, ReturnTypeType}:                          _GotoState371Action,
+	{_State277, FuncTypeType}:                            _GotoState101Action,
+	{_State278, IdentifierToken}:                         _GotoState170Action,
+	{_State278, ParameterDefType}:                        _GotoState373Action,
+	{_State279, NewlinesToken}:                           _GotoState374Action,
+	{_State279, OrToken}:                                 _GotoState375Action,
+	{_State280, RparenToken}:                             _GotoState376Action,
+	{_State281, AssignToken}:                             _GotoState294Action,
+	{_State282, NewlinesToken}:                           _GotoState377Action,
+	{_State282, OrToken}:                                 _GotoState378Action,
+	{_State283, IdentifierToken}:                         _GotoState93Action,
+	{_State283, StructToken}:                             _GotoState34Action,
+	{_State283, EnumToken}:                               _GotoState90Action,
+	{_State283, TraitToken}:                              _GotoState98Action,
+	{_State283, FuncToken}:                               _GotoState92Action,
+	{_State283, LparenToken}:                             _GotoState94Action,
+	{_State283, LbracketToken}:                           _GotoState26Action,
+	{_State283, DotToken}:                                _GotoState89Action,
+	{_State283, QuestionToken}:                           _GotoState96Action,
+	{_State283, ExclaimToken}:                            _GotoState91Action,
+	{_State283, TildeTildeToken}:                         _GotoState97Action,
+	{_State283, BitNegToken}:                             _GotoState88Action,
+	{_State283, BitAndToken}:                             _GotoState87Action,
+	{_State283, ParseErrorToken}:                         _GotoState95Action,
+	{_State283, InitializableTypeType}:                   _GotoState104Action,
+	{_State283, AtomTypeType}:                            _GotoState99Action,
+	{_State283, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State283, ReturnableTypeType}:                      _GotoState108Action,
+	{_State283, PrefixedTypeType}:                        _GotoState107Action,
+	{_State283, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State283, ValueTypeType}:                           _GotoState379Action,
+	{_State283, TraitOpTypeType}:                         _GotoState110Action,
+	{_State283, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State283, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State283, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State283, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State283, TraitDefType}:                            _GotoState109Action,
+	{_State283, FuncTypeType}:                            _GotoState101Action,
+	{_State284, IdentifierToken}:                         _GotoState93Action,
+	{_State284, StructToken}:                             _GotoState34Action,
+	{_State284, EnumToken}:                               _GotoState90Action,
+	{_State284, TraitToken}:                              _GotoState98Action,
+	{_State284, FuncToken}:                               _GotoState92Action,
+	{_State284, LparenToken}:                             _GotoState94Action,
+	{_State284, LbracketToken}:                           _GotoState26Action,
+	{_State284, DotToken}:                                _GotoState290Action,
+	{_State284, QuestionToken}:                           _GotoState96Action,
+	{_State284, ExclaimToken}:                            _GotoState91Action,
+	{_State284, DollarLbracketToken}:                     _GotoState121Action,
+	{_State284, EllipsisToken}:                           _GotoState380Action,
+	{_State284, TildeTildeToken}:                         _GotoState97Action,
+	{_State284, BitNegToken}:                             _GotoState88Action,
+	{_State284, BitAndToken}:                             _GotoState87Action,
+	{_State284, ParseErrorToken}:                         _GotoState95Action,
+	{_State284, OptionalGenericBindingType}:              _GotoState179Action,
+	{_State284, InitializableTypeType}:                   _GotoState104Action,
+	{_State284, AtomTypeType}:                            _GotoState99Action,
+	{_State284, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State284, ReturnableTypeType}:                      _GotoState108Action,
+	{_State284, PrefixedTypeType}:                        _GotoState107Action,
+	{_State284, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State284, ValueTypeType}:                           _GotoState381Action,
+	{_State284, TraitOpTypeType}:                         _GotoState110Action,
+	{_State284, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State284, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State284, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State284, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State284, TraitDefType}:                            _GotoState109Action,
+	{_State284, FuncTypeType}:                            _GotoState101Action,
+	{_State285, RparenToken}:                             _GotoState382Action,
+	{_State287, CommaToken}:                              _GotoState383Action,
+	{_State288, AddToken}:                                _GotoState191Action,
+	{_State288, SubToken}:                                _GotoState196Action,
+	{_State288, MulToken}:                                _GotoState194Action,
+	{_State288, TraitOpType}:                             _GotoState197Action,
+	{_State289, DollarLbracketToken}:                     _GotoState121Action,
+	{_State289, OptionalGenericBindingType}:              _GotoState384Action,
+	{_State290, IdentifierToken}:                         _GotoState289Action,
+	{_State290, DollarLbracketToken}:                     _GotoState121Action,
+	{_State290, OptionalGenericBindingType}:              _GotoState175Action,
+	{_State291, AddToken}:                                _GotoState191Action,
+	{_State291, SubToken}:                                _GotoState196Action,
+	{_State291, MulToken}:                                _GotoState194Action,
+	{_State291, TraitOpType}:                             _GotoState197Action,
+	{_State292, IdentifierToken}:                         _GotoState385Action,
 	{_State293, IdentifierToken}:                         _GotoState180Action,
 	{_State293, UnsafeToken}:                             _GotoState181Action,
 	{_State293, StructToken}:                             _GotoState34Action,
@@ -8257,14 +8323,15 @@ var _ActionTable = _ActionTableType{
 	{_State293, PrefixTypeOpType}:                        _GotoState106Action,
 	{_State293, ValueTypeType}:                           _GotoState188Action,
 	{_State293, TraitOpTypeType}:                         _GotoState110Action,
-	{_State293, FieldDefType}:                            _GotoState279Action,
+	{_State293, FieldDefType}:                            _GotoState281Action,
 	{_State293, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State293, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State293, EnumValueDefType}:                        _GotoState387Action,
+	{_State293, EnumValueDefType}:                        _GotoState386Action,
 	{_State293, ImplicitEnumDefType}:                     _GotoState102Action,
 	{_State293, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State293, TraitDefType}:                            _GotoState109Action,
 	{_State293, FuncTypeType}:                            _GotoState101Action,
+	{_State294, DefaultToken}:                            _GotoState387Action,
 	{_State295, IdentifierToken}:                         _GotoState180Action,
 	{_State295, UnsafeToken}:                             _GotoState181Action,
 	{_State295, StructToken}:                             _GotoState34Action,
@@ -8289,55 +8356,56 @@ var _ActionTable = _ActionTableType{
 	{_State295, PrefixTypeOpType}:                        _GotoState106Action,
 	{_State295, ValueTypeType}:                           _GotoState188Action,
 	{_State295, TraitOpTypeType}:                         _GotoState110Action,
-	{_State295, FieldDefType}:                            _GotoState388Action,
+	{_State295, FieldDefType}:                            _GotoState281Action,
 	{_State295, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State295, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State295, EnumValueDefType}:                        _GotoState388Action,
 	{_State295, ImplicitEnumDefType}:                     _GotoState102Action,
 	{_State295, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State295, TraitDefType}:                            _GotoState109Action,
 	{_State295, FuncTypeType}:                            _GotoState101Action,
-	{_State297, IdentifierToken}:                         _GotoState389Action,
-	{_State297, LparenToken}:                             _GotoState177Action,
-	{_State300, RparenToken}:                             _GotoState390Action,
-	{_State301, NewlinesToken}:                           _GotoState392Action,
-	{_State301, CommaToken}:                              _GotoState391Action,
-	{_State303, RbracketToken}:                           _GotoState393Action,
-	{_State303, AddToken}:                                _GotoState191Action,
-	{_State303, SubToken}:                                _GotoState196Action,
-	{_State303, MulToken}:                                _GotoState194Action,
-	{_State303, TraitOpType}:                             _GotoState197Action,
-	{_State304, RbracketToken}:                           _GotoState394Action,
-	{_State311, IdentifierToken}:                         _GotoState180Action,
-	{_State311, UnsafeToken}:                             _GotoState181Action,
-	{_State311, StructToken}:                             _GotoState34Action,
-	{_State311, EnumToken}:                               _GotoState90Action,
-	{_State311, TraitToken}:                              _GotoState98Action,
-	{_State311, FuncToken}:                               _GotoState92Action,
-	{_State311, LparenToken}:                             _GotoState94Action,
-	{_State311, LbracketToken}:                           _GotoState26Action,
-	{_State311, DotToken}:                                _GotoState89Action,
-	{_State311, QuestionToken}:                           _GotoState96Action,
-	{_State311, ExclaimToken}:                            _GotoState91Action,
-	{_State311, TildeTildeToken}:                         _GotoState97Action,
-	{_State311, BitNegToken}:                             _GotoState88Action,
-	{_State311, BitAndToken}:                             _GotoState87Action,
-	{_State311, ParseErrorToken}:                         _GotoState95Action,
-	{_State311, UnsafeStatementType}:                     _GotoState187Action,
-	{_State311, InitializableTypeType}:                   _GotoState104Action,
-	{_State311, AtomTypeType}:                            _GotoState99Action,
-	{_State311, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State311, ReturnableTypeType}:                      _GotoState108Action,
-	{_State311, PrefixedTypeType}:                        _GotoState107Action,
-	{_State311, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State311, ValueTypeType}:                           _GotoState188Action,
-	{_State311, TraitOpTypeType}:                         _GotoState110Action,
-	{_State311, FieldDefType}:                            _GotoState395Action,
-	{_State311, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State311, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State311, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State311, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State311, TraitDefType}:                            _GotoState109Action,
-	{_State311, FuncTypeType}:                            _GotoState101Action,
+	{_State297, IdentifierToken}:                         _GotoState180Action,
+	{_State297, UnsafeToken}:                             _GotoState181Action,
+	{_State297, StructToken}:                             _GotoState34Action,
+	{_State297, EnumToken}:                               _GotoState90Action,
+	{_State297, TraitToken}:                              _GotoState98Action,
+	{_State297, FuncToken}:                               _GotoState92Action,
+	{_State297, LparenToken}:                             _GotoState94Action,
+	{_State297, LbracketToken}:                           _GotoState26Action,
+	{_State297, DotToken}:                                _GotoState89Action,
+	{_State297, QuestionToken}:                           _GotoState96Action,
+	{_State297, ExclaimToken}:                            _GotoState91Action,
+	{_State297, TildeTildeToken}:                         _GotoState97Action,
+	{_State297, BitNegToken}:                             _GotoState88Action,
+	{_State297, BitAndToken}:                             _GotoState87Action,
+	{_State297, ParseErrorToken}:                         _GotoState95Action,
+	{_State297, UnsafeStatementType}:                     _GotoState187Action,
+	{_State297, InitializableTypeType}:                   _GotoState104Action,
+	{_State297, AtomTypeType}:                            _GotoState99Action,
+	{_State297, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State297, ReturnableTypeType}:                      _GotoState108Action,
+	{_State297, PrefixedTypeType}:                        _GotoState107Action,
+	{_State297, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State297, ValueTypeType}:                           _GotoState188Action,
+	{_State297, TraitOpTypeType}:                         _GotoState110Action,
+	{_State297, FieldDefType}:                            _GotoState389Action,
+	{_State297, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State297, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State297, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State297, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State297, TraitDefType}:                            _GotoState109Action,
+	{_State297, FuncTypeType}:                            _GotoState101Action,
+	{_State299, IdentifierToken}:                         _GotoState390Action,
+	{_State299, LparenToken}:                             _GotoState177Action,
+	{_State302, RparenToken}:                             _GotoState391Action,
+	{_State303, NewlinesToken}:                           _GotoState393Action,
+	{_State303, CommaToken}:                              _GotoState392Action,
+	{_State305, RbracketToken}:                           _GotoState394Action,
+	{_State305, AddToken}:                                _GotoState191Action,
+	{_State305, SubToken}:                                _GotoState196Action,
+	{_State305, MulToken}:                                _GotoState194Action,
+	{_State305, TraitOpType}:                             _GotoState197Action,
+	{_State306, RbracketToken}:                           _GotoState395Action,
 	{_State312, IdentifierToken}:                         _GotoState180Action,
 	{_State312, UnsafeToken}:                             _GotoState181Action,
 	{_State312, StructToken}:                             _GotoState34Action,
@@ -8369,89 +8437,66 @@ var _ActionTable = _ActionTableType{
 	{_State312, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State312, TraitDefType}:                            _GotoState109Action,
 	{_State312, FuncTypeType}:                            _GotoState101Action,
-	{_State314, IdentifierToken}:                         _GotoState93Action,
-	{_State314, StructToken}:                             _GotoState34Action,
-	{_State314, EnumToken}:                               _GotoState90Action,
-	{_State314, TraitToken}:                              _GotoState98Action,
-	{_State314, FuncToken}:                               _GotoState92Action,
-	{_State314, LparenToken}:                             _GotoState94Action,
-	{_State314, LbracketToken}:                           _GotoState26Action,
-	{_State314, DotToken}:                                _GotoState89Action,
-	{_State314, QuestionToken}:                           _GotoState96Action,
-	{_State314, ExclaimToken}:                            _GotoState91Action,
-	{_State314, TildeTildeToken}:                         _GotoState97Action,
-	{_State314, BitNegToken}:                             _GotoState88Action,
-	{_State314, BitAndToken}:                             _GotoState87Action,
-	{_State314, ParseErrorToken}:                         _GotoState95Action,
-	{_State314, InitializableTypeType}:                   _GotoState104Action,
-	{_State314, AtomTypeType}:                            _GotoState99Action,
-	{_State314, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State314, ReturnableTypeType}:                      _GotoState108Action,
-	{_State314, PrefixedTypeType}:                        _GotoState107Action,
-	{_State314, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State314, ValueTypeType}:                           _GotoState397Action,
-	{_State314, TraitOpTypeType}:                         _GotoState110Action,
-	{_State314, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State314, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State314, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State314, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State314, TraitDefType}:                            _GotoState109Action,
-	{_State314, FuncTypeType}:                            _GotoState101Action,
-	{_State317, RparenToken}:                             _GotoState398Action,
-	{_State319, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State319, FloatLiteralToken}:                       _GotoState20Action,
-	{_State319, RuneLiteralToken}:                        _GotoState32Action,
-	{_State319, StringLiteralToken}:                      _GotoState33Action,
-	{_State319, IdentifierToken}:                         _GotoState23Action,
-	{_State319, TrueToken}:                               _GotoState36Action,
-	{_State319, FalseToken}:                              _GotoState19Action,
-	{_State319, StructToken}:                             _GotoState34Action,
-	{_State319, FuncToken}:                               _GotoState21Action,
-	{_State319, VarToken}:                                _GotoState37Action,
-	{_State319, LetToken}:                                _GotoState27Action,
-	{_State319, NotToken}:                                _GotoState30Action,
-	{_State319, LabelDeclToken}:                          _GotoState25Action,
-	{_State319, LparenToken}:                             _GotoState28Action,
-	{_State319, LbracketToken}:                           _GotoState26Action,
-	{_State319, SubToken}:                                _GotoState35Action,
-	{_State319, MulToken}:                                _GotoState29Action,
-	{_State319, BitNegToken}:                             _GotoState18Action,
-	{_State319, BitAndToken}:                             _GotoState17Action,
-	{_State319, GreaterToken}:                            _GotoState22Action,
-	{_State319, ParseErrorToken}:                         _GotoState31Action,
-	{_State319, VarDeclPatternType}:                      _GotoState69Action,
-	{_State319, VarOrLetType}:                            _GotoState70Action,
-	{_State319, OptionalLabelDeclType}:                   _GotoState85Action,
-	{_State319, SequenceExprType}:                        _GotoState399Action,
-	{_State319, CallExprType}:                            _GotoState50Action,
-	{_State319, AtomExprType}:                            _GotoState43Action,
-	{_State319, ParseErrorExprType}:                      _GotoState62Action,
-	{_State319, LiteralExprType}:                         _GotoState58Action,
-	{_State319, IdentifierExprType}:                      _GotoState53Action,
-	{_State319, BlockExprType}:                           _GotoState49Action,
-	{_State319, InitializeExprType}:                      _GotoState57Action,
-	{_State319, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State319, AccessibleExprType}:                      _GotoState39Action,
-	{_State319, AccessExprType}:                          _GotoState38Action,
-	{_State319, IndexExprType}:                           _GotoState55Action,
-	{_State319, PostfixableExprType}:                     _GotoState64Action,
-	{_State319, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State319, PrefixableExprType}:                      _GotoState67Action,
-	{_State319, PrefixUnaryExprType}:                     _GotoState65Action,
-	{_State319, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State319, MulExprType}:                             _GotoState59Action,
-	{_State319, BinaryMulExprType}:                       _GotoState47Action,
-	{_State319, AddExprType}:                             _GotoState40Action,
-	{_State319, BinaryAddExprType}:                       _GotoState44Action,
-	{_State319, CmpExprType}:                             _GotoState51Action,
-	{_State319, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State319, AndExprType}:                             _GotoState41Action,
-	{_State319, BinaryAndExprType}:                       _GotoState45Action,
-	{_State319, OrExprType}:                              _GotoState61Action,
-	{_State319, BinaryOrExprType}:                        _GotoState48Action,
-	{_State319, InitializableTypeType}:                   _GotoState56Action,
-	{_State319, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State319, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State313, IdentifierToken}:                         _GotoState180Action,
+	{_State313, UnsafeToken}:                             _GotoState181Action,
+	{_State313, StructToken}:                             _GotoState34Action,
+	{_State313, EnumToken}:                               _GotoState90Action,
+	{_State313, TraitToken}:                              _GotoState98Action,
+	{_State313, FuncToken}:                               _GotoState92Action,
+	{_State313, LparenToken}:                             _GotoState94Action,
+	{_State313, LbracketToken}:                           _GotoState26Action,
+	{_State313, DotToken}:                                _GotoState89Action,
+	{_State313, QuestionToken}:                           _GotoState96Action,
+	{_State313, ExclaimToken}:                            _GotoState91Action,
+	{_State313, TildeTildeToken}:                         _GotoState97Action,
+	{_State313, BitNegToken}:                             _GotoState88Action,
+	{_State313, BitAndToken}:                             _GotoState87Action,
+	{_State313, ParseErrorToken}:                         _GotoState95Action,
+	{_State313, UnsafeStatementType}:                     _GotoState187Action,
+	{_State313, InitializableTypeType}:                   _GotoState104Action,
+	{_State313, AtomTypeType}:                            _GotoState99Action,
+	{_State313, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State313, ReturnableTypeType}:                      _GotoState108Action,
+	{_State313, PrefixedTypeType}:                        _GotoState107Action,
+	{_State313, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State313, ValueTypeType}:                           _GotoState188Action,
+	{_State313, TraitOpTypeType}:                         _GotoState110Action,
+	{_State313, FieldDefType}:                            _GotoState397Action,
+	{_State313, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State313, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State313, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State313, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State313, TraitDefType}:                            _GotoState109Action,
+	{_State313, FuncTypeType}:                            _GotoState101Action,
+	{_State315, IdentifierToken}:                         _GotoState93Action,
+	{_State315, StructToken}:                             _GotoState34Action,
+	{_State315, EnumToken}:                               _GotoState90Action,
+	{_State315, TraitToken}:                              _GotoState98Action,
+	{_State315, FuncToken}:                               _GotoState92Action,
+	{_State315, LparenToken}:                             _GotoState94Action,
+	{_State315, LbracketToken}:                           _GotoState26Action,
+	{_State315, DotToken}:                                _GotoState89Action,
+	{_State315, QuestionToken}:                           _GotoState96Action,
+	{_State315, ExclaimToken}:                            _GotoState91Action,
+	{_State315, TildeTildeToken}:                         _GotoState97Action,
+	{_State315, BitNegToken}:                             _GotoState88Action,
+	{_State315, BitAndToken}:                             _GotoState87Action,
+	{_State315, ParseErrorToken}:                         _GotoState95Action,
+	{_State315, InitializableTypeType}:                   _GotoState104Action,
+	{_State315, AtomTypeType}:                            _GotoState99Action,
+	{_State315, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State315, ReturnableTypeType}:                      _GotoState108Action,
+	{_State315, PrefixedTypeType}:                        _GotoState107Action,
+	{_State315, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State315, ValueTypeType}:                           _GotoState398Action,
+	{_State315, TraitOpTypeType}:                         _GotoState110Action,
+	{_State315, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State315, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State315, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State315, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State315, TraitDefType}:                            _GotoState109Action,
+	{_State315, FuncTypeType}:                            _GotoState101Action,
+	{_State318, RparenToken}:                             _GotoState399Action,
 	{_State320, IntegerLiteralToken}:                     _GotoState24Action,
 	{_State320, FloatLiteralToken}:                       _GotoState20Action,
 	{_State320, RuneLiteralToken}:                        _GotoState32Action,
@@ -8584,8 +8629,7 @@ var _ActionTable = _ActionTableType{
 	{_State322, VarDeclPatternType}:                      _GotoState69Action,
 	{_State322, VarOrLetType}:                            _GotoState70Action,
 	{_State322, OptionalLabelDeclType}:                   _GotoState85Action,
-	{_State322, SequenceExprType}:                        _GotoState403Action,
-	{_State322, OptionalSequenceExprType}:                _GotoState402Action,
+	{_State322, SequenceExprType}:                        _GotoState402Action,
 	{_State322, CallExprType}:                            _GotoState50Action,
 	{_State322, AtomExprType}:                            _GotoState43Action,
 	{_State322, ParseErrorExprType}:                      _GotoState62Action,
@@ -8615,275 +8659,275 @@ var _ActionTable = _ActionTableType{
 	{_State322, InitializableTypeType}:                   _GotoState56Action,
 	{_State322, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State322, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State323, LbraceToken}:                             _GotoState72Action,
-	{_State323, StatementBlockType}:                      _GotoState404Action,
-	{_State324, IdentifierToken}:                         _GotoState405Action,
-	{_State325, DotToken}:                                _GotoState406Action,
-	{_State328, CommaToken}:                              _GotoState408Action,
-	{_State328, AssignToken}:                             _GotoState407Action,
-	{_State330, ElseToken}:                               _GotoState409Action,
-	{_State332, IdentifierToken}:                         _GotoState157Action,
-	{_State332, LparenToken}:                             _GotoState158Action,
-	{_State332, VarPatternType}:                          _GotoState410Action,
-	{_State332, TuplePatternType}:                        _GotoState159Action,
-	{_State333, IdentifierToken}:                         _GotoState227Action,
+	{_State323, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State323, FloatLiteralToken}:                       _GotoState20Action,
+	{_State323, RuneLiteralToken}:                        _GotoState32Action,
+	{_State323, StringLiteralToken}:                      _GotoState33Action,
+	{_State323, IdentifierToken}:                         _GotoState23Action,
+	{_State323, TrueToken}:                               _GotoState36Action,
+	{_State323, FalseToken}:                              _GotoState19Action,
+	{_State323, StructToken}:                             _GotoState34Action,
+	{_State323, FuncToken}:                               _GotoState21Action,
+	{_State323, VarToken}:                                _GotoState37Action,
+	{_State323, LetToken}:                                _GotoState27Action,
+	{_State323, NotToken}:                                _GotoState30Action,
+	{_State323, LabelDeclToken}:                          _GotoState25Action,
+	{_State323, LparenToken}:                             _GotoState28Action,
+	{_State323, LbracketToken}:                           _GotoState26Action,
+	{_State323, SubToken}:                                _GotoState35Action,
+	{_State323, MulToken}:                                _GotoState29Action,
+	{_State323, BitNegToken}:                             _GotoState18Action,
+	{_State323, BitAndToken}:                             _GotoState17Action,
+	{_State323, GreaterToken}:                            _GotoState22Action,
+	{_State323, ParseErrorToken}:                         _GotoState31Action,
+	{_State323, VarDeclPatternType}:                      _GotoState69Action,
+	{_State323, VarOrLetType}:                            _GotoState70Action,
+	{_State323, OptionalLabelDeclType}:                   _GotoState85Action,
+	{_State323, SequenceExprType}:                        _GotoState404Action,
+	{_State323, OptionalSequenceExprType}:                _GotoState403Action,
+	{_State323, CallExprType}:                            _GotoState50Action,
+	{_State323, AtomExprType}:                            _GotoState43Action,
+	{_State323, ParseErrorExprType}:                      _GotoState62Action,
+	{_State323, LiteralExprType}:                         _GotoState58Action,
+	{_State323, IdentifierExprType}:                      _GotoState53Action,
+	{_State323, BlockExprType}:                           _GotoState49Action,
+	{_State323, InitializeExprType}:                      _GotoState57Action,
+	{_State323, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State323, AccessibleExprType}:                      _GotoState39Action,
+	{_State323, AccessExprType}:                          _GotoState38Action,
+	{_State323, IndexExprType}:                           _GotoState55Action,
+	{_State323, PostfixableExprType}:                     _GotoState64Action,
+	{_State323, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State323, PrefixableExprType}:                      _GotoState67Action,
+	{_State323, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State323, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State323, MulExprType}:                             _GotoState59Action,
+	{_State323, BinaryMulExprType}:                       _GotoState47Action,
+	{_State323, AddExprType}:                             _GotoState40Action,
+	{_State323, BinaryAddExprType}:                       _GotoState44Action,
+	{_State323, CmpExprType}:                             _GotoState51Action,
+	{_State323, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State323, AndExprType}:                             _GotoState41Action,
+	{_State323, BinaryAndExprType}:                       _GotoState45Action,
+	{_State323, OrExprType}:                              _GotoState61Action,
+	{_State323, BinaryOrExprType}:                        _GotoState48Action,
+	{_State323, InitializableTypeType}:                   _GotoState56Action,
+	{_State323, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State323, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State324, LbraceToken}:                             _GotoState72Action,
+	{_State324, StatementBlockType}:                      _GotoState405Action,
+	{_State325, IdentifierToken}:                         _GotoState406Action,
+	{_State326, DotToken}:                                _GotoState407Action,
+	{_State329, CommaToken}:                              _GotoState409Action,
+	{_State329, AssignToken}:                             _GotoState408Action,
+	{_State331, ElseToken}:                               _GotoState410Action,
+	{_State333, IdentifierToken}:                         _GotoState157Action,
 	{_State333, LparenToken}:                             _GotoState158Action,
-	{_State333, EllipsisToken}:                           _GotoState226Action,
-	{_State333, VarPatternType}:                          _GotoState230Action,
+	{_State333, VarPatternType}:                          _GotoState411Action,
 	{_State333, TuplePatternType}:                        _GotoState159Action,
-	{_State333, FieldVarPatternType}:                     _GotoState411Action,
-	{_State335, CommaToken}:                              _GotoState408Action,
-	{_State335, ColonToken}:                              _GotoState412Action,
-	{_State336, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State336, FloatLiteralToken}:                       _GotoState20Action,
-	{_State336, RuneLiteralToken}:                        _GotoState32Action,
-	{_State336, StringLiteralToken}:                      _GotoState33Action,
-	{_State336, IdentifierToken}:                         _GotoState23Action,
-	{_State336, TrueToken}:                               _GotoState36Action,
-	{_State336, FalseToken}:                              _GotoState19Action,
-	{_State336, ReturnToken}:                             _GotoState242Action,
-	{_State336, BreakToken}:                              _GotoState234Action,
-	{_State336, ContinueToken}:                           _GotoState236Action,
-	{_State336, FallthroughToken}:                        _GotoState239Action,
-	{_State336, UnsafeToken}:                             _GotoState181Action,
-	{_State336, StructToken}:                             _GotoState34Action,
-	{_State336, FuncToken}:                               _GotoState21Action,
-	{_State336, AsyncToken}:                              _GotoState233Action,
-	{_State336, DeferToken}:                              _GotoState238Action,
-	{_State336, VarToken}:                                _GotoState37Action,
-	{_State336, LetToken}:                                _GotoState27Action,
-	{_State336, NotToken}:                                _GotoState30Action,
-	{_State336, LabelDeclToken}:                          _GotoState25Action,
-	{_State336, LparenToken}:                             _GotoState28Action,
-	{_State336, LbracketToken}:                           _GotoState26Action,
-	{_State336, SubToken}:                                _GotoState35Action,
-	{_State336, MulToken}:                                _GotoState29Action,
-	{_State336, BitNegToken}:                             _GotoState18Action,
-	{_State336, BitAndToken}:                             _GotoState17Action,
-	{_State336, GreaterToken}:                            _GotoState22Action,
-	{_State336, ParseErrorToken}:                         _GotoState31Action,
-	{_State336, SimpleStatementBodyType}:                 _GotoState414Action,
-	{_State336, OptionalSimpleStatementBodyType}:         _GotoState413Action,
-	{_State336, ExpressionOrImproperStructStatementType}: _GotoState250Action,
-	{_State336, CallbackOpType}:                          _GotoState247Action,
-	{_State336, CallbackOpStatementType}:                 _GotoState248Action,
-	{_State336, UnsafeStatementType}:                     _GotoState261Action,
-	{_State336, JumpStatementType}:                       _GotoState254Action,
-	{_State336, JumpTypeType}:                            _GotoState255Action,
-	{_State336, ExpressionsType}:                         _GotoState251Action,
-	{_State336, FallthroughStatementType}:                _GotoState252Action,
-	{_State336, AssignStatementType}:                     _GotoState245Action,
-	{_State336, UnaryOpAssignStatementType}:              _GotoState260Action,
-	{_State336, BinaryOpAssignStatementType}:             _GotoState246Action,
-	{_State336, VarDeclPatternType}:                      _GotoState69Action,
-	{_State336, VarOrLetType}:                            _GotoState70Action,
-	{_State336, AssignPatternType}:                       _GotoState244Action,
-	{_State336, ExpressionType}:                          _GotoState249Action,
-	{_State336, OptionalLabelDeclType}:                   _GotoState60Action,
-	{_State336, SequenceExprType}:                        _GotoState256Action,
-	{_State336, CallExprType}:                            _GotoState50Action,
-	{_State336, AtomExprType}:                            _GotoState43Action,
-	{_State336, ParseErrorExprType}:                      _GotoState62Action,
-	{_State336, LiteralExprType}:                         _GotoState58Action,
-	{_State336, IdentifierExprType}:                      _GotoState53Action,
-	{_State336, BlockExprType}:                           _GotoState49Action,
-	{_State336, InitializeExprType}:                      _GotoState57Action,
-	{_State336, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State336, AccessibleExprType}:                      _GotoState243Action,
-	{_State336, AccessExprType}:                          _GotoState38Action,
-	{_State336, IndexExprType}:                           _GotoState55Action,
-	{_State336, PostfixableExprType}:                     _GotoState64Action,
-	{_State336, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State336, PrefixableExprType}:                      _GotoState67Action,
-	{_State336, PrefixUnaryExprType}:                     _GotoState65Action,
-	{_State336, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State336, MulExprType}:                             _GotoState59Action,
-	{_State336, BinaryMulExprType}:                       _GotoState47Action,
-	{_State336, AddExprType}:                             _GotoState40Action,
-	{_State336, BinaryAddExprType}:                       _GotoState44Action,
-	{_State336, CmpExprType}:                             _GotoState51Action,
-	{_State336, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State336, AndExprType}:                             _GotoState41Action,
-	{_State336, BinaryAndExprType}:                       _GotoState45Action,
-	{_State336, OrExprType}:                              _GotoState61Action,
-	{_State336, BinaryOrExprType}:                        _GotoState48Action,
-	{_State336, InitializableTypeType}:                   _GotoState56Action,
-	{_State336, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State336, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State337, StringLiteralToken}:                      _GotoState338Action,
-	{_State337, ImportClauseType}:                        _GotoState415Action,
-	{_State337, ImportClauseTerminalType}:                _GotoState416Action,
-	{_State337, ImportClausesType}:                       _GotoState417Action,
-	{_State338, AsToken}:                                 _GotoState418Action,
-	{_State353, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State353, FloatLiteralToken}:                       _GotoState20Action,
-	{_State353, RuneLiteralToken}:                        _GotoState32Action,
-	{_State353, StringLiteralToken}:                      _GotoState33Action,
-	{_State353, IdentifierToken}:                         _GotoState23Action,
-	{_State353, TrueToken}:                               _GotoState36Action,
-	{_State353, FalseToken}:                              _GotoState19Action,
-	{_State353, StructToken}:                             _GotoState34Action,
-	{_State353, FuncToken}:                               _GotoState21Action,
-	{_State353, VarToken}:                                _GotoState37Action,
-	{_State353, LetToken}:                                _GotoState27Action,
-	{_State353, NotToken}:                                _GotoState30Action,
-	{_State353, LabelDeclToken}:                          _GotoState25Action,
-	{_State353, LparenToken}:                             _GotoState28Action,
-	{_State353, LbracketToken}:                           _GotoState26Action,
-	{_State353, SubToken}:                                _GotoState35Action,
-	{_State353, MulToken}:                                _GotoState29Action,
-	{_State353, BitNegToken}:                             _GotoState18Action,
-	{_State353, BitAndToken}:                             _GotoState17Action,
-	{_State353, GreaterToken}:                            _GotoState22Action,
-	{_State353, ParseErrorToken}:                         _GotoState31Action,
-	{_State353, VarDeclPatternType}:                      _GotoState69Action,
-	{_State353, VarOrLetType}:                            _GotoState70Action,
-	{_State353, ExpressionType}:                          _GotoState419Action,
-	{_State353, OptionalLabelDeclType}:                   _GotoState60Action,
-	{_State353, SequenceExprType}:                        _GotoState68Action,
-	{_State353, CallExprType}:                            _GotoState50Action,
-	{_State353, AtomExprType}:                            _GotoState43Action,
-	{_State353, ParseErrorExprType}:                      _GotoState62Action,
-	{_State353, LiteralExprType}:                         _GotoState58Action,
-	{_State353, IdentifierExprType}:                      _GotoState53Action,
-	{_State353, BlockExprType}:                           _GotoState49Action,
-	{_State353, InitializeExprType}:                      _GotoState57Action,
-	{_State353, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State353, AccessibleExprType}:                      _GotoState39Action,
-	{_State353, AccessExprType}:                          _GotoState38Action,
-	{_State353, IndexExprType}:                           _GotoState55Action,
-	{_State353, PostfixableExprType}:                     _GotoState64Action,
-	{_State353, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State353, PrefixableExprType}:                      _GotoState67Action,
-	{_State353, PrefixUnaryExprType}:                     _GotoState65Action,
-	{_State353, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State353, MulExprType}:                             _GotoState59Action,
-	{_State353, BinaryMulExprType}:                       _GotoState47Action,
-	{_State353, AddExprType}:                             _GotoState40Action,
-	{_State353, BinaryAddExprType}:                       _GotoState44Action,
-	{_State353, CmpExprType}:                             _GotoState51Action,
-	{_State353, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State353, AndExprType}:                             _GotoState41Action,
-	{_State353, BinaryAndExprType}:                       _GotoState45Action,
-	{_State353, OrExprType}:                              _GotoState61Action,
-	{_State353, BinaryOrExprType}:                        _GotoState48Action,
-	{_State353, InitializableTypeType}:                   _GotoState56Action,
-	{_State353, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State353, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State355, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State355, FloatLiteralToken}:                       _GotoState20Action,
-	{_State355, RuneLiteralToken}:                        _GotoState32Action,
-	{_State355, StringLiteralToken}:                      _GotoState33Action,
-	{_State355, IdentifierToken}:                         _GotoState23Action,
-	{_State355, TrueToken}:                               _GotoState36Action,
-	{_State355, FalseToken}:                              _GotoState19Action,
-	{_State355, StructToken}:                             _GotoState34Action,
-	{_State355, FuncToken}:                               _GotoState21Action,
-	{_State355, VarToken}:                                _GotoState37Action,
-	{_State355, LetToken}:                                _GotoState27Action,
-	{_State355, NotToken}:                                _GotoState30Action,
-	{_State355, LabelDeclToken}:                          _GotoState25Action,
-	{_State355, LparenToken}:                             _GotoState28Action,
-	{_State355, LbracketToken}:                           _GotoState26Action,
-	{_State355, SubToken}:                                _GotoState35Action,
-	{_State355, MulToken}:                                _GotoState29Action,
-	{_State355, BitNegToken}:                             _GotoState18Action,
-	{_State355, BitAndToken}:                             _GotoState17Action,
-	{_State355, GreaterToken}:                            _GotoState22Action,
-	{_State355, ParseErrorToken}:                         _GotoState31Action,
-	{_State355, VarDeclPatternType}:                      _GotoState69Action,
-	{_State355, VarOrLetType}:                            _GotoState70Action,
-	{_State355, ExpressionType}:                          _GotoState420Action,
-	{_State355, OptionalLabelDeclType}:                   _GotoState60Action,
-	{_State355, SequenceExprType}:                        _GotoState68Action,
-	{_State355, CallExprType}:                            _GotoState50Action,
-	{_State355, AtomExprType}:                            _GotoState43Action,
-	{_State355, ParseErrorExprType}:                      _GotoState62Action,
-	{_State355, LiteralExprType}:                         _GotoState58Action,
-	{_State355, IdentifierExprType}:                      _GotoState53Action,
-	{_State355, BlockExprType}:                           _GotoState49Action,
-	{_State355, InitializeExprType}:                      _GotoState57Action,
-	{_State355, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State355, AccessibleExprType}:                      _GotoState39Action,
-	{_State355, AccessExprType}:                          _GotoState38Action,
-	{_State355, IndexExprType}:                           _GotoState55Action,
-	{_State355, PostfixableExprType}:                     _GotoState64Action,
-	{_State355, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State355, PrefixableExprType}:                      _GotoState67Action,
-	{_State355, PrefixUnaryExprType}:                     _GotoState65Action,
-	{_State355, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State355, MulExprType}:                             _GotoState59Action,
-	{_State355, BinaryMulExprType}:                       _GotoState47Action,
-	{_State355, AddExprType}:                             _GotoState40Action,
-	{_State355, BinaryAddExprType}:                       _GotoState44Action,
-	{_State355, CmpExprType}:                             _GotoState51Action,
-	{_State355, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State355, AndExprType}:                             _GotoState41Action,
-	{_State355, BinaryAndExprType}:                       _GotoState45Action,
-	{_State355, OrExprType}:                              _GotoState61Action,
-	{_State355, BinaryOrExprType}:                        _GotoState48Action,
-	{_State355, InitializableTypeType}:                   _GotoState56Action,
-	{_State355, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State355, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State356, LbracketToken}:                           _GotoState123Action,
-	{_State356, DotToken}:                                _GotoState122Action,
-	{_State356, DollarLbracketToken}:                     _GotoState121Action,
-	{_State356, OptionalGenericBindingType}:              _GotoState125Action,
-	{_State358, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State358, FloatLiteralToken}:                       _GotoState20Action,
-	{_State358, RuneLiteralToken}:                        _GotoState32Action,
-	{_State358, StringLiteralToken}:                      _GotoState33Action,
-	{_State358, IdentifierToken}:                         _GotoState23Action,
-	{_State358, TrueToken}:                               _GotoState36Action,
-	{_State358, FalseToken}:                              _GotoState19Action,
-	{_State358, StructToken}:                             _GotoState34Action,
-	{_State358, FuncToken}:                               _GotoState21Action,
-	{_State358, VarToken}:                                _GotoState37Action,
-	{_State358, LetToken}:                                _GotoState27Action,
-	{_State358, NotToken}:                                _GotoState30Action,
-	{_State358, LabelDeclToken}:                          _GotoState25Action,
-	{_State358, LparenToken}:                             _GotoState28Action,
-	{_State358, LbracketToken}:                           _GotoState26Action,
-	{_State358, SubToken}:                                _GotoState35Action,
-	{_State358, MulToken}:                                _GotoState29Action,
-	{_State358, BitNegToken}:                             _GotoState18Action,
-	{_State358, BitAndToken}:                             _GotoState17Action,
-	{_State358, GreaterToken}:                            _GotoState22Action,
-	{_State358, ParseErrorToken}:                         _GotoState31Action,
-	{_State358, VarDeclPatternType}:                      _GotoState69Action,
-	{_State358, VarOrLetType}:                            _GotoState70Action,
-	{_State358, ExpressionType}:                          _GotoState421Action,
-	{_State358, OptionalLabelDeclType}:                   _GotoState60Action,
-	{_State358, SequenceExprType}:                        _GotoState68Action,
-	{_State358, CallExprType}:                            _GotoState50Action,
-	{_State358, AtomExprType}:                            _GotoState43Action,
-	{_State358, ParseErrorExprType}:                      _GotoState62Action,
-	{_State358, LiteralExprType}:                         _GotoState58Action,
-	{_State358, IdentifierExprType}:                      _GotoState53Action,
-	{_State358, BlockExprType}:                           _GotoState49Action,
-	{_State358, InitializeExprType}:                      _GotoState57Action,
-	{_State358, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State358, AccessibleExprType}:                      _GotoState39Action,
-	{_State358, AccessExprType}:                          _GotoState38Action,
-	{_State358, IndexExprType}:                           _GotoState55Action,
-	{_State358, PostfixableExprType}:                     _GotoState64Action,
-	{_State358, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State358, PrefixableExprType}:                      _GotoState67Action,
-	{_State358, PrefixUnaryExprType}:                     _GotoState65Action,
-	{_State358, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State358, MulExprType}:                             _GotoState59Action,
-	{_State358, BinaryMulExprType}:                       _GotoState47Action,
-	{_State358, AddExprType}:                             _GotoState40Action,
-	{_State358, BinaryAddExprType}:                       _GotoState44Action,
-	{_State358, CmpExprType}:                             _GotoState51Action,
-	{_State358, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State358, AndExprType}:                             _GotoState41Action,
-	{_State358, BinaryAndExprType}:                       _GotoState45Action,
-	{_State358, OrExprType}:                              _GotoState61Action,
-	{_State358, BinaryOrExprType}:                        _GotoState48Action,
-	{_State358, InitializableTypeType}:                   _GotoState56Action,
-	{_State358, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State358, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State334, IdentifierToken}:                         _GotoState229Action,
+	{_State334, LparenToken}:                             _GotoState158Action,
+	{_State334, EllipsisToken}:                           _GotoState228Action,
+	{_State334, VarPatternType}:                          _GotoState232Action,
+	{_State334, TuplePatternType}:                        _GotoState159Action,
+	{_State334, FieldVarPatternType}:                     _GotoState412Action,
+	{_State336, CommaToken}:                              _GotoState409Action,
+	{_State336, ColonToken}:                              _GotoState413Action,
+	{_State337, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State337, FloatLiteralToken}:                       _GotoState20Action,
+	{_State337, RuneLiteralToken}:                        _GotoState32Action,
+	{_State337, StringLiteralToken}:                      _GotoState33Action,
+	{_State337, IdentifierToken}:                         _GotoState23Action,
+	{_State337, TrueToken}:                               _GotoState36Action,
+	{_State337, FalseToken}:                              _GotoState19Action,
+	{_State337, ReturnToken}:                             _GotoState244Action,
+	{_State337, BreakToken}:                              _GotoState236Action,
+	{_State337, ContinueToken}:                           _GotoState238Action,
+	{_State337, FallthroughToken}:                        _GotoState241Action,
+	{_State337, UnsafeToken}:                             _GotoState181Action,
+	{_State337, StructToken}:                             _GotoState34Action,
+	{_State337, FuncToken}:                               _GotoState21Action,
+	{_State337, AsyncToken}:                              _GotoState235Action,
+	{_State337, DeferToken}:                              _GotoState240Action,
+	{_State337, VarToken}:                                _GotoState37Action,
+	{_State337, LetToken}:                                _GotoState27Action,
+	{_State337, NotToken}:                                _GotoState30Action,
+	{_State337, LabelDeclToken}:                          _GotoState25Action,
+	{_State337, LparenToken}:                             _GotoState28Action,
+	{_State337, LbracketToken}:                           _GotoState26Action,
+	{_State337, SubToken}:                                _GotoState35Action,
+	{_State337, MulToken}:                                _GotoState29Action,
+	{_State337, BitNegToken}:                             _GotoState18Action,
+	{_State337, BitAndToken}:                             _GotoState17Action,
+	{_State337, GreaterToken}:                            _GotoState22Action,
+	{_State337, ParseErrorToken}:                         _GotoState31Action,
+	{_State337, SimpleStatementBodyType}:                 _GotoState415Action,
+	{_State337, OptionalSimpleStatementBodyType}:         _GotoState414Action,
+	{_State337, ExpressionOrImproperStructStatementType}: _GotoState252Action,
+	{_State337, CallbackOpType}:                          _GotoState249Action,
+	{_State337, CallbackOpStatementType}:                 _GotoState250Action,
+	{_State337, UnsafeStatementType}:                     _GotoState263Action,
+	{_State337, JumpStatementType}:                       _GotoState256Action,
+	{_State337, JumpTypeType}:                            _GotoState257Action,
+	{_State337, ExpressionsType}:                         _GotoState253Action,
+	{_State337, FallthroughStatementType}:                _GotoState254Action,
+	{_State337, AssignStatementType}:                     _GotoState247Action,
+	{_State337, UnaryOpAssignStatementType}:              _GotoState262Action,
+	{_State337, BinaryOpAssignStatementType}:             _GotoState248Action,
+	{_State337, VarDeclPatternType}:                      _GotoState69Action,
+	{_State337, VarOrLetType}:                            _GotoState70Action,
+	{_State337, AssignPatternType}:                       _GotoState246Action,
+	{_State337, ExpressionType}:                          _GotoState251Action,
+	{_State337, OptionalLabelDeclType}:                   _GotoState60Action,
+	{_State337, SequenceExprType}:                        _GotoState258Action,
+	{_State337, CallExprType}:                            _GotoState50Action,
+	{_State337, AtomExprType}:                            _GotoState43Action,
+	{_State337, ParseErrorExprType}:                      _GotoState62Action,
+	{_State337, LiteralExprType}:                         _GotoState58Action,
+	{_State337, IdentifierExprType}:                      _GotoState53Action,
+	{_State337, BlockExprType}:                           _GotoState49Action,
+	{_State337, InitializeExprType}:                      _GotoState57Action,
+	{_State337, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State337, AccessibleExprType}:                      _GotoState245Action,
+	{_State337, AccessExprType}:                          _GotoState38Action,
+	{_State337, IndexExprType}:                           _GotoState55Action,
+	{_State337, PostfixableExprType}:                     _GotoState64Action,
+	{_State337, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State337, PrefixableExprType}:                      _GotoState67Action,
+	{_State337, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State337, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State337, MulExprType}:                             _GotoState59Action,
+	{_State337, BinaryMulExprType}:                       _GotoState47Action,
+	{_State337, AddExprType}:                             _GotoState40Action,
+	{_State337, BinaryAddExprType}:                       _GotoState44Action,
+	{_State337, CmpExprType}:                             _GotoState51Action,
+	{_State337, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State337, AndExprType}:                             _GotoState41Action,
+	{_State337, BinaryAndExprType}:                       _GotoState45Action,
+	{_State337, OrExprType}:                              _GotoState61Action,
+	{_State337, BinaryOrExprType}:                        _GotoState48Action,
+	{_State337, InitializableTypeType}:                   _GotoState56Action,
+	{_State337, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State337, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State338, StringLiteralToken}:                      _GotoState339Action,
+	{_State338, ImportClauseType}:                        _GotoState416Action,
+	{_State338, ImportClauseTerminalType}:                _GotoState417Action,
+	{_State338, ImportClausesType}:                       _GotoState418Action,
+	{_State339, AsToken}:                                 _GotoState419Action,
+	{_State354, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State354, FloatLiteralToken}:                       _GotoState20Action,
+	{_State354, RuneLiteralToken}:                        _GotoState32Action,
+	{_State354, StringLiteralToken}:                      _GotoState33Action,
+	{_State354, IdentifierToken}:                         _GotoState23Action,
+	{_State354, TrueToken}:                               _GotoState36Action,
+	{_State354, FalseToken}:                              _GotoState19Action,
+	{_State354, StructToken}:                             _GotoState34Action,
+	{_State354, FuncToken}:                               _GotoState21Action,
+	{_State354, VarToken}:                                _GotoState37Action,
+	{_State354, LetToken}:                                _GotoState27Action,
+	{_State354, NotToken}:                                _GotoState30Action,
+	{_State354, LabelDeclToken}:                          _GotoState25Action,
+	{_State354, LparenToken}:                             _GotoState28Action,
+	{_State354, LbracketToken}:                           _GotoState26Action,
+	{_State354, SubToken}:                                _GotoState35Action,
+	{_State354, MulToken}:                                _GotoState29Action,
+	{_State354, BitNegToken}:                             _GotoState18Action,
+	{_State354, BitAndToken}:                             _GotoState17Action,
+	{_State354, GreaterToken}:                            _GotoState22Action,
+	{_State354, ParseErrorToken}:                         _GotoState31Action,
+	{_State354, VarDeclPatternType}:                      _GotoState69Action,
+	{_State354, VarOrLetType}:                            _GotoState70Action,
+	{_State354, ExpressionType}:                          _GotoState420Action,
+	{_State354, OptionalLabelDeclType}:                   _GotoState60Action,
+	{_State354, SequenceExprType}:                        _GotoState68Action,
+	{_State354, CallExprType}:                            _GotoState50Action,
+	{_State354, AtomExprType}:                            _GotoState43Action,
+	{_State354, ParseErrorExprType}:                      _GotoState62Action,
+	{_State354, LiteralExprType}:                         _GotoState58Action,
+	{_State354, IdentifierExprType}:                      _GotoState53Action,
+	{_State354, BlockExprType}:                           _GotoState49Action,
+	{_State354, InitializeExprType}:                      _GotoState57Action,
+	{_State354, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State354, AccessibleExprType}:                      _GotoState39Action,
+	{_State354, AccessExprType}:                          _GotoState38Action,
+	{_State354, IndexExprType}:                           _GotoState55Action,
+	{_State354, PostfixableExprType}:                     _GotoState64Action,
+	{_State354, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State354, PrefixableExprType}:                      _GotoState67Action,
+	{_State354, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State354, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State354, MulExprType}:                             _GotoState59Action,
+	{_State354, BinaryMulExprType}:                       _GotoState47Action,
+	{_State354, AddExprType}:                             _GotoState40Action,
+	{_State354, BinaryAddExprType}:                       _GotoState44Action,
+	{_State354, CmpExprType}:                             _GotoState51Action,
+	{_State354, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State354, AndExprType}:                             _GotoState41Action,
+	{_State354, BinaryAndExprType}:                       _GotoState45Action,
+	{_State354, OrExprType}:                              _GotoState61Action,
+	{_State354, BinaryOrExprType}:                        _GotoState48Action,
+	{_State354, InitializableTypeType}:                   _GotoState56Action,
+	{_State354, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State354, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State356, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State356, FloatLiteralToken}:                       _GotoState20Action,
+	{_State356, RuneLiteralToken}:                        _GotoState32Action,
+	{_State356, StringLiteralToken}:                      _GotoState33Action,
+	{_State356, IdentifierToken}:                         _GotoState23Action,
+	{_State356, TrueToken}:                               _GotoState36Action,
+	{_State356, FalseToken}:                              _GotoState19Action,
+	{_State356, StructToken}:                             _GotoState34Action,
+	{_State356, FuncToken}:                               _GotoState21Action,
+	{_State356, VarToken}:                                _GotoState37Action,
+	{_State356, LetToken}:                                _GotoState27Action,
+	{_State356, NotToken}:                                _GotoState30Action,
+	{_State356, LabelDeclToken}:                          _GotoState25Action,
+	{_State356, LparenToken}:                             _GotoState28Action,
+	{_State356, LbracketToken}:                           _GotoState26Action,
+	{_State356, SubToken}:                                _GotoState35Action,
+	{_State356, MulToken}:                                _GotoState29Action,
+	{_State356, BitNegToken}:                             _GotoState18Action,
+	{_State356, BitAndToken}:                             _GotoState17Action,
+	{_State356, GreaterToken}:                            _GotoState22Action,
+	{_State356, ParseErrorToken}:                         _GotoState31Action,
+	{_State356, VarDeclPatternType}:                      _GotoState69Action,
+	{_State356, VarOrLetType}:                            _GotoState70Action,
+	{_State356, ExpressionType}:                          _GotoState421Action,
+	{_State356, OptionalLabelDeclType}:                   _GotoState60Action,
+	{_State356, SequenceExprType}:                        _GotoState68Action,
+	{_State356, CallExprType}:                            _GotoState50Action,
+	{_State356, AtomExprType}:                            _GotoState43Action,
+	{_State356, ParseErrorExprType}:                      _GotoState62Action,
+	{_State356, LiteralExprType}:                         _GotoState58Action,
+	{_State356, IdentifierExprType}:                      _GotoState53Action,
+	{_State356, BlockExprType}:                           _GotoState49Action,
+	{_State356, InitializeExprType}:                      _GotoState57Action,
+	{_State356, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State356, AccessibleExprType}:                      _GotoState39Action,
+	{_State356, AccessExprType}:                          _GotoState38Action,
+	{_State356, IndexExprType}:                           _GotoState55Action,
+	{_State356, PostfixableExprType}:                     _GotoState64Action,
+	{_State356, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State356, PrefixableExprType}:                      _GotoState67Action,
+	{_State356, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State356, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State356, MulExprType}:                             _GotoState59Action,
+	{_State356, BinaryMulExprType}:                       _GotoState47Action,
+	{_State356, AddExprType}:                             _GotoState40Action,
+	{_State356, BinaryAddExprType}:                       _GotoState44Action,
+	{_State356, CmpExprType}:                             _GotoState51Action,
+	{_State356, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State356, AndExprType}:                             _GotoState41Action,
+	{_State356, BinaryAndExprType}:                       _GotoState45Action,
+	{_State356, OrExprType}:                              _GotoState61Action,
+	{_State356, BinaryOrExprType}:                        _GotoState48Action,
+	{_State356, InitializableTypeType}:                   _GotoState56Action,
+	{_State356, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State356, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State357, LbracketToken}:                           _GotoState123Action,
+	{_State357, DotToken}:                                _GotoState122Action,
+	{_State357, DollarLbracketToken}:                     _GotoState121Action,
+	{_State357, OptionalGenericBindingType}:              _GotoState125Action,
 	{_State359, IntegerLiteralToken}:                     _GotoState24Action,
 	{_State359, FloatLiteralToken}:                       _GotoState20Action,
 	{_State359, RuneLiteralToken}:                        _GotoState32Action,
@@ -8905,10 +8949,9 @@ var _ActionTable = _ActionTableType{
 	{_State359, BitAndToken}:                             _GotoState17Action,
 	{_State359, GreaterToken}:                            _GotoState22Action,
 	{_State359, ParseErrorToken}:                         _GotoState31Action,
-	{_State359, ExpressionsType}:                         _GotoState422Action,
 	{_State359, VarDeclPatternType}:                      _GotoState69Action,
 	{_State359, VarOrLetType}:                            _GotoState70Action,
-	{_State359, ExpressionType}:                          _GotoState249Action,
+	{_State359, ExpressionType}:                          _GotoState422Action,
 	{_State359, OptionalLabelDeclType}:                   _GotoState60Action,
 	{_State359, SequenceExprType}:                        _GotoState68Action,
 	{_State359, CallExprType}:                            _GotoState50Action,
@@ -8940,82 +8983,106 @@ var _ActionTable = _ActionTableType{
 	{_State359, InitializableTypeType}:                   _GotoState56Action,
 	{_State359, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State359, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State360, CommaToken}:                              _GotoState358Action,
-	{_State363, AddToken}:                                _GotoState191Action,
-	{_State363, SubToken}:                                _GotoState196Action,
-	{_State363, MulToken}:                                _GotoState194Action,
-	{_State363, TraitOpType}:                             _GotoState197Action,
-	{_State364, IdentifierToken}:                         _GotoState265Action,
-	{_State364, GenericParameterDefType}:                 _GotoState423Action,
-	{_State366, IdentifierToken}:                         _GotoState93Action,
-	{_State366, StructToken}:                             _GotoState34Action,
-	{_State366, EnumToken}:                               _GotoState90Action,
-	{_State366, TraitToken}:                              _GotoState98Action,
-	{_State366, FuncToken}:                               _GotoState92Action,
-	{_State366, LparenToken}:                             _GotoState94Action,
-	{_State366, LbracketToken}:                           _GotoState26Action,
-	{_State366, DotToken}:                                _GotoState89Action,
-	{_State366, QuestionToken}:                           _GotoState96Action,
-	{_State366, ExclaimToken}:                            _GotoState91Action,
-	{_State366, TildeTildeToken}:                         _GotoState97Action,
-	{_State366, BitNegToken}:                             _GotoState88Action,
-	{_State366, BitAndToken}:                             _GotoState87Action,
-	{_State366, ParseErrorToken}:                         _GotoState95Action,
-	{_State366, InitializableTypeType}:                   _GotoState104Action,
-	{_State366, AtomTypeType}:                            _GotoState99Action,
-	{_State366, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State366, ReturnableTypeType}:                      _GotoState108Action,
-	{_State366, PrefixedTypeType}:                        _GotoState107Action,
-	{_State366, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State366, ValueTypeType}:                           _GotoState424Action,
-	{_State366, TraitOpTypeType}:                         _GotoState110Action,
-	{_State366, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State366, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State366, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State366, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State366, TraitDefType}:                            _GotoState109Action,
-	{_State366, FuncTypeType}:                            _GotoState101Action,
-	{_State367, RparenToken}:                             _GotoState425Action,
-	{_State368, AddToken}:                                _GotoState191Action,
-	{_State368, SubToken}:                                _GotoState196Action,
-	{_State368, MulToken}:                                _GotoState194Action,
-	{_State368, TraitOpType}:                             _GotoState197Action,
-	{_State369, DollarLbracketToken}:                     _GotoState166Action,
-	{_State369, OptionalGenericParametersType}:           _GotoState426Action,
-	{_State370, LbraceToken}:                             _GotoState72Action,
-	{_State370, StatementBlockType}:                      _GotoState427Action,
-	{_State373, IdentifierToken}:                         _GotoState180Action,
-	{_State373, UnsafeToken}:                             _GotoState181Action,
-	{_State373, StructToken}:                             _GotoState34Action,
-	{_State373, EnumToken}:                               _GotoState90Action,
-	{_State373, TraitToken}:                              _GotoState98Action,
-	{_State373, FuncToken}:                               _GotoState92Action,
-	{_State373, LparenToken}:                             _GotoState94Action,
-	{_State373, LbracketToken}:                           _GotoState26Action,
-	{_State373, DotToken}:                                _GotoState89Action,
-	{_State373, QuestionToken}:                           _GotoState96Action,
-	{_State373, ExclaimToken}:                            _GotoState91Action,
-	{_State373, TildeTildeToken}:                         _GotoState97Action,
-	{_State373, BitNegToken}:                             _GotoState88Action,
-	{_State373, BitAndToken}:                             _GotoState87Action,
-	{_State373, ParseErrorToken}:                         _GotoState95Action,
-	{_State373, UnsafeStatementType}:                     _GotoState187Action,
-	{_State373, InitializableTypeType}:                   _GotoState104Action,
-	{_State373, AtomTypeType}:                            _GotoState99Action,
-	{_State373, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State373, ReturnableTypeType}:                      _GotoState108Action,
-	{_State373, PrefixedTypeType}:                        _GotoState107Action,
-	{_State373, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State373, ValueTypeType}:                           _GotoState188Action,
-	{_State373, TraitOpTypeType}:                         _GotoState110Action,
-	{_State373, FieldDefType}:                            _GotoState279Action,
-	{_State373, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State373, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State373, EnumValueDefType}:                        _GotoState428Action,
-	{_State373, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State373, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State373, TraitDefType}:                            _GotoState109Action,
-	{_State373, FuncTypeType}:                            _GotoState101Action,
+	{_State360, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State360, FloatLiteralToken}:                       _GotoState20Action,
+	{_State360, RuneLiteralToken}:                        _GotoState32Action,
+	{_State360, StringLiteralToken}:                      _GotoState33Action,
+	{_State360, IdentifierToken}:                         _GotoState23Action,
+	{_State360, TrueToken}:                               _GotoState36Action,
+	{_State360, FalseToken}:                              _GotoState19Action,
+	{_State360, StructToken}:                             _GotoState34Action,
+	{_State360, FuncToken}:                               _GotoState21Action,
+	{_State360, VarToken}:                                _GotoState37Action,
+	{_State360, LetToken}:                                _GotoState27Action,
+	{_State360, NotToken}:                                _GotoState30Action,
+	{_State360, LabelDeclToken}:                          _GotoState25Action,
+	{_State360, LparenToken}:                             _GotoState28Action,
+	{_State360, LbracketToken}:                           _GotoState26Action,
+	{_State360, SubToken}:                                _GotoState35Action,
+	{_State360, MulToken}:                                _GotoState29Action,
+	{_State360, BitNegToken}:                             _GotoState18Action,
+	{_State360, BitAndToken}:                             _GotoState17Action,
+	{_State360, GreaterToken}:                            _GotoState22Action,
+	{_State360, ParseErrorToken}:                         _GotoState31Action,
+	{_State360, ExpressionsType}:                         _GotoState423Action,
+	{_State360, VarDeclPatternType}:                      _GotoState69Action,
+	{_State360, VarOrLetType}:                            _GotoState70Action,
+	{_State360, ExpressionType}:                          _GotoState251Action,
+	{_State360, OptionalLabelDeclType}:                   _GotoState60Action,
+	{_State360, SequenceExprType}:                        _GotoState68Action,
+	{_State360, CallExprType}:                            _GotoState50Action,
+	{_State360, AtomExprType}:                            _GotoState43Action,
+	{_State360, ParseErrorExprType}:                      _GotoState62Action,
+	{_State360, LiteralExprType}:                         _GotoState58Action,
+	{_State360, IdentifierExprType}:                      _GotoState53Action,
+	{_State360, BlockExprType}:                           _GotoState49Action,
+	{_State360, InitializeExprType}:                      _GotoState57Action,
+	{_State360, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State360, AccessibleExprType}:                      _GotoState39Action,
+	{_State360, AccessExprType}:                          _GotoState38Action,
+	{_State360, IndexExprType}:                           _GotoState55Action,
+	{_State360, PostfixableExprType}:                     _GotoState64Action,
+	{_State360, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State360, PrefixableExprType}:                      _GotoState67Action,
+	{_State360, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State360, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State360, MulExprType}:                             _GotoState59Action,
+	{_State360, BinaryMulExprType}:                       _GotoState47Action,
+	{_State360, AddExprType}:                             _GotoState40Action,
+	{_State360, BinaryAddExprType}:                       _GotoState44Action,
+	{_State360, CmpExprType}:                             _GotoState51Action,
+	{_State360, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State360, AndExprType}:                             _GotoState41Action,
+	{_State360, BinaryAndExprType}:                       _GotoState45Action,
+	{_State360, OrExprType}:                              _GotoState61Action,
+	{_State360, BinaryOrExprType}:                        _GotoState48Action,
+	{_State360, InitializableTypeType}:                   _GotoState56Action,
+	{_State360, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State360, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State361, CommaToken}:                              _GotoState359Action,
+	{_State364, AddToken}:                                _GotoState191Action,
+	{_State364, SubToken}:                                _GotoState196Action,
+	{_State364, MulToken}:                                _GotoState194Action,
+	{_State364, TraitOpType}:                             _GotoState197Action,
+	{_State365, IdentifierToken}:                         _GotoState267Action,
+	{_State365, GenericParameterDefType}:                 _GotoState424Action,
+	{_State367, IdentifierToken}:                         _GotoState93Action,
+	{_State367, StructToken}:                             _GotoState34Action,
+	{_State367, EnumToken}:                               _GotoState90Action,
+	{_State367, TraitToken}:                              _GotoState98Action,
+	{_State367, FuncToken}:                               _GotoState92Action,
+	{_State367, LparenToken}:                             _GotoState94Action,
+	{_State367, LbracketToken}:                           _GotoState26Action,
+	{_State367, DotToken}:                                _GotoState89Action,
+	{_State367, QuestionToken}:                           _GotoState96Action,
+	{_State367, ExclaimToken}:                            _GotoState91Action,
+	{_State367, TildeTildeToken}:                         _GotoState97Action,
+	{_State367, BitNegToken}:                             _GotoState88Action,
+	{_State367, BitAndToken}:                             _GotoState87Action,
+	{_State367, ParseErrorToken}:                         _GotoState95Action,
+	{_State367, InitializableTypeType}:                   _GotoState104Action,
+	{_State367, AtomTypeType}:                            _GotoState99Action,
+	{_State367, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State367, ReturnableTypeType}:                      _GotoState108Action,
+	{_State367, PrefixedTypeType}:                        _GotoState107Action,
+	{_State367, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State367, ValueTypeType}:                           _GotoState425Action,
+	{_State367, TraitOpTypeType}:                         _GotoState110Action,
+	{_State367, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State367, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State367, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State367, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State367, TraitDefType}:                            _GotoState109Action,
+	{_State367, FuncTypeType}:                            _GotoState101Action,
+	{_State368, RparenToken}:                             _GotoState426Action,
+	{_State369, AddToken}:                                _GotoState191Action,
+	{_State369, SubToken}:                                _GotoState196Action,
+	{_State369, MulToken}:                                _GotoState194Action,
+	{_State369, TraitOpType}:                             _GotoState197Action,
+	{_State370, DollarLbracketToken}:                     _GotoState166Action,
+	{_State370, OptionalGenericParametersType}:           _GotoState427Action,
+	{_State371, LbraceToken}:                             _GotoState72Action,
+	{_State371, StatementBlockType}:                      _GotoState428Action,
 	{_State374, IdentifierToken}:                         _GotoState180Action,
 	{_State374, UnsafeToken}:                             _GotoState181Action,
 	{_State374, StructToken}:                             _GotoState34Action,
@@ -9040,7 +9107,7 @@ var _ActionTable = _ActionTableType{
 	{_State374, PrefixTypeOpType}:                        _GotoState106Action,
 	{_State374, ValueTypeType}:                           _GotoState188Action,
 	{_State374, TraitOpTypeType}:                         _GotoState110Action,
-	{_State374, FieldDefType}:                            _GotoState279Action,
+	{_State374, FieldDefType}:                            _GotoState281Action,
 	{_State374, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State374, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State374, EnumValueDefType}:                        _GotoState429Action,
@@ -9048,38 +9115,38 @@ var _ActionTable = _ActionTableType{
 	{_State374, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State374, TraitDefType}:                            _GotoState109Action,
 	{_State374, FuncTypeType}:                            _GotoState101Action,
-	{_State376, IdentifierToken}:                         _GotoState180Action,
-	{_State376, UnsafeToken}:                             _GotoState181Action,
-	{_State376, StructToken}:                             _GotoState34Action,
-	{_State376, EnumToken}:                               _GotoState90Action,
-	{_State376, TraitToken}:                              _GotoState98Action,
-	{_State376, FuncToken}:                               _GotoState92Action,
-	{_State376, LparenToken}:                             _GotoState94Action,
-	{_State376, LbracketToken}:                           _GotoState26Action,
-	{_State376, DotToken}:                                _GotoState89Action,
-	{_State376, QuestionToken}:                           _GotoState96Action,
-	{_State376, ExclaimToken}:                            _GotoState91Action,
-	{_State376, TildeTildeToken}:                         _GotoState97Action,
-	{_State376, BitNegToken}:                             _GotoState88Action,
-	{_State376, BitAndToken}:                             _GotoState87Action,
-	{_State376, ParseErrorToken}:                         _GotoState95Action,
-	{_State376, UnsafeStatementType}:                     _GotoState187Action,
-	{_State376, InitializableTypeType}:                   _GotoState104Action,
-	{_State376, AtomTypeType}:                            _GotoState99Action,
-	{_State376, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State376, ReturnableTypeType}:                      _GotoState108Action,
-	{_State376, PrefixedTypeType}:                        _GotoState107Action,
-	{_State376, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State376, ValueTypeType}:                           _GotoState188Action,
-	{_State376, TraitOpTypeType}:                         _GotoState110Action,
-	{_State376, FieldDefType}:                            _GotoState279Action,
-	{_State376, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State376, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State376, EnumValueDefType}:                        _GotoState430Action,
-	{_State376, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State376, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State376, TraitDefType}:                            _GotoState109Action,
-	{_State376, FuncTypeType}:                            _GotoState101Action,
+	{_State375, IdentifierToken}:                         _GotoState180Action,
+	{_State375, UnsafeToken}:                             _GotoState181Action,
+	{_State375, StructToken}:                             _GotoState34Action,
+	{_State375, EnumToken}:                               _GotoState90Action,
+	{_State375, TraitToken}:                              _GotoState98Action,
+	{_State375, FuncToken}:                               _GotoState92Action,
+	{_State375, LparenToken}:                             _GotoState94Action,
+	{_State375, LbracketToken}:                           _GotoState26Action,
+	{_State375, DotToken}:                                _GotoState89Action,
+	{_State375, QuestionToken}:                           _GotoState96Action,
+	{_State375, ExclaimToken}:                            _GotoState91Action,
+	{_State375, TildeTildeToken}:                         _GotoState97Action,
+	{_State375, BitNegToken}:                             _GotoState88Action,
+	{_State375, BitAndToken}:                             _GotoState87Action,
+	{_State375, ParseErrorToken}:                         _GotoState95Action,
+	{_State375, UnsafeStatementType}:                     _GotoState187Action,
+	{_State375, InitializableTypeType}:                   _GotoState104Action,
+	{_State375, AtomTypeType}:                            _GotoState99Action,
+	{_State375, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State375, ReturnableTypeType}:                      _GotoState108Action,
+	{_State375, PrefixedTypeType}:                        _GotoState107Action,
+	{_State375, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State375, ValueTypeType}:                           _GotoState188Action,
+	{_State375, TraitOpTypeType}:                         _GotoState110Action,
+	{_State375, FieldDefType}:                            _GotoState281Action,
+	{_State375, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State375, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State375, EnumValueDefType}:                        _GotoState430Action,
+	{_State375, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State375, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State375, TraitDefType}:                            _GotoState109Action,
+	{_State375, FuncTypeType}:                            _GotoState101Action,
 	{_State377, IdentifierToken}:                         _GotoState180Action,
 	{_State377, UnsafeToken}:                             _GotoState181Action,
 	{_State377, StructToken}:                             _GotoState34Action,
@@ -9104,7 +9171,7 @@ var _ActionTable = _ActionTableType{
 	{_State377, PrefixTypeOpType}:                        _GotoState106Action,
 	{_State377, ValueTypeType}:                           _GotoState188Action,
 	{_State377, TraitOpTypeType}:                         _GotoState110Action,
-	{_State377, FieldDefType}:                            _GotoState279Action,
+	{_State377, FieldDefType}:                            _GotoState281Action,
 	{_State377, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State377, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State377, EnumValueDefType}:                        _GotoState431Action,
@@ -9112,70 +9179,75 @@ var _ActionTable = _ActionTableType{
 	{_State377, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State377, TraitDefType}:                            _GotoState109Action,
 	{_State377, FuncTypeType}:                            _GotoState101Action,
-	{_State378, AddToken}:                                _GotoState191Action,
-	{_State378, SubToken}:                                _GotoState196Action,
-	{_State378, MulToken}:                                _GotoState194Action,
-	{_State378, TraitOpType}:                             _GotoState197Action,
-	{_State379, IdentifierToken}:                         _GotoState93Action,
-	{_State379, StructToken}:                             _GotoState34Action,
-	{_State379, EnumToken}:                               _GotoState90Action,
-	{_State379, TraitToken}:                              _GotoState98Action,
-	{_State379, FuncToken}:                               _GotoState92Action,
-	{_State379, LparenToken}:                             _GotoState94Action,
-	{_State379, LbracketToken}:                           _GotoState26Action,
-	{_State379, DotToken}:                                _GotoState89Action,
-	{_State379, QuestionToken}:                           _GotoState96Action,
-	{_State379, ExclaimToken}:                            _GotoState91Action,
-	{_State379, TildeTildeToken}:                         _GotoState97Action,
-	{_State379, BitNegToken}:                             _GotoState88Action,
-	{_State379, BitAndToken}:                             _GotoState87Action,
-	{_State379, ParseErrorToken}:                         _GotoState95Action,
-	{_State379, InitializableTypeType}:                   _GotoState104Action,
-	{_State379, AtomTypeType}:                            _GotoState99Action,
-	{_State379, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State379, ReturnableTypeType}:                      _GotoState108Action,
-	{_State379, PrefixedTypeType}:                        _GotoState107Action,
-	{_State379, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State379, ValueTypeType}:                           _GotoState432Action,
-	{_State379, TraitOpTypeType}:                         _GotoState110Action,
-	{_State379, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State379, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State379, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State379, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State379, TraitDefType}:                            _GotoState109Action,
-	{_State379, FuncTypeType}:                            _GotoState101Action,
-	{_State380, AddToken}:                                _GotoState191Action,
-	{_State380, SubToken}:                                _GotoState196Action,
-	{_State380, MulToken}:                                _GotoState194Action,
-	{_State380, TraitOpType}:                             _GotoState197Action,
-	{_State381, IdentifierToken}:                         _GotoState93Action,
-	{_State381, StructToken}:                             _GotoState34Action,
-	{_State381, EnumToken}:                               _GotoState90Action,
-	{_State381, TraitToken}:                              _GotoState98Action,
-	{_State381, FuncToken}:                               _GotoState92Action,
-	{_State381, LparenToken}:                             _GotoState94Action,
-	{_State381, LbracketToken}:                           _GotoState26Action,
-	{_State381, DotToken}:                                _GotoState89Action,
-	{_State381, QuestionToken}:                           _GotoState96Action,
-	{_State381, ExclaimToken}:                            _GotoState91Action,
-	{_State381, TildeTildeToken}:                         _GotoState97Action,
-	{_State381, BitNegToken}:                             _GotoState88Action,
-	{_State381, BitAndToken}:                             _GotoState87Action,
-	{_State381, ParseErrorToken}:                         _GotoState95Action,
-	{_State381, InitializableTypeType}:                   _GotoState104Action,
-	{_State381, AtomTypeType}:                            _GotoState99Action,
-	{_State381, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State381, ReturnableTypeType}:                      _GotoState371Action,
-	{_State381, PrefixedTypeType}:                        _GotoState107Action,
-	{_State381, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State381, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State381, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State381, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State381, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State381, TraitDefType}:                            _GotoState109Action,
-	{_State381, ReturnTypeType}:                          _GotoState433Action,
-	{_State381, FuncTypeType}:                            _GotoState101Action,
-	{_State382, IdentifierToken}:                         _GotoState282Action,
+	{_State378, IdentifierToken}:                         _GotoState180Action,
+	{_State378, UnsafeToken}:                             _GotoState181Action,
+	{_State378, StructToken}:                             _GotoState34Action,
+	{_State378, EnumToken}:                               _GotoState90Action,
+	{_State378, TraitToken}:                              _GotoState98Action,
+	{_State378, FuncToken}:                               _GotoState92Action,
+	{_State378, LparenToken}:                             _GotoState94Action,
+	{_State378, LbracketToken}:                           _GotoState26Action,
+	{_State378, DotToken}:                                _GotoState89Action,
+	{_State378, QuestionToken}:                           _GotoState96Action,
+	{_State378, ExclaimToken}:                            _GotoState91Action,
+	{_State378, TildeTildeToken}:                         _GotoState97Action,
+	{_State378, BitNegToken}:                             _GotoState88Action,
+	{_State378, BitAndToken}:                             _GotoState87Action,
+	{_State378, ParseErrorToken}:                         _GotoState95Action,
+	{_State378, UnsafeStatementType}:                     _GotoState187Action,
+	{_State378, InitializableTypeType}:                   _GotoState104Action,
+	{_State378, AtomTypeType}:                            _GotoState99Action,
+	{_State378, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State378, ReturnableTypeType}:                      _GotoState108Action,
+	{_State378, PrefixedTypeType}:                        _GotoState107Action,
+	{_State378, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State378, ValueTypeType}:                           _GotoState188Action,
+	{_State378, TraitOpTypeType}:                         _GotoState110Action,
+	{_State378, FieldDefType}:                            _GotoState281Action,
+	{_State378, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State378, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State378, EnumValueDefType}:                        _GotoState432Action,
+	{_State378, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State378, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State378, TraitDefType}:                            _GotoState109Action,
+	{_State378, FuncTypeType}:                            _GotoState101Action,
+	{_State379, AddToken}:                                _GotoState191Action,
+	{_State379, SubToken}:                                _GotoState196Action,
+	{_State379, MulToken}:                                _GotoState194Action,
+	{_State379, TraitOpType}:                             _GotoState197Action,
+	{_State380, IdentifierToken}:                         _GotoState93Action,
+	{_State380, StructToken}:                             _GotoState34Action,
+	{_State380, EnumToken}:                               _GotoState90Action,
+	{_State380, TraitToken}:                              _GotoState98Action,
+	{_State380, FuncToken}:                               _GotoState92Action,
+	{_State380, LparenToken}:                             _GotoState94Action,
+	{_State380, LbracketToken}:                           _GotoState26Action,
+	{_State380, DotToken}:                                _GotoState89Action,
+	{_State380, QuestionToken}:                           _GotoState96Action,
+	{_State380, ExclaimToken}:                            _GotoState91Action,
+	{_State380, TildeTildeToken}:                         _GotoState97Action,
+	{_State380, BitNegToken}:                             _GotoState88Action,
+	{_State380, BitAndToken}:                             _GotoState87Action,
+	{_State380, ParseErrorToken}:                         _GotoState95Action,
+	{_State380, InitializableTypeType}:                   _GotoState104Action,
+	{_State380, AtomTypeType}:                            _GotoState99Action,
+	{_State380, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State380, ReturnableTypeType}:                      _GotoState108Action,
+	{_State380, PrefixedTypeType}:                        _GotoState107Action,
+	{_State380, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State380, ValueTypeType}:                           _GotoState433Action,
+	{_State380, TraitOpTypeType}:                         _GotoState110Action,
+	{_State380, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State380, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State380, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State380, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State380, TraitDefType}:                            _GotoState109Action,
+	{_State380, FuncTypeType}:                            _GotoState101Action,
+	{_State381, AddToken}:                                _GotoState191Action,
+	{_State381, SubToken}:                                _GotoState196Action,
+	{_State381, MulToken}:                                _GotoState194Action,
+	{_State381, TraitOpType}:                             _GotoState197Action,
+	{_State382, IdentifierToken}:                         _GotoState93Action,
 	{_State382, StructToken}:                             _GotoState34Action,
 	{_State382, EnumToken}:                               _GotoState90Action,
 	{_State382, TraitToken}:                              _GotoState98Action,
@@ -9185,7 +9257,6 @@ var _ActionTable = _ActionTableType{
 	{_State382, DotToken}:                                _GotoState89Action,
 	{_State382, QuestionToken}:                           _GotoState96Action,
 	{_State382, ExclaimToken}:                            _GotoState91Action,
-	{_State382, EllipsisToken}:                           _GotoState281Action,
 	{_State382, TildeTildeToken}:                         _GotoState97Action,
 	{_State382, BitNegToken}:                             _GotoState88Action,
 	{_State382, BitAndToken}:                             _GotoState87Action,
@@ -9193,59 +9264,54 @@ var _ActionTable = _ActionTableType{
 	{_State382, InitializableTypeType}:                   _GotoState104Action,
 	{_State382, AtomTypeType}:                            _GotoState99Action,
 	{_State382, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State382, ReturnableTypeType}:                      _GotoState108Action,
+	{_State382, ReturnableTypeType}:                      _GotoState372Action,
 	{_State382, PrefixedTypeType}:                        _GotoState107Action,
 	{_State382, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State382, ValueTypeType}:                           _GotoState286Action,
-	{_State382, TraitOpTypeType}:                         _GotoState110Action,
 	{_State382, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State382, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State382, ImplicitEnumDefType}:                     _GotoState102Action,
 	{_State382, ExplicitEnumDefType}:                     _GotoState100Action,
 	{_State382, TraitDefType}:                            _GotoState109Action,
-	{_State382, ParameterDeclType}:                       _GotoState434Action,
+	{_State382, ReturnTypeType}:                          _GotoState434Action,
 	{_State382, FuncTypeType}:                            _GotoState101Action,
-	{_State384, GreaterToken}:                            _GotoState435Action,
-	{_State389, LparenToken}:                             _GotoState436Action,
-	{_State391, IdentifierToken}:                         _GotoState180Action,
-	{_State391, UnsafeToken}:                             _GotoState181Action,
-	{_State391, StructToken}:                             _GotoState34Action,
-	{_State391, EnumToken}:                               _GotoState90Action,
-	{_State391, TraitToken}:                              _GotoState98Action,
-	{_State391, FuncToken}:                               _GotoState297Action,
-	{_State391, LparenToken}:                             _GotoState94Action,
-	{_State391, LbracketToken}:                           _GotoState26Action,
-	{_State391, DotToken}:                                _GotoState89Action,
-	{_State391, QuestionToken}:                           _GotoState96Action,
-	{_State391, ExclaimToken}:                            _GotoState91Action,
-	{_State391, TildeTildeToken}:                         _GotoState97Action,
-	{_State391, BitNegToken}:                             _GotoState88Action,
-	{_State391, BitAndToken}:                             _GotoState87Action,
-	{_State391, ParseErrorToken}:                         _GotoState95Action,
-	{_State391, UnsafeStatementType}:                     _GotoState187Action,
-	{_State391, InitializableTypeType}:                   _GotoState104Action,
-	{_State391, AtomTypeType}:                            _GotoState99Action,
-	{_State391, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State391, ReturnableTypeType}:                      _GotoState108Action,
-	{_State391, PrefixedTypeType}:                        _GotoState107Action,
-	{_State391, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State391, ValueTypeType}:                           _GotoState188Action,
-	{_State391, TraitOpTypeType}:                         _GotoState110Action,
-	{_State391, FieldDefType}:                            _GotoState298Action,
-	{_State391, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State391, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State391, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State391, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State391, TraitPropertyType}:                       _GotoState437Action,
-	{_State391, TraitDefType}:                            _GotoState109Action,
-	{_State391, FuncTypeType}:                            _GotoState101Action,
-	{_State391, MethodSignatureType}:                     _GotoState299Action,
+	{_State383, IdentifierToken}:                         _GotoState284Action,
+	{_State383, StructToken}:                             _GotoState34Action,
+	{_State383, EnumToken}:                               _GotoState90Action,
+	{_State383, TraitToken}:                              _GotoState98Action,
+	{_State383, FuncToken}:                               _GotoState92Action,
+	{_State383, LparenToken}:                             _GotoState94Action,
+	{_State383, LbracketToken}:                           _GotoState26Action,
+	{_State383, DotToken}:                                _GotoState89Action,
+	{_State383, QuestionToken}:                           _GotoState96Action,
+	{_State383, ExclaimToken}:                            _GotoState91Action,
+	{_State383, EllipsisToken}:                           _GotoState283Action,
+	{_State383, TildeTildeToken}:                         _GotoState97Action,
+	{_State383, BitNegToken}:                             _GotoState88Action,
+	{_State383, BitAndToken}:                             _GotoState87Action,
+	{_State383, ParseErrorToken}:                         _GotoState95Action,
+	{_State383, InitializableTypeType}:                   _GotoState104Action,
+	{_State383, AtomTypeType}:                            _GotoState99Action,
+	{_State383, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State383, ReturnableTypeType}:                      _GotoState108Action,
+	{_State383, PrefixedTypeType}:                        _GotoState107Action,
+	{_State383, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State383, ValueTypeType}:                           _GotoState288Action,
+	{_State383, TraitOpTypeType}:                         _GotoState110Action,
+	{_State383, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State383, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State383, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State383, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State383, TraitDefType}:                            _GotoState109Action,
+	{_State383, ParameterDeclType}:                       _GotoState435Action,
+	{_State383, FuncTypeType}:                            _GotoState101Action,
+	{_State385, GreaterToken}:                            _GotoState436Action,
+	{_State390, LparenToken}:                             _GotoState437Action,
 	{_State392, IdentifierToken}:                         _GotoState180Action,
 	{_State392, UnsafeToken}:                             _GotoState181Action,
 	{_State392, StructToken}:                             _GotoState34Action,
 	{_State392, EnumToken}:                               _GotoState90Action,
 	{_State392, TraitToken}:                              _GotoState98Action,
-	{_State392, FuncToken}:                               _GotoState297Action,
+	{_State392, FuncToken}:                               _GotoState299Action,
 	{_State392, LparenToken}:                             _GotoState94Action,
 	{_State392, LbracketToken}:                           _GotoState26Action,
 	{_State392, DotToken}:                                _GotoState89Action,
@@ -9264,7 +9330,7 @@ var _ActionTable = _ActionTableType{
 	{_State392, PrefixTypeOpType}:                        _GotoState106Action,
 	{_State392, ValueTypeType}:                           _GotoState188Action,
 	{_State392, TraitOpTypeType}:                         _GotoState110Action,
-	{_State392, FieldDefType}:                            _GotoState298Action,
+	{_State392, FieldDefType}:                            _GotoState300Action,
 	{_State392, ImplicitStructDefType}:                   _GotoState103Action,
 	{_State392, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State392, ImplicitEnumDefType}:                     _GotoState102Action,
@@ -9272,70 +9338,49 @@ var _ActionTable = _ActionTableType{
 	{_State392, TraitPropertyType}:                       _GotoState438Action,
 	{_State392, TraitDefType}:                            _GotoState109Action,
 	{_State392, FuncTypeType}:                            _GotoState101Action,
-	{_State392, MethodSignatureType}:                     _GotoState299Action,
-	{_State397, AddToken}:                                _GotoState191Action,
-	{_State397, SubToken}:                                _GotoState196Action,
-	{_State397, MulToken}:                                _GotoState194Action,
-	{_State397, TraitOpType}:                             _GotoState197Action,
-	{_State401, DoToken}:                                 _GotoState439Action,
-	{_State402, SemicolonToken}:                          _GotoState440Action,
-	{_State405, LparenToken}:                             _GotoState28Action,
-	{_State405, ImplicitStructExprType}:                  _GotoState441Action,
-	{_State406, IdentifierToken}:                         _GotoState442Action,
-	{_State407, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State407, FloatLiteralToken}:                       _GotoState20Action,
-	{_State407, RuneLiteralToken}:                        _GotoState32Action,
-	{_State407, StringLiteralToken}:                      _GotoState33Action,
-	{_State407, IdentifierToken}:                         _GotoState23Action,
-	{_State407, TrueToken}:                               _GotoState36Action,
-	{_State407, FalseToken}:                              _GotoState19Action,
-	{_State407, StructToken}:                             _GotoState34Action,
-	{_State407, FuncToken}:                               _GotoState21Action,
-	{_State407, VarToken}:                                _GotoState37Action,
-	{_State407, LetToken}:                                _GotoState27Action,
-	{_State407, NotToken}:                                _GotoState30Action,
-	{_State407, LabelDeclToken}:                          _GotoState25Action,
-	{_State407, LparenToken}:                             _GotoState28Action,
-	{_State407, LbracketToken}:                           _GotoState26Action,
-	{_State407, SubToken}:                                _GotoState35Action,
-	{_State407, MulToken}:                                _GotoState29Action,
-	{_State407, BitNegToken}:                             _GotoState18Action,
-	{_State407, BitAndToken}:                             _GotoState17Action,
-	{_State407, GreaterToken}:                            _GotoState22Action,
-	{_State407, ParseErrorToken}:                         _GotoState31Action,
-	{_State407, VarDeclPatternType}:                      _GotoState69Action,
-	{_State407, VarOrLetType}:                            _GotoState70Action,
-	{_State407, OptionalLabelDeclType}:                   _GotoState85Action,
-	{_State407, SequenceExprType}:                        _GotoState443Action,
-	{_State407, CallExprType}:                            _GotoState50Action,
-	{_State407, AtomExprType}:                            _GotoState43Action,
-	{_State407, ParseErrorExprType}:                      _GotoState62Action,
-	{_State407, LiteralExprType}:                         _GotoState58Action,
-	{_State407, IdentifierExprType}:                      _GotoState53Action,
-	{_State407, BlockExprType}:                           _GotoState49Action,
-	{_State407, InitializeExprType}:                      _GotoState57Action,
-	{_State407, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State407, AccessibleExprType}:                      _GotoState39Action,
-	{_State407, AccessExprType}:                          _GotoState38Action,
-	{_State407, IndexExprType}:                           _GotoState55Action,
-	{_State407, PostfixableExprType}:                     _GotoState64Action,
-	{_State407, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State407, PrefixableExprType}:                      _GotoState67Action,
-	{_State407, PrefixUnaryExprType}:                     _GotoState65Action,
-	{_State407, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State407, MulExprType}:                             _GotoState59Action,
-	{_State407, BinaryMulExprType}:                       _GotoState47Action,
-	{_State407, AddExprType}:                             _GotoState40Action,
-	{_State407, BinaryAddExprType}:                       _GotoState44Action,
-	{_State407, CmpExprType}:                             _GotoState51Action,
-	{_State407, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State407, AndExprType}:                             _GotoState41Action,
-	{_State407, BinaryAndExprType}:                       _GotoState45Action,
-	{_State407, OrExprType}:                              _GotoState61Action,
-	{_State407, BinaryOrExprType}:                        _GotoState48Action,
-	{_State407, InitializableTypeType}:                   _GotoState56Action,
-	{_State407, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State407, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State392, MethodSignatureType}:                     _GotoState301Action,
+	{_State393, IdentifierToken}:                         _GotoState180Action,
+	{_State393, UnsafeToken}:                             _GotoState181Action,
+	{_State393, StructToken}:                             _GotoState34Action,
+	{_State393, EnumToken}:                               _GotoState90Action,
+	{_State393, TraitToken}:                              _GotoState98Action,
+	{_State393, FuncToken}:                               _GotoState299Action,
+	{_State393, LparenToken}:                             _GotoState94Action,
+	{_State393, LbracketToken}:                           _GotoState26Action,
+	{_State393, DotToken}:                                _GotoState89Action,
+	{_State393, QuestionToken}:                           _GotoState96Action,
+	{_State393, ExclaimToken}:                            _GotoState91Action,
+	{_State393, TildeTildeToken}:                         _GotoState97Action,
+	{_State393, BitNegToken}:                             _GotoState88Action,
+	{_State393, BitAndToken}:                             _GotoState87Action,
+	{_State393, ParseErrorToken}:                         _GotoState95Action,
+	{_State393, UnsafeStatementType}:                     _GotoState187Action,
+	{_State393, InitializableTypeType}:                   _GotoState104Action,
+	{_State393, AtomTypeType}:                            _GotoState99Action,
+	{_State393, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State393, ReturnableTypeType}:                      _GotoState108Action,
+	{_State393, PrefixedTypeType}:                        _GotoState107Action,
+	{_State393, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State393, ValueTypeType}:                           _GotoState188Action,
+	{_State393, TraitOpTypeType}:                         _GotoState110Action,
+	{_State393, FieldDefType}:                            _GotoState300Action,
+	{_State393, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State393, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State393, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State393, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State393, TraitPropertyType}:                       _GotoState439Action,
+	{_State393, TraitDefType}:                            _GotoState109Action,
+	{_State393, FuncTypeType}:                            _GotoState101Action,
+	{_State393, MethodSignatureType}:                     _GotoState301Action,
+	{_State398, AddToken}:                                _GotoState191Action,
+	{_State398, SubToken}:                                _GotoState196Action,
+	{_State398, MulToken}:                                _GotoState194Action,
+	{_State398, TraitOpType}:                             _GotoState197Action,
+	{_State402, DoToken}:                                 _GotoState440Action,
+	{_State403, SemicolonToken}:                          _GotoState441Action,
+	{_State406, LparenToken}:                             _GotoState28Action,
+	{_State406, ImplicitStructExprType}:                  _GotoState442Action,
+	{_State407, IdentifierToken}:                         _GotoState443Action,
 	{_State408, IntegerLiteralToken}:                     _GotoState24Action,
 	{_State408, FloatLiteralToken}:                       _GotoState20Action,
 	{_State408, RuneLiteralToken}:                        _GotoState32Action,
@@ -9345,13 +9390,12 @@ var _ActionTable = _ActionTableType{
 	{_State408, FalseToken}:                              _GotoState19Action,
 	{_State408, StructToken}:                             _GotoState34Action,
 	{_State408, FuncToken}:                               _GotoState21Action,
-	{_State408, VarToken}:                                _GotoState325Action,
+	{_State408, VarToken}:                                _GotoState37Action,
 	{_State408, LetToken}:                                _GotoState27Action,
 	{_State408, NotToken}:                                _GotoState30Action,
 	{_State408, LabelDeclToken}:                          _GotoState25Action,
 	{_State408, LparenToken}:                             _GotoState28Action,
 	{_State408, LbracketToken}:                           _GotoState26Action,
-	{_State408, DotToken}:                                _GotoState324Action,
 	{_State408, SubToken}:                                _GotoState35Action,
 	{_State408, MulToken}:                                _GotoState29Action,
 	{_State408, BitNegToken}:                             _GotoState18Action,
@@ -9360,10 +9404,8 @@ var _ActionTable = _ActionTableType{
 	{_State408, ParseErrorToken}:                         _GotoState31Action,
 	{_State408, VarDeclPatternType}:                      _GotoState69Action,
 	{_State408, VarOrLetType}:                            _GotoState70Action,
-	{_State408, AssignPatternType}:                       _GotoState326Action,
-	{_State408, CasePatternType}:                         _GotoState444Action,
 	{_State408, OptionalLabelDeclType}:                   _GotoState85Action,
-	{_State408, SequenceExprType}:                        _GotoState329Action,
+	{_State408, SequenceExprType}:                        _GotoState444Action,
 	{_State408, CallExprType}:                            _GotoState50Action,
 	{_State408, AtomExprType}:                            _GotoState43Action,
 	{_State408, ParseErrorExprType}:                      _GotoState62Action,
@@ -9393,289 +9435,346 @@ var _ActionTable = _ActionTableType{
 	{_State408, InitializableTypeType}:                   _GotoState56Action,
 	{_State408, ExplicitStructDefType}:                   _GotoState52Action,
 	{_State408, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State409, IfToken}:                                 _GotoState149Action,
-	{_State409, LbraceToken}:                             _GotoState72Action,
-	{_State409, StatementBlockType}:                      _GotoState446Action,
-	{_State409, IfExprType}:                              _GotoState445Action,
-	{_State412, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State412, FloatLiteralToken}:                       _GotoState20Action,
-	{_State412, RuneLiteralToken}:                        _GotoState32Action,
-	{_State412, StringLiteralToken}:                      _GotoState33Action,
-	{_State412, IdentifierToken}:                         _GotoState23Action,
-	{_State412, TrueToken}:                               _GotoState36Action,
-	{_State412, FalseToken}:                              _GotoState19Action,
-	{_State412, ReturnToken}:                             _GotoState242Action,
-	{_State412, BreakToken}:                              _GotoState234Action,
-	{_State412, ContinueToken}:                           _GotoState236Action,
-	{_State412, FallthroughToken}:                        _GotoState239Action,
-	{_State412, UnsafeToken}:                             _GotoState181Action,
-	{_State412, StructToken}:                             _GotoState34Action,
-	{_State412, FuncToken}:                               _GotoState21Action,
-	{_State412, AsyncToken}:                              _GotoState233Action,
-	{_State412, DeferToken}:                              _GotoState238Action,
-	{_State412, VarToken}:                                _GotoState37Action,
-	{_State412, LetToken}:                                _GotoState27Action,
-	{_State412, NotToken}:                                _GotoState30Action,
-	{_State412, LabelDeclToken}:                          _GotoState25Action,
-	{_State412, LparenToken}:                             _GotoState28Action,
-	{_State412, LbracketToken}:                           _GotoState26Action,
-	{_State412, SubToken}:                                _GotoState35Action,
-	{_State412, MulToken}:                                _GotoState29Action,
-	{_State412, BitNegToken}:                             _GotoState18Action,
-	{_State412, BitAndToken}:                             _GotoState17Action,
-	{_State412, GreaterToken}:                            _GotoState22Action,
-	{_State412, ParseErrorToken}:                         _GotoState31Action,
-	{_State412, SimpleStatementBodyType}:                 _GotoState414Action,
-	{_State412, OptionalSimpleStatementBodyType}:         _GotoState447Action,
-	{_State412, ExpressionOrImproperStructStatementType}: _GotoState250Action,
-	{_State412, CallbackOpType}:                          _GotoState247Action,
-	{_State412, CallbackOpStatementType}:                 _GotoState248Action,
-	{_State412, UnsafeStatementType}:                     _GotoState261Action,
-	{_State412, JumpStatementType}:                       _GotoState254Action,
-	{_State412, JumpTypeType}:                            _GotoState255Action,
-	{_State412, ExpressionsType}:                         _GotoState251Action,
-	{_State412, FallthroughStatementType}:                _GotoState252Action,
-	{_State412, AssignStatementType}:                     _GotoState245Action,
-	{_State412, UnaryOpAssignStatementType}:              _GotoState260Action,
-	{_State412, BinaryOpAssignStatementType}:             _GotoState246Action,
-	{_State412, VarDeclPatternType}:                      _GotoState69Action,
-	{_State412, VarOrLetType}:                            _GotoState70Action,
-	{_State412, AssignPatternType}:                       _GotoState244Action,
-	{_State412, ExpressionType}:                          _GotoState249Action,
-	{_State412, OptionalLabelDeclType}:                   _GotoState60Action,
-	{_State412, SequenceExprType}:                        _GotoState256Action,
-	{_State412, CallExprType}:                            _GotoState50Action,
-	{_State412, AtomExprType}:                            _GotoState43Action,
-	{_State412, ParseErrorExprType}:                      _GotoState62Action,
-	{_State412, LiteralExprType}:                         _GotoState58Action,
-	{_State412, IdentifierExprType}:                      _GotoState53Action,
-	{_State412, BlockExprType}:                           _GotoState49Action,
-	{_State412, InitializeExprType}:                      _GotoState57Action,
-	{_State412, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State412, AccessibleExprType}:                      _GotoState243Action,
-	{_State412, AccessExprType}:                          _GotoState38Action,
-	{_State412, IndexExprType}:                           _GotoState55Action,
-	{_State412, PostfixableExprType}:                     _GotoState64Action,
-	{_State412, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State412, PrefixableExprType}:                      _GotoState67Action,
-	{_State412, PrefixUnaryExprType}:                     _GotoState65Action,
-	{_State412, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State412, MulExprType}:                             _GotoState59Action,
-	{_State412, BinaryMulExprType}:                       _GotoState47Action,
-	{_State412, AddExprType}:                             _GotoState40Action,
-	{_State412, BinaryAddExprType}:                       _GotoState44Action,
-	{_State412, CmpExprType}:                             _GotoState51Action,
-	{_State412, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State412, AndExprType}:                             _GotoState41Action,
-	{_State412, BinaryAndExprType}:                       _GotoState45Action,
-	{_State412, OrExprType}:                              _GotoState61Action,
-	{_State412, BinaryOrExprType}:                        _GotoState48Action,
-	{_State412, InitializableTypeType}:                   _GotoState56Action,
-	{_State412, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State412, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State415, NewlinesToken}:                           _GotoState449Action,
-	{_State415, CommaToken}:                              _GotoState448Action,
-	{_State417, StringLiteralToken}:                      _GotoState338Action,
-	{_State417, RparenToken}:                             _GotoState450Action,
-	{_State417, ImportClauseType}:                        _GotoState415Action,
-	{_State417, ImportClauseTerminalType}:                _GotoState451Action,
-	{_State418, IdentifierToken}:                         _GotoState452Action,
-	{_State422, CommaToken}:                              _GotoState358Action,
-	{_State424, AddToken}:                                _GotoState191Action,
-	{_State424, SubToken}:                                _GotoState196Action,
-	{_State424, MulToken}:                                _GotoState194Action,
-	{_State424, TraitOpType}:                             _GotoState197Action,
-	{_State425, IdentifierToken}:                         _GotoState93Action,
-	{_State425, StructToken}:                             _GotoState34Action,
-	{_State425, EnumToken}:                               _GotoState90Action,
-	{_State425, TraitToken}:                              _GotoState98Action,
-	{_State425, FuncToken}:                               _GotoState92Action,
-	{_State425, LparenToken}:                             _GotoState94Action,
-	{_State425, LbracketToken}:                           _GotoState26Action,
-	{_State425, DotToken}:                                _GotoState89Action,
-	{_State425, QuestionToken}:                           _GotoState96Action,
-	{_State425, ExclaimToken}:                            _GotoState91Action,
-	{_State425, TildeTildeToken}:                         _GotoState97Action,
-	{_State425, BitNegToken}:                             _GotoState88Action,
-	{_State425, BitAndToken}:                             _GotoState87Action,
-	{_State425, ParseErrorToken}:                         _GotoState95Action,
-	{_State425, InitializableTypeType}:                   _GotoState104Action,
-	{_State425, AtomTypeType}:                            _GotoState99Action,
-	{_State425, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State425, ReturnableTypeType}:                      _GotoState371Action,
-	{_State425, PrefixedTypeType}:                        _GotoState107Action,
-	{_State425, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State425, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State425, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State425, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State425, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State425, TraitDefType}:                            _GotoState109Action,
-	{_State425, ReturnTypeType}:                          _GotoState453Action,
-	{_State425, FuncTypeType}:                            _GotoState101Action,
-	{_State426, LparenToken}:                             _GotoState454Action,
-	{_State432, AddToken}:                                _GotoState191Action,
-	{_State432, SubToken}:                                _GotoState196Action,
-	{_State432, MulToken}:                                _GotoState194Action,
-	{_State432, TraitOpType}:                             _GotoState197Action,
-	{_State435, StringLiteralToken}:                      _GotoState455Action,
-	{_State436, IdentifierToken}:                         _GotoState282Action,
-	{_State436, StructToken}:                             _GotoState34Action,
-	{_State436, EnumToken}:                               _GotoState90Action,
-	{_State436, TraitToken}:                              _GotoState98Action,
-	{_State436, FuncToken}:                               _GotoState92Action,
-	{_State436, LparenToken}:                             _GotoState94Action,
-	{_State436, LbracketToken}:                           _GotoState26Action,
-	{_State436, DotToken}:                                _GotoState89Action,
-	{_State436, QuestionToken}:                           _GotoState96Action,
-	{_State436, ExclaimToken}:                            _GotoState91Action,
-	{_State436, EllipsisToken}:                           _GotoState281Action,
-	{_State436, TildeTildeToken}:                         _GotoState97Action,
-	{_State436, BitNegToken}:                             _GotoState88Action,
-	{_State436, BitAndToken}:                             _GotoState87Action,
-	{_State436, ParseErrorToken}:                         _GotoState95Action,
-	{_State436, InitializableTypeType}:                   _GotoState104Action,
-	{_State436, AtomTypeType}:                            _GotoState99Action,
-	{_State436, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State436, ReturnableTypeType}:                      _GotoState108Action,
-	{_State436, PrefixedTypeType}:                        _GotoState107Action,
-	{_State436, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State436, ValueTypeType}:                           _GotoState286Action,
-	{_State436, TraitOpTypeType}:                         _GotoState110Action,
-	{_State436, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State436, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State436, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State436, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State436, TraitDefType}:                            _GotoState109Action,
-	{_State436, ParameterDeclType}:                       _GotoState284Action,
-	{_State436, ParameterDeclsType}:                      _GotoState285Action,
-	{_State436, OptionalParameterDeclsType}:              _GotoState456Action,
-	{_State436, FuncTypeType}:                            _GotoState101Action,
-	{_State439, LbraceToken}:                             _GotoState72Action,
-	{_State439, StatementBlockType}:                      _GotoState457Action,
-	{_State440, IntegerLiteralToken}:                     _GotoState24Action,
-	{_State440, FloatLiteralToken}:                       _GotoState20Action,
-	{_State440, RuneLiteralToken}:                        _GotoState32Action,
-	{_State440, StringLiteralToken}:                      _GotoState33Action,
-	{_State440, IdentifierToken}:                         _GotoState23Action,
-	{_State440, TrueToken}:                               _GotoState36Action,
-	{_State440, FalseToken}:                              _GotoState19Action,
-	{_State440, StructToken}:                             _GotoState34Action,
-	{_State440, FuncToken}:                               _GotoState21Action,
-	{_State440, VarToken}:                                _GotoState37Action,
-	{_State440, LetToken}:                                _GotoState27Action,
-	{_State440, NotToken}:                                _GotoState30Action,
-	{_State440, LabelDeclToken}:                          _GotoState25Action,
-	{_State440, LparenToken}:                             _GotoState28Action,
-	{_State440, LbracketToken}:                           _GotoState26Action,
-	{_State440, SubToken}:                                _GotoState35Action,
-	{_State440, MulToken}:                                _GotoState29Action,
-	{_State440, BitNegToken}:                             _GotoState18Action,
-	{_State440, BitAndToken}:                             _GotoState17Action,
-	{_State440, GreaterToken}:                            _GotoState22Action,
-	{_State440, ParseErrorToken}:                         _GotoState31Action,
-	{_State440, VarDeclPatternType}:                      _GotoState69Action,
-	{_State440, VarOrLetType}:                            _GotoState70Action,
-	{_State440, OptionalLabelDeclType}:                   _GotoState85Action,
-	{_State440, SequenceExprType}:                        _GotoState403Action,
-	{_State440, OptionalSequenceExprType}:                _GotoState458Action,
-	{_State440, CallExprType}:                            _GotoState50Action,
-	{_State440, AtomExprType}:                            _GotoState43Action,
-	{_State440, ParseErrorExprType}:                      _GotoState62Action,
-	{_State440, LiteralExprType}:                         _GotoState58Action,
-	{_State440, IdentifierExprType}:                      _GotoState53Action,
-	{_State440, BlockExprType}:                           _GotoState49Action,
-	{_State440, InitializeExprType}:                      _GotoState57Action,
-	{_State440, ImplicitStructExprType}:                  _GotoState54Action,
-	{_State440, AccessibleExprType}:                      _GotoState39Action,
-	{_State440, AccessExprType}:                          _GotoState38Action,
-	{_State440, IndexExprType}:                           _GotoState55Action,
-	{_State440, PostfixableExprType}:                     _GotoState64Action,
-	{_State440, PostfixUnaryExprType}:                    _GotoState63Action,
-	{_State440, PrefixableExprType}:                      _GotoState67Action,
-	{_State440, PrefixUnaryExprType}:                     _GotoState65Action,
-	{_State440, PrefixUnaryOpType}:                       _GotoState66Action,
-	{_State440, MulExprType}:                             _GotoState59Action,
-	{_State440, BinaryMulExprType}:                       _GotoState47Action,
-	{_State440, AddExprType}:                             _GotoState40Action,
-	{_State440, BinaryAddExprType}:                       _GotoState44Action,
-	{_State440, CmpExprType}:                             _GotoState51Action,
-	{_State440, BinaryCmpExprType}:                       _GotoState46Action,
-	{_State440, AndExprType}:                             _GotoState41Action,
-	{_State440, BinaryAndExprType}:                       _GotoState45Action,
-	{_State440, OrExprType}:                              _GotoState61Action,
-	{_State440, BinaryOrExprType}:                        _GotoState48Action,
-	{_State440, InitializableTypeType}:                   _GotoState56Action,
-	{_State440, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State440, AnonymousFuncExprType}:                   _GotoState42Action,
-	{_State442, LparenToken}:                             _GotoState158Action,
-	{_State442, TuplePatternType}:                        _GotoState459Action,
-	{_State453, LbraceToken}:                             _GotoState72Action,
-	{_State453, StatementBlockType}:                      _GotoState460Action,
-	{_State454, IdentifierToken}:                         _GotoState170Action,
-	{_State454, ParameterDefType}:                        _GotoState173Action,
-	{_State454, ParameterDefsType}:                       _GotoState174Action,
-	{_State454, OptionalParameterDefsType}:               _GotoState461Action,
-	{_State456, RparenToken}:                             _GotoState462Action,
-	{_State458, DoToken}:                                 _GotoState463Action,
-	{_State461, RparenToken}:                             _GotoState464Action,
-	{_State462, IdentifierToken}:                         _GotoState93Action,
-	{_State462, StructToken}:                             _GotoState34Action,
-	{_State462, EnumToken}:                               _GotoState90Action,
-	{_State462, TraitToken}:                              _GotoState98Action,
-	{_State462, FuncToken}:                               _GotoState92Action,
-	{_State462, LparenToken}:                             _GotoState94Action,
-	{_State462, LbracketToken}:                           _GotoState26Action,
-	{_State462, DotToken}:                                _GotoState89Action,
-	{_State462, QuestionToken}:                           _GotoState96Action,
-	{_State462, ExclaimToken}:                            _GotoState91Action,
-	{_State462, TildeTildeToken}:                         _GotoState97Action,
-	{_State462, BitNegToken}:                             _GotoState88Action,
-	{_State462, BitAndToken}:                             _GotoState87Action,
-	{_State462, ParseErrorToken}:                         _GotoState95Action,
-	{_State462, InitializableTypeType}:                   _GotoState104Action,
-	{_State462, AtomTypeType}:                            _GotoState99Action,
-	{_State462, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State462, ReturnableTypeType}:                      _GotoState371Action,
-	{_State462, PrefixedTypeType}:                        _GotoState107Action,
-	{_State462, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State462, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State462, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State462, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State462, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State462, TraitDefType}:                            _GotoState109Action,
-	{_State462, ReturnTypeType}:                          _GotoState465Action,
-	{_State462, FuncTypeType}:                            _GotoState101Action,
-	{_State463, LbraceToken}:                             _GotoState72Action,
-	{_State463, StatementBlockType}:                      _GotoState466Action,
-	{_State464, IdentifierToken}:                         _GotoState93Action,
-	{_State464, StructToken}:                             _GotoState34Action,
-	{_State464, EnumToken}:                               _GotoState90Action,
-	{_State464, TraitToken}:                              _GotoState98Action,
-	{_State464, FuncToken}:                               _GotoState92Action,
-	{_State464, LparenToken}:                             _GotoState94Action,
-	{_State464, LbracketToken}:                           _GotoState26Action,
-	{_State464, DotToken}:                                _GotoState89Action,
-	{_State464, QuestionToken}:                           _GotoState96Action,
-	{_State464, ExclaimToken}:                            _GotoState91Action,
-	{_State464, TildeTildeToken}:                         _GotoState97Action,
-	{_State464, BitNegToken}:                             _GotoState88Action,
-	{_State464, BitAndToken}:                             _GotoState87Action,
-	{_State464, ParseErrorToken}:                         _GotoState95Action,
-	{_State464, InitializableTypeType}:                   _GotoState104Action,
-	{_State464, AtomTypeType}:                            _GotoState99Action,
-	{_State464, ParseErrorTypeType}:                      _GotoState105Action,
-	{_State464, ReturnableTypeType}:                      _GotoState371Action,
-	{_State464, PrefixedTypeType}:                        _GotoState107Action,
-	{_State464, PrefixTypeOpType}:                        _GotoState106Action,
-	{_State464, ImplicitStructDefType}:                   _GotoState103Action,
-	{_State464, ExplicitStructDefType}:                   _GotoState52Action,
-	{_State464, ImplicitEnumDefType}:                     _GotoState102Action,
-	{_State464, ExplicitEnumDefType}:                     _GotoState100Action,
-	{_State464, TraitDefType}:                            _GotoState109Action,
-	{_State464, ReturnTypeType}:                          _GotoState467Action,
-	{_State464, FuncTypeType}:                            _GotoState101Action,
-	{_State467, LbraceToken}:                             _GotoState72Action,
-	{_State467, StatementBlockType}:                      _GotoState468Action,
+	{_State409, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State409, FloatLiteralToken}:                       _GotoState20Action,
+	{_State409, RuneLiteralToken}:                        _GotoState32Action,
+	{_State409, StringLiteralToken}:                      _GotoState33Action,
+	{_State409, IdentifierToken}:                         _GotoState23Action,
+	{_State409, TrueToken}:                               _GotoState36Action,
+	{_State409, FalseToken}:                              _GotoState19Action,
+	{_State409, StructToken}:                             _GotoState34Action,
+	{_State409, FuncToken}:                               _GotoState21Action,
+	{_State409, VarToken}:                                _GotoState326Action,
+	{_State409, LetToken}:                                _GotoState27Action,
+	{_State409, NotToken}:                                _GotoState30Action,
+	{_State409, LabelDeclToken}:                          _GotoState25Action,
+	{_State409, LparenToken}:                             _GotoState28Action,
+	{_State409, LbracketToken}:                           _GotoState26Action,
+	{_State409, DotToken}:                                _GotoState325Action,
+	{_State409, SubToken}:                                _GotoState35Action,
+	{_State409, MulToken}:                                _GotoState29Action,
+	{_State409, BitNegToken}:                             _GotoState18Action,
+	{_State409, BitAndToken}:                             _GotoState17Action,
+	{_State409, GreaterToken}:                            _GotoState22Action,
+	{_State409, ParseErrorToken}:                         _GotoState31Action,
+	{_State409, VarDeclPatternType}:                      _GotoState69Action,
+	{_State409, VarOrLetType}:                            _GotoState70Action,
+	{_State409, AssignPatternType}:                       _GotoState327Action,
+	{_State409, CasePatternType}:                         _GotoState445Action,
+	{_State409, OptionalLabelDeclType}:                   _GotoState85Action,
+	{_State409, SequenceExprType}:                        _GotoState330Action,
+	{_State409, CallExprType}:                            _GotoState50Action,
+	{_State409, AtomExprType}:                            _GotoState43Action,
+	{_State409, ParseErrorExprType}:                      _GotoState62Action,
+	{_State409, LiteralExprType}:                         _GotoState58Action,
+	{_State409, IdentifierExprType}:                      _GotoState53Action,
+	{_State409, BlockExprType}:                           _GotoState49Action,
+	{_State409, InitializeExprType}:                      _GotoState57Action,
+	{_State409, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State409, AccessibleExprType}:                      _GotoState39Action,
+	{_State409, AccessExprType}:                          _GotoState38Action,
+	{_State409, IndexExprType}:                           _GotoState55Action,
+	{_State409, PostfixableExprType}:                     _GotoState64Action,
+	{_State409, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State409, PrefixableExprType}:                      _GotoState67Action,
+	{_State409, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State409, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State409, MulExprType}:                             _GotoState59Action,
+	{_State409, BinaryMulExprType}:                       _GotoState47Action,
+	{_State409, AddExprType}:                             _GotoState40Action,
+	{_State409, BinaryAddExprType}:                       _GotoState44Action,
+	{_State409, CmpExprType}:                             _GotoState51Action,
+	{_State409, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State409, AndExprType}:                             _GotoState41Action,
+	{_State409, BinaryAndExprType}:                       _GotoState45Action,
+	{_State409, OrExprType}:                              _GotoState61Action,
+	{_State409, BinaryOrExprType}:                        _GotoState48Action,
+	{_State409, InitializableTypeType}:                   _GotoState56Action,
+	{_State409, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State409, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State410, IfToken}:                                 _GotoState149Action,
+	{_State410, LbraceToken}:                             _GotoState72Action,
+	{_State410, StatementBlockType}:                      _GotoState447Action,
+	{_State410, IfExprType}:                              _GotoState446Action,
+	{_State413, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State413, FloatLiteralToken}:                       _GotoState20Action,
+	{_State413, RuneLiteralToken}:                        _GotoState32Action,
+	{_State413, StringLiteralToken}:                      _GotoState33Action,
+	{_State413, IdentifierToken}:                         _GotoState23Action,
+	{_State413, TrueToken}:                               _GotoState36Action,
+	{_State413, FalseToken}:                              _GotoState19Action,
+	{_State413, ReturnToken}:                             _GotoState244Action,
+	{_State413, BreakToken}:                              _GotoState236Action,
+	{_State413, ContinueToken}:                           _GotoState238Action,
+	{_State413, FallthroughToken}:                        _GotoState241Action,
+	{_State413, UnsafeToken}:                             _GotoState181Action,
+	{_State413, StructToken}:                             _GotoState34Action,
+	{_State413, FuncToken}:                               _GotoState21Action,
+	{_State413, AsyncToken}:                              _GotoState235Action,
+	{_State413, DeferToken}:                              _GotoState240Action,
+	{_State413, VarToken}:                                _GotoState37Action,
+	{_State413, LetToken}:                                _GotoState27Action,
+	{_State413, NotToken}:                                _GotoState30Action,
+	{_State413, LabelDeclToken}:                          _GotoState25Action,
+	{_State413, LparenToken}:                             _GotoState28Action,
+	{_State413, LbracketToken}:                           _GotoState26Action,
+	{_State413, SubToken}:                                _GotoState35Action,
+	{_State413, MulToken}:                                _GotoState29Action,
+	{_State413, BitNegToken}:                             _GotoState18Action,
+	{_State413, BitAndToken}:                             _GotoState17Action,
+	{_State413, GreaterToken}:                            _GotoState22Action,
+	{_State413, ParseErrorToken}:                         _GotoState31Action,
+	{_State413, SimpleStatementBodyType}:                 _GotoState415Action,
+	{_State413, OptionalSimpleStatementBodyType}:         _GotoState448Action,
+	{_State413, ExpressionOrImproperStructStatementType}: _GotoState252Action,
+	{_State413, CallbackOpType}:                          _GotoState249Action,
+	{_State413, CallbackOpStatementType}:                 _GotoState250Action,
+	{_State413, UnsafeStatementType}:                     _GotoState263Action,
+	{_State413, JumpStatementType}:                       _GotoState256Action,
+	{_State413, JumpTypeType}:                            _GotoState257Action,
+	{_State413, ExpressionsType}:                         _GotoState253Action,
+	{_State413, FallthroughStatementType}:                _GotoState254Action,
+	{_State413, AssignStatementType}:                     _GotoState247Action,
+	{_State413, UnaryOpAssignStatementType}:              _GotoState262Action,
+	{_State413, BinaryOpAssignStatementType}:             _GotoState248Action,
+	{_State413, VarDeclPatternType}:                      _GotoState69Action,
+	{_State413, VarOrLetType}:                            _GotoState70Action,
+	{_State413, AssignPatternType}:                       _GotoState246Action,
+	{_State413, ExpressionType}:                          _GotoState251Action,
+	{_State413, OptionalLabelDeclType}:                   _GotoState60Action,
+	{_State413, SequenceExprType}:                        _GotoState258Action,
+	{_State413, CallExprType}:                            _GotoState50Action,
+	{_State413, AtomExprType}:                            _GotoState43Action,
+	{_State413, ParseErrorExprType}:                      _GotoState62Action,
+	{_State413, LiteralExprType}:                         _GotoState58Action,
+	{_State413, IdentifierExprType}:                      _GotoState53Action,
+	{_State413, BlockExprType}:                           _GotoState49Action,
+	{_State413, InitializeExprType}:                      _GotoState57Action,
+	{_State413, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State413, AccessibleExprType}:                      _GotoState245Action,
+	{_State413, AccessExprType}:                          _GotoState38Action,
+	{_State413, IndexExprType}:                           _GotoState55Action,
+	{_State413, PostfixableExprType}:                     _GotoState64Action,
+	{_State413, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State413, PrefixableExprType}:                      _GotoState67Action,
+	{_State413, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State413, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State413, MulExprType}:                             _GotoState59Action,
+	{_State413, BinaryMulExprType}:                       _GotoState47Action,
+	{_State413, AddExprType}:                             _GotoState40Action,
+	{_State413, BinaryAddExprType}:                       _GotoState44Action,
+	{_State413, CmpExprType}:                             _GotoState51Action,
+	{_State413, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State413, AndExprType}:                             _GotoState41Action,
+	{_State413, BinaryAndExprType}:                       _GotoState45Action,
+	{_State413, OrExprType}:                              _GotoState61Action,
+	{_State413, BinaryOrExprType}:                        _GotoState48Action,
+	{_State413, InitializableTypeType}:                   _GotoState56Action,
+	{_State413, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State413, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State416, NewlinesToken}:                           _GotoState450Action,
+	{_State416, CommaToken}:                              _GotoState449Action,
+	{_State418, StringLiteralToken}:                      _GotoState339Action,
+	{_State418, RparenToken}:                             _GotoState451Action,
+	{_State418, ImportClauseType}:                        _GotoState416Action,
+	{_State418, ImportClauseTerminalType}:                _GotoState452Action,
+	{_State419, IdentifierToken}:                         _GotoState453Action,
+	{_State423, CommaToken}:                              _GotoState359Action,
+	{_State425, AddToken}:                                _GotoState191Action,
+	{_State425, SubToken}:                                _GotoState196Action,
+	{_State425, MulToken}:                                _GotoState194Action,
+	{_State425, TraitOpType}:                             _GotoState197Action,
+	{_State426, IdentifierToken}:                         _GotoState93Action,
+	{_State426, StructToken}:                             _GotoState34Action,
+	{_State426, EnumToken}:                               _GotoState90Action,
+	{_State426, TraitToken}:                              _GotoState98Action,
+	{_State426, FuncToken}:                               _GotoState92Action,
+	{_State426, LparenToken}:                             _GotoState94Action,
+	{_State426, LbracketToken}:                           _GotoState26Action,
+	{_State426, DotToken}:                                _GotoState89Action,
+	{_State426, QuestionToken}:                           _GotoState96Action,
+	{_State426, ExclaimToken}:                            _GotoState91Action,
+	{_State426, TildeTildeToken}:                         _GotoState97Action,
+	{_State426, BitNegToken}:                             _GotoState88Action,
+	{_State426, BitAndToken}:                             _GotoState87Action,
+	{_State426, ParseErrorToken}:                         _GotoState95Action,
+	{_State426, InitializableTypeType}:                   _GotoState104Action,
+	{_State426, AtomTypeType}:                            _GotoState99Action,
+	{_State426, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State426, ReturnableTypeType}:                      _GotoState372Action,
+	{_State426, PrefixedTypeType}:                        _GotoState107Action,
+	{_State426, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State426, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State426, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State426, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State426, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State426, TraitDefType}:                            _GotoState109Action,
+	{_State426, ReturnTypeType}:                          _GotoState454Action,
+	{_State426, FuncTypeType}:                            _GotoState101Action,
+	{_State427, LparenToken}:                             _GotoState455Action,
+	{_State433, AddToken}:                                _GotoState191Action,
+	{_State433, SubToken}:                                _GotoState196Action,
+	{_State433, MulToken}:                                _GotoState194Action,
+	{_State433, TraitOpType}:                             _GotoState197Action,
+	{_State436, StringLiteralToken}:                      _GotoState456Action,
+	{_State437, IdentifierToken}:                         _GotoState284Action,
+	{_State437, StructToken}:                             _GotoState34Action,
+	{_State437, EnumToken}:                               _GotoState90Action,
+	{_State437, TraitToken}:                              _GotoState98Action,
+	{_State437, FuncToken}:                               _GotoState92Action,
+	{_State437, LparenToken}:                             _GotoState94Action,
+	{_State437, LbracketToken}:                           _GotoState26Action,
+	{_State437, DotToken}:                                _GotoState89Action,
+	{_State437, QuestionToken}:                           _GotoState96Action,
+	{_State437, ExclaimToken}:                            _GotoState91Action,
+	{_State437, EllipsisToken}:                           _GotoState283Action,
+	{_State437, TildeTildeToken}:                         _GotoState97Action,
+	{_State437, BitNegToken}:                             _GotoState88Action,
+	{_State437, BitAndToken}:                             _GotoState87Action,
+	{_State437, ParseErrorToken}:                         _GotoState95Action,
+	{_State437, InitializableTypeType}:                   _GotoState104Action,
+	{_State437, AtomTypeType}:                            _GotoState99Action,
+	{_State437, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State437, ReturnableTypeType}:                      _GotoState108Action,
+	{_State437, PrefixedTypeType}:                        _GotoState107Action,
+	{_State437, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State437, ValueTypeType}:                           _GotoState288Action,
+	{_State437, TraitOpTypeType}:                         _GotoState110Action,
+	{_State437, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State437, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State437, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State437, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State437, TraitDefType}:                            _GotoState109Action,
+	{_State437, ParameterDeclType}:                       _GotoState286Action,
+	{_State437, ParameterDeclsType}:                      _GotoState287Action,
+	{_State437, OptionalParameterDeclsType}:              _GotoState457Action,
+	{_State437, FuncTypeType}:                            _GotoState101Action,
+	{_State440, LbraceToken}:                             _GotoState72Action,
+	{_State440, StatementBlockType}:                      _GotoState458Action,
+	{_State441, IntegerLiteralToken}:                     _GotoState24Action,
+	{_State441, FloatLiteralToken}:                       _GotoState20Action,
+	{_State441, RuneLiteralToken}:                        _GotoState32Action,
+	{_State441, StringLiteralToken}:                      _GotoState33Action,
+	{_State441, IdentifierToken}:                         _GotoState23Action,
+	{_State441, TrueToken}:                               _GotoState36Action,
+	{_State441, FalseToken}:                              _GotoState19Action,
+	{_State441, StructToken}:                             _GotoState34Action,
+	{_State441, FuncToken}:                               _GotoState21Action,
+	{_State441, VarToken}:                                _GotoState37Action,
+	{_State441, LetToken}:                                _GotoState27Action,
+	{_State441, NotToken}:                                _GotoState30Action,
+	{_State441, LabelDeclToken}:                          _GotoState25Action,
+	{_State441, LparenToken}:                             _GotoState28Action,
+	{_State441, LbracketToken}:                           _GotoState26Action,
+	{_State441, SubToken}:                                _GotoState35Action,
+	{_State441, MulToken}:                                _GotoState29Action,
+	{_State441, BitNegToken}:                             _GotoState18Action,
+	{_State441, BitAndToken}:                             _GotoState17Action,
+	{_State441, GreaterToken}:                            _GotoState22Action,
+	{_State441, ParseErrorToken}:                         _GotoState31Action,
+	{_State441, VarDeclPatternType}:                      _GotoState69Action,
+	{_State441, VarOrLetType}:                            _GotoState70Action,
+	{_State441, OptionalLabelDeclType}:                   _GotoState85Action,
+	{_State441, SequenceExprType}:                        _GotoState404Action,
+	{_State441, OptionalSequenceExprType}:                _GotoState459Action,
+	{_State441, CallExprType}:                            _GotoState50Action,
+	{_State441, AtomExprType}:                            _GotoState43Action,
+	{_State441, ParseErrorExprType}:                      _GotoState62Action,
+	{_State441, LiteralExprType}:                         _GotoState58Action,
+	{_State441, IdentifierExprType}:                      _GotoState53Action,
+	{_State441, BlockExprType}:                           _GotoState49Action,
+	{_State441, InitializeExprType}:                      _GotoState57Action,
+	{_State441, ImplicitStructExprType}:                  _GotoState54Action,
+	{_State441, AccessibleExprType}:                      _GotoState39Action,
+	{_State441, AccessExprType}:                          _GotoState38Action,
+	{_State441, IndexExprType}:                           _GotoState55Action,
+	{_State441, PostfixableExprType}:                     _GotoState64Action,
+	{_State441, PostfixUnaryExprType}:                    _GotoState63Action,
+	{_State441, PrefixableExprType}:                      _GotoState67Action,
+	{_State441, PrefixUnaryExprType}:                     _GotoState65Action,
+	{_State441, PrefixUnaryOpType}:                       _GotoState66Action,
+	{_State441, MulExprType}:                             _GotoState59Action,
+	{_State441, BinaryMulExprType}:                       _GotoState47Action,
+	{_State441, AddExprType}:                             _GotoState40Action,
+	{_State441, BinaryAddExprType}:                       _GotoState44Action,
+	{_State441, CmpExprType}:                             _GotoState51Action,
+	{_State441, BinaryCmpExprType}:                       _GotoState46Action,
+	{_State441, AndExprType}:                             _GotoState41Action,
+	{_State441, BinaryAndExprType}:                       _GotoState45Action,
+	{_State441, OrExprType}:                              _GotoState61Action,
+	{_State441, BinaryOrExprType}:                        _GotoState48Action,
+	{_State441, InitializableTypeType}:                   _GotoState56Action,
+	{_State441, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State441, AnonymousFuncExprType}:                   _GotoState42Action,
+	{_State443, LparenToken}:                             _GotoState158Action,
+	{_State443, TuplePatternType}:                        _GotoState460Action,
+	{_State454, LbraceToken}:                             _GotoState72Action,
+	{_State454, StatementBlockType}:                      _GotoState461Action,
+	{_State455, IdentifierToken}:                         _GotoState170Action,
+	{_State455, ParameterDefType}:                        _GotoState173Action,
+	{_State455, ParameterDefsType}:                       _GotoState174Action,
+	{_State455, OptionalParameterDefsType}:               _GotoState462Action,
+	{_State457, RparenToken}:                             _GotoState463Action,
+	{_State459, DoToken}:                                 _GotoState464Action,
+	{_State462, RparenToken}:                             _GotoState465Action,
+	{_State463, IdentifierToken}:                         _GotoState93Action,
+	{_State463, StructToken}:                             _GotoState34Action,
+	{_State463, EnumToken}:                               _GotoState90Action,
+	{_State463, TraitToken}:                              _GotoState98Action,
+	{_State463, FuncToken}:                               _GotoState92Action,
+	{_State463, LparenToken}:                             _GotoState94Action,
+	{_State463, LbracketToken}:                           _GotoState26Action,
+	{_State463, DotToken}:                                _GotoState89Action,
+	{_State463, QuestionToken}:                           _GotoState96Action,
+	{_State463, ExclaimToken}:                            _GotoState91Action,
+	{_State463, TildeTildeToken}:                         _GotoState97Action,
+	{_State463, BitNegToken}:                             _GotoState88Action,
+	{_State463, BitAndToken}:                             _GotoState87Action,
+	{_State463, ParseErrorToken}:                         _GotoState95Action,
+	{_State463, InitializableTypeType}:                   _GotoState104Action,
+	{_State463, AtomTypeType}:                            _GotoState99Action,
+	{_State463, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State463, ReturnableTypeType}:                      _GotoState372Action,
+	{_State463, PrefixedTypeType}:                        _GotoState107Action,
+	{_State463, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State463, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State463, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State463, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State463, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State463, TraitDefType}:                            _GotoState109Action,
+	{_State463, ReturnTypeType}:                          _GotoState466Action,
+	{_State463, FuncTypeType}:                            _GotoState101Action,
+	{_State464, LbraceToken}:                             _GotoState72Action,
+	{_State464, StatementBlockType}:                      _GotoState467Action,
+	{_State465, IdentifierToken}:                         _GotoState93Action,
+	{_State465, StructToken}:                             _GotoState34Action,
+	{_State465, EnumToken}:                               _GotoState90Action,
+	{_State465, TraitToken}:                              _GotoState98Action,
+	{_State465, FuncToken}:                               _GotoState92Action,
+	{_State465, LparenToken}:                             _GotoState94Action,
+	{_State465, LbracketToken}:                           _GotoState26Action,
+	{_State465, DotToken}:                                _GotoState89Action,
+	{_State465, QuestionToken}:                           _GotoState96Action,
+	{_State465, ExclaimToken}:                            _GotoState91Action,
+	{_State465, TildeTildeToken}:                         _GotoState97Action,
+	{_State465, BitNegToken}:                             _GotoState88Action,
+	{_State465, BitAndToken}:                             _GotoState87Action,
+	{_State465, ParseErrorToken}:                         _GotoState95Action,
+	{_State465, InitializableTypeType}:                   _GotoState104Action,
+	{_State465, AtomTypeType}:                            _GotoState99Action,
+	{_State465, ParseErrorTypeType}:                      _GotoState105Action,
+	{_State465, ReturnableTypeType}:                      _GotoState372Action,
+	{_State465, PrefixedTypeType}:                        _GotoState107Action,
+	{_State465, PrefixTypeOpType}:                        _GotoState106Action,
+	{_State465, ImplicitStructDefType}:                   _GotoState103Action,
+	{_State465, ExplicitStructDefType}:                   _GotoState52Action,
+	{_State465, ImplicitEnumDefType}:                     _GotoState102Action,
+	{_State465, ExplicitEnumDefType}:                     _GotoState100Action,
+	{_State465, TraitDefType}:                            _GotoState109Action,
+	{_State465, ReturnTypeType}:                          _GotoState468Action,
+	{_State465, FuncTypeType}:                            _GotoState101Action,
+	{_State468, LbraceToken}:                             _GotoState72Action,
+	{_State468, StatementBlockType}:                      _GotoState469Action,
 	{_State1, _EndMarker}:                                _ReduceNilToOptionalDefinitionsAction,
 	{_State1, _WildcardMarker}:                           _ReduceNilToOptionalNewlinesAction,
 	{_State5, _WildcardMarker}:                           _ReduceUnlabelledToOptionalLabelDeclAction,
@@ -9694,7 +9793,6 @@ var _ActionTable = _ActionTableType{
 	{_State27, _WildcardMarker}:                          _ReduceLetToVarOrLetAction,
 	{_State28, _WildcardMarker}:                          _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State28, RparenToken}:                              _ReduceNilToOptionalArgumentsAction,
-	{_State28, ColonToken}:                               _ReduceNilToOptionalExpressionAction,
 	{_State29, _WildcardMarker}:                          _ReduceMulToPrefixUnaryOpAction,
 	{_State30, _WildcardMarker}:                          _ReduceNotToPrefixUnaryOpAction,
 	{_State31, _WildcardMarker}:                          _ReduceToParseErrorExprAction,
@@ -9768,17 +9866,20 @@ var _ActionTable = _ActionTableType{
 	{_State108, _WildcardMarker}:                         _ReduceReturnableTypeToValueTypeAction,
 	{_State109, _WildcardMarker}:                         _ReduceTraitDefToAtomTypeAction,
 	{_State110, _WildcardMarker}:                         _ReduceTraitOpTypeToValueTypeAction,
-	{_State112, _WildcardMarker}:                         _ReduceEllipsisToArgumentAction,
-	{_State113, _WildcardMarker}:                         _ReduceToIdentifierExprAction,
-	{_State114, _WildcardMarker}:                         _ReduceArgumentToArgumentsAction,
-	{_State115, RparenToken}:                             _ReduceArgumentsToOptionalArgumentsAction,
-	{_State116, _WildcardMarker}:                         _ReduceColonExpressionsToArgumentAction,
-	{_State117, _WildcardMarker}:                         _ReducePositionalToArgumentAction,
-	{_State117, ColonToken}:                              _ReduceExpressionToOptionalExpressionAction,
+	{_State112, ColonToken}:                              _ReduceUnitUnitPairToColonExprAction,
+	{_State112, CommaToken}:                              _ReduceUnitUnitPairToColonExprAction,
+	{_State112, RbracketToken}:                           _ReduceUnitUnitPairToColonExprAction,
+	{_State112, RparenToken}:                             _ReduceUnitUnitPairToColonExprAction,
+	{_State112, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State113, _WildcardMarker}:                         _ReduceSkipPatternToArgumentAction,
+	{_State114, _WildcardMarker}:                         _ReduceToIdentifierExprAction,
+	{_State115, _WildcardMarker}:                         _ReduceArgumentToArgumentsAction,
+	{_State116, RparenToken}:                             _ReduceArgumentsToOptionalArgumentsAction,
+	{_State117, _WildcardMarker}:                         _ReduceColonExprToArgumentAction,
+	{_State118, _WildcardMarker}:                         _ReducePositionalToArgumentAction,
 	{_State120, RparenToken}:                             _ReduceNilToOptionalExplicitFieldDefsAction,
 	{_State121, RbracketToken}:                           _ReduceNilToOptionalGenericArgumentsAction,
 	{_State123, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State123, ColonToken}:                              _ReduceNilToOptionalExpressionAction,
 	{_State124, _WildcardMarker}:                         _ReduceToPostfixUnaryExprAction,
 	{_State126, _WildcardMarker}:                         _ReduceAddToAddOpAction,
 	{_State127, _WildcardMarker}:                         _ReduceBitOrToAddOpAction,
@@ -9795,7 +9896,6 @@ var _ActionTable = _ActionTableType{
 	{_State138, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State139, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State139, RparenToken}:                             _ReduceNilToOptionalArgumentsAction,
-	{_State139, ColonToken}:                              _ReduceNilToOptionalExpressionAction,
 	{_State140, _WildcardMarker}:                         _ReduceBitAndToMulOpAction,
 	{_State141, _WildcardMarker}:                         _ReduceBitLshiftToMulOpAction,
 	{_State142, _WildcardMarker}:                         _ReduceBitRshiftToMulOpAction,
@@ -9839,232 +9939,231 @@ var _ActionTable = _ActionTableType{
 	{_State194, _WildcardMarker}:                         _ReduceMulToTraitOpAction,
 	{_State195, _WildcardMarker}:                         _ReduceSliceToInitializableTypeAction,
 	{_State196, _WildcardMarker}:                         _ReduceSubToTraitOpAction,
-	{_State198, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State198, _WildcardMarker}:                         _ReduceUnitExprPairToColonExprAction,
 	{_State199, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State199, ColonToken}:                              _ReduceNilToOptionalExpressionAction,
 	{_State200, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State200, ColonToken}:                              _ReduceNilToOptionalExpressionAction,
-	{_State200, CommaToken}:                              _ReduceNilToOptionalExpressionAction,
-	{_State200, RbracketToken}:                           _ReduceNilToOptionalExpressionAction,
-	{_State200, RparenToken}:                             _ReduceNilToOptionalExpressionAction,
-	{_State201, _WildcardMarker}:                         _ReduceToImplicitStructExprAction,
+	{_State201, ColonToken}:                              _ReduceColonExprUnitTupleToColonExprAction,
+	{_State201, CommaToken}:                              _ReduceColonExprUnitTupleToColonExprAction,
+	{_State201, RbracketToken}:                           _ReduceColonExprUnitTupleToColonExprAction,
+	{_State201, RparenToken}:                             _ReduceColonExprUnitTupleToColonExprAction,
+	{_State201, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State202, ColonToken}:                              _ReduceExprUnitPairToColonExprAction,
+	{_State202, CommaToken}:                              _ReduceExprUnitPairToColonExprAction,
+	{_State202, RbracketToken}:                           _ReduceExprUnitPairToColonExprAction,
+	{_State202, RparenToken}:                             _ReduceExprUnitPairToColonExprAction,
 	{_State202, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State202, ColonToken}:                              _ReduceNilToOptionalExpressionAction,
-	{_State202, CommaToken}:                              _ReduceNilToOptionalExpressionAction,
-	{_State202, RbracketToken}:                           _ReduceNilToOptionalExpressionAction,
-	{_State202, RparenToken}:                             _ReduceNilToOptionalExpressionAction,
-	{_State203, RparenToken}:                             _ReduceExplicitFieldDefsToOptionalExplicitFieldDefsAction,
-	{_State204, _WildcardMarker}:                         _ReduceFieldDefToExplicitFieldDefsAction,
-	{_State206, RbracketToken}:                           _ReduceGenericArgumentsToOptionalGenericArgumentsAction,
-	{_State208, _WildcardMarker}:                         _ReduceValueTypeToGenericArgumentsAction,
-	{_State209, _WildcardMarker}:                         _ReduceToAccessExprAction,
-	{_State211, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State211, RparenToken}:                             _ReduceNilToOptionalArgumentsAction,
-	{_State211, ColonToken}:                              _ReduceNilToOptionalExpressionAction,
-	{_State212, _WildcardMarker}:                         _ReduceToBinaryAddExprAction,
-	{_State213, _WildcardMarker}:                         _ReduceToBinaryAndExprAction,
-	{_State214, _WildcardMarker}:                         _ReduceToBinaryCmpExprAction,
-	{_State216, _WildcardMarker}:                         _ReduceToBinaryMulExprAction,
-	{_State217, _WildcardMarker}:                         _ReduceInfiniteToLoopExprAction,
-	{_State220, _WildcardMarker}:                         _ReduceToAssignPatternAction,
-	{_State220, SemicolonToken}:                          _ReduceSequenceExprToForAssignmentAction,
-	{_State221, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State223, LbraceToken}:                             _ReduceSequenceExprToConditionAction,
-	{_State225, _WildcardMarker}:                         _ReduceToBinaryOrExprAction,
-	{_State226, _WildcardMarker}:                         _ReduceEllipsisToFieldVarPatternAction,
-	{_State227, _WildcardMarker}:                         _ReduceIdentifierToVarPatternAction,
-	{_State228, _WildcardMarker}:                         _ReduceFieldVarPatternToFieldVarPatternsAction,
-	{_State230, _WildcardMarker}:                         _ReducePositionalToFieldVarPatternAction,
-	{_State231, _EndMarker}:                              _ReduceToVarDeclPatternAction,
-	{_State232, _WildcardMarker}:                         _ReduceValueTypeToOptionalValueTypeAction,
-	{_State233, _WildcardMarker}:                         _ReduceAsyncToCallbackOpAction,
-	{_State234, _WildcardMarker}:                         _ReduceBreakToJumpTypeAction,
-	{_State235, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State236, _WildcardMarker}:                         _ReduceContinueToJumpTypeAction,
-	{_State238, _WildcardMarker}:                         _ReduceDeferToCallbackOpAction,
-	{_State239, _WildcardMarker}:                         _ReduceToFallthroughStatementAction,
-	{_State241, _EndMarker}:                              _ReduceToStatementBlockAction,
-	{_State242, _WildcardMarker}:                         _ReduceReturnToJumpTypeAction,
-	{_State243, _WildcardMarker}:                         _ReduceAccessibleExprToPostfixableExprAction,
-	{_State243, LparenToken}:                             _ReduceNilToOptionalGenericBindingAction,
-	{_State245, _WildcardMarker}:                         _ReduceAssignStatementToSimpleStatementBodyAction,
-	{_State246, _WildcardMarker}:                         _ReduceBinaryOpAssignStatementToSimpleStatementBodyAction,
-	{_State247, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State248, _WildcardMarker}:                         _ReduceCallbackOpStatementToSimpleStatementBodyAction,
-	{_State249, _WildcardMarker}:                         _ReduceExpressionToExpressionsAction,
-	{_State250, _WildcardMarker}:                         _ReduceExpressionOrImproperStructStatementToSimpleStatementBodyAction,
-	{_State251, _WildcardMarker}:                         _ReduceToExpressionOrImproperStructStatementAction,
-	{_State252, _WildcardMarker}:                         _ReduceFallthroughStatementToSimpleStatementBodyAction,
-	{_State253, _WildcardMarker}:                         _ReduceImportStatementToStatementBodyAction,
-	{_State254, _WildcardMarker}:                         _ReduceJumpStatementToSimpleStatementBodyAction,
-	{_State255, NewlinesToken}:                           _ReduceUnlabeledNoValueToJumpStatementAction,
-	{_State255, SemicolonToken}:                          _ReduceUnlabeledNoValueToJumpStatementAction,
-	{_State255, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State256, AssignToken}:                             _ReduceToAssignPatternAction,
-	{_State256, _WildcardMarker}:                         _ReduceSequenceExprToExpressionAction,
-	{_State257, _WildcardMarker}:                         _ReduceSimpleStatementBodyToStatementBodyAction,
-	{_State258, _WildcardMarker}:                         _ReduceAddToStatementsAction,
-	{_State260, _WildcardMarker}:                         _ReduceUnaryOpAssignStatementToSimpleStatementBodyAction,
-	{_State261, _WildcardMarker}:                         _ReduceUnsafeStatementToSimpleStatementBodyAction,
-	{_State262, _WildcardMarker}:                         _ReduceAddToDefinitionsAction,
-	{_State263, _WildcardMarker}:                         _ReduceGlobalVarAssignmentToDefinitionAction,
-	{_State264, _WildcardMarker}:                         _ReduceAliasToTypeDefAction,
-	{_State265, _WildcardMarker}:                         _ReduceUnconstrainedToGenericParameterDefAction,
-	{_State266, _WildcardMarker}:                         _ReduceGenericParameterDefToGenericParameterDefsAction,
-	{_State267, RbracketToken}:                           _ReduceGenericParameterDefsToOptionalGenericParameterDefsAction,
-	{_State269, _WildcardMarker}:                         _ReduceDefinitionToTypeDefAction,
-	{_State270, _EndMarker}:                              _ReduceAliasToNamedFuncDefAction,
-	{_State271, RparenToken}:                             _ReduceNilToOptionalParameterDefsAction,
-	{_State272, _WildcardMarker}:                         _ReduceInferredRefVarargToParameterDefAction,
-	{_State273, _WildcardMarker}:                         _ReduceArgToParameterDefAction,
-	{_State275, LbraceToken}:                             _ReduceNilToReturnTypeAction,
-	{_State279, _WildcardMarker}:                         _ReduceFieldDefToEnumValueDefAction,
-	{_State282, _WildcardMarker}:                         _ReduceNilToOptionalGenericBindingAction,
-	{_State284, _WildcardMarker}:                         _ReduceParameterDeclToParameterDeclsAction,
-	{_State285, RparenToken}:                             _ReduceParameterDeclsToOptionalParameterDeclsAction,
-	{_State286, _WildcardMarker}:                         _ReduceUnamedToParameterDeclAction,
-	{_State287, _WildcardMarker}:                         _ReduceNilToOptionalGenericBindingAction,
-	{_State288, _WildcardMarker}:                         _ReduceNilToOptionalGenericBindingAction,
-	{_State289, _WildcardMarker}:                         _ReduceExplicitToFieldDefAction,
-	{_State294, _WildcardMarker}:                         _ReduceToImplicitEnumDefAction,
-	{_State296, _WildcardMarker}:                         _ReduceToImplicitStructDefAction,
-	{_State298, _WildcardMarker}:                         _ReduceFieldDefToTraitPropertyAction,
-	{_State299, _WildcardMarker}:                         _ReduceMethodSignatureToTraitPropertyAction,
-	{_State301, RparenToken}:                             _ReduceTraitPropertiesToOptionalTraitPropertiesAction,
-	{_State302, _WildcardMarker}:                         _ReduceTraitPropertyToTraitPropertiesAction,
-	{_State305, _WildcardMarker}:                         _ReduceToTraitOpTypeAction,
-	{_State306, _WildcardMarker}:                         _ReduceNamedToArgumentAction,
-	{_State307, _WildcardMarker}:                         _ReduceAddToArgumentsAction,
-	{_State308, _WildcardMarker}:                         _ReduceExpressionToOptionalExpressionAction,
-	{_State309, _WildcardMarker}:                         _ReduceAddToColonExpressionsAction,
-	{_State310, _WildcardMarker}:                         _ReducePairToColonExpressionsAction,
-	{_State313, _WildcardMarker}:                         _ReduceToExplicitStructDefAction,
-	{_State315, _WildcardMarker}:                         _ReduceBindingToOptionalGenericBindingAction,
-	{_State316, _WildcardMarker}:                         _ReduceToIndexExprAction,
-	{_State318, _WildcardMarker}:                         _ReduceToInitializeExprAction,
-	{_State319, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State203, _WildcardMarker}:                         _ReduceVarargAssignmentToArgumentAction,
+	{_State204, _WildcardMarker}:                         _ReduceToImplicitStructExprAction,
+	{_State205, RparenToken}:                             _ReduceExplicitFieldDefsToOptionalExplicitFieldDefsAction,
+	{_State206, _WildcardMarker}:                         _ReduceFieldDefToExplicitFieldDefsAction,
+	{_State208, RbracketToken}:                           _ReduceGenericArgumentsToOptionalGenericArgumentsAction,
+	{_State210, _WildcardMarker}:                         _ReduceValueTypeToGenericArgumentsAction,
+	{_State211, _WildcardMarker}:                         _ReduceToAccessExprAction,
+	{_State213, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State213, RparenToken}:                             _ReduceNilToOptionalArgumentsAction,
+	{_State214, _WildcardMarker}:                         _ReduceToBinaryAddExprAction,
+	{_State215, _WildcardMarker}:                         _ReduceToBinaryAndExprAction,
+	{_State216, _WildcardMarker}:                         _ReduceToBinaryCmpExprAction,
+	{_State218, _WildcardMarker}:                         _ReduceToBinaryMulExprAction,
+	{_State219, _WildcardMarker}:                         _ReduceInfiniteToLoopExprAction,
+	{_State222, _WildcardMarker}:                         _ReduceToAssignPatternAction,
+	{_State222, SemicolonToken}:                          _ReduceSequenceExprToForAssignmentAction,
+	{_State223, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State225, LbraceToken}:                             _ReduceSequenceExprToConditionAction,
+	{_State227, _WildcardMarker}:                         _ReduceToBinaryOrExprAction,
+	{_State228, _WildcardMarker}:                         _ReduceEllipsisToFieldVarPatternAction,
+	{_State229, _WildcardMarker}:                         _ReduceIdentifierToVarPatternAction,
+	{_State230, _WildcardMarker}:                         _ReduceFieldVarPatternToFieldVarPatternsAction,
+	{_State232, _WildcardMarker}:                         _ReducePositionalToFieldVarPatternAction,
+	{_State233, _EndMarker}:                              _ReduceToVarDeclPatternAction,
+	{_State234, _WildcardMarker}:                         _ReduceValueTypeToOptionalValueTypeAction,
+	{_State235, _WildcardMarker}:                         _ReduceAsyncToCallbackOpAction,
+	{_State236, _WildcardMarker}:                         _ReduceBreakToJumpTypeAction,
+	{_State237, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State238, _WildcardMarker}:                         _ReduceContinueToJumpTypeAction,
+	{_State240, _WildcardMarker}:                         _ReduceDeferToCallbackOpAction,
+	{_State241, _WildcardMarker}:                         _ReduceToFallthroughStatementAction,
+	{_State243, _EndMarker}:                              _ReduceToStatementBlockAction,
+	{_State244, _WildcardMarker}:                         _ReduceReturnToJumpTypeAction,
+	{_State245, _WildcardMarker}:                         _ReduceAccessibleExprToPostfixableExprAction,
+	{_State245, LparenToken}:                             _ReduceNilToOptionalGenericBindingAction,
+	{_State247, _WildcardMarker}:                         _ReduceAssignStatementToSimpleStatementBodyAction,
+	{_State248, _WildcardMarker}:                         _ReduceBinaryOpAssignStatementToSimpleStatementBodyAction,
+	{_State249, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State250, _WildcardMarker}:                         _ReduceCallbackOpStatementToSimpleStatementBodyAction,
+	{_State251, _WildcardMarker}:                         _ReduceExpressionToExpressionsAction,
+	{_State252, _WildcardMarker}:                         _ReduceExpressionOrImproperStructStatementToSimpleStatementBodyAction,
+	{_State253, _WildcardMarker}:                         _ReduceToExpressionOrImproperStructStatementAction,
+	{_State254, _WildcardMarker}:                         _ReduceFallthroughStatementToSimpleStatementBodyAction,
+	{_State255, _WildcardMarker}:                         _ReduceImportStatementToStatementBodyAction,
+	{_State256, _WildcardMarker}:                         _ReduceJumpStatementToSimpleStatementBodyAction,
+	{_State257, NewlinesToken}:                           _ReduceUnlabeledNoValueToJumpStatementAction,
+	{_State257, SemicolonToken}:                          _ReduceUnlabeledNoValueToJumpStatementAction,
+	{_State257, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State258, AssignToken}:                             _ReduceToAssignPatternAction,
+	{_State258, _WildcardMarker}:                         _ReduceSequenceExprToExpressionAction,
+	{_State259, _WildcardMarker}:                         _ReduceSimpleStatementBodyToStatementBodyAction,
+	{_State260, _WildcardMarker}:                         _ReduceAddToStatementsAction,
+	{_State262, _WildcardMarker}:                         _ReduceUnaryOpAssignStatementToSimpleStatementBodyAction,
+	{_State263, _WildcardMarker}:                         _ReduceUnsafeStatementToSimpleStatementBodyAction,
+	{_State264, _WildcardMarker}:                         _ReduceAddToDefinitionsAction,
+	{_State265, _WildcardMarker}:                         _ReduceGlobalVarAssignmentToDefinitionAction,
+	{_State266, _WildcardMarker}:                         _ReduceAliasToTypeDefAction,
+	{_State267, _WildcardMarker}:                         _ReduceUnconstrainedToGenericParameterDefAction,
+	{_State268, _WildcardMarker}:                         _ReduceGenericParameterDefToGenericParameterDefsAction,
+	{_State269, RbracketToken}:                           _ReduceGenericParameterDefsToOptionalGenericParameterDefsAction,
+	{_State271, _WildcardMarker}:                         _ReduceDefinitionToTypeDefAction,
+	{_State272, _EndMarker}:                              _ReduceAliasToNamedFuncDefAction,
+	{_State273, RparenToken}:                             _ReduceNilToOptionalParameterDefsAction,
+	{_State274, _WildcardMarker}:                         _ReduceInferredRefVarargToParameterDefAction,
+	{_State275, _WildcardMarker}:                         _ReduceArgToParameterDefAction,
+	{_State277, LbraceToken}:                             _ReduceNilToReturnTypeAction,
+	{_State281, _WildcardMarker}:                         _ReduceFieldDefToEnumValueDefAction,
+	{_State284, _WildcardMarker}:                         _ReduceNilToOptionalGenericBindingAction,
+	{_State286, _WildcardMarker}:                         _ReduceParameterDeclToParameterDeclsAction,
+	{_State287, RparenToken}:                             _ReduceParameterDeclsToOptionalParameterDeclsAction,
+	{_State288, _WildcardMarker}:                         _ReduceUnamedToParameterDeclAction,
+	{_State289, _WildcardMarker}:                         _ReduceNilToOptionalGenericBindingAction,
+	{_State290, _WildcardMarker}:                         _ReduceNilToOptionalGenericBindingAction,
+	{_State291, _WildcardMarker}:                         _ReduceExplicitToFieldDefAction,
+	{_State296, _WildcardMarker}:                         _ReduceToImplicitEnumDefAction,
+	{_State298, _WildcardMarker}:                         _ReduceToImplicitStructDefAction,
+	{_State300, _WildcardMarker}:                         _ReduceFieldDefToTraitPropertyAction,
+	{_State301, _WildcardMarker}:                         _ReduceMethodSignatureToTraitPropertyAction,
+	{_State303, RparenToken}:                             _ReduceTraitPropertiesToOptionalTraitPropertiesAction,
+	{_State304, _WildcardMarker}:                         _ReduceTraitPropertyToTraitPropertiesAction,
+	{_State307, _WildcardMarker}:                         _ReduceToTraitOpTypeAction,
+	{_State308, _WildcardMarker}:                         _ReduceNamedAssignmentToArgumentAction,
+	{_State309, _WildcardMarker}:                         _ReduceAddToArgumentsAction,
+	{_State310, _WildcardMarker}:                         _ReduceColonExprExprTupleToColonExprAction,
+	{_State311, _WildcardMarker}:                         _ReduceExprExprPairToColonExprAction,
+	{_State314, _WildcardMarker}:                         _ReduceToExplicitStructDefAction,
+	{_State316, _WildcardMarker}:                         _ReduceBindingToOptionalGenericBindingAction,
+	{_State317, _WildcardMarker}:                         _ReduceToIndexExprAction,
+	{_State319, _WildcardMarker}:                         _ReduceToInitializeExprAction,
 	{_State320, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State321, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State322, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State322, SemicolonToken}:                          _ReduceNilToOptionalSequenceExprAction,
-	{_State325, _WildcardMarker}:                         _ReduceVarToVarOrLetAction,
-	{_State326, _WildcardMarker}:                         _ReduceAssignPatternToCasePatternAction,
-	{_State327, _WildcardMarker}:                         _ReduceCasePatternToCasePatternsAction,
-	{_State329, _WildcardMarker}:                         _ReduceToAssignPatternAction,
-	{_State330, _WildcardMarker}:                         _ReduceNoElseToIfExprAction,
-	{_State331, _EndMarker}:                              _ReduceToSwitchExprAction,
-	{_State334, _WildcardMarker}:                         _ReduceToTuplePatternAction,
-	{_State336, NewlinesToken}:                           _ReduceNilToOptionalSimpleStatementBodyAction,
-	{_State336, SemicolonToken}:                          _ReduceNilToOptionalSimpleStatementBodyAction,
-	{_State336, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State338, _WildcardMarker}:                         _ReduceStringLiteralToImportClauseAction,
-	{_State339, _WildcardMarker}:                         _ReduceSingleToImportStatementAction,
-	{_State340, _WildcardMarker}:                         _ReduceAddAssignToBinaryOpAssignAction,
-	{_State341, _WildcardMarker}:                         _ReduceAddOneAssignToUnaryOpAssignAction,
-	{_State342, _WildcardMarker}:                         _ReduceBitAndAssignToBinaryOpAssignAction,
-	{_State343, _WildcardMarker}:                         _ReduceBitLshiftAssignToBinaryOpAssignAction,
-	{_State344, _WildcardMarker}:                         _ReduceBitNegAssignToBinaryOpAssignAction,
-	{_State345, _WildcardMarker}:                         _ReduceBitOrAssignToBinaryOpAssignAction,
-	{_State346, _WildcardMarker}:                         _ReduceBitRshiftAssignToBinaryOpAssignAction,
-	{_State347, _WildcardMarker}:                         _ReduceBitXorAssignToBinaryOpAssignAction,
-	{_State348, _WildcardMarker}:                         _ReduceDivAssignToBinaryOpAssignAction,
-	{_State349, _WildcardMarker}:                         _ReduceModAssignToBinaryOpAssignAction,
-	{_State350, _WildcardMarker}:                         _ReduceMulAssignToBinaryOpAssignAction,
-	{_State351, _WildcardMarker}:                         _ReduceSubAssignToBinaryOpAssignAction,
-	{_State352, _WildcardMarker}:                         _ReduceSubOneAssignToUnaryOpAssignAction,
-	{_State353, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State354, _WildcardMarker}:                         _ReduceToUnaryOpAssignStatementAction,
-	{_State355, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State356, LparenToken}:                             _ReduceNilToOptionalGenericBindingAction,
-	{_State357, NewlinesToken}:                           _ReduceToCallbackOpStatementAction,
-	{_State357, SemicolonToken}:                          _ReduceToCallbackOpStatementAction,
-	{_State357, _WildcardMarker}:                         _ReduceCallExprToAccessibleExprAction,
-	{_State358, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State359, NewlinesToken}:                           _ReduceLabeledNoValueToJumpStatementAction,
-	{_State359, SemicolonToken}:                          _ReduceLabeledNoValueToJumpStatementAction,
+	{_State323, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State323, SemicolonToken}:                          _ReduceNilToOptionalSequenceExprAction,
+	{_State326, _WildcardMarker}:                         _ReduceVarToVarOrLetAction,
+	{_State327, _WildcardMarker}:                         _ReduceAssignPatternToCasePatternAction,
+	{_State328, _WildcardMarker}:                         _ReduceCasePatternToCasePatternsAction,
+	{_State330, _WildcardMarker}:                         _ReduceToAssignPatternAction,
+	{_State331, _WildcardMarker}:                         _ReduceNoElseToIfExprAction,
+	{_State332, _EndMarker}:                              _ReduceToSwitchExprAction,
+	{_State335, _WildcardMarker}:                         _ReduceToTuplePatternAction,
+	{_State337, NewlinesToken}:                           _ReduceNilToOptionalSimpleStatementBodyAction,
+	{_State337, SemicolonToken}:                          _ReduceNilToOptionalSimpleStatementBodyAction,
+	{_State337, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State339, _WildcardMarker}:                         _ReduceStringLiteralToImportClauseAction,
+	{_State340, _WildcardMarker}:                         _ReduceSingleToImportStatementAction,
+	{_State341, _WildcardMarker}:                         _ReduceAddAssignToBinaryOpAssignAction,
+	{_State342, _WildcardMarker}:                         _ReduceAddOneAssignToUnaryOpAssignAction,
+	{_State343, _WildcardMarker}:                         _ReduceBitAndAssignToBinaryOpAssignAction,
+	{_State344, _WildcardMarker}:                         _ReduceBitLshiftAssignToBinaryOpAssignAction,
+	{_State345, _WildcardMarker}:                         _ReduceBitNegAssignToBinaryOpAssignAction,
+	{_State346, _WildcardMarker}:                         _ReduceBitOrAssignToBinaryOpAssignAction,
+	{_State347, _WildcardMarker}:                         _ReduceBitRshiftAssignToBinaryOpAssignAction,
+	{_State348, _WildcardMarker}:                         _ReduceBitXorAssignToBinaryOpAssignAction,
+	{_State349, _WildcardMarker}:                         _ReduceDivAssignToBinaryOpAssignAction,
+	{_State350, _WildcardMarker}:                         _ReduceModAssignToBinaryOpAssignAction,
+	{_State351, _WildcardMarker}:                         _ReduceMulAssignToBinaryOpAssignAction,
+	{_State352, _WildcardMarker}:                         _ReduceSubAssignToBinaryOpAssignAction,
+	{_State353, _WildcardMarker}:                         _ReduceSubOneAssignToUnaryOpAssignAction,
+	{_State354, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State355, _WildcardMarker}:                         _ReduceToUnaryOpAssignStatementAction,
+	{_State356, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State357, LparenToken}:                             _ReduceNilToOptionalGenericBindingAction,
+	{_State358, NewlinesToken}:                           _ReduceToCallbackOpStatementAction,
+	{_State358, SemicolonToken}:                          _ReduceToCallbackOpStatementAction,
+	{_State358, _WildcardMarker}:                         _ReduceCallExprToAccessibleExprAction,
 	{_State359, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State360, _WildcardMarker}:                         _ReduceUnlabeledValuedToJumpStatementAction,
-	{_State361, _WildcardMarker}:                         _ReduceImplicitToStatementAction,
-	{_State362, _WildcardMarker}:                         _ReduceExplicitToStatementAction,
-	{_State363, _WildcardMarker}:                         _ReduceConstrainedToGenericParameterDefAction,
-	{_State365, _WildcardMarker}:                         _ReduceGenericToOptionalGenericParametersAction,
-	{_State368, _WildcardMarker}:                         _ReduceVarargToParameterDefAction,
-	{_State369, LparenToken}:                             _ReduceNilToOptionalGenericParametersAction,
-	{_State371, _WildcardMarker}:                         _ReduceReturnableTypeToReturnTypeAction,
-	{_State372, _WildcardMarker}:                         _ReduceAddToParameterDefsAction,
-	{_State375, _WildcardMarker}:                         _ReduceToExplicitEnumDefAction,
-	{_State378, _WildcardMarker}:                         _ReduceUnnamedVarargToParameterDeclAction,
-	{_State380, _WildcardMarker}:                         _ReduceArgToParameterDeclAction,
-	{_State381, _WildcardMarker}:                         _ReduceNilToReturnTypeAction,
-	{_State383, _WildcardMarker}:                         _ReduceExternNamedToAtomTypeAction,
-	{_State385, _WildcardMarker}:                         _ReducePairToImplicitEnumValueDefsAction,
-	{_State386, _WildcardMarker}:                         _ReduceDefaultToEnumValueDefAction,
-	{_State387, _WildcardMarker}:                         _ReduceAddToImplicitEnumValueDefsAction,
-	{_State388, _WildcardMarker}:                         _ReduceAddToImplicitFieldDefsAction,
-	{_State390, _WildcardMarker}:                         _ReduceToTraitDefAction,
-	{_State393, _WildcardMarker}:                         _ReduceMapToInitializableTypeAction,
-	{_State394, _WildcardMarker}:                         _ReduceArrayToInitializableTypeAction,
-	{_State395, _WildcardMarker}:                         _ReduceExplicitToExplicitFieldDefsAction,
-	{_State396, _WildcardMarker}:                         _ReduceImplicitToExplicitFieldDefsAction,
-	{_State397, _WildcardMarker}:                         _ReduceAddToGenericArgumentsAction,
-	{_State398, _WildcardMarker}:                         _ReduceToCallExprAction,
-	{_State399, _EndMarker}:                              _ReduceDoWhileToLoopExprAction,
-	{_State400, SemicolonToken}:                          _ReduceAssignToForAssignmentAction,
-	{_State403, DoToken}:                                 _ReduceSequenceExprToOptionalSequenceExprAction,
-	{_State404, _EndMarker}:                              _ReduceWhileToLoopExprAction,
-	{_State407, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State360, NewlinesToken}:                           _ReduceLabeledNoValueToJumpStatementAction,
+	{_State360, SemicolonToken}:                          _ReduceLabeledNoValueToJumpStatementAction,
+	{_State360, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State361, _WildcardMarker}:                         _ReduceUnlabeledValuedToJumpStatementAction,
+	{_State362, _WildcardMarker}:                         _ReduceImplicitToStatementAction,
+	{_State363, _WildcardMarker}:                         _ReduceExplicitToStatementAction,
+	{_State364, _WildcardMarker}:                         _ReduceConstrainedToGenericParameterDefAction,
+	{_State366, _WildcardMarker}:                         _ReduceGenericToOptionalGenericParametersAction,
+	{_State369, _WildcardMarker}:                         _ReduceVarargToParameterDefAction,
+	{_State370, LparenToken}:                             _ReduceNilToOptionalGenericParametersAction,
+	{_State372, _WildcardMarker}:                         _ReduceReturnableTypeToReturnTypeAction,
+	{_State373, _WildcardMarker}:                         _ReduceAddToParameterDefsAction,
+	{_State376, _WildcardMarker}:                         _ReduceToExplicitEnumDefAction,
+	{_State379, _WildcardMarker}:                         _ReduceUnnamedVarargToParameterDeclAction,
+	{_State381, _WildcardMarker}:                         _ReduceArgToParameterDeclAction,
+	{_State382, _WildcardMarker}:                         _ReduceNilToReturnTypeAction,
+	{_State384, _WildcardMarker}:                         _ReduceExternNamedToAtomTypeAction,
+	{_State386, _WildcardMarker}:                         _ReducePairToImplicitEnumValueDefsAction,
+	{_State387, _WildcardMarker}:                         _ReduceDefaultToEnumValueDefAction,
+	{_State388, _WildcardMarker}:                         _ReduceAddToImplicitEnumValueDefsAction,
+	{_State389, _WildcardMarker}:                         _ReduceAddToImplicitFieldDefsAction,
+	{_State391, _WildcardMarker}:                         _ReduceToTraitDefAction,
+	{_State394, _WildcardMarker}:                         _ReduceMapToInitializableTypeAction,
+	{_State395, _WildcardMarker}:                         _ReduceArrayToInitializableTypeAction,
+	{_State396, _WildcardMarker}:                         _ReduceExplicitToExplicitFieldDefsAction,
+	{_State397, _WildcardMarker}:                         _ReduceImplicitToExplicitFieldDefsAction,
+	{_State398, _WildcardMarker}:                         _ReduceAddToGenericArgumentsAction,
+	{_State399, _WildcardMarker}:                         _ReduceToCallExprAction,
+	{_State400, _EndMarker}:                              _ReduceDoWhileToLoopExprAction,
+	{_State401, SemicolonToken}:                          _ReduceAssignToForAssignmentAction,
+	{_State404, DoToken}:                                 _ReduceSequenceExprToOptionalSequenceExprAction,
+	{_State405, _EndMarker}:                              _ReduceWhileToLoopExprAction,
 	{_State408, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State410, _WildcardMarker}:                         _ReduceNamedToFieldVarPatternAction,
-	{_State411, _WildcardMarker}:                         _ReduceAddToFieldVarPatternsAction,
-	{_State412, NewlinesToken}:                           _ReduceNilToOptionalSimpleStatementBodyAction,
-	{_State412, SemicolonToken}:                          _ReduceNilToOptionalSimpleStatementBodyAction,
-	{_State412, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State413, _WildcardMarker}:                         _ReduceDefaultBranchStatementToStatementBodyAction,
-	{_State414, _WildcardMarker}:                         _ReduceSimpleStatementBodyToOptionalSimpleStatementBodyAction,
-	{_State416, _WildcardMarker}:                         _ReduceFirstToImportClausesAction,
-	{_State419, _WildcardMarker}:                         _ReduceToBinaryOpAssignStatementAction,
-	{_State420, _WildcardMarker}:                         _ReduceToAssignStatementAction,
-	{_State421, _WildcardMarker}:                         _ReduceAddToExpressionsAction,
-	{_State422, _WildcardMarker}:                         _ReduceLabeledValuedToJumpStatementAction,
-	{_State423, _WildcardMarker}:                         _ReduceAddToGenericParameterDefsAction,
-	{_State424, _WildcardMarker}:                         _ReduceConstrainedDefToTypeDefAction,
-	{_State425, LbraceToken}:                             _ReduceNilToReturnTypeAction,
-	{_State427, _WildcardMarker}:                         _ReduceToAnonymousFuncExprAction,
-	{_State428, RparenToken}:                             _ReduceImplicitPairToExplicitEnumValueDefsAction,
-	{_State429, _WildcardMarker}:                         _ReducePairToImplicitEnumValueDefsAction,
-	{_State429, RparenToken}:                             _ReduceExplicitPairToExplicitEnumValueDefsAction,
-	{_State430, RparenToken}:                             _ReduceImplicitAddToExplicitEnumValueDefsAction,
-	{_State431, _WildcardMarker}:                         _ReduceAddToImplicitEnumValueDefsAction,
-	{_State431, RparenToken}:                             _ReduceExplicitAddToExplicitEnumValueDefsAction,
-	{_State432, _WildcardMarker}:                         _ReduceVarargToParameterDeclAction,
-	{_State433, _WildcardMarker}:                         _ReduceToFuncTypeAction,
-	{_State434, _WildcardMarker}:                         _ReduceAddToParameterDeclsAction,
-	{_State436, RparenToken}:                             _ReduceNilToOptionalParameterDeclsAction,
-	{_State437, _WildcardMarker}:                         _ReduceExplicitToTraitPropertiesAction,
-	{_State438, _WildcardMarker}:                         _ReduceImplicitToTraitPropertiesAction,
-	{_State440, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State440, DoToken}:                                 _ReduceNilToOptionalSequenceExprAction,
-	{_State441, _WildcardMarker}:                         _ReduceEnumMatchPatternToCasePatternAction,
-	{_State443, LbraceToken}:                             _ReduceCaseToConditionAction,
-	{_State444, _WildcardMarker}:                         _ReduceMultipleToCasePatternsAction,
-	{_State445, _EndMarker}:                              _ReduceMultiIfElseToIfExprAction,
-	{_State446, _EndMarker}:                              _ReduceIfElseToIfExprAction,
-	{_State447, _WildcardMarker}:                         _ReduceCaseBranchStatementToStatementBodyAction,
-	{_State448, _WildcardMarker}:                         _ReduceExplicitToImportClauseTerminalAction,
-	{_State449, _WildcardMarker}:                         _ReduceImplicitToImportClauseTerminalAction,
-	{_State450, _WildcardMarker}:                         _ReduceMultipleToImportStatementAction,
-	{_State451, _WildcardMarker}:                         _ReduceAddToImportClausesAction,
-	{_State452, _WildcardMarker}:                         _ReduceAliasToImportClauseAction,
-	{_State454, RparenToken}:                             _ReduceNilToOptionalParameterDefsAction,
-	{_State455, _WildcardMarker}:                         _ReduceToUnsafeStatementAction,
-	{_State457, _EndMarker}:                              _ReduceIteratorToLoopExprAction,
-	{_State459, _WildcardMarker}:                         _ReduceEnumVarDeclPatternToCasePatternAction,
-	{_State460, _EndMarker}:                              _ReduceFuncDefToNamedFuncDefAction,
-	{_State462, _WildcardMarker}:                         _ReduceNilToReturnTypeAction,
-	{_State464, LbraceToken}:                             _ReduceNilToReturnTypeAction,
-	{_State465, _WildcardMarker}:                         _ReduceToMethodSignatureAction,
-	{_State466, _EndMarker}:                              _ReduceForToLoopExprAction,
-	{_State468, _EndMarker}:                              _ReduceMethodDefToNamedFuncDefAction,
+	{_State409, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State411, _WildcardMarker}:                         _ReduceNamedToFieldVarPatternAction,
+	{_State412, _WildcardMarker}:                         _ReduceAddToFieldVarPatternsAction,
+	{_State413, NewlinesToken}:                           _ReduceNilToOptionalSimpleStatementBodyAction,
+	{_State413, SemicolonToken}:                          _ReduceNilToOptionalSimpleStatementBodyAction,
+	{_State413, _WildcardMarker}:                         _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State414, _WildcardMarker}:                         _ReduceDefaultBranchStatementToStatementBodyAction,
+	{_State415, _WildcardMarker}:                         _ReduceSimpleStatementBodyToOptionalSimpleStatementBodyAction,
+	{_State417, _WildcardMarker}:                         _ReduceFirstToImportClausesAction,
+	{_State420, _WildcardMarker}:                         _ReduceToBinaryOpAssignStatementAction,
+	{_State421, _WildcardMarker}:                         _ReduceToAssignStatementAction,
+	{_State422, _WildcardMarker}:                         _ReduceAddToExpressionsAction,
+	{_State423, _WildcardMarker}:                         _ReduceLabeledValuedToJumpStatementAction,
+	{_State424, _WildcardMarker}:                         _ReduceAddToGenericParameterDefsAction,
+	{_State425, _WildcardMarker}:                         _ReduceConstrainedDefToTypeDefAction,
+	{_State426, LbraceToken}:                             _ReduceNilToReturnTypeAction,
+	{_State428, _WildcardMarker}:                         _ReduceToAnonymousFuncExprAction,
+	{_State429, RparenToken}:                             _ReduceImplicitPairToExplicitEnumValueDefsAction,
+	{_State430, _WildcardMarker}:                         _ReducePairToImplicitEnumValueDefsAction,
+	{_State430, RparenToken}:                             _ReduceExplicitPairToExplicitEnumValueDefsAction,
+	{_State431, RparenToken}:                             _ReduceImplicitAddToExplicitEnumValueDefsAction,
+	{_State432, _WildcardMarker}:                         _ReduceAddToImplicitEnumValueDefsAction,
+	{_State432, RparenToken}:                             _ReduceExplicitAddToExplicitEnumValueDefsAction,
+	{_State433, _WildcardMarker}:                         _ReduceVarargToParameterDeclAction,
+	{_State434, _WildcardMarker}:                         _ReduceToFuncTypeAction,
+	{_State435, _WildcardMarker}:                         _ReduceAddToParameterDeclsAction,
+	{_State437, RparenToken}:                             _ReduceNilToOptionalParameterDeclsAction,
+	{_State438, _WildcardMarker}:                         _ReduceExplicitToTraitPropertiesAction,
+	{_State439, _WildcardMarker}:                         _ReduceImplicitToTraitPropertiesAction,
+	{_State441, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State441, DoToken}:                                 _ReduceNilToOptionalSequenceExprAction,
+	{_State442, _WildcardMarker}:                         _ReduceEnumMatchPatternToCasePatternAction,
+	{_State444, LbraceToken}:                             _ReduceCaseToConditionAction,
+	{_State445, _WildcardMarker}:                         _ReduceMultipleToCasePatternsAction,
+	{_State446, _EndMarker}:                              _ReduceMultiIfElseToIfExprAction,
+	{_State447, _EndMarker}:                              _ReduceIfElseToIfExprAction,
+	{_State448, _WildcardMarker}:                         _ReduceCaseBranchStatementToStatementBodyAction,
+	{_State449, _WildcardMarker}:                         _ReduceExplicitToImportClauseTerminalAction,
+	{_State450, _WildcardMarker}:                         _ReduceImplicitToImportClauseTerminalAction,
+	{_State451, _WildcardMarker}:                         _ReduceMultipleToImportStatementAction,
+	{_State452, _WildcardMarker}:                         _ReduceAddToImportClausesAction,
+	{_State453, _WildcardMarker}:                         _ReduceAliasToImportClauseAction,
+	{_State455, RparenToken}:                             _ReduceNilToOptionalParameterDefsAction,
+	{_State456, _WildcardMarker}:                         _ReduceToUnsafeStatementAction,
+	{_State458, _EndMarker}:                              _ReduceIteratorToLoopExprAction,
+	{_State460, _WildcardMarker}:                         _ReduceEnumVarDeclPatternToCasePatternAction,
+	{_State461, _EndMarker}:                              _ReduceFuncDefToNamedFuncDefAction,
+	{_State463, _WildcardMarker}:                         _ReduceNilToReturnTypeAction,
+	{_State465, LbraceToken}:                             _ReduceNilToReturnTypeAction,
+	{_State466, _WildcardMarker}:                         _ReduceToMethodSignatureAction,
+	{_State467, _EndMarker}:                              _ReduceForToLoopExprAction,
+	{_State469, _EndMarker}:                              _ReduceMethodDefToNamedFuncDefAction,
 }
 
 /*
@@ -10457,13 +10556,12 @@ Parser Debug States:
     Reduce:
       * -> [optional_label_decl]
       RPAREN -> [optional_arguments]
-      COLON -> [optional_expression]
     Goto:
       INTEGER_LITERAL -> State 24
       FLOAT_LITERAL -> State 20
       RUNE_LITERAL -> State 32
       STRING_LITERAL -> State 33
-      IDENTIFIER -> State 113
+      IDENTIFIER -> State 114
       TRUE -> State 36
       FALSE -> State 19
       STRUCT -> State 34
@@ -10474,7 +10572,8 @@ Parser Debug States:
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      ELLIPSIS -> State 112
+      COLON -> State 112
+      ELLIPSIS -> State 113
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -10483,15 +10582,14 @@ Parser Debug States:
       PARSE_ERROR -> State 31
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      expression -> State 117
+      expression -> State 118
       optional_label_decl -> State 60
       sequence_expr -> State 68
       call_expr -> State 50
-      optional_arguments -> State 118
-      arguments -> State 115
-      argument -> State 114
-      colon_expressions -> State 116
-      optional_expression -> State 119
+      optional_arguments -> State 119
+      arguments -> State 116
+      argument -> State 115
+      colon_expr -> State 117
       atom_expr -> State 43
       parse_error_expr -> State 62
       literal_expr -> State 58
@@ -11356,22 +11454,92 @@ Parser Debug States:
 
   State 112:
     Kernel Items:
+      colon_expr: COLON., COLON
+      colon_expr: COLON., COMMA
+      colon_expr: COLON., RBRACKET
+      colon_expr: COLON., RPAREN
+      colon_expr: COLON.expression
+    Reduce:
+      * -> [optional_label_decl]
+      RPAREN -> [colon_expr]
+      RBRACKET -> [colon_expr]
+      COMMA -> [colon_expr]
+      COLON -> [colon_expr]
+    Goto:
+      INTEGER_LITERAL -> State 24
+      FLOAT_LITERAL -> State 20
+      RUNE_LITERAL -> State 32
+      STRING_LITERAL -> State 33
+      IDENTIFIER -> State 23
+      TRUE -> State 36
+      FALSE -> State 19
+      STRUCT -> State 34
+      FUNC -> State 21
+      VAR -> State 37
+      LET -> State 27
+      NOT -> State 30
+      LABEL_DECL -> State 25
+      LPAREN -> State 28
+      LBRACKET -> State 26
+      SUB -> State 35
+      MUL -> State 29
+      BIT_NEG -> State 18
+      BIT_AND -> State 17
+      GREATER -> State 22
+      PARSE_ERROR -> State 31
+      var_decl_pattern -> State 69
+      var_or_let -> State 70
+      expression -> State 198
+      optional_label_decl -> State 60
+      sequence_expr -> State 68
+      call_expr -> State 50
+      atom_expr -> State 43
+      parse_error_expr -> State 62
+      literal_expr -> State 58
+      identifier_expr -> State 53
+      block_expr -> State 49
+      initialize_expr -> State 57
+      implicit_struct_expr -> State 54
+      accessible_expr -> State 39
+      access_expr -> State 38
+      index_expr -> State 55
+      postfixable_expr -> State 64
+      postfix_unary_expr -> State 63
+      prefixable_expr -> State 67
+      prefix_unary_expr -> State 65
+      prefix_unary_op -> State 66
+      mul_expr -> State 59
+      binary_mul_expr -> State 47
+      add_expr -> State 40
+      binary_add_expr -> State 44
+      cmp_expr -> State 51
+      binary_cmp_expr -> State 46
+      and_expr -> State 41
+      binary_and_expr -> State 45
+      or_expr -> State 61
+      binary_or_expr -> State 48
+      initializable_type -> State 56
+      explicit_struct_def -> State 52
+      anonymous_func_expr -> State 42
+
+  State 113:
+    Kernel Items:
       argument: ELLIPSIS., *
     Reduce:
       * -> [argument]
     Goto:
       (nil)
 
-  State 113:
+  State 114:
     Kernel Items:
       argument: IDENTIFIER.ASSIGN expression
       identifier_expr: IDENTIFIER., *
     Reduce:
       * -> [identifier_expr]
     Goto:
-      ASSIGN -> State 198
+      ASSIGN -> State 199
 
-  State 114:
+  State 115:
     Kernel Items:
       arguments: argument., *
     Reduce:
@@ -11379,49 +11547,44 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 115:
+  State 116:
     Kernel Items:
       optional_arguments: arguments., RPAREN
       arguments: arguments.COMMA argument
     Reduce:
       RPAREN -> [optional_arguments]
     Goto:
-      COMMA -> State 199
-
-  State 116:
-    Kernel Items:
-      argument: colon_expressions., *
-      colon_expressions: colon_expressions.COLON optional_expression
-    Reduce:
-      * -> [argument]
-    Goto:
-      COLON -> State 200
+      COMMA -> State 200
 
   State 117:
     Kernel Items:
-      argument: expression., *
-      optional_expression: expression., COLON
+      argument: colon_expr., *
+      colon_expr: colon_expr.COLON
+      colon_expr: colon_expr.COLON expression
     Reduce:
       * -> [argument]
-      COLON -> [optional_expression]
     Goto:
-      (nil)
+      COLON -> State 201
 
   State 118:
+    Kernel Items:
+      argument: expression., *
+      argument: expression.ELLIPSIS
+      colon_expr: expression.COLON
+      colon_expr: expression.COLON expression
+    Reduce:
+      * -> [argument]
+    Goto:
+      COLON -> State 202
+      ELLIPSIS -> State 203
+
+  State 119:
     Kernel Items:
       implicit_struct_expr: LPAREN optional_arguments.RPAREN
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 201
-
-  State 119:
-    Kernel Items:
-      colon_expressions: optional_expression.COLON optional_expression
-    Reduce:
-      (nil)
-    Goto:
-      COLON -> State 202
+      RPAREN -> State 204
 
   State 120:
     Kernel Items:
@@ -11453,10 +11616,10 @@ Parser Debug States:
       prefix_type_op -> State 106
       value_type -> State 188
       trait_op_type -> State 110
-      field_def -> State 204
+      field_def -> State 206
       implicit_struct_def -> State 103
-      explicit_field_defs -> State 203
-      optional_explicit_field_defs -> State 205
+      explicit_field_defs -> State 205
+      optional_explicit_field_defs -> State 207
       explicit_struct_def -> State 52
       implicit_enum_def -> State 102
       explicit_enum_def -> State 100
@@ -11483,15 +11646,15 @@ Parser Debug States:
       BIT_NEG -> State 88
       BIT_AND -> State 87
       PARSE_ERROR -> State 95
-      optional_generic_arguments -> State 207
-      generic_arguments -> State 206
+      optional_generic_arguments -> State 209
+      generic_arguments -> State 208
       initializable_type -> State 104
       atom_type -> State 99
       parse_error_type -> State 105
       returnable_type -> State 108
       prefixed_type -> State 107
       prefix_type_op -> State 106
-      value_type -> State 208
+      value_type -> State 210
       trait_op_type -> State 110
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
@@ -11506,20 +11669,19 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 209
+      IDENTIFIER -> State 211
 
   State 123:
     Kernel Items:
       index_expr: accessible_expr LBRACKET.argument RBRACKET
     Reduce:
       * -> [optional_label_decl]
-      COLON -> [optional_expression]
     Goto:
       INTEGER_LITERAL -> State 24
       FLOAT_LITERAL -> State 20
       RUNE_LITERAL -> State 32
       STRING_LITERAL -> State 33
-      IDENTIFIER -> State 113
+      IDENTIFIER -> State 114
       TRUE -> State 36
       FALSE -> State 19
       STRUCT -> State 34
@@ -11530,7 +11692,8 @@ Parser Debug States:
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      ELLIPSIS -> State 112
+      COLON -> State 112
+      ELLIPSIS -> State 113
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -11539,13 +11702,12 @@ Parser Debug States:
       PARSE_ERROR -> State 31
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      expression -> State 117
+      expression -> State 118
       optional_label_decl -> State 60
       sequence_expr -> State 68
       call_expr -> State 50
-      argument -> State 210
-      colon_expressions -> State 116
-      optional_expression -> State 119
+      argument -> State 212
+      colon_expr -> State 117
       atom_expr -> State 43
       parse_error_expr -> State 62
       literal_expr -> State 58
@@ -11589,7 +11751,7 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      LPAREN -> State 211
+      LPAREN -> State 213
 
   State 126:
     Kernel Items:
@@ -11664,7 +11826,7 @@ Parser Debug States:
       prefixable_expr -> State 67
       prefix_unary_expr -> State 65
       prefix_unary_op -> State 66
-      mul_expr -> State 212
+      mul_expr -> State 214
       binary_mul_expr -> State 47
       initializable_type -> State 56
       explicit_struct_def -> State 52
@@ -11715,7 +11877,7 @@ Parser Debug States:
       binary_mul_expr -> State 47
       add_expr -> State 40
       binary_add_expr -> State 44
-      cmp_expr -> State 213
+      cmp_expr -> State 215
       binary_cmp_expr -> State 46
       initializable_type -> State 56
       explicit_struct_def -> State 52
@@ -11812,7 +11974,7 @@ Parser Debug States:
       prefix_unary_op -> State 66
       mul_expr -> State 59
       binary_mul_expr -> State 47
-      add_expr -> State 214
+      add_expr -> State 216
       binary_add_expr -> State 44
       initializable_type -> State 56
       explicit_struct_def -> State 52
@@ -11824,13 +11986,12 @@ Parser Debug States:
     Reduce:
       * -> [optional_label_decl]
       RPAREN -> [optional_arguments]
-      COLON -> [optional_expression]
     Goto:
       INTEGER_LITERAL -> State 24
       FLOAT_LITERAL -> State 20
       RUNE_LITERAL -> State 32
       STRING_LITERAL -> State 33
-      IDENTIFIER -> State 113
+      IDENTIFIER -> State 114
       TRUE -> State 36
       FALSE -> State 19
       STRUCT -> State 34
@@ -11841,7 +12002,8 @@ Parser Debug States:
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      ELLIPSIS -> State 112
+      COLON -> State 112
+      ELLIPSIS -> State 113
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -11850,15 +12012,14 @@ Parser Debug States:
       PARSE_ERROR -> State 31
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      expression -> State 117
+      expression -> State 118
       optional_label_decl -> State 60
       sequence_expr -> State 68
       call_expr -> State 50
-      optional_arguments -> State 215
-      arguments -> State 115
-      argument -> State 114
-      colon_expressions -> State 116
-      optional_expression -> State 119
+      optional_arguments -> State 217
+      arguments -> State 116
+      argument -> State 115
+      colon_expr -> State 117
       atom_expr -> State 43
       parse_error_expr -> State 62
       literal_expr -> State 58
@@ -11974,7 +12135,7 @@ Parser Debug States:
       index_expr -> State 55
       postfixable_expr -> State 64
       postfix_unary_expr -> State 63
-      prefixable_expr -> State 216
+      prefixable_expr -> State 218
       prefix_unary_expr -> State 65
       prefix_unary_op -> State 66
       initializable_type -> State 56
@@ -11989,7 +12150,7 @@ Parser Debug States:
       (nil)
     Goto:
       LBRACE -> State 72
-      statement_block -> State 217
+      statement_block -> State 219
 
   State 148:
     Kernel Items:
@@ -12022,10 +12183,10 @@ Parser Debug States:
       PARSE_ERROR -> State 31
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      assign_pattern -> State 218
+      assign_pattern -> State 220
       optional_label_decl -> State 85
-      sequence_expr -> State 220
-      for_assignment -> State 219
+      sequence_expr -> State 222
+      for_assignment -> State 221
       call_expr -> State 50
       atom_expr -> State 43
       parse_error_expr -> State 62
@@ -12071,7 +12232,7 @@ Parser Debug States:
       IDENTIFIER -> State 23
       TRUE -> State 36
       FALSE -> State 19
-      CASE -> State 221
+      CASE -> State 223
       STRUCT -> State 34
       FUNC -> State 21
       VAR -> State 37
@@ -12089,8 +12250,8 @@ Parser Debug States:
       var_decl_pattern -> State 69
       var_or_let -> State 70
       optional_label_decl -> State 85
-      sequence_expr -> State 223
-      condition -> State 222
+      sequence_expr -> State 225
+      condition -> State 224
       call_expr -> State 50
       atom_expr -> State 43
       parse_error_expr -> State 62
@@ -12151,7 +12312,7 @@ Parser Debug States:
       var_decl_pattern -> State 69
       var_or_let -> State 70
       optional_label_decl -> State 85
-      sequence_expr -> State 224
+      sequence_expr -> State 226
       call_expr -> State 50
       atom_expr -> State 43
       parse_error_expr -> State 62
@@ -12261,7 +12422,7 @@ Parser Debug States:
       binary_add_expr -> State 44
       cmp_expr -> State 51
       binary_cmp_expr -> State 46
-      and_expr -> State 225
+      and_expr -> State 227
       binary_and_expr -> State 45
       initializable_type -> State 56
       explicit_struct_def -> State 52
@@ -12289,13 +12450,13 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 227
+      IDENTIFIER -> State 229
       LPAREN -> State 158
-      ELLIPSIS -> State 226
-      var_pattern -> State 230
+      ELLIPSIS -> State 228
+      var_pattern -> State 232
       tuple_pattern -> State 159
-      field_var_patterns -> State 229
-      field_var_pattern -> State 228
+      field_var_patterns -> State 231
+      field_var_pattern -> State 230
 
   State 159:
     Kernel Items:
@@ -12325,14 +12486,14 @@ Parser Debug States:
       BIT_NEG -> State 88
       BIT_AND -> State 87
       PARSE_ERROR -> State 95
-      optional_value_type -> State 231
+      optional_value_type -> State 233
       initializable_type -> State 104
       atom_type -> State 99
       parse_error_type -> State 105
       returnable_type -> State 108
       prefixed_type -> State 107
       prefix_type_op -> State 106
-      value_type -> State 232
+      value_type -> State 234
       trait_op_type -> State 110
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
@@ -12355,23 +12516,23 @@ Parser Debug States:
       IDENTIFIER -> State 23
       TRUE -> State 36
       FALSE -> State 19
-      CASE -> State 235
-      DEFAULT -> State 237
-      RETURN -> State 242
-      BREAK -> State 234
-      CONTINUE -> State 236
-      FALLTHROUGH -> State 239
-      IMPORT -> State 240
+      CASE -> State 237
+      DEFAULT -> State 239
+      RETURN -> State 244
+      BREAK -> State 236
+      CONTINUE -> State 238
+      FALLTHROUGH -> State 241
+      IMPORT -> State 242
       UNSAFE -> State 181
       STRUCT -> State 34
       FUNC -> State 21
-      ASYNC -> State 233
-      DEFER -> State 238
+      ASYNC -> State 235
+      DEFER -> State 240
       VAR -> State 37
       LET -> State 27
       NOT -> State 30
       LABEL_DECL -> State 25
-      RBRACE -> State 241
+      RBRACE -> State 243
       LPAREN -> State 28
       LBRACKET -> State 26
       SUB -> State 35
@@ -12380,27 +12541,27 @@ Parser Debug States:
       BIT_AND -> State 17
       GREATER -> State 22
       PARSE_ERROR -> State 31
-      statement -> State 258
-      simple_statement_body -> State 257
-      statement_body -> State 259
-      expression_or_improper_struct_statement -> State 250
-      callback_op -> State 247
-      callback_op_statement -> State 248
-      unsafe_statement -> State 261
-      jump_statement -> State 254
-      jump_type -> State 255
-      expressions -> State 251
-      fallthrough_statement -> State 252
-      assign_statement -> State 245
-      unary_op_assign_statement -> State 260
-      binary_op_assign_statement -> State 246
-      import_statement -> State 253
+      statement -> State 260
+      simple_statement_body -> State 259
+      statement_body -> State 261
+      expression_or_improper_struct_statement -> State 252
+      callback_op -> State 249
+      callback_op_statement -> State 250
+      unsafe_statement -> State 263
+      jump_statement -> State 256
+      jump_type -> State 257
+      expressions -> State 253
+      fallthrough_statement -> State 254
+      assign_statement -> State 247
+      unary_op_assign_statement -> State 262
+      binary_op_assign_statement -> State 248
+      import_statement -> State 255
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      assign_pattern -> State 244
-      expression -> State 249
+      assign_pattern -> State 246
+      expression -> State 251
       optional_label_decl -> State 60
-      sequence_expr -> State 256
+      sequence_expr -> State 258
       call_expr -> State 50
       atom_expr -> State 43
       parse_error_expr -> State 62
@@ -12409,7 +12570,7 @@ Parser Debug States:
       block_expr -> State 49
       initialize_expr -> State 57
       implicit_struct_expr -> State 54
-      accessible_expr -> State 243
+      accessible_expr -> State 245
       access_expr -> State 38
       index_expr -> State 55
       postfixable_expr -> State 64
@@ -12445,7 +12606,7 @@ Parser Debug States:
       VAR -> State 37
       LET -> State 27
       LBRACE -> State 72
-      definition -> State 262
+      definition -> State 264
       statement_block -> State 77
       var_decl_pattern -> State 79
       var_or_let -> State 70
@@ -12490,7 +12651,7 @@ Parser Debug States:
       PARSE_ERROR -> State 31
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      expression -> State 263
+      expression -> State 265
       optional_label_decl -> State 60
       sequence_expr -> State 68
       call_expr -> State 50
@@ -12549,7 +12710,7 @@ Parser Debug States:
       returnable_type -> State 108
       prefixed_type -> State 107
       prefix_type_op -> State 106
-      value_type -> State 264
+      value_type -> State 266
       trait_op_type -> State 110
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
@@ -12564,10 +12725,10 @@ Parser Debug States:
     Reduce:
       RBRACKET -> [optional_generic_parameter_defs]
     Goto:
-      IDENTIFIER -> State 265
-      generic_parameter_def -> State 266
-      generic_parameter_defs -> State 267
-      optional_generic_parameter_defs -> State 268
+      IDENTIFIER -> State 267
+      generic_parameter_def -> State 268
+      generic_parameter_defs -> State 269
+      optional_generic_parameter_defs -> State 270
 
   State 167:
     Kernel Items:
@@ -12596,7 +12757,7 @@ Parser Debug States:
       returnable_type -> State 108
       prefixed_type -> State 107
       prefix_type_op -> State 106
-      value_type -> State 269
+      value_type -> State 271
       trait_op_type -> State 110
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
@@ -12634,7 +12795,7 @@ Parser Debug States:
       PARSE_ERROR -> State 31
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      expression -> State 270
+      expression -> State 272
       optional_label_decl -> State 60
       sequence_expr -> State 68
       call_expr -> State 50
@@ -12673,7 +12834,7 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      LPAREN -> State 271
+      LPAREN -> State 273
 
   State 170:
     Kernel Items:
@@ -12694,7 +12855,7 @@ Parser Debug States:
       DOT -> State 89
       QUESTION -> State 96
       EXCLAIM -> State 91
-      ELLIPSIS -> State 272
+      ELLIPSIS -> State 274
       TILDE_TILDE -> State 97
       BIT_NEG -> State 88
       BIT_AND -> State 87
@@ -12705,7 +12866,7 @@ Parser Debug States:
       returnable_type -> State 108
       prefixed_type -> State 107
       prefix_type_op -> State 106
-      value_type -> State 273
+      value_type -> State 275
       trait_op_type -> State 110
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
@@ -12720,7 +12881,7 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 274
+      RPAREN -> State 276
 
   State 172:
     Kernel Items:
@@ -12728,7 +12889,7 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 275
+      RPAREN -> State 277
 
   State 173:
     Kernel Items:
@@ -12745,7 +12906,7 @@ Parser Debug States:
     Reduce:
       RPAREN -> [optional_parameter_defs]
     Goto:
-      COMMA -> State 276
+      COMMA -> State 278
 
   State 175:
     Kernel Items:
@@ -12785,13 +12946,13 @@ Parser Debug States:
       prefix_type_op -> State 106
       value_type -> State 188
       trait_op_type -> State 110
-      field_def -> State 279
+      field_def -> State 281
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
-      enum_value_def -> State 277
-      implicit_enum_value_defs -> State 280
+      enum_value_def -> State 279
+      implicit_enum_value_defs -> State 282
       implicit_enum_def -> State 102
-      explicit_enum_value_defs -> State 278
+      explicit_enum_value_defs -> State 280
       explicit_enum_def -> State 100
       trait_def -> State 109
       func_type -> State 101
@@ -12802,7 +12963,7 @@ Parser Debug States:
     Reduce:
       RPAREN -> [optional_parameter_decls]
     Goto:
-      IDENTIFIER -> State 282
+      IDENTIFIER -> State 284
       STRUCT -> State 34
       ENUM -> State 90
       TRAIT -> State 98
@@ -12812,7 +12973,7 @@ Parser Debug States:
       DOT -> State 89
       QUESTION -> State 96
       EXCLAIM -> State 91
-      ELLIPSIS -> State 281
+      ELLIPSIS -> State 283
       TILDE_TILDE -> State 97
       BIT_NEG -> State 88
       BIT_AND -> State 87
@@ -12823,16 +12984,16 @@ Parser Debug States:
       returnable_type -> State 108
       prefixed_type -> State 107
       prefix_type_op -> State 106
-      value_type -> State 286
+      value_type -> State 288
       trait_op_type -> State 110
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
       implicit_enum_def -> State 102
       explicit_enum_def -> State 100
       trait_def -> State 109
-      parameter_decl -> State 284
-      parameter_decls -> State 285
-      optional_parameter_decls -> State 283
+      parameter_decl -> State 286
+      parameter_decls -> State 287
+      optional_parameter_decls -> State 285
       func_type -> State 101
 
   State 178:
@@ -12841,7 +13002,7 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 287
+      IDENTIFIER -> State 289
 
   State 179:
     Kernel Items:
@@ -12866,7 +13027,7 @@ Parser Debug States:
       FUNC -> State 92
       LPAREN -> State 94
       LBRACKET -> State 26
-      DOT -> State 288
+      DOT -> State 290
       QUESTION -> State 96
       EXCLAIM -> State 91
       DOLLAR_LBRACKET -> State 121
@@ -12881,7 +13042,7 @@ Parser Debug States:
       returnable_type -> State 108
       prefixed_type -> State 107
       prefix_type_op -> State 106
-      value_type -> State 289
+      value_type -> State 291
       trait_op_type -> State 110
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
@@ -12896,7 +13057,7 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      LESS -> State 290
+      LESS -> State 292
 
   State 182:
     Kernel Items:
@@ -12904,7 +13065,7 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      OR -> State 291
+      OR -> State 293
 
   State 183:
     Kernel Items:
@@ -12915,7 +13076,7 @@ Parser Debug States:
       * -> [implicit_field_defs]
       OR -> [enum_value_def]
     Goto:
-      ASSIGN -> State 292
+      ASSIGN -> State 294
 
   State 184:
     Kernel Items:
@@ -12924,8 +13085,8 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      OR -> State 293
-      RPAREN -> State 294
+      OR -> State 295
+      RPAREN -> State 296
 
   State 185:
     Kernel Items:
@@ -12934,7 +13095,7 @@ Parser Debug States:
     Reduce:
       RPAREN -> [optional_implicit_field_defs]
     Goto:
-      COMMA -> State 295
+      COMMA -> State 297
 
   State 186:
     Kernel Items:
@@ -12942,7 +13103,7 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 296
+      RPAREN -> State 298
 
   State 187:
     Kernel Items:
@@ -12975,7 +13136,7 @@ Parser Debug States:
       STRUCT -> State 34
       ENUM -> State 90
       TRAIT -> State 98
-      FUNC -> State 297
+      FUNC -> State 299
       LPAREN -> State 94
       LBRACKET -> State 26
       DOT -> State 89
@@ -12994,17 +13155,17 @@ Parser Debug States:
       prefix_type_op -> State 106
       value_type -> State 188
       trait_op_type -> State 110
-      field_def -> State 298
+      field_def -> State 300
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
       implicit_enum_def -> State 102
       explicit_enum_def -> State 100
-      trait_property -> State 302
-      trait_properties -> State 301
-      optional_trait_properties -> State 300
+      trait_property -> State 304
+      trait_properties -> State 303
+      optional_trait_properties -> State 302
       trait_def -> State 109
       func_type -> State 101
-      method_signature -> State 299
+      method_signature -> State 301
 
   State 190:
     Kernel Items:
@@ -13048,7 +13209,7 @@ Parser Debug States:
       returnable_type -> State 108
       prefixed_type -> State 107
       prefix_type_op -> State 106
-      value_type -> State 303
+      value_type -> State 305
       trait_op_type -> State 110
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
@@ -13063,7 +13224,7 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      INTEGER_LITERAL -> State 304
+      INTEGER_LITERAL -> State 306
 
   State 194:
     Kernel Items:
@@ -13112,7 +13273,7 @@ Parser Debug States:
       initializable_type -> State 104
       atom_type -> State 99
       parse_error_type -> State 105
-      returnable_type -> State 305
+      returnable_type -> State 307
       prefixed_type -> State 107
       prefix_type_op -> State 106
       implicit_struct_def -> State 103
@@ -13123,6 +13284,14 @@ Parser Debug States:
       func_type -> State 101
 
   State 198:
+    Kernel Items:
+      colon_expr: COLON expression., *
+    Reduce:
+      * -> [colon_expr]
+    Goto:
+      (nil)
+
+  State 199:
     Kernel Items:
       argument: IDENTIFIER ASSIGN.expression
     Reduce:
@@ -13151,77 +13320,10 @@ Parser Debug States:
       PARSE_ERROR -> State 31
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      expression -> State 306
+      expression -> State 308
       optional_label_decl -> State 60
       sequence_expr -> State 68
       call_expr -> State 50
-      atom_expr -> State 43
-      parse_error_expr -> State 62
-      literal_expr -> State 58
-      identifier_expr -> State 53
-      block_expr -> State 49
-      initialize_expr -> State 57
-      implicit_struct_expr -> State 54
-      accessible_expr -> State 39
-      access_expr -> State 38
-      index_expr -> State 55
-      postfixable_expr -> State 64
-      postfix_unary_expr -> State 63
-      prefixable_expr -> State 67
-      prefix_unary_expr -> State 65
-      prefix_unary_op -> State 66
-      mul_expr -> State 59
-      binary_mul_expr -> State 47
-      add_expr -> State 40
-      binary_add_expr -> State 44
-      cmp_expr -> State 51
-      binary_cmp_expr -> State 46
-      and_expr -> State 41
-      binary_and_expr -> State 45
-      or_expr -> State 61
-      binary_or_expr -> State 48
-      initializable_type -> State 56
-      explicit_struct_def -> State 52
-      anonymous_func_expr -> State 42
-
-  State 199:
-    Kernel Items:
-      arguments: arguments COMMA.argument
-    Reduce:
-      * -> [optional_label_decl]
-      COLON -> [optional_expression]
-    Goto:
-      INTEGER_LITERAL -> State 24
-      FLOAT_LITERAL -> State 20
-      RUNE_LITERAL -> State 32
-      STRING_LITERAL -> State 33
-      IDENTIFIER -> State 113
-      TRUE -> State 36
-      FALSE -> State 19
-      STRUCT -> State 34
-      FUNC -> State 21
-      VAR -> State 37
-      LET -> State 27
-      NOT -> State 30
-      LABEL_DECL -> State 25
-      LPAREN -> State 28
-      LBRACKET -> State 26
-      ELLIPSIS -> State 112
-      SUB -> State 35
-      MUL -> State 29
-      BIT_NEG -> State 18
-      BIT_AND -> State 17
-      GREATER -> State 22
-      PARSE_ERROR -> State 31
-      var_decl_pattern -> State 69
-      var_or_let -> State 70
-      expression -> State 117
-      optional_label_decl -> State 60
-      sequence_expr -> State 68
-      call_expr -> State 50
-      argument -> State 307
-      colon_expressions -> State 116
-      optional_expression -> State 119
       atom_expr -> State 43
       parse_error_expr -> State 62
       literal_expr -> State 58
@@ -13253,19 +13355,15 @@ Parser Debug States:
 
   State 200:
     Kernel Items:
-      colon_expressions: colon_expressions COLON.optional_expression
+      arguments: arguments COMMA.argument
     Reduce:
       * -> [optional_label_decl]
-      RPAREN -> [optional_expression]
-      RBRACKET -> [optional_expression]
-      COMMA -> [optional_expression]
-      COLON -> [optional_expression]
     Goto:
       INTEGER_LITERAL -> State 24
       FLOAT_LITERAL -> State 20
       RUNE_LITERAL -> State 32
       STRING_LITERAL -> State 33
-      IDENTIFIER -> State 23
+      IDENTIFIER -> State 114
       TRUE -> State 36
       FALSE -> State 19
       STRUCT -> State 34
@@ -13276,6 +13374,8 @@ Parser Debug States:
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
+      COLON -> State 112
+      ELLIPSIS -> State 113
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -13284,11 +13384,12 @@ Parser Debug States:
       PARSE_ERROR -> State 31
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      expression -> State 308
+      expression -> State 118
       optional_label_decl -> State 60
       sequence_expr -> State 68
       call_expr -> State 50
-      optional_expression -> State 309
+      argument -> State 309
+      colon_expr -> State 117
       atom_expr -> State 43
       parse_error_expr -> State 62
       literal_expr -> State 58
@@ -13320,21 +13421,17 @@ Parser Debug States:
 
   State 201:
     Kernel Items:
-      implicit_struct_expr: LPAREN optional_arguments RPAREN., *
-    Reduce:
-      * -> [implicit_struct_expr]
-    Goto:
-      (nil)
-
-  State 202:
-    Kernel Items:
-      colon_expressions: optional_expression COLON.optional_expression
+      colon_expr: colon_expr COLON., COLON
+      colon_expr: colon_expr COLON., COMMA
+      colon_expr: colon_expr COLON., RBRACKET
+      colon_expr: colon_expr COLON., RPAREN
+      colon_expr: colon_expr COLON.expression
     Reduce:
       * -> [optional_label_decl]
-      RPAREN -> [optional_expression]
-      RBRACKET -> [optional_expression]
-      COMMA -> [optional_expression]
-      COLON -> [optional_expression]
+      RPAREN -> [colon_expr]
+      RBRACKET -> [colon_expr]
+      COMMA -> [colon_expr]
+      COLON -> [colon_expr]
     Goto:
       INTEGER_LITERAL -> State 24
       FLOAT_LITERAL -> State 20
@@ -13359,11 +13456,80 @@ Parser Debug States:
       PARSE_ERROR -> State 31
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      expression -> State 308
+      expression -> State 310
       optional_label_decl -> State 60
       sequence_expr -> State 68
       call_expr -> State 50
-      optional_expression -> State 310
+      atom_expr -> State 43
+      parse_error_expr -> State 62
+      literal_expr -> State 58
+      identifier_expr -> State 53
+      block_expr -> State 49
+      initialize_expr -> State 57
+      implicit_struct_expr -> State 54
+      accessible_expr -> State 39
+      access_expr -> State 38
+      index_expr -> State 55
+      postfixable_expr -> State 64
+      postfix_unary_expr -> State 63
+      prefixable_expr -> State 67
+      prefix_unary_expr -> State 65
+      prefix_unary_op -> State 66
+      mul_expr -> State 59
+      binary_mul_expr -> State 47
+      add_expr -> State 40
+      binary_add_expr -> State 44
+      cmp_expr -> State 51
+      binary_cmp_expr -> State 46
+      and_expr -> State 41
+      binary_and_expr -> State 45
+      or_expr -> State 61
+      binary_or_expr -> State 48
+      initializable_type -> State 56
+      explicit_struct_def -> State 52
+      anonymous_func_expr -> State 42
+
+  State 202:
+    Kernel Items:
+      colon_expr: expression COLON., COLON
+      colon_expr: expression COLON., COMMA
+      colon_expr: expression COLON., RBRACKET
+      colon_expr: expression COLON., RPAREN
+      colon_expr: expression COLON.expression
+    Reduce:
+      * -> [optional_label_decl]
+      RPAREN -> [colon_expr]
+      RBRACKET -> [colon_expr]
+      COMMA -> [colon_expr]
+      COLON -> [colon_expr]
+    Goto:
+      INTEGER_LITERAL -> State 24
+      FLOAT_LITERAL -> State 20
+      RUNE_LITERAL -> State 32
+      STRING_LITERAL -> State 33
+      IDENTIFIER -> State 23
+      TRUE -> State 36
+      FALSE -> State 19
+      STRUCT -> State 34
+      FUNC -> State 21
+      VAR -> State 37
+      LET -> State 27
+      NOT -> State 30
+      LABEL_DECL -> State 25
+      LPAREN -> State 28
+      LBRACKET -> State 26
+      SUB -> State 35
+      MUL -> State 29
+      BIT_NEG -> State 18
+      BIT_AND -> State 17
+      GREATER -> State 22
+      PARSE_ERROR -> State 31
+      var_decl_pattern -> State 69
+      var_or_let -> State 70
+      expression -> State 311
+      optional_label_decl -> State 60
+      sequence_expr -> State 68
+      call_expr -> State 50
       atom_expr -> State 43
       parse_error_expr -> State 62
       literal_expr -> State 58
@@ -13395,16 +13561,32 @@ Parser Debug States:
 
   State 203:
     Kernel Items:
+      argument: expression ELLIPSIS., *
+    Reduce:
+      * -> [argument]
+    Goto:
+      (nil)
+
+  State 204:
+    Kernel Items:
+      implicit_struct_expr: LPAREN optional_arguments RPAREN., *
+    Reduce:
+      * -> [implicit_struct_expr]
+    Goto:
+      (nil)
+
+  State 205:
+    Kernel Items:
       explicit_field_defs: explicit_field_defs.NEWLINES field_def
       explicit_field_defs: explicit_field_defs.COMMA field_def
       optional_explicit_field_defs: explicit_field_defs., RPAREN
     Reduce:
       RPAREN -> [optional_explicit_field_defs]
     Goto:
-      NEWLINES -> State 312
-      COMMA -> State 311
+      NEWLINES -> State 313
+      COMMA -> State 312
 
-  State 204:
+  State 206:
     Kernel Items:
       explicit_field_defs: field_def., *
     Reduce:
@@ -13412,32 +13594,32 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 205:
+  State 207:
     Kernel Items:
       explicit_struct_def: STRUCT LPAREN optional_explicit_field_defs.RPAREN
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 313
+      RPAREN -> State 314
 
-  State 206:
+  State 208:
     Kernel Items:
       optional_generic_arguments: generic_arguments., RBRACKET
       generic_arguments: generic_arguments.COMMA value_type
     Reduce:
       RBRACKET -> [optional_generic_arguments]
     Goto:
-      COMMA -> State 314
+      COMMA -> State 315
 
-  State 207:
+  State 209:
     Kernel Items:
       optional_generic_binding: DOLLAR_LBRACKET optional_generic_arguments.RBRACKET
     Reduce:
       (nil)
     Goto:
-      RBRACKET -> State 315
+      RBRACKET -> State 316
 
-  State 208:
+  State 210:
     Kernel Items:
       generic_arguments: value_type., *
       trait_op_type: value_type.trait_op returnable_type
@@ -13449,7 +13631,7 @@ Parser Debug States:
       MUL -> State 194
       trait_op -> State 197
 
-  State 209:
+  State 211:
     Kernel Items:
       access_expr: accessible_expr DOT IDENTIFIER., *
     Reduce:
@@ -13457,27 +13639,26 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 210:
+  State 212:
     Kernel Items:
       index_expr: accessible_expr LBRACKET argument.RBRACKET
     Reduce:
       (nil)
     Goto:
-      RBRACKET -> State 316
+      RBRACKET -> State 317
 
-  State 211:
+  State 213:
     Kernel Items:
       call_expr: accessible_expr optional_generic_binding LPAREN.optional_arguments RPAREN
     Reduce:
       * -> [optional_label_decl]
       RPAREN -> [optional_arguments]
-      COLON -> [optional_expression]
     Goto:
       INTEGER_LITERAL -> State 24
       FLOAT_LITERAL -> State 20
       RUNE_LITERAL -> State 32
       STRING_LITERAL -> State 33
-      IDENTIFIER -> State 113
+      IDENTIFIER -> State 114
       TRUE -> State 36
       FALSE -> State 19
       STRUCT -> State 34
@@ -13488,7 +13669,8 @@ Parser Debug States:
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      ELLIPSIS -> State 112
+      COLON -> State 112
+      ELLIPSIS -> State 113
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -13497,15 +13679,14 @@ Parser Debug States:
       PARSE_ERROR -> State 31
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      expression -> State 117
+      expression -> State 118
       optional_label_decl -> State 60
       sequence_expr -> State 68
       call_expr -> State 50
-      optional_arguments -> State 317
-      arguments -> State 115
-      argument -> State 114
-      colon_expressions -> State 116
-      optional_expression -> State 119
+      optional_arguments -> State 318
+      arguments -> State 116
+      argument -> State 115
+      colon_expr -> State 117
       atom_expr -> State 43
       parse_error_expr -> State 62
       literal_expr -> State 58
@@ -13535,7 +13716,7 @@ Parser Debug States:
       explicit_struct_def -> State 52
       anonymous_func_expr -> State 42
 
-  State 212:
+  State 214:
     Kernel Items:
       binary_mul_expr: mul_expr.mul_op prefixable_expr
       binary_add_expr: add_expr add_op mul_expr., *
@@ -13550,7 +13731,7 @@ Parser Debug States:
       BIT_RSHIFT -> State 142
       mul_op -> State 146
 
-  State 213:
+  State 215:
     Kernel Items:
       binary_cmp_expr: cmp_expr.cmp_op add_expr
       binary_and_expr: and_expr AND cmp_expr., *
@@ -13565,7 +13746,7 @@ Parser Debug States:
       GREATER_OR_EQUAL -> State 134
       cmp_op -> State 138
 
-  State 214:
+  State 216:
     Kernel Items:
       binary_add_expr: add_expr.add_op mul_expr
       binary_cmp_expr: cmp_expr cmp_op add_expr., *
@@ -13578,15 +13759,15 @@ Parser Debug States:
       BIT_OR -> State 127
       add_op -> State 130
 
-  State 215:
+  State 217:
     Kernel Items:
       initialize_expr: initializable_type LPAREN optional_arguments.RPAREN
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 318
+      RPAREN -> State 319
 
-  State 216:
+  State 218:
     Kernel Items:
       binary_mul_expr: mul_expr mul_op prefixable_expr., *
     Reduce:
@@ -13594,34 +13775,34 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 217:
+  State 219:
     Kernel Items:
       loop_expr: DO statement_block., *
       loop_expr: DO statement_block.FOR sequence_expr
     Reduce:
       * -> [loop_expr]
     Goto:
-      FOR -> State 319
+      FOR -> State 320
 
-  State 218:
+  State 220:
     Kernel Items:
       loop_expr: FOR assign_pattern.IN sequence_expr DO statement_block
       for_assignment: assign_pattern.ASSIGN sequence_expr
     Reduce:
       (nil)
     Goto:
-      IN -> State 321
-      ASSIGN -> State 320
+      IN -> State 322
+      ASSIGN -> State 321
 
-  State 219:
+  State 221:
     Kernel Items:
       loop_expr: FOR for_assignment.SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO statement_block
     Reduce:
       (nil)
     Goto:
-      SEMICOLON -> State 322
+      SEMICOLON -> State 323
 
-  State 220:
+  State 222:
     Kernel Items:
       assign_pattern: sequence_expr., *
       loop_expr: FOR sequence_expr.DO statement_block
@@ -13630,9 +13811,9 @@ Parser Debug States:
       * -> [assign_pattern]
       SEMICOLON -> [for_assignment]
     Goto:
-      DO -> State 323
+      DO -> State 324
 
-  State 221:
+  State 223:
     Kernel Items:
       condition: CASE.case_patterns ASSIGN sequence_expr
     Reduce:
@@ -13647,26 +13828,26 @@ Parser Debug States:
       FALSE -> State 19
       STRUCT -> State 34
       FUNC -> State 21
-      VAR -> State 325
+      VAR -> State 326
       LET -> State 27
       NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      DOT -> State 324
+      DOT -> State 325
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
       BIT_AND -> State 17
       GREATER -> State 22
       PARSE_ERROR -> State 31
-      case_patterns -> State 328
+      case_patterns -> State 329
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      assign_pattern -> State 326
-      case_pattern -> State 327
+      assign_pattern -> State 327
+      case_pattern -> State 328
       optional_label_decl -> State 85
-      sequence_expr -> State 329
+      sequence_expr -> State 330
       call_expr -> State 50
       atom_expr -> State 43
       parse_error_expr -> State 62
@@ -13697,7 +13878,7 @@ Parser Debug States:
       explicit_struct_def -> State 52
       anonymous_func_expr -> State 42
 
-  State 222:
+  State 224:
     Kernel Items:
       if_expr: IF condition.statement_block
       if_expr: IF condition.statement_block ELSE statement_block
@@ -13706,9 +13887,9 @@ Parser Debug States:
       (nil)
     Goto:
       LBRACE -> State 72
-      statement_block -> State 330
+      statement_block -> State 331
 
-  State 223:
+  State 225:
     Kernel Items:
       condition: sequence_expr., LBRACE
     Reduce:
@@ -13716,16 +13897,16 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 224:
+  State 226:
     Kernel Items:
       switch_expr: SWITCH sequence_expr.statement_block
     Reduce:
       (nil)
     Goto:
       LBRACE -> State 72
-      statement_block -> State 331
+      statement_block -> State 332
 
-  State 225:
+  State 227:
     Kernel Items:
       binary_and_expr: and_expr.AND cmp_expr
       binary_or_expr: or_expr OR and_expr., *
@@ -13734,7 +13915,7 @@ Parser Debug States:
     Goto:
       AND -> State 131
 
-  State 226:
+  State 228:
     Kernel Items:
       field_var_pattern: ELLIPSIS., *
     Reduce:
@@ -13742,16 +13923,16 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 227:
+  State 229:
     Kernel Items:
       var_pattern: IDENTIFIER., *
       field_var_pattern: IDENTIFIER.ASSIGN var_pattern
     Reduce:
       * -> [var_pattern]
     Goto:
-      ASSIGN -> State 332
+      ASSIGN -> State 333
 
-  State 228:
+  State 230:
     Kernel Items:
       field_var_patterns: field_var_pattern., *
     Reduce:
@@ -13759,17 +13940,17 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 229:
+  State 231:
     Kernel Items:
       tuple_pattern: LPAREN field_var_patterns.RPAREN
       field_var_patterns: field_var_patterns.COMMA field_var_pattern
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 334
-      COMMA -> State 333
+      RPAREN -> State 335
+      COMMA -> State 334
 
-  State 230:
+  State 232:
     Kernel Items:
       field_var_pattern: var_pattern., *
     Reduce:
@@ -13777,7 +13958,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 231:
+  State 233:
     Kernel Items:
       var_decl_pattern: var_or_let var_pattern optional_value_type., $
     Reduce:
@@ -13785,7 +13966,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 232:
+  State 234:
     Kernel Items:
       optional_value_type: value_type., *
       trait_op_type: value_type.trait_op returnable_type
@@ -13797,7 +13978,7 @@ Parser Debug States:
       MUL -> State 194
       trait_op -> State 197
 
-  State 233:
+  State 235:
     Kernel Items:
       callback_op: ASYNC., *
     Reduce:
@@ -13805,7 +13986,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 234:
+  State 236:
     Kernel Items:
       jump_type: BREAK., *
     Reduce:
@@ -13813,7 +13994,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 235:
+  State 237:
     Kernel Items:
       statement_body: CASE.case_patterns COLON optional_simple_statement_body
     Reduce:
@@ -13828,26 +14009,26 @@ Parser Debug States:
       FALSE -> State 19
       STRUCT -> State 34
       FUNC -> State 21
-      VAR -> State 325
+      VAR -> State 326
       LET -> State 27
       NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      DOT -> State 324
+      DOT -> State 325
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
       BIT_AND -> State 17
       GREATER -> State 22
       PARSE_ERROR -> State 31
-      case_patterns -> State 335
+      case_patterns -> State 336
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      assign_pattern -> State 326
-      case_pattern -> State 327
+      assign_pattern -> State 327
+      case_pattern -> State 328
       optional_label_decl -> State 85
-      sequence_expr -> State 329
+      sequence_expr -> State 330
       call_expr -> State 50
       atom_expr -> State 43
       parse_error_expr -> State 62
@@ -13878,7 +14059,7 @@ Parser Debug States:
       explicit_struct_def -> State 52
       anonymous_func_expr -> State 42
 
-  State 236:
+  State 238:
     Kernel Items:
       jump_type: CONTINUE., *
     Reduce:
@@ -13886,15 +14067,15 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 237:
+  State 239:
     Kernel Items:
       statement_body: DEFAULT.COLON optional_simple_statement_body
     Reduce:
       (nil)
     Goto:
-      COLON -> State 336
+      COLON -> State 337
 
-  State 238:
+  State 240:
     Kernel Items:
       callback_op: DEFER., *
     Reduce:
@@ -13902,7 +14083,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 239:
+  State 241:
     Kernel Items:
       fallthrough_statement: FALLTHROUGH., *
     Reduce:
@@ -13910,18 +14091,18 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 240:
+  State 242:
     Kernel Items:
       import_statement: IMPORT.import_clause
       import_statement: IMPORT.LPAREN import_clauses RPAREN
     Reduce:
       (nil)
     Goto:
-      STRING_LITERAL -> State 338
-      LPAREN -> State 337
-      import_clause -> State 339
+      STRING_LITERAL -> State 339
+      LPAREN -> State 338
+      import_clause -> State 340
 
-  State 241:
+  State 243:
     Kernel Items:
       statement_block: LBRACE statements RBRACE., $
     Reduce:
@@ -13929,7 +14110,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 242:
+  State 244:
     Kernel Items:
       jump_type: RETURN., *
     Reduce:
@@ -13937,7 +14118,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 243:
+  State 245:
     Kernel Items:
       unary_op_assign_statement: accessible_expr.unary_op_assign
       binary_op_assign_statement: accessible_expr.binary_op_assign expression
@@ -13954,32 +14135,32 @@ Parser Debug States:
       DOT -> State 122
       QUESTION -> State 124
       DOLLAR_LBRACKET -> State 121
-      ADD_ASSIGN -> State 340
-      SUB_ASSIGN -> State 351
-      MUL_ASSIGN -> State 350
-      DIV_ASSIGN -> State 348
-      MOD_ASSIGN -> State 349
-      ADD_ONE_ASSIGN -> State 341
-      SUB_ONE_ASSIGN -> State 352
-      BIT_NEG_ASSIGN -> State 344
-      BIT_AND_ASSIGN -> State 342
-      BIT_OR_ASSIGN -> State 345
-      BIT_XOR_ASSIGN -> State 347
-      BIT_LSHIFT_ASSIGN -> State 343
-      BIT_RSHIFT_ASSIGN -> State 346
-      unary_op_assign -> State 354
-      binary_op_assign -> State 353
+      ADD_ASSIGN -> State 341
+      SUB_ASSIGN -> State 352
+      MUL_ASSIGN -> State 351
+      DIV_ASSIGN -> State 349
+      MOD_ASSIGN -> State 350
+      ADD_ONE_ASSIGN -> State 342
+      SUB_ONE_ASSIGN -> State 353
+      BIT_NEG_ASSIGN -> State 345
+      BIT_AND_ASSIGN -> State 343
+      BIT_OR_ASSIGN -> State 346
+      BIT_XOR_ASSIGN -> State 348
+      BIT_LSHIFT_ASSIGN -> State 344
+      BIT_RSHIFT_ASSIGN -> State 347
+      unary_op_assign -> State 355
+      binary_op_assign -> State 354
       optional_generic_binding -> State 125
 
-  State 244:
+  State 246:
     Kernel Items:
       assign_statement: assign_pattern.ASSIGN expression
     Reduce:
       (nil)
     Goto:
-      ASSIGN -> State 355
+      ASSIGN -> State 356
 
-  State 245:
+  State 247:
     Kernel Items:
       simple_statement_body: assign_statement., *
     Reduce:
@@ -13987,7 +14168,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 246:
+  State 248:
     Kernel Items:
       simple_statement_body: binary_op_assign_statement., *
     Reduce:
@@ -13995,7 +14176,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 247:
+  State 249:
     Kernel Items:
       callback_op_statement: callback_op.call_expr
     Reduce:
@@ -14015,7 +14196,7 @@ Parser Debug States:
       LBRACKET -> State 26
       PARSE_ERROR -> State 31
       optional_label_decl -> State 85
-      call_expr -> State 357
+      call_expr -> State 358
       atom_expr -> State 43
       parse_error_expr -> State 62
       literal_expr -> State 58
@@ -14023,14 +14204,14 @@ Parser Debug States:
       block_expr -> State 49
       initialize_expr -> State 57
       implicit_struct_expr -> State 54
-      accessible_expr -> State 356
+      accessible_expr -> State 357
       access_expr -> State 38
       index_expr -> State 55
       initializable_type -> State 56
       explicit_struct_def -> State 52
       anonymous_func_expr -> State 42
 
-  State 248:
+  State 250:
     Kernel Items:
       simple_statement_body: callback_op_statement., *
     Reduce:
@@ -14038,7 +14219,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 249:
+  State 251:
     Kernel Items:
       expressions: expression., *
     Reduce:
@@ -14046,7 +14227,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 250:
+  State 252:
     Kernel Items:
       simple_statement_body: expression_or_improper_struct_statement., *
     Reduce:
@@ -14054,16 +14235,16 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 251:
+  State 253:
     Kernel Items:
       expression_or_improper_struct_statement: expressions., *
       expressions: expressions.COMMA expression
     Reduce:
       * -> [expression_or_improper_struct_statement]
     Goto:
-      COMMA -> State 358
+      COMMA -> State 359
 
-  State 252:
+  State 254:
     Kernel Items:
       simple_statement_body: fallthrough_statement., *
     Reduce:
@@ -14071,7 +14252,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 253:
+  State 255:
     Kernel Items:
       statement_body: import_statement., *
     Reduce:
@@ -14079,7 +14260,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 254:
+  State 256:
     Kernel Items:
       simple_statement_body: jump_statement., *
     Reduce:
@@ -14087,7 +14268,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 255:
+  State 257:
     Kernel Items:
       jump_statement: jump_type., NEWLINES
       jump_statement: jump_type., SEMICOLON
@@ -14112,7 +14293,7 @@ Parser Debug States:
       LET -> State 27
       NOT -> State 30
       LABEL_DECL -> State 25
-      JUMP_LABEL -> State 359
+      JUMP_LABEL -> State 360
       LPAREN -> State 28
       LBRACKET -> State 26
       SUB -> State 35
@@ -14121,10 +14302,10 @@ Parser Debug States:
       BIT_AND -> State 17
       GREATER -> State 22
       PARSE_ERROR -> State 31
-      expressions -> State 360
+      expressions -> State 361
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      expression -> State 249
+      expression -> State 251
       optional_label_decl -> State 60
       sequence_expr -> State 68
       call_expr -> State 50
@@ -14157,7 +14338,7 @@ Parser Debug States:
       explicit_struct_def -> State 52
       anonymous_func_expr -> State 42
 
-  State 256:
+  State 258:
     Kernel Items:
       assign_pattern: sequence_expr., ASSIGN
       expression: sequence_expr., *
@@ -14167,7 +14348,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 257:
+  State 259:
     Kernel Items:
       statement_body: simple_statement_body., *
     Reduce:
@@ -14175,7 +14356,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 258:
+  State 260:
     Kernel Items:
       statements: statements statement., *
     Reduce:
@@ -14183,17 +14364,17 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 259:
+  State 261:
     Kernel Items:
       statement: statement_body.NEWLINES
       statement: statement_body.SEMICOLON
     Reduce:
       (nil)
     Goto:
-      NEWLINES -> State 361
-      SEMICOLON -> State 362
+      NEWLINES -> State 362
+      SEMICOLON -> State 363
 
-  State 260:
+  State 262:
     Kernel Items:
       simple_statement_body: unary_op_assign_statement., *
     Reduce:
@@ -14201,7 +14382,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 261:
+  State 263:
     Kernel Items:
       simple_statement_body: unsafe_statement., *
     Reduce:
@@ -14209,7 +14390,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 262:
+  State 264:
     Kernel Items:
       definitions: definitions NEWLINES definition., *
     Reduce:
@@ -14217,7 +14398,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 263:
+  State 265:
     Kernel Items:
       definition: var_decl_pattern ASSIGN expression., *
     Reduce:
@@ -14225,7 +14406,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 264:
+  State 266:
     Kernel Items:
       trait_op_type: value_type.trait_op returnable_type
       type_def: TYPE IDENTIFIER ASSIGN value_type., *
@@ -14237,7 +14418,7 @@ Parser Debug States:
       MUL -> State 194
       trait_op -> State 197
 
-  State 265:
+  State 267:
     Kernel Items:
       generic_parameter_def: IDENTIFIER., *
       generic_parameter_def: IDENTIFIER.value_type
@@ -14264,7 +14445,7 @@ Parser Debug States:
       returnable_type -> State 108
       prefixed_type -> State 107
       prefix_type_op -> State 106
-      value_type -> State 363
+      value_type -> State 364
       trait_op_type -> State 110
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
@@ -14273,7 +14454,7 @@ Parser Debug States:
       trait_def -> State 109
       func_type -> State 101
 
-  State 266:
+  State 268:
     Kernel Items:
       generic_parameter_defs: generic_parameter_def., *
     Reduce:
@@ -14281,24 +14462,24 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 267:
+  State 269:
     Kernel Items:
       generic_parameter_defs: generic_parameter_defs.COMMA generic_parameter_def
       optional_generic_parameter_defs: generic_parameter_defs., RBRACKET
     Reduce:
       RBRACKET -> [optional_generic_parameter_defs]
     Goto:
-      COMMA -> State 364
+      COMMA -> State 365
 
-  State 268:
+  State 270:
     Kernel Items:
       optional_generic_parameters: DOLLAR_LBRACKET optional_generic_parameter_defs.RBRACKET
     Reduce:
       (nil)
     Goto:
-      RBRACKET -> State 365
+      RBRACKET -> State 366
 
-  State 269:
+  State 271:
     Kernel Items:
       trait_op_type: value_type.trait_op returnable_type
       type_def: TYPE IDENTIFIER optional_generic_parameters value_type., *
@@ -14306,13 +14487,13 @@ Parser Debug States:
     Reduce:
       * -> [type_def]
     Goto:
-      IMPLEMENTS -> State 366
+      IMPLEMENTS -> State 367
       ADD -> State 191
       SUB -> State 196
       MUL -> State 194
       trait_op -> State 197
 
-  State 270:
+  State 272:
     Kernel Items:
       named_func_def: FUNC IDENTIFIER ASSIGN expression., $
     Reduce:
@@ -14320,7 +14501,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 271:
+  State 273:
     Kernel Items:
       named_func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN.optional_parameter_defs RPAREN return_type statement_block
     Reduce:
@@ -14329,9 +14510,9 @@ Parser Debug States:
       IDENTIFIER -> State 170
       parameter_def -> State 173
       parameter_defs -> State 174
-      optional_parameter_defs -> State 367
+      optional_parameter_defs -> State 368
 
-  State 272:
+  State 274:
     Kernel Items:
       parameter_def: IDENTIFIER ELLIPSIS., *
       parameter_def: IDENTIFIER ELLIPSIS.value_type
@@ -14358,7 +14539,7 @@ Parser Debug States:
       returnable_type -> State 108
       prefixed_type -> State 107
       prefix_type_op -> State 106
-      value_type -> State 368
+      value_type -> State 369
       trait_op_type -> State 110
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
@@ -14367,7 +14548,7 @@ Parser Debug States:
       trait_def -> State 109
       func_type -> State 101
 
-  State 273:
+  State 275:
     Kernel Items:
       trait_op_type: value_type.trait_op returnable_type
       parameter_def: IDENTIFIER value_type., *
@@ -14379,15 +14560,15 @@ Parser Debug States:
       MUL -> State 194
       trait_op -> State 197
 
-  State 274:
+  State 276:
     Kernel Items:
       named_func_def: FUNC LPAREN parameter_def RPAREN.IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type statement_block
     Reduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 369
+      IDENTIFIER -> State 370
 
-  State 275:
+  State 277:
     Kernel Items:
       anonymous_func_expr: FUNC LPAREN optional_parameter_defs RPAREN.return_type statement_block
     Reduce:
@@ -14410,7 +14591,7 @@ Parser Debug States:
       initializable_type -> State 104
       atom_type -> State 99
       parse_error_type -> State 105
-      returnable_type -> State 371
+      returnable_type -> State 372
       prefixed_type -> State 107
       prefix_type_op -> State 106
       implicit_struct_def -> State 103
@@ -14418,19 +14599,19 @@ Parser Debug States:
       implicit_enum_def -> State 102
       explicit_enum_def -> State 100
       trait_def -> State 109
-      return_type -> State 370
+      return_type -> State 371
       func_type -> State 101
 
-  State 276:
+  State 278:
     Kernel Items:
       parameter_defs: parameter_defs COMMA.parameter_def
     Reduce:
       (nil)
     Goto:
       IDENTIFIER -> State 170
-      parameter_def -> State 372
+      parameter_def -> State 373
 
-  State 277:
+  State 279:
     Kernel Items:
       implicit_enum_value_defs: enum_value_def.OR enum_value_def
       explicit_enum_value_defs: enum_value_def.OR enum_value_def
@@ -14438,27 +14619,27 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      NEWLINES -> State 373
-      OR -> State 374
+      NEWLINES -> State 374
+      OR -> State 375
 
-  State 278:
+  State 280:
     Kernel Items:
       explicit_enum_def: ENUM LPAREN explicit_enum_value_defs.RPAREN
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 375
+      RPAREN -> State 376
 
-  State 279:
+  State 281:
     Kernel Items:
       enum_value_def: field_def., *
       enum_value_def: field_def.ASSIGN DEFAULT
     Reduce:
       * -> [enum_value_def]
     Goto:
-      ASSIGN -> State 292
+      ASSIGN -> State 294
 
-  State 280:
+  State 282:
     Kernel Items:
       implicit_enum_value_defs: implicit_enum_value_defs.OR enum_value_def
       explicit_enum_value_defs: implicit_enum_value_defs.OR enum_value_def
@@ -14466,10 +14647,10 @@ Parser Debug States:
     Reduce:
       (nil)
     Goto:
-      NEWLINES -> State 376
-      OR -> State 377
+      NEWLINES -> State 377
+      OR -> State 378
 
-  State 281:
+  State 283:
     Kernel Items:
       parameter_decl: ELLIPSIS.value_type
     Reduce:
@@ -14495,7 +14676,7 @@ Parser Debug States:
       returnable_type -> State 108
       prefixed_type -> State 107
       prefix_type_op -> State 106
-      value_type -> State 378
+      value_type -> State 379
       trait_op_type -> State 110
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
@@ -14504,7 +14685,7 @@ Parser Debug States:
       trait_def -> State 109
       func_type -> State 101
 
-  State 282:
+  State 284:
     Kernel Items:
       atom_type: IDENTIFIER.optional_generic_binding
       atom_type: IDENTIFIER.DOT IDENTIFIER optional_generic_binding
@@ -14520,11 +14701,11 @@ Parser Debug States:
       FUNC -> State 92
       LPAREN -> State 94
       LBRACKET -> State 26
-      DOT -> State 288
+      DOT -> State 290
       QUESTION -> State 96
       EXCLAIM -> State 91
       DOLLAR_LBRACKET -> State 121
-      ELLIPSIS -> State 379
+      ELLIPSIS -> State 380
       TILDE_TILDE -> State 97
       BIT_NEG -> State 88
       BIT_AND -> State 87
@@ -14536,7 +14717,7 @@ Parser Debug States:
       returnable_type -> State 108
       prefixed_type -> State 107
       prefix_type_op -> State 106
-      value_type -> State 380
+      value_type -> State 381
       trait_op_type -> State 110
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
@@ -14545,15 +14726,15 @@ Parser Debug States:
       trait_def -> State 109
       func_type -> State 101
 
-  State 283:
+  State 285:
     Kernel Items:
       func_type: FUNC LPAREN optional_parameter_decls.RPAREN return_type
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 381
+      RPAREN -> State 382
 
-  State 284:
+  State 286:
     Kernel Items:
       parameter_decls: parameter_decl., *
     Reduce:
@@ -14561,16 +14742,16 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 285:
+  State 287:
     Kernel Items:
       parameter_decls: parameter_decls.COMMA parameter_decl
       optional_parameter_decls: parameter_decls., RPAREN
     Reduce:
       RPAREN -> [optional_parameter_decls]
     Goto:
-      COMMA -> State 382
+      COMMA -> State 383
 
-  State 286:
+  State 288:
     Kernel Items:
       trait_op_type: value_type.trait_op returnable_type
       parameter_decl: value_type., *
@@ -14582,27 +14763,27 @@ Parser Debug States:
       MUL -> State 194
       trait_op -> State 197
 
-  State 287:
+  State 289:
     Kernel Items:
       atom_type: IDENTIFIER DOT IDENTIFIER.optional_generic_binding
     Reduce:
       * -> [optional_generic_binding]
     Goto:
       DOLLAR_LBRACKET -> State 121
-      optional_generic_binding -> State 383
+      optional_generic_binding -> State 384
 
-  State 288:
+  State 290:
     Kernel Items:
       atom_type: IDENTIFIER DOT.IDENTIFIER optional_generic_binding
       atom_type: DOT.optional_generic_binding
     Reduce:
       * -> [optional_generic_binding]
     Goto:
-      IDENTIFIER -> State 287
+      IDENTIFIER -> State 289
       DOLLAR_LBRACKET -> State 121
       optional_generic_binding -> State 175
 
-  State 289:
+  State 291:
     Kernel Items:
       trait_op_type: value_type.trait_op returnable_type
       field_def: IDENTIFIER value_type., *
@@ -14614,15 +14795,15 @@ Parser Debug States:
       MUL -> State 194
       trait_op -> State 197
 
-  State 290:
+  State 292:
     Kernel Items:
       unsafe_statement: UNSAFE LESS.IDENTIFIER GREATER STRING_LITERAL
     Reduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 384
+      IDENTIFIER -> State 385
 
-  State 291:
+  State 293:
     Kernel Items:
       implicit_enum_value_defs: enum_value_def OR.enum_value_def
     Reduce:
@@ -14652,24 +14833,24 @@ Parser Debug States:
       prefix_type_op -> State 106
       value_type -> State 188
       trait_op_type -> State 110
-      field_def -> State 279
+      field_def -> State 281
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
-      enum_value_def -> State 385
+      enum_value_def -> State 386
       implicit_enum_def -> State 102
       explicit_enum_def -> State 100
       trait_def -> State 109
       func_type -> State 101
 
-  State 292:
+  State 294:
     Kernel Items:
       enum_value_def: field_def ASSIGN.DEFAULT
     Reduce:
       (nil)
     Goto:
-      DEFAULT -> State 386
+      DEFAULT -> State 387
 
-  State 293:
+  State 295:
     Kernel Items:
       implicit_enum_value_defs: implicit_enum_value_defs OR.enum_value_def
     Reduce:
@@ -14699,16 +14880,16 @@ Parser Debug States:
       prefix_type_op -> State 106
       value_type -> State 188
       trait_op_type -> State 110
-      field_def -> State 279
+      field_def -> State 281
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
-      enum_value_def -> State 387
+      enum_value_def -> State 388
       implicit_enum_def -> State 102
       explicit_enum_def -> State 100
       trait_def -> State 109
       func_type -> State 101
 
-  State 294:
+  State 296:
     Kernel Items:
       implicit_enum_def: LPAREN implicit_enum_value_defs RPAREN., *
     Reduce:
@@ -14716,7 +14897,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 295:
+  State 297:
     Kernel Items:
       implicit_field_defs: implicit_field_defs COMMA.field_def
     Reduce:
@@ -14746,7 +14927,7 @@ Parser Debug States:
       prefix_type_op -> State 106
       value_type -> State 188
       trait_op_type -> State 110
-      field_def -> State 388
+      field_def -> State 389
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
       implicit_enum_def -> State 102
@@ -14754,7 +14935,7 @@ Parser Debug States:
       trait_def -> State 109
       func_type -> State 101
 
-  State 296:
+  State 298:
     Kernel Items:
       implicit_struct_def: LPAREN optional_implicit_field_defs RPAREN., *
     Reduce:
@@ -14762,17 +14943,17 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 297:
+  State 299:
     Kernel Items:
       func_type: FUNC.LPAREN optional_parameter_decls RPAREN return_type
       method_signature: FUNC.IDENTIFIER LPAREN optional_parameter_decls RPAREN return_type
     Reduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 389
+      IDENTIFIER -> State 390
       LPAREN -> State 177
 
-  State 298:
+  State 300:
     Kernel Items:
       trait_property: field_def., *
     Reduce:
@@ -14780,7 +14961,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 299:
+  State 301:
     Kernel Items:
       trait_property: method_signature., *
     Reduce:
@@ -14788,15 +14969,15 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 300:
+  State 302:
     Kernel Items:
       trait_def: TRAIT LPAREN optional_trait_properties.RPAREN
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 390
+      RPAREN -> State 391
 
-  State 301:
+  State 303:
     Kernel Items:
       trait_properties: trait_properties.NEWLINES trait_property
       trait_properties: trait_properties.COMMA trait_property
@@ -14804,10 +14985,10 @@ Parser Debug States:
     Reduce:
       RPAREN -> [optional_trait_properties]
     Goto:
-      NEWLINES -> State 392
-      COMMA -> State 391
+      NEWLINES -> State 393
+      COMMA -> State 392
 
-  State 302:
+  State 304:
     Kernel Items:
       trait_properties: trait_property., *
     Reduce:
@@ -14815,28 +14996,28 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 303:
+  State 305:
     Kernel Items:
       initializable_type: LBRACKET value_type COLON value_type.RBRACKET
       trait_op_type: value_type.trait_op returnable_type
     Reduce:
       (nil)
     Goto:
-      RBRACKET -> State 393
+      RBRACKET -> State 394
       ADD -> State 191
       SUB -> State 196
       MUL -> State 194
       trait_op -> State 197
 
-  State 304:
+  State 306:
     Kernel Items:
       initializable_type: LBRACKET value_type COMMA INTEGER_LITERAL.RBRACKET
     Reduce:
       (nil)
     Goto:
-      RBRACKET -> State 394
+      RBRACKET -> State 395
 
-  State 305:
+  State 307:
     Kernel Items:
       trait_op_type: value_type trait_op returnable_type., *
     Reduce:
@@ -14844,7 +15025,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 306:
+  State 308:
     Kernel Items:
       argument: IDENTIFIER ASSIGN expression., *
     Reduce:
@@ -14852,7 +15033,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 307:
+  State 309:
     Kernel Items:
       arguments: arguments COMMA argument., *
     Reduce:
@@ -14860,71 +15041,25 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 308:
-    Kernel Items:
-      optional_expression: expression., *
-    Reduce:
-      * -> [optional_expression]
-    Goto:
-      (nil)
-
-  State 309:
-    Kernel Items:
-      colon_expressions: colon_expressions COLON optional_expression., *
-    Reduce:
-      * -> [colon_expressions]
-    Goto:
-      (nil)
-
   State 310:
     Kernel Items:
-      colon_expressions: optional_expression COLON optional_expression., *
+      colon_expr: colon_expr COLON expression., *
     Reduce:
-      * -> [colon_expressions]
+      * -> [colon_expr]
     Goto:
       (nil)
 
   State 311:
     Kernel Items:
-      explicit_field_defs: explicit_field_defs COMMA.field_def
+      colon_expr: expression COLON expression., *
     Reduce:
-      (nil)
+      * -> [colon_expr]
     Goto:
-      IDENTIFIER -> State 180
-      UNSAFE -> State 181
-      STRUCT -> State 34
-      ENUM -> State 90
-      TRAIT -> State 98
-      FUNC -> State 92
-      LPAREN -> State 94
-      LBRACKET -> State 26
-      DOT -> State 89
-      QUESTION -> State 96
-      EXCLAIM -> State 91
-      TILDE_TILDE -> State 97
-      BIT_NEG -> State 88
-      BIT_AND -> State 87
-      PARSE_ERROR -> State 95
-      unsafe_statement -> State 187
-      initializable_type -> State 104
-      atom_type -> State 99
-      parse_error_type -> State 105
-      returnable_type -> State 108
-      prefixed_type -> State 107
-      prefix_type_op -> State 106
-      value_type -> State 188
-      trait_op_type -> State 110
-      field_def -> State 395
-      implicit_struct_def -> State 103
-      explicit_struct_def -> State 52
-      implicit_enum_def -> State 102
-      explicit_enum_def -> State 100
-      trait_def -> State 109
-      func_type -> State 101
+      (nil)
 
   State 312:
     Kernel Items:
-      explicit_field_defs: explicit_field_defs NEWLINES.field_def
+      explicit_field_defs: explicit_field_defs COMMA.field_def
     Reduce:
       (nil)
     Goto:
@@ -14962,13 +15097,51 @@ Parser Debug States:
 
   State 313:
     Kernel Items:
+      explicit_field_defs: explicit_field_defs NEWLINES.field_def
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 180
+      UNSAFE -> State 181
+      STRUCT -> State 34
+      ENUM -> State 90
+      TRAIT -> State 98
+      FUNC -> State 92
+      LPAREN -> State 94
+      LBRACKET -> State 26
+      DOT -> State 89
+      QUESTION -> State 96
+      EXCLAIM -> State 91
+      TILDE_TILDE -> State 97
+      BIT_NEG -> State 88
+      BIT_AND -> State 87
+      PARSE_ERROR -> State 95
+      unsafe_statement -> State 187
+      initializable_type -> State 104
+      atom_type -> State 99
+      parse_error_type -> State 105
+      returnable_type -> State 108
+      prefixed_type -> State 107
+      prefix_type_op -> State 106
+      value_type -> State 188
+      trait_op_type -> State 110
+      field_def -> State 397
+      implicit_struct_def -> State 103
+      explicit_struct_def -> State 52
+      implicit_enum_def -> State 102
+      explicit_enum_def -> State 100
+      trait_def -> State 109
+      func_type -> State 101
+
+  State 314:
+    Kernel Items:
       explicit_struct_def: STRUCT LPAREN optional_explicit_field_defs RPAREN., *
     Reduce:
       * -> [explicit_struct_def]
     Goto:
       (nil)
 
-  State 314:
+  State 315:
     Kernel Items:
       generic_arguments: generic_arguments COMMA.value_type
     Reduce:
@@ -14994,7 +15167,7 @@ Parser Debug States:
       returnable_type -> State 108
       prefixed_type -> State 107
       prefix_type_op -> State 106
-      value_type -> State 397
+      value_type -> State 398
       trait_op_type -> State 110
       implicit_struct_def -> State 103
       explicit_struct_def -> State 52
@@ -15003,7 +15176,7 @@ Parser Debug States:
       trait_def -> State 109
       func_type -> State 101
 
-  State 315:
+  State 316:
     Kernel Items:
       optional_generic_binding: DOLLAR_LBRACKET optional_generic_arguments RBRACKET., *
     Reduce:
@@ -15011,7 +15184,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 316:
+  State 317:
     Kernel Items:
       index_expr: accessible_expr LBRACKET argument RBRACKET., *
     Reduce:
@@ -15019,15 +15192,15 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 317:
+  State 318:
     Kernel Items:
       call_expr: accessible_expr optional_generic_binding LPAREN optional_arguments.RPAREN
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 398
+      RPAREN -> State 399
 
-  State 318:
+  State 319:
     Kernel Items:
       initialize_expr: initializable_type LPAREN optional_arguments RPAREN., *
     Reduce:
@@ -15035,70 +15208,9 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 319:
-    Kernel Items:
-      loop_expr: DO statement_block FOR.sequence_expr
-    Reduce:
-      LBRACE -> [optional_label_decl]
-    Goto:
-      INTEGER_LITERAL -> State 24
-      FLOAT_LITERAL -> State 20
-      RUNE_LITERAL -> State 32
-      STRING_LITERAL -> State 33
-      IDENTIFIER -> State 23
-      TRUE -> State 36
-      FALSE -> State 19
-      STRUCT -> State 34
-      FUNC -> State 21
-      VAR -> State 37
-      LET -> State 27
-      NOT -> State 30
-      LABEL_DECL -> State 25
-      LPAREN -> State 28
-      LBRACKET -> State 26
-      SUB -> State 35
-      MUL -> State 29
-      BIT_NEG -> State 18
-      BIT_AND -> State 17
-      GREATER -> State 22
-      PARSE_ERROR -> State 31
-      var_decl_pattern -> State 69
-      var_or_let -> State 70
-      optional_label_decl -> State 85
-      sequence_expr -> State 399
-      call_expr -> State 50
-      atom_expr -> State 43
-      parse_error_expr -> State 62
-      literal_expr -> State 58
-      identifier_expr -> State 53
-      block_expr -> State 49
-      initialize_expr -> State 57
-      implicit_struct_expr -> State 54
-      accessible_expr -> State 39
-      access_expr -> State 38
-      index_expr -> State 55
-      postfixable_expr -> State 64
-      postfix_unary_expr -> State 63
-      prefixable_expr -> State 67
-      prefix_unary_expr -> State 65
-      prefix_unary_op -> State 66
-      mul_expr -> State 59
-      binary_mul_expr -> State 47
-      add_expr -> State 40
-      binary_add_expr -> State 44
-      cmp_expr -> State 51
-      binary_cmp_expr -> State 46
-      and_expr -> State 41
-      binary_and_expr -> State 45
-      or_expr -> State 61
-      binary_or_expr -> State 48
-      initializable_type -> State 56
-      explicit_struct_def -> State 52
-      anonymous_func_expr -> State 42
-
   State 320:
     Kernel Items:
-      for_assignment: assign_pattern ASSIGN.sequence_expr
+      loop_expr: DO statement_block FOR.sequence_expr
     Reduce:
       LBRACE -> [optional_label_decl]
     Goto:
@@ -15159,7 +15271,7 @@ Parser Debug States:
 
   State 321:
     Kernel Items:
-      loop_expr: FOR assign_pattern IN.sequence_expr DO statement_block
+      for_assignment: assign_pattern ASSIGN.sequence_expr
     Reduce:
       LBRACE -> [optional_label_decl]
     Goto:
@@ -15220,10 +15332,9 @@ Parser Debug States:
 
   State 322:
     Kernel Items:
-      loop_expr: FOR for_assignment SEMICOLON.optional_sequence_expr SEMICOLON optional_sequence_expr DO statement_block
+      loop_expr: FOR assign_pattern IN.sequence_expr DO statement_block
     Reduce:
       LBRACE -> [optional_label_decl]
-      SEMICOLON -> [optional_sequence_expr]
     Goto:
       INTEGER_LITERAL -> State 24
       FLOAT_LITERAL -> State 20
@@ -15249,8 +15360,7 @@ Parser Debug States:
       var_decl_pattern -> State 69
       var_or_let -> State 70
       optional_label_decl -> State 85
-      sequence_expr -> State 403
-      optional_sequence_expr -> State 402
+      sequence_expr -> State 402
       call_expr -> State 50
       atom_expr -> State 43
       parse_error_expr -> State 62
@@ -15283,346 +15393,10 @@ Parser Debug States:
 
   State 323:
     Kernel Items:
-      loop_expr: FOR sequence_expr DO.statement_block
+      loop_expr: FOR for_assignment SEMICOLON.optional_sequence_expr SEMICOLON optional_sequence_expr DO statement_block
     Reduce:
-      (nil)
-    Goto:
-      LBRACE -> State 72
-      statement_block -> State 404
-
-  State 324:
-    Kernel Items:
-      case_pattern: DOT.IDENTIFIER implicit_struct_expr
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 405
-
-  State 325:
-    Kernel Items:
-      var_or_let: VAR., *
-      case_pattern: VAR.DOT IDENTIFIER tuple_pattern
-    Reduce:
-      * -> [var_or_let]
-    Goto:
-      DOT -> State 406
-
-  State 326:
-    Kernel Items:
-      case_pattern: assign_pattern., *
-    Reduce:
-      * -> [case_pattern]
-    Goto:
-      (nil)
-
-  State 327:
-    Kernel Items:
-      case_patterns: case_pattern., *
-    Reduce:
-      * -> [case_patterns]
-    Goto:
-      (nil)
-
-  State 328:
-    Kernel Items:
-      case_patterns: case_patterns.COMMA case_pattern
-      condition: CASE case_patterns.ASSIGN sequence_expr
-    Reduce:
-      (nil)
-    Goto:
-      COMMA -> State 408
-      ASSIGN -> State 407
-
-  State 329:
-    Kernel Items:
-      assign_pattern: sequence_expr., *
-    Reduce:
-      * -> [assign_pattern]
-    Goto:
-      (nil)
-
-  State 330:
-    Kernel Items:
-      if_expr: IF condition statement_block., *
-      if_expr: IF condition statement_block.ELSE statement_block
-      if_expr: IF condition statement_block.ELSE if_expr
-    Reduce:
-      * -> [if_expr]
-    Goto:
-      ELSE -> State 409
-
-  State 331:
-    Kernel Items:
-      switch_expr: SWITCH sequence_expr statement_block., $
-    Reduce:
-      $ -> [switch_expr]
-    Goto:
-      (nil)
-
-  State 332:
-    Kernel Items:
-      field_var_pattern: IDENTIFIER ASSIGN.var_pattern
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 157
-      LPAREN -> State 158
-      var_pattern -> State 410
-      tuple_pattern -> State 159
-
-  State 333:
-    Kernel Items:
-      field_var_patterns: field_var_patterns COMMA.field_var_pattern
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 227
-      LPAREN -> State 158
-      ELLIPSIS -> State 226
-      var_pattern -> State 230
-      tuple_pattern -> State 159
-      field_var_pattern -> State 411
-
-  State 334:
-    Kernel Items:
-      tuple_pattern: LPAREN field_var_patterns RPAREN., *
-    Reduce:
-      * -> [tuple_pattern]
-    Goto:
-      (nil)
-
-  State 335:
-    Kernel Items:
-      statement_body: CASE case_patterns.COLON optional_simple_statement_body
-      case_patterns: case_patterns.COMMA case_pattern
-    Reduce:
-      (nil)
-    Goto:
-      COMMA -> State 408
-      COLON -> State 412
-
-  State 336:
-    Kernel Items:
-      statement_body: DEFAULT COLON.optional_simple_statement_body
-    Reduce:
-      * -> [optional_label_decl]
-      NEWLINES -> [optional_simple_statement_body]
-      SEMICOLON -> [optional_simple_statement_body]
-    Goto:
-      INTEGER_LITERAL -> State 24
-      FLOAT_LITERAL -> State 20
-      RUNE_LITERAL -> State 32
-      STRING_LITERAL -> State 33
-      IDENTIFIER -> State 23
-      TRUE -> State 36
-      FALSE -> State 19
-      RETURN -> State 242
-      BREAK -> State 234
-      CONTINUE -> State 236
-      FALLTHROUGH -> State 239
-      UNSAFE -> State 181
-      STRUCT -> State 34
-      FUNC -> State 21
-      ASYNC -> State 233
-      DEFER -> State 238
-      VAR -> State 37
-      LET -> State 27
-      NOT -> State 30
-      LABEL_DECL -> State 25
-      LPAREN -> State 28
-      LBRACKET -> State 26
-      SUB -> State 35
-      MUL -> State 29
-      BIT_NEG -> State 18
-      BIT_AND -> State 17
-      GREATER -> State 22
-      PARSE_ERROR -> State 31
-      simple_statement_body -> State 414
-      optional_simple_statement_body -> State 413
-      expression_or_improper_struct_statement -> State 250
-      callback_op -> State 247
-      callback_op_statement -> State 248
-      unsafe_statement -> State 261
-      jump_statement -> State 254
-      jump_type -> State 255
-      expressions -> State 251
-      fallthrough_statement -> State 252
-      assign_statement -> State 245
-      unary_op_assign_statement -> State 260
-      binary_op_assign_statement -> State 246
-      var_decl_pattern -> State 69
-      var_or_let -> State 70
-      assign_pattern -> State 244
-      expression -> State 249
-      optional_label_decl -> State 60
-      sequence_expr -> State 256
-      call_expr -> State 50
-      atom_expr -> State 43
-      parse_error_expr -> State 62
-      literal_expr -> State 58
-      identifier_expr -> State 53
-      block_expr -> State 49
-      initialize_expr -> State 57
-      implicit_struct_expr -> State 54
-      accessible_expr -> State 243
-      access_expr -> State 38
-      index_expr -> State 55
-      postfixable_expr -> State 64
-      postfix_unary_expr -> State 63
-      prefixable_expr -> State 67
-      prefix_unary_expr -> State 65
-      prefix_unary_op -> State 66
-      mul_expr -> State 59
-      binary_mul_expr -> State 47
-      add_expr -> State 40
-      binary_add_expr -> State 44
-      cmp_expr -> State 51
-      binary_cmp_expr -> State 46
-      and_expr -> State 41
-      binary_and_expr -> State 45
-      or_expr -> State 61
-      binary_or_expr -> State 48
-      initializable_type -> State 56
-      explicit_struct_def -> State 52
-      anonymous_func_expr -> State 42
-
-  State 337:
-    Kernel Items:
-      import_statement: IMPORT LPAREN.import_clauses RPAREN
-    Reduce:
-      (nil)
-    Goto:
-      STRING_LITERAL -> State 338
-      import_clause -> State 415
-      import_clause_terminal -> State 416
-      import_clauses -> State 417
-
-  State 338:
-    Kernel Items:
-      import_clause: STRING_LITERAL., *
-      import_clause: STRING_LITERAL.AS IDENTIFIER
-    Reduce:
-      * -> [import_clause]
-    Goto:
-      AS -> State 418
-
-  State 339:
-    Kernel Items:
-      import_statement: IMPORT import_clause., *
-    Reduce:
-      * -> [import_statement]
-    Goto:
-      (nil)
-
-  State 340:
-    Kernel Items:
-      binary_op_assign: ADD_ASSIGN., *
-    Reduce:
-      * -> [binary_op_assign]
-    Goto:
-      (nil)
-
-  State 341:
-    Kernel Items:
-      unary_op_assign: ADD_ONE_ASSIGN., *
-    Reduce:
-      * -> [unary_op_assign]
-    Goto:
-      (nil)
-
-  State 342:
-    Kernel Items:
-      binary_op_assign: BIT_AND_ASSIGN., *
-    Reduce:
-      * -> [binary_op_assign]
-    Goto:
-      (nil)
-
-  State 343:
-    Kernel Items:
-      binary_op_assign: BIT_LSHIFT_ASSIGN., *
-    Reduce:
-      * -> [binary_op_assign]
-    Goto:
-      (nil)
-
-  State 344:
-    Kernel Items:
-      binary_op_assign: BIT_NEG_ASSIGN., *
-    Reduce:
-      * -> [binary_op_assign]
-    Goto:
-      (nil)
-
-  State 345:
-    Kernel Items:
-      binary_op_assign: BIT_OR_ASSIGN., *
-    Reduce:
-      * -> [binary_op_assign]
-    Goto:
-      (nil)
-
-  State 346:
-    Kernel Items:
-      binary_op_assign: BIT_RSHIFT_ASSIGN., *
-    Reduce:
-      * -> [binary_op_assign]
-    Goto:
-      (nil)
-
-  State 347:
-    Kernel Items:
-      binary_op_assign: BIT_XOR_ASSIGN., *
-    Reduce:
-      * -> [binary_op_assign]
-    Goto:
-      (nil)
-
-  State 348:
-    Kernel Items:
-      binary_op_assign: DIV_ASSIGN., *
-    Reduce:
-      * -> [binary_op_assign]
-    Goto:
-      (nil)
-
-  State 349:
-    Kernel Items:
-      binary_op_assign: MOD_ASSIGN., *
-    Reduce:
-      * -> [binary_op_assign]
-    Goto:
-      (nil)
-
-  State 350:
-    Kernel Items:
-      binary_op_assign: MUL_ASSIGN., *
-    Reduce:
-      * -> [binary_op_assign]
-    Goto:
-      (nil)
-
-  State 351:
-    Kernel Items:
-      binary_op_assign: SUB_ASSIGN., *
-    Reduce:
-      * -> [binary_op_assign]
-    Goto:
-      (nil)
-
-  State 352:
-    Kernel Items:
-      unary_op_assign: SUB_ONE_ASSIGN., *
-    Reduce:
-      * -> [unary_op_assign]
-    Goto:
-      (nil)
-
-  State 353:
-    Kernel Items:
-      binary_op_assign_statement: accessible_expr binary_op_assign.expression
-    Reduce:
-      * -> [optional_label_decl]
+      LBRACE -> [optional_label_decl]
+      SEMICOLON -> [optional_sequence_expr]
     Goto:
       INTEGER_LITERAL -> State 24
       FLOAT_LITERAL -> State 20
@@ -15647,9 +15421,9 @@ Parser Debug States:
       PARSE_ERROR -> State 31
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      expression -> State 419
-      optional_label_decl -> State 60
-      sequence_expr -> State 68
+      optional_label_decl -> State 85
+      sequence_expr -> State 404
+      optional_sequence_expr -> State 403
       call_expr -> State 50
       atom_expr -> State 43
       parse_error_expr -> State 62
@@ -15680,17 +15454,346 @@ Parser Debug States:
       explicit_struct_def -> State 52
       anonymous_func_expr -> State 42
 
-  State 354:
+  State 324:
     Kernel Items:
-      unary_op_assign_statement: accessible_expr unary_op_assign., *
+      loop_expr: FOR sequence_expr DO.statement_block
     Reduce:
-      * -> [unary_op_assign_statement]
+      (nil)
+    Goto:
+      LBRACE -> State 72
+      statement_block -> State 405
+
+  State 325:
+    Kernel Items:
+      case_pattern: DOT.IDENTIFIER implicit_struct_expr
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 406
+
+  State 326:
+    Kernel Items:
+      var_or_let: VAR., *
+      case_pattern: VAR.DOT IDENTIFIER tuple_pattern
+    Reduce:
+      * -> [var_or_let]
+    Goto:
+      DOT -> State 407
+
+  State 327:
+    Kernel Items:
+      case_pattern: assign_pattern., *
+    Reduce:
+      * -> [case_pattern]
     Goto:
       (nil)
 
-  State 355:
+  State 328:
     Kernel Items:
-      assign_statement: assign_pattern ASSIGN.expression
+      case_patterns: case_pattern., *
+    Reduce:
+      * -> [case_patterns]
+    Goto:
+      (nil)
+
+  State 329:
+    Kernel Items:
+      case_patterns: case_patterns.COMMA case_pattern
+      condition: CASE case_patterns.ASSIGN sequence_expr
+    Reduce:
+      (nil)
+    Goto:
+      COMMA -> State 409
+      ASSIGN -> State 408
+
+  State 330:
+    Kernel Items:
+      assign_pattern: sequence_expr., *
+    Reduce:
+      * -> [assign_pattern]
+    Goto:
+      (nil)
+
+  State 331:
+    Kernel Items:
+      if_expr: IF condition statement_block., *
+      if_expr: IF condition statement_block.ELSE statement_block
+      if_expr: IF condition statement_block.ELSE if_expr
+    Reduce:
+      * -> [if_expr]
+    Goto:
+      ELSE -> State 410
+
+  State 332:
+    Kernel Items:
+      switch_expr: SWITCH sequence_expr statement_block., $
+    Reduce:
+      $ -> [switch_expr]
+    Goto:
+      (nil)
+
+  State 333:
+    Kernel Items:
+      field_var_pattern: IDENTIFIER ASSIGN.var_pattern
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 157
+      LPAREN -> State 158
+      var_pattern -> State 411
+      tuple_pattern -> State 159
+
+  State 334:
+    Kernel Items:
+      field_var_patterns: field_var_patterns COMMA.field_var_pattern
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 229
+      LPAREN -> State 158
+      ELLIPSIS -> State 228
+      var_pattern -> State 232
+      tuple_pattern -> State 159
+      field_var_pattern -> State 412
+
+  State 335:
+    Kernel Items:
+      tuple_pattern: LPAREN field_var_patterns RPAREN., *
+    Reduce:
+      * -> [tuple_pattern]
+    Goto:
+      (nil)
+
+  State 336:
+    Kernel Items:
+      statement_body: CASE case_patterns.COLON optional_simple_statement_body
+      case_patterns: case_patterns.COMMA case_pattern
+    Reduce:
+      (nil)
+    Goto:
+      COMMA -> State 409
+      COLON -> State 413
+
+  State 337:
+    Kernel Items:
+      statement_body: DEFAULT COLON.optional_simple_statement_body
+    Reduce:
+      * -> [optional_label_decl]
+      NEWLINES -> [optional_simple_statement_body]
+      SEMICOLON -> [optional_simple_statement_body]
+    Goto:
+      INTEGER_LITERAL -> State 24
+      FLOAT_LITERAL -> State 20
+      RUNE_LITERAL -> State 32
+      STRING_LITERAL -> State 33
+      IDENTIFIER -> State 23
+      TRUE -> State 36
+      FALSE -> State 19
+      RETURN -> State 244
+      BREAK -> State 236
+      CONTINUE -> State 238
+      FALLTHROUGH -> State 241
+      UNSAFE -> State 181
+      STRUCT -> State 34
+      FUNC -> State 21
+      ASYNC -> State 235
+      DEFER -> State 240
+      VAR -> State 37
+      LET -> State 27
+      NOT -> State 30
+      LABEL_DECL -> State 25
+      LPAREN -> State 28
+      LBRACKET -> State 26
+      SUB -> State 35
+      MUL -> State 29
+      BIT_NEG -> State 18
+      BIT_AND -> State 17
+      GREATER -> State 22
+      PARSE_ERROR -> State 31
+      simple_statement_body -> State 415
+      optional_simple_statement_body -> State 414
+      expression_or_improper_struct_statement -> State 252
+      callback_op -> State 249
+      callback_op_statement -> State 250
+      unsafe_statement -> State 263
+      jump_statement -> State 256
+      jump_type -> State 257
+      expressions -> State 253
+      fallthrough_statement -> State 254
+      assign_statement -> State 247
+      unary_op_assign_statement -> State 262
+      binary_op_assign_statement -> State 248
+      var_decl_pattern -> State 69
+      var_or_let -> State 70
+      assign_pattern -> State 246
+      expression -> State 251
+      optional_label_decl -> State 60
+      sequence_expr -> State 258
+      call_expr -> State 50
+      atom_expr -> State 43
+      parse_error_expr -> State 62
+      literal_expr -> State 58
+      identifier_expr -> State 53
+      block_expr -> State 49
+      initialize_expr -> State 57
+      implicit_struct_expr -> State 54
+      accessible_expr -> State 245
+      access_expr -> State 38
+      index_expr -> State 55
+      postfixable_expr -> State 64
+      postfix_unary_expr -> State 63
+      prefixable_expr -> State 67
+      prefix_unary_expr -> State 65
+      prefix_unary_op -> State 66
+      mul_expr -> State 59
+      binary_mul_expr -> State 47
+      add_expr -> State 40
+      binary_add_expr -> State 44
+      cmp_expr -> State 51
+      binary_cmp_expr -> State 46
+      and_expr -> State 41
+      binary_and_expr -> State 45
+      or_expr -> State 61
+      binary_or_expr -> State 48
+      initializable_type -> State 56
+      explicit_struct_def -> State 52
+      anonymous_func_expr -> State 42
+
+  State 338:
+    Kernel Items:
+      import_statement: IMPORT LPAREN.import_clauses RPAREN
+    Reduce:
+      (nil)
+    Goto:
+      STRING_LITERAL -> State 339
+      import_clause -> State 416
+      import_clause_terminal -> State 417
+      import_clauses -> State 418
+
+  State 339:
+    Kernel Items:
+      import_clause: STRING_LITERAL., *
+      import_clause: STRING_LITERAL.AS IDENTIFIER
+    Reduce:
+      * -> [import_clause]
+    Goto:
+      AS -> State 419
+
+  State 340:
+    Kernel Items:
+      import_statement: IMPORT import_clause., *
+    Reduce:
+      * -> [import_statement]
+    Goto:
+      (nil)
+
+  State 341:
+    Kernel Items:
+      binary_op_assign: ADD_ASSIGN., *
+    Reduce:
+      * -> [binary_op_assign]
+    Goto:
+      (nil)
+
+  State 342:
+    Kernel Items:
+      unary_op_assign: ADD_ONE_ASSIGN., *
+    Reduce:
+      * -> [unary_op_assign]
+    Goto:
+      (nil)
+
+  State 343:
+    Kernel Items:
+      binary_op_assign: BIT_AND_ASSIGN., *
+    Reduce:
+      * -> [binary_op_assign]
+    Goto:
+      (nil)
+
+  State 344:
+    Kernel Items:
+      binary_op_assign: BIT_LSHIFT_ASSIGN., *
+    Reduce:
+      * -> [binary_op_assign]
+    Goto:
+      (nil)
+
+  State 345:
+    Kernel Items:
+      binary_op_assign: BIT_NEG_ASSIGN., *
+    Reduce:
+      * -> [binary_op_assign]
+    Goto:
+      (nil)
+
+  State 346:
+    Kernel Items:
+      binary_op_assign: BIT_OR_ASSIGN., *
+    Reduce:
+      * -> [binary_op_assign]
+    Goto:
+      (nil)
+
+  State 347:
+    Kernel Items:
+      binary_op_assign: BIT_RSHIFT_ASSIGN., *
+    Reduce:
+      * -> [binary_op_assign]
+    Goto:
+      (nil)
+
+  State 348:
+    Kernel Items:
+      binary_op_assign: BIT_XOR_ASSIGN., *
+    Reduce:
+      * -> [binary_op_assign]
+    Goto:
+      (nil)
+
+  State 349:
+    Kernel Items:
+      binary_op_assign: DIV_ASSIGN., *
+    Reduce:
+      * -> [binary_op_assign]
+    Goto:
+      (nil)
+
+  State 350:
+    Kernel Items:
+      binary_op_assign: MOD_ASSIGN., *
+    Reduce:
+      * -> [binary_op_assign]
+    Goto:
+      (nil)
+
+  State 351:
+    Kernel Items:
+      binary_op_assign: MUL_ASSIGN., *
+    Reduce:
+      * -> [binary_op_assign]
+    Goto:
+      (nil)
+
+  State 352:
+    Kernel Items:
+      binary_op_assign: SUB_ASSIGN., *
+    Reduce:
+      * -> [binary_op_assign]
+    Goto:
+      (nil)
+
+  State 353:
+    Kernel Items:
+      unary_op_assign: SUB_ONE_ASSIGN., *
+    Reduce:
+      * -> [unary_op_assign]
+    Goto:
+      (nil)
+
+  State 354:
+    Kernel Items:
+      binary_op_assign_statement: accessible_expr binary_op_assign.expression
     Reduce:
       * -> [optional_label_decl]
     Goto:
@@ -15750,34 +15853,17 @@ Parser Debug States:
       explicit_struct_def -> State 52
       anonymous_func_expr -> State 42
 
-  State 356:
+  State 355:
     Kernel Items:
-      call_expr: accessible_expr.optional_generic_binding LPAREN optional_arguments RPAREN
-      access_expr: accessible_expr.DOT IDENTIFIER
-      index_expr: accessible_expr.LBRACKET argument RBRACKET
+      unary_op_assign_statement: accessible_expr unary_op_assign., *
     Reduce:
-      LPAREN -> [optional_generic_binding]
-    Goto:
-      LBRACKET -> State 123
-      DOT -> State 122
-      DOLLAR_LBRACKET -> State 121
-      optional_generic_binding -> State 125
-
-  State 357:
-    Kernel Items:
-      callback_op_statement: callback_op call_expr., NEWLINES
-      callback_op_statement: callback_op call_expr., SEMICOLON
-      accessible_expr: call_expr., *
-    Reduce:
-      * -> [accessible_expr]
-      NEWLINES -> [callback_op_statement]
-      SEMICOLON -> [callback_op_statement]
+      * -> [unary_op_assign_statement]
     Goto:
       (nil)
 
-  State 358:
+  State 356:
     Kernel Items:
-      expressions: expressions COMMA.expression
+      assign_statement: assign_pattern ASSIGN.expression
     Reduce:
       * -> [optional_label_decl]
     Goto:
@@ -15837,15 +15923,36 @@ Parser Debug States:
       explicit_struct_def -> State 52
       anonymous_func_expr -> State 42
 
+  State 357:
+    Kernel Items:
+      call_expr: accessible_expr.optional_generic_binding LPAREN optional_arguments RPAREN
+      access_expr: accessible_expr.DOT IDENTIFIER
+      index_expr: accessible_expr.LBRACKET argument RBRACKET
+    Reduce:
+      LPAREN -> [optional_generic_binding]
+    Goto:
+      LBRACKET -> State 123
+      DOT -> State 122
+      DOLLAR_LBRACKET -> State 121
+      optional_generic_binding -> State 125
+
+  State 358:
+    Kernel Items:
+      callback_op_statement: callback_op call_expr., NEWLINES
+      callback_op_statement: callback_op call_expr., SEMICOLON
+      accessible_expr: call_expr., *
+    Reduce:
+      * -> [accessible_expr]
+      NEWLINES -> [callback_op_statement]
+      SEMICOLON -> [callback_op_statement]
+    Goto:
+      (nil)
+
   State 359:
     Kernel Items:
-      jump_statement: jump_type JUMP_LABEL., NEWLINES
-      jump_statement: jump_type JUMP_LABEL., SEMICOLON
-      jump_statement: jump_type JUMP_LABEL.expressions
+      expressions: expressions COMMA.expression
     Reduce:
       * -> [optional_label_decl]
-      NEWLINES -> [jump_statement]
-      SEMICOLON -> [jump_statement]
     Goto:
       INTEGER_LITERAL -> State 24
       FLOAT_LITERAL -> State 20
@@ -15868,10 +15975,9 @@ Parser Debug States:
       BIT_AND -> State 17
       GREATER -> State 22
       PARSE_ERROR -> State 31
-      expressions -> State 422
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      expression -> State 249
+      expression -> State 422
       optional_label_decl -> State 60
       sequence_expr -> State 68
       call_expr -> State 50
@@ -15906,709 +16012,13 @@ Parser Debug States:
 
   State 360:
     Kernel Items:
-      jump_statement: jump_type expressions., *
-      expressions: expressions.COMMA expression
+      jump_statement: jump_type JUMP_LABEL., NEWLINES
+      jump_statement: jump_type JUMP_LABEL., SEMICOLON
+      jump_statement: jump_type JUMP_LABEL.expressions
     Reduce:
-      * -> [jump_statement]
-    Goto:
-      COMMA -> State 358
-
-  State 361:
-    Kernel Items:
-      statement: statement_body NEWLINES., *
-    Reduce:
-      * -> [statement]
-    Goto:
-      (nil)
-
-  State 362:
-    Kernel Items:
-      statement: statement_body SEMICOLON., *
-    Reduce:
-      * -> [statement]
-    Goto:
-      (nil)
-
-  State 363:
-    Kernel Items:
-      trait_op_type: value_type.trait_op returnable_type
-      generic_parameter_def: IDENTIFIER value_type., *
-    Reduce:
-      * -> [generic_parameter_def]
-    Goto:
-      ADD -> State 191
-      SUB -> State 196
-      MUL -> State 194
-      trait_op -> State 197
-
-  State 364:
-    Kernel Items:
-      generic_parameter_defs: generic_parameter_defs COMMA.generic_parameter_def
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 265
-      generic_parameter_def -> State 423
-
-  State 365:
-    Kernel Items:
-      optional_generic_parameters: DOLLAR_LBRACKET optional_generic_parameter_defs RBRACKET., *
-    Reduce:
-      * -> [optional_generic_parameters]
-    Goto:
-      (nil)
-
-  State 366:
-    Kernel Items:
-      type_def: TYPE IDENTIFIER optional_generic_parameters value_type IMPLEMENTS.value_type
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 93
-      STRUCT -> State 34
-      ENUM -> State 90
-      TRAIT -> State 98
-      FUNC -> State 92
-      LPAREN -> State 94
-      LBRACKET -> State 26
-      DOT -> State 89
-      QUESTION -> State 96
-      EXCLAIM -> State 91
-      TILDE_TILDE -> State 97
-      BIT_NEG -> State 88
-      BIT_AND -> State 87
-      PARSE_ERROR -> State 95
-      initializable_type -> State 104
-      atom_type -> State 99
-      parse_error_type -> State 105
-      returnable_type -> State 108
-      prefixed_type -> State 107
-      prefix_type_op -> State 106
-      value_type -> State 424
-      trait_op_type -> State 110
-      implicit_struct_def -> State 103
-      explicit_struct_def -> State 52
-      implicit_enum_def -> State 102
-      explicit_enum_def -> State 100
-      trait_def -> State 109
-      func_type -> State 101
-
-  State 367:
-    Kernel Items:
-      named_func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs.RPAREN return_type statement_block
-    Reduce:
-      (nil)
-    Goto:
-      RPAREN -> State 425
-
-  State 368:
-    Kernel Items:
-      trait_op_type: value_type.trait_op returnable_type
-      parameter_def: IDENTIFIER ELLIPSIS value_type., *
-    Reduce:
-      * -> [parameter_def]
-    Goto:
-      ADD -> State 191
-      SUB -> State 196
-      MUL -> State 194
-      trait_op -> State 197
-
-  State 369:
-    Kernel Items:
-      named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER.optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type statement_block
-    Reduce:
-      LPAREN -> [optional_generic_parameters]
-    Goto:
-      DOLLAR_LBRACKET -> State 166
-      optional_generic_parameters -> State 426
-
-  State 370:
-    Kernel Items:
-      anonymous_func_expr: FUNC LPAREN optional_parameter_defs RPAREN return_type.statement_block
-    Reduce:
-      (nil)
-    Goto:
-      LBRACE -> State 72
-      statement_block -> State 427
-
-  State 371:
-    Kernel Items:
-      return_type: returnable_type., *
-    Reduce:
-      * -> [return_type]
-    Goto:
-      (nil)
-
-  State 372:
-    Kernel Items:
-      parameter_defs: parameter_defs COMMA parameter_def., *
-    Reduce:
-      * -> [parameter_defs]
-    Goto:
-      (nil)
-
-  State 373:
-    Kernel Items:
-      explicit_enum_value_defs: enum_value_def NEWLINES.enum_value_def
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 180
-      UNSAFE -> State 181
-      STRUCT -> State 34
-      ENUM -> State 90
-      TRAIT -> State 98
-      FUNC -> State 92
-      LPAREN -> State 94
-      LBRACKET -> State 26
-      DOT -> State 89
-      QUESTION -> State 96
-      EXCLAIM -> State 91
-      TILDE_TILDE -> State 97
-      BIT_NEG -> State 88
-      BIT_AND -> State 87
-      PARSE_ERROR -> State 95
-      unsafe_statement -> State 187
-      initializable_type -> State 104
-      atom_type -> State 99
-      parse_error_type -> State 105
-      returnable_type -> State 108
-      prefixed_type -> State 107
-      prefix_type_op -> State 106
-      value_type -> State 188
-      trait_op_type -> State 110
-      field_def -> State 279
-      implicit_struct_def -> State 103
-      explicit_struct_def -> State 52
-      enum_value_def -> State 428
-      implicit_enum_def -> State 102
-      explicit_enum_def -> State 100
-      trait_def -> State 109
-      func_type -> State 101
-
-  State 374:
-    Kernel Items:
-      implicit_enum_value_defs: enum_value_def OR.enum_value_def
-      explicit_enum_value_defs: enum_value_def OR.enum_value_def
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 180
-      UNSAFE -> State 181
-      STRUCT -> State 34
-      ENUM -> State 90
-      TRAIT -> State 98
-      FUNC -> State 92
-      LPAREN -> State 94
-      LBRACKET -> State 26
-      DOT -> State 89
-      QUESTION -> State 96
-      EXCLAIM -> State 91
-      TILDE_TILDE -> State 97
-      BIT_NEG -> State 88
-      BIT_AND -> State 87
-      PARSE_ERROR -> State 95
-      unsafe_statement -> State 187
-      initializable_type -> State 104
-      atom_type -> State 99
-      parse_error_type -> State 105
-      returnable_type -> State 108
-      prefixed_type -> State 107
-      prefix_type_op -> State 106
-      value_type -> State 188
-      trait_op_type -> State 110
-      field_def -> State 279
-      implicit_struct_def -> State 103
-      explicit_struct_def -> State 52
-      enum_value_def -> State 429
-      implicit_enum_def -> State 102
-      explicit_enum_def -> State 100
-      trait_def -> State 109
-      func_type -> State 101
-
-  State 375:
-    Kernel Items:
-      explicit_enum_def: ENUM LPAREN explicit_enum_value_defs RPAREN., *
-    Reduce:
-      * -> [explicit_enum_def]
-    Goto:
-      (nil)
-
-  State 376:
-    Kernel Items:
-      explicit_enum_value_defs: implicit_enum_value_defs NEWLINES.enum_value_def
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 180
-      UNSAFE -> State 181
-      STRUCT -> State 34
-      ENUM -> State 90
-      TRAIT -> State 98
-      FUNC -> State 92
-      LPAREN -> State 94
-      LBRACKET -> State 26
-      DOT -> State 89
-      QUESTION -> State 96
-      EXCLAIM -> State 91
-      TILDE_TILDE -> State 97
-      BIT_NEG -> State 88
-      BIT_AND -> State 87
-      PARSE_ERROR -> State 95
-      unsafe_statement -> State 187
-      initializable_type -> State 104
-      atom_type -> State 99
-      parse_error_type -> State 105
-      returnable_type -> State 108
-      prefixed_type -> State 107
-      prefix_type_op -> State 106
-      value_type -> State 188
-      trait_op_type -> State 110
-      field_def -> State 279
-      implicit_struct_def -> State 103
-      explicit_struct_def -> State 52
-      enum_value_def -> State 430
-      implicit_enum_def -> State 102
-      explicit_enum_def -> State 100
-      trait_def -> State 109
-      func_type -> State 101
-
-  State 377:
-    Kernel Items:
-      implicit_enum_value_defs: implicit_enum_value_defs OR.enum_value_def
-      explicit_enum_value_defs: implicit_enum_value_defs OR.enum_value_def
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 180
-      UNSAFE -> State 181
-      STRUCT -> State 34
-      ENUM -> State 90
-      TRAIT -> State 98
-      FUNC -> State 92
-      LPAREN -> State 94
-      LBRACKET -> State 26
-      DOT -> State 89
-      QUESTION -> State 96
-      EXCLAIM -> State 91
-      TILDE_TILDE -> State 97
-      BIT_NEG -> State 88
-      BIT_AND -> State 87
-      PARSE_ERROR -> State 95
-      unsafe_statement -> State 187
-      initializable_type -> State 104
-      atom_type -> State 99
-      parse_error_type -> State 105
-      returnable_type -> State 108
-      prefixed_type -> State 107
-      prefix_type_op -> State 106
-      value_type -> State 188
-      trait_op_type -> State 110
-      field_def -> State 279
-      implicit_struct_def -> State 103
-      explicit_struct_def -> State 52
-      enum_value_def -> State 431
-      implicit_enum_def -> State 102
-      explicit_enum_def -> State 100
-      trait_def -> State 109
-      func_type -> State 101
-
-  State 378:
-    Kernel Items:
-      trait_op_type: value_type.trait_op returnable_type
-      parameter_decl: ELLIPSIS value_type., *
-    Reduce:
-      * -> [parameter_decl]
-    Goto:
-      ADD -> State 191
-      SUB -> State 196
-      MUL -> State 194
-      trait_op -> State 197
-
-  State 379:
-    Kernel Items:
-      parameter_decl: IDENTIFIER ELLIPSIS.value_type
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 93
-      STRUCT -> State 34
-      ENUM -> State 90
-      TRAIT -> State 98
-      FUNC -> State 92
-      LPAREN -> State 94
-      LBRACKET -> State 26
-      DOT -> State 89
-      QUESTION -> State 96
-      EXCLAIM -> State 91
-      TILDE_TILDE -> State 97
-      BIT_NEG -> State 88
-      BIT_AND -> State 87
-      PARSE_ERROR -> State 95
-      initializable_type -> State 104
-      atom_type -> State 99
-      parse_error_type -> State 105
-      returnable_type -> State 108
-      prefixed_type -> State 107
-      prefix_type_op -> State 106
-      value_type -> State 432
-      trait_op_type -> State 110
-      implicit_struct_def -> State 103
-      explicit_struct_def -> State 52
-      implicit_enum_def -> State 102
-      explicit_enum_def -> State 100
-      trait_def -> State 109
-      func_type -> State 101
-
-  State 380:
-    Kernel Items:
-      trait_op_type: value_type.trait_op returnable_type
-      parameter_decl: IDENTIFIER value_type., *
-    Reduce:
-      * -> [parameter_decl]
-    Goto:
-      ADD -> State 191
-      SUB -> State 196
-      MUL -> State 194
-      trait_op -> State 197
-
-  State 381:
-    Kernel Items:
-      func_type: FUNC LPAREN optional_parameter_decls RPAREN.return_type
-    Reduce:
-      * -> [return_type]
-    Goto:
-      IDENTIFIER -> State 93
-      STRUCT -> State 34
-      ENUM -> State 90
-      TRAIT -> State 98
-      FUNC -> State 92
-      LPAREN -> State 94
-      LBRACKET -> State 26
-      DOT -> State 89
-      QUESTION -> State 96
-      EXCLAIM -> State 91
-      TILDE_TILDE -> State 97
-      BIT_NEG -> State 88
-      BIT_AND -> State 87
-      PARSE_ERROR -> State 95
-      initializable_type -> State 104
-      atom_type -> State 99
-      parse_error_type -> State 105
-      returnable_type -> State 371
-      prefixed_type -> State 107
-      prefix_type_op -> State 106
-      implicit_struct_def -> State 103
-      explicit_struct_def -> State 52
-      implicit_enum_def -> State 102
-      explicit_enum_def -> State 100
-      trait_def -> State 109
-      return_type -> State 433
-      func_type -> State 101
-
-  State 382:
-    Kernel Items:
-      parameter_decls: parameter_decls COMMA.parameter_decl
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 282
-      STRUCT -> State 34
-      ENUM -> State 90
-      TRAIT -> State 98
-      FUNC -> State 92
-      LPAREN -> State 94
-      LBRACKET -> State 26
-      DOT -> State 89
-      QUESTION -> State 96
-      EXCLAIM -> State 91
-      ELLIPSIS -> State 281
-      TILDE_TILDE -> State 97
-      BIT_NEG -> State 88
-      BIT_AND -> State 87
-      PARSE_ERROR -> State 95
-      initializable_type -> State 104
-      atom_type -> State 99
-      parse_error_type -> State 105
-      returnable_type -> State 108
-      prefixed_type -> State 107
-      prefix_type_op -> State 106
-      value_type -> State 286
-      trait_op_type -> State 110
-      implicit_struct_def -> State 103
-      explicit_struct_def -> State 52
-      implicit_enum_def -> State 102
-      explicit_enum_def -> State 100
-      trait_def -> State 109
-      parameter_decl -> State 434
-      func_type -> State 101
-
-  State 383:
-    Kernel Items:
-      atom_type: IDENTIFIER DOT IDENTIFIER optional_generic_binding., *
-    Reduce:
-      * -> [atom_type]
-    Goto:
-      (nil)
-
-  State 384:
-    Kernel Items:
-      unsafe_statement: UNSAFE LESS IDENTIFIER.GREATER STRING_LITERAL
-    Reduce:
-      (nil)
-    Goto:
-      GREATER -> State 435
-
-  State 385:
-    Kernel Items:
-      implicit_enum_value_defs: enum_value_def OR enum_value_def., *
-    Reduce:
-      * -> [implicit_enum_value_defs]
-    Goto:
-      (nil)
-
-  State 386:
-    Kernel Items:
-      enum_value_def: field_def ASSIGN DEFAULT., *
-    Reduce:
-      * -> [enum_value_def]
-    Goto:
-      (nil)
-
-  State 387:
-    Kernel Items:
-      implicit_enum_value_defs: implicit_enum_value_defs OR enum_value_def., *
-    Reduce:
-      * -> [implicit_enum_value_defs]
-    Goto:
-      (nil)
-
-  State 388:
-    Kernel Items:
-      implicit_field_defs: implicit_field_defs COMMA field_def., *
-    Reduce:
-      * -> [implicit_field_defs]
-    Goto:
-      (nil)
-
-  State 389:
-    Kernel Items:
-      method_signature: FUNC IDENTIFIER.LPAREN optional_parameter_decls RPAREN return_type
-    Reduce:
-      (nil)
-    Goto:
-      LPAREN -> State 436
-
-  State 390:
-    Kernel Items:
-      trait_def: TRAIT LPAREN optional_trait_properties RPAREN., *
-    Reduce:
-      * -> [trait_def]
-    Goto:
-      (nil)
-
-  State 391:
-    Kernel Items:
-      trait_properties: trait_properties COMMA.trait_property
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 180
-      UNSAFE -> State 181
-      STRUCT -> State 34
-      ENUM -> State 90
-      TRAIT -> State 98
-      FUNC -> State 297
-      LPAREN -> State 94
-      LBRACKET -> State 26
-      DOT -> State 89
-      QUESTION -> State 96
-      EXCLAIM -> State 91
-      TILDE_TILDE -> State 97
-      BIT_NEG -> State 88
-      BIT_AND -> State 87
-      PARSE_ERROR -> State 95
-      unsafe_statement -> State 187
-      initializable_type -> State 104
-      atom_type -> State 99
-      parse_error_type -> State 105
-      returnable_type -> State 108
-      prefixed_type -> State 107
-      prefix_type_op -> State 106
-      value_type -> State 188
-      trait_op_type -> State 110
-      field_def -> State 298
-      implicit_struct_def -> State 103
-      explicit_struct_def -> State 52
-      implicit_enum_def -> State 102
-      explicit_enum_def -> State 100
-      trait_property -> State 437
-      trait_def -> State 109
-      func_type -> State 101
-      method_signature -> State 299
-
-  State 392:
-    Kernel Items:
-      trait_properties: trait_properties NEWLINES.trait_property
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 180
-      UNSAFE -> State 181
-      STRUCT -> State 34
-      ENUM -> State 90
-      TRAIT -> State 98
-      FUNC -> State 297
-      LPAREN -> State 94
-      LBRACKET -> State 26
-      DOT -> State 89
-      QUESTION -> State 96
-      EXCLAIM -> State 91
-      TILDE_TILDE -> State 97
-      BIT_NEG -> State 88
-      BIT_AND -> State 87
-      PARSE_ERROR -> State 95
-      unsafe_statement -> State 187
-      initializable_type -> State 104
-      atom_type -> State 99
-      parse_error_type -> State 105
-      returnable_type -> State 108
-      prefixed_type -> State 107
-      prefix_type_op -> State 106
-      value_type -> State 188
-      trait_op_type -> State 110
-      field_def -> State 298
-      implicit_struct_def -> State 103
-      explicit_struct_def -> State 52
-      implicit_enum_def -> State 102
-      explicit_enum_def -> State 100
-      trait_property -> State 438
-      trait_def -> State 109
-      func_type -> State 101
-      method_signature -> State 299
-
-  State 393:
-    Kernel Items:
-      initializable_type: LBRACKET value_type COLON value_type RBRACKET., *
-    Reduce:
-      * -> [initializable_type]
-    Goto:
-      (nil)
-
-  State 394:
-    Kernel Items:
-      initializable_type: LBRACKET value_type COMMA INTEGER_LITERAL RBRACKET., *
-    Reduce:
-      * -> [initializable_type]
-    Goto:
-      (nil)
-
-  State 395:
-    Kernel Items:
-      explicit_field_defs: explicit_field_defs COMMA field_def., *
-    Reduce:
-      * -> [explicit_field_defs]
-    Goto:
-      (nil)
-
-  State 396:
-    Kernel Items:
-      explicit_field_defs: explicit_field_defs NEWLINES field_def., *
-    Reduce:
-      * -> [explicit_field_defs]
-    Goto:
-      (nil)
-
-  State 397:
-    Kernel Items:
-      generic_arguments: generic_arguments COMMA value_type., *
-      trait_op_type: value_type.trait_op returnable_type
-    Reduce:
-      * -> [generic_arguments]
-    Goto:
-      ADD -> State 191
-      SUB -> State 196
-      MUL -> State 194
-      trait_op -> State 197
-
-  State 398:
-    Kernel Items:
-      call_expr: accessible_expr optional_generic_binding LPAREN optional_arguments RPAREN., *
-    Reduce:
-      * -> [call_expr]
-    Goto:
-      (nil)
-
-  State 399:
-    Kernel Items:
-      loop_expr: DO statement_block FOR sequence_expr., $
-    Reduce:
-      $ -> [loop_expr]
-    Goto:
-      (nil)
-
-  State 400:
-    Kernel Items:
-      for_assignment: assign_pattern ASSIGN sequence_expr., SEMICOLON
-    Reduce:
-      SEMICOLON -> [for_assignment]
-    Goto:
-      (nil)
-
-  State 401:
-    Kernel Items:
-      loop_expr: FOR assign_pattern IN sequence_expr.DO statement_block
-    Reduce:
-      (nil)
-    Goto:
-      DO -> State 439
-
-  State 402:
-    Kernel Items:
-      loop_expr: FOR for_assignment SEMICOLON optional_sequence_expr.SEMICOLON optional_sequence_expr DO statement_block
-    Reduce:
-      (nil)
-    Goto:
-      SEMICOLON -> State 440
-
-  State 403:
-    Kernel Items:
-      optional_sequence_expr: sequence_expr., DO
-    Reduce:
-      DO -> [optional_sequence_expr]
-    Goto:
-      (nil)
-
-  State 404:
-    Kernel Items:
-      loop_expr: FOR sequence_expr DO statement_block., $
-    Reduce:
-      $ -> [loop_expr]
-    Goto:
-      (nil)
-
-  State 405:
-    Kernel Items:
-      case_pattern: DOT IDENTIFIER.implicit_struct_expr
-    Reduce:
-      (nil)
-    Goto:
-      LPAREN -> State 28
-      implicit_struct_expr -> State 441
-
-  State 406:
-    Kernel Items:
-      case_pattern: VAR DOT.IDENTIFIER tuple_pattern
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 442
-
-  State 407:
-    Kernel Items:
-      condition: CASE case_patterns ASSIGN.sequence_expr
-    Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
+      NEWLINES -> [jump_statement]
+      SEMICOLON -> [jump_statement]
     Goto:
       INTEGER_LITERAL -> State 24
       FLOAT_LITERAL -> State 20
@@ -16631,10 +16041,12 @@ Parser Debug States:
       BIT_AND -> State 17
       GREATER -> State 22
       PARSE_ERROR -> State 31
+      expressions -> State 423
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      optional_label_decl -> State 85
-      sequence_expr -> State 443
+      expression -> State 251
+      optional_label_decl -> State 60
+      sequence_expr -> State 68
       call_expr -> State 50
       atom_expr -> State 43
       parse_error_expr -> State 62
@@ -16665,9 +16077,709 @@ Parser Debug States:
       explicit_struct_def -> State 52
       anonymous_func_expr -> State 42
 
+  State 361:
+    Kernel Items:
+      jump_statement: jump_type expressions., *
+      expressions: expressions.COMMA expression
+    Reduce:
+      * -> [jump_statement]
+    Goto:
+      COMMA -> State 359
+
+  State 362:
+    Kernel Items:
+      statement: statement_body NEWLINES., *
+    Reduce:
+      * -> [statement]
+    Goto:
+      (nil)
+
+  State 363:
+    Kernel Items:
+      statement: statement_body SEMICOLON., *
+    Reduce:
+      * -> [statement]
+    Goto:
+      (nil)
+
+  State 364:
+    Kernel Items:
+      trait_op_type: value_type.trait_op returnable_type
+      generic_parameter_def: IDENTIFIER value_type., *
+    Reduce:
+      * -> [generic_parameter_def]
+    Goto:
+      ADD -> State 191
+      SUB -> State 196
+      MUL -> State 194
+      trait_op -> State 197
+
+  State 365:
+    Kernel Items:
+      generic_parameter_defs: generic_parameter_defs COMMA.generic_parameter_def
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 267
+      generic_parameter_def -> State 424
+
+  State 366:
+    Kernel Items:
+      optional_generic_parameters: DOLLAR_LBRACKET optional_generic_parameter_defs RBRACKET., *
+    Reduce:
+      * -> [optional_generic_parameters]
+    Goto:
+      (nil)
+
+  State 367:
+    Kernel Items:
+      type_def: TYPE IDENTIFIER optional_generic_parameters value_type IMPLEMENTS.value_type
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 93
+      STRUCT -> State 34
+      ENUM -> State 90
+      TRAIT -> State 98
+      FUNC -> State 92
+      LPAREN -> State 94
+      LBRACKET -> State 26
+      DOT -> State 89
+      QUESTION -> State 96
+      EXCLAIM -> State 91
+      TILDE_TILDE -> State 97
+      BIT_NEG -> State 88
+      BIT_AND -> State 87
+      PARSE_ERROR -> State 95
+      initializable_type -> State 104
+      atom_type -> State 99
+      parse_error_type -> State 105
+      returnable_type -> State 108
+      prefixed_type -> State 107
+      prefix_type_op -> State 106
+      value_type -> State 425
+      trait_op_type -> State 110
+      implicit_struct_def -> State 103
+      explicit_struct_def -> State 52
+      implicit_enum_def -> State 102
+      explicit_enum_def -> State 100
+      trait_def -> State 109
+      func_type -> State 101
+
+  State 368:
+    Kernel Items:
+      named_func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs.RPAREN return_type statement_block
+    Reduce:
+      (nil)
+    Goto:
+      RPAREN -> State 426
+
+  State 369:
+    Kernel Items:
+      trait_op_type: value_type.trait_op returnable_type
+      parameter_def: IDENTIFIER ELLIPSIS value_type., *
+    Reduce:
+      * -> [parameter_def]
+    Goto:
+      ADD -> State 191
+      SUB -> State 196
+      MUL -> State 194
+      trait_op -> State 197
+
+  State 370:
+    Kernel Items:
+      named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER.optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type statement_block
+    Reduce:
+      LPAREN -> [optional_generic_parameters]
+    Goto:
+      DOLLAR_LBRACKET -> State 166
+      optional_generic_parameters -> State 427
+
+  State 371:
+    Kernel Items:
+      anonymous_func_expr: FUNC LPAREN optional_parameter_defs RPAREN return_type.statement_block
+    Reduce:
+      (nil)
+    Goto:
+      LBRACE -> State 72
+      statement_block -> State 428
+
+  State 372:
+    Kernel Items:
+      return_type: returnable_type., *
+    Reduce:
+      * -> [return_type]
+    Goto:
+      (nil)
+
+  State 373:
+    Kernel Items:
+      parameter_defs: parameter_defs COMMA parameter_def., *
+    Reduce:
+      * -> [parameter_defs]
+    Goto:
+      (nil)
+
+  State 374:
+    Kernel Items:
+      explicit_enum_value_defs: enum_value_def NEWLINES.enum_value_def
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 180
+      UNSAFE -> State 181
+      STRUCT -> State 34
+      ENUM -> State 90
+      TRAIT -> State 98
+      FUNC -> State 92
+      LPAREN -> State 94
+      LBRACKET -> State 26
+      DOT -> State 89
+      QUESTION -> State 96
+      EXCLAIM -> State 91
+      TILDE_TILDE -> State 97
+      BIT_NEG -> State 88
+      BIT_AND -> State 87
+      PARSE_ERROR -> State 95
+      unsafe_statement -> State 187
+      initializable_type -> State 104
+      atom_type -> State 99
+      parse_error_type -> State 105
+      returnable_type -> State 108
+      prefixed_type -> State 107
+      prefix_type_op -> State 106
+      value_type -> State 188
+      trait_op_type -> State 110
+      field_def -> State 281
+      implicit_struct_def -> State 103
+      explicit_struct_def -> State 52
+      enum_value_def -> State 429
+      implicit_enum_def -> State 102
+      explicit_enum_def -> State 100
+      trait_def -> State 109
+      func_type -> State 101
+
+  State 375:
+    Kernel Items:
+      implicit_enum_value_defs: enum_value_def OR.enum_value_def
+      explicit_enum_value_defs: enum_value_def OR.enum_value_def
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 180
+      UNSAFE -> State 181
+      STRUCT -> State 34
+      ENUM -> State 90
+      TRAIT -> State 98
+      FUNC -> State 92
+      LPAREN -> State 94
+      LBRACKET -> State 26
+      DOT -> State 89
+      QUESTION -> State 96
+      EXCLAIM -> State 91
+      TILDE_TILDE -> State 97
+      BIT_NEG -> State 88
+      BIT_AND -> State 87
+      PARSE_ERROR -> State 95
+      unsafe_statement -> State 187
+      initializable_type -> State 104
+      atom_type -> State 99
+      parse_error_type -> State 105
+      returnable_type -> State 108
+      prefixed_type -> State 107
+      prefix_type_op -> State 106
+      value_type -> State 188
+      trait_op_type -> State 110
+      field_def -> State 281
+      implicit_struct_def -> State 103
+      explicit_struct_def -> State 52
+      enum_value_def -> State 430
+      implicit_enum_def -> State 102
+      explicit_enum_def -> State 100
+      trait_def -> State 109
+      func_type -> State 101
+
+  State 376:
+    Kernel Items:
+      explicit_enum_def: ENUM LPAREN explicit_enum_value_defs RPAREN., *
+    Reduce:
+      * -> [explicit_enum_def]
+    Goto:
+      (nil)
+
+  State 377:
+    Kernel Items:
+      explicit_enum_value_defs: implicit_enum_value_defs NEWLINES.enum_value_def
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 180
+      UNSAFE -> State 181
+      STRUCT -> State 34
+      ENUM -> State 90
+      TRAIT -> State 98
+      FUNC -> State 92
+      LPAREN -> State 94
+      LBRACKET -> State 26
+      DOT -> State 89
+      QUESTION -> State 96
+      EXCLAIM -> State 91
+      TILDE_TILDE -> State 97
+      BIT_NEG -> State 88
+      BIT_AND -> State 87
+      PARSE_ERROR -> State 95
+      unsafe_statement -> State 187
+      initializable_type -> State 104
+      atom_type -> State 99
+      parse_error_type -> State 105
+      returnable_type -> State 108
+      prefixed_type -> State 107
+      prefix_type_op -> State 106
+      value_type -> State 188
+      trait_op_type -> State 110
+      field_def -> State 281
+      implicit_struct_def -> State 103
+      explicit_struct_def -> State 52
+      enum_value_def -> State 431
+      implicit_enum_def -> State 102
+      explicit_enum_def -> State 100
+      trait_def -> State 109
+      func_type -> State 101
+
+  State 378:
+    Kernel Items:
+      implicit_enum_value_defs: implicit_enum_value_defs OR.enum_value_def
+      explicit_enum_value_defs: implicit_enum_value_defs OR.enum_value_def
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 180
+      UNSAFE -> State 181
+      STRUCT -> State 34
+      ENUM -> State 90
+      TRAIT -> State 98
+      FUNC -> State 92
+      LPAREN -> State 94
+      LBRACKET -> State 26
+      DOT -> State 89
+      QUESTION -> State 96
+      EXCLAIM -> State 91
+      TILDE_TILDE -> State 97
+      BIT_NEG -> State 88
+      BIT_AND -> State 87
+      PARSE_ERROR -> State 95
+      unsafe_statement -> State 187
+      initializable_type -> State 104
+      atom_type -> State 99
+      parse_error_type -> State 105
+      returnable_type -> State 108
+      prefixed_type -> State 107
+      prefix_type_op -> State 106
+      value_type -> State 188
+      trait_op_type -> State 110
+      field_def -> State 281
+      implicit_struct_def -> State 103
+      explicit_struct_def -> State 52
+      enum_value_def -> State 432
+      implicit_enum_def -> State 102
+      explicit_enum_def -> State 100
+      trait_def -> State 109
+      func_type -> State 101
+
+  State 379:
+    Kernel Items:
+      trait_op_type: value_type.trait_op returnable_type
+      parameter_decl: ELLIPSIS value_type., *
+    Reduce:
+      * -> [parameter_decl]
+    Goto:
+      ADD -> State 191
+      SUB -> State 196
+      MUL -> State 194
+      trait_op -> State 197
+
+  State 380:
+    Kernel Items:
+      parameter_decl: IDENTIFIER ELLIPSIS.value_type
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 93
+      STRUCT -> State 34
+      ENUM -> State 90
+      TRAIT -> State 98
+      FUNC -> State 92
+      LPAREN -> State 94
+      LBRACKET -> State 26
+      DOT -> State 89
+      QUESTION -> State 96
+      EXCLAIM -> State 91
+      TILDE_TILDE -> State 97
+      BIT_NEG -> State 88
+      BIT_AND -> State 87
+      PARSE_ERROR -> State 95
+      initializable_type -> State 104
+      atom_type -> State 99
+      parse_error_type -> State 105
+      returnable_type -> State 108
+      prefixed_type -> State 107
+      prefix_type_op -> State 106
+      value_type -> State 433
+      trait_op_type -> State 110
+      implicit_struct_def -> State 103
+      explicit_struct_def -> State 52
+      implicit_enum_def -> State 102
+      explicit_enum_def -> State 100
+      trait_def -> State 109
+      func_type -> State 101
+
+  State 381:
+    Kernel Items:
+      trait_op_type: value_type.trait_op returnable_type
+      parameter_decl: IDENTIFIER value_type., *
+    Reduce:
+      * -> [parameter_decl]
+    Goto:
+      ADD -> State 191
+      SUB -> State 196
+      MUL -> State 194
+      trait_op -> State 197
+
+  State 382:
+    Kernel Items:
+      func_type: FUNC LPAREN optional_parameter_decls RPAREN.return_type
+    Reduce:
+      * -> [return_type]
+    Goto:
+      IDENTIFIER -> State 93
+      STRUCT -> State 34
+      ENUM -> State 90
+      TRAIT -> State 98
+      FUNC -> State 92
+      LPAREN -> State 94
+      LBRACKET -> State 26
+      DOT -> State 89
+      QUESTION -> State 96
+      EXCLAIM -> State 91
+      TILDE_TILDE -> State 97
+      BIT_NEG -> State 88
+      BIT_AND -> State 87
+      PARSE_ERROR -> State 95
+      initializable_type -> State 104
+      atom_type -> State 99
+      parse_error_type -> State 105
+      returnable_type -> State 372
+      prefixed_type -> State 107
+      prefix_type_op -> State 106
+      implicit_struct_def -> State 103
+      explicit_struct_def -> State 52
+      implicit_enum_def -> State 102
+      explicit_enum_def -> State 100
+      trait_def -> State 109
+      return_type -> State 434
+      func_type -> State 101
+
+  State 383:
+    Kernel Items:
+      parameter_decls: parameter_decls COMMA.parameter_decl
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 284
+      STRUCT -> State 34
+      ENUM -> State 90
+      TRAIT -> State 98
+      FUNC -> State 92
+      LPAREN -> State 94
+      LBRACKET -> State 26
+      DOT -> State 89
+      QUESTION -> State 96
+      EXCLAIM -> State 91
+      ELLIPSIS -> State 283
+      TILDE_TILDE -> State 97
+      BIT_NEG -> State 88
+      BIT_AND -> State 87
+      PARSE_ERROR -> State 95
+      initializable_type -> State 104
+      atom_type -> State 99
+      parse_error_type -> State 105
+      returnable_type -> State 108
+      prefixed_type -> State 107
+      prefix_type_op -> State 106
+      value_type -> State 288
+      trait_op_type -> State 110
+      implicit_struct_def -> State 103
+      explicit_struct_def -> State 52
+      implicit_enum_def -> State 102
+      explicit_enum_def -> State 100
+      trait_def -> State 109
+      parameter_decl -> State 435
+      func_type -> State 101
+
+  State 384:
+    Kernel Items:
+      atom_type: IDENTIFIER DOT IDENTIFIER optional_generic_binding., *
+    Reduce:
+      * -> [atom_type]
+    Goto:
+      (nil)
+
+  State 385:
+    Kernel Items:
+      unsafe_statement: UNSAFE LESS IDENTIFIER.GREATER STRING_LITERAL
+    Reduce:
+      (nil)
+    Goto:
+      GREATER -> State 436
+
+  State 386:
+    Kernel Items:
+      implicit_enum_value_defs: enum_value_def OR enum_value_def., *
+    Reduce:
+      * -> [implicit_enum_value_defs]
+    Goto:
+      (nil)
+
+  State 387:
+    Kernel Items:
+      enum_value_def: field_def ASSIGN DEFAULT., *
+    Reduce:
+      * -> [enum_value_def]
+    Goto:
+      (nil)
+
+  State 388:
+    Kernel Items:
+      implicit_enum_value_defs: implicit_enum_value_defs OR enum_value_def., *
+    Reduce:
+      * -> [implicit_enum_value_defs]
+    Goto:
+      (nil)
+
+  State 389:
+    Kernel Items:
+      implicit_field_defs: implicit_field_defs COMMA field_def., *
+    Reduce:
+      * -> [implicit_field_defs]
+    Goto:
+      (nil)
+
+  State 390:
+    Kernel Items:
+      method_signature: FUNC IDENTIFIER.LPAREN optional_parameter_decls RPAREN return_type
+    Reduce:
+      (nil)
+    Goto:
+      LPAREN -> State 437
+
+  State 391:
+    Kernel Items:
+      trait_def: TRAIT LPAREN optional_trait_properties RPAREN., *
+    Reduce:
+      * -> [trait_def]
+    Goto:
+      (nil)
+
+  State 392:
+    Kernel Items:
+      trait_properties: trait_properties COMMA.trait_property
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 180
+      UNSAFE -> State 181
+      STRUCT -> State 34
+      ENUM -> State 90
+      TRAIT -> State 98
+      FUNC -> State 299
+      LPAREN -> State 94
+      LBRACKET -> State 26
+      DOT -> State 89
+      QUESTION -> State 96
+      EXCLAIM -> State 91
+      TILDE_TILDE -> State 97
+      BIT_NEG -> State 88
+      BIT_AND -> State 87
+      PARSE_ERROR -> State 95
+      unsafe_statement -> State 187
+      initializable_type -> State 104
+      atom_type -> State 99
+      parse_error_type -> State 105
+      returnable_type -> State 108
+      prefixed_type -> State 107
+      prefix_type_op -> State 106
+      value_type -> State 188
+      trait_op_type -> State 110
+      field_def -> State 300
+      implicit_struct_def -> State 103
+      explicit_struct_def -> State 52
+      implicit_enum_def -> State 102
+      explicit_enum_def -> State 100
+      trait_property -> State 438
+      trait_def -> State 109
+      func_type -> State 101
+      method_signature -> State 301
+
+  State 393:
+    Kernel Items:
+      trait_properties: trait_properties NEWLINES.trait_property
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 180
+      UNSAFE -> State 181
+      STRUCT -> State 34
+      ENUM -> State 90
+      TRAIT -> State 98
+      FUNC -> State 299
+      LPAREN -> State 94
+      LBRACKET -> State 26
+      DOT -> State 89
+      QUESTION -> State 96
+      EXCLAIM -> State 91
+      TILDE_TILDE -> State 97
+      BIT_NEG -> State 88
+      BIT_AND -> State 87
+      PARSE_ERROR -> State 95
+      unsafe_statement -> State 187
+      initializable_type -> State 104
+      atom_type -> State 99
+      parse_error_type -> State 105
+      returnable_type -> State 108
+      prefixed_type -> State 107
+      prefix_type_op -> State 106
+      value_type -> State 188
+      trait_op_type -> State 110
+      field_def -> State 300
+      implicit_struct_def -> State 103
+      explicit_struct_def -> State 52
+      implicit_enum_def -> State 102
+      explicit_enum_def -> State 100
+      trait_property -> State 439
+      trait_def -> State 109
+      func_type -> State 101
+      method_signature -> State 301
+
+  State 394:
+    Kernel Items:
+      initializable_type: LBRACKET value_type COLON value_type RBRACKET., *
+    Reduce:
+      * -> [initializable_type]
+    Goto:
+      (nil)
+
+  State 395:
+    Kernel Items:
+      initializable_type: LBRACKET value_type COMMA INTEGER_LITERAL RBRACKET., *
+    Reduce:
+      * -> [initializable_type]
+    Goto:
+      (nil)
+
+  State 396:
+    Kernel Items:
+      explicit_field_defs: explicit_field_defs COMMA field_def., *
+    Reduce:
+      * -> [explicit_field_defs]
+    Goto:
+      (nil)
+
+  State 397:
+    Kernel Items:
+      explicit_field_defs: explicit_field_defs NEWLINES field_def., *
+    Reduce:
+      * -> [explicit_field_defs]
+    Goto:
+      (nil)
+
+  State 398:
+    Kernel Items:
+      generic_arguments: generic_arguments COMMA value_type., *
+      trait_op_type: value_type.trait_op returnable_type
+    Reduce:
+      * -> [generic_arguments]
+    Goto:
+      ADD -> State 191
+      SUB -> State 196
+      MUL -> State 194
+      trait_op -> State 197
+
+  State 399:
+    Kernel Items:
+      call_expr: accessible_expr optional_generic_binding LPAREN optional_arguments RPAREN., *
+    Reduce:
+      * -> [call_expr]
+    Goto:
+      (nil)
+
+  State 400:
+    Kernel Items:
+      loop_expr: DO statement_block FOR sequence_expr., $
+    Reduce:
+      $ -> [loop_expr]
+    Goto:
+      (nil)
+
+  State 401:
+    Kernel Items:
+      for_assignment: assign_pattern ASSIGN sequence_expr., SEMICOLON
+    Reduce:
+      SEMICOLON -> [for_assignment]
+    Goto:
+      (nil)
+
+  State 402:
+    Kernel Items:
+      loop_expr: FOR assign_pattern IN sequence_expr.DO statement_block
+    Reduce:
+      (nil)
+    Goto:
+      DO -> State 440
+
+  State 403:
+    Kernel Items:
+      loop_expr: FOR for_assignment SEMICOLON optional_sequence_expr.SEMICOLON optional_sequence_expr DO statement_block
+    Reduce:
+      (nil)
+    Goto:
+      SEMICOLON -> State 441
+
+  State 404:
+    Kernel Items:
+      optional_sequence_expr: sequence_expr., DO
+    Reduce:
+      DO -> [optional_sequence_expr]
+    Goto:
+      (nil)
+
+  State 405:
+    Kernel Items:
+      loop_expr: FOR sequence_expr DO statement_block., $
+    Reduce:
+      $ -> [loop_expr]
+    Goto:
+      (nil)
+
+  State 406:
+    Kernel Items:
+      case_pattern: DOT IDENTIFIER.implicit_struct_expr
+    Reduce:
+      (nil)
+    Goto:
+      LPAREN -> State 28
+      implicit_struct_expr -> State 442
+
+  State 407:
+    Kernel Items:
+      case_pattern: VAR DOT.IDENTIFIER tuple_pattern
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 443
+
   State 408:
     Kernel Items:
-      case_patterns: case_patterns COMMA.case_pattern
+      condition: CASE case_patterns ASSIGN.sequence_expr
     Reduce:
       LBRACE -> [optional_label_decl]
     Goto:
@@ -16680,13 +16792,12 @@ Parser Debug States:
       FALSE -> State 19
       STRUCT -> State 34
       FUNC -> State 21
-      VAR -> State 325
+      VAR -> State 37
       LET -> State 27
       NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      DOT -> State 324
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -16695,10 +16806,8 @@ Parser Debug States:
       PARSE_ERROR -> State 31
       var_decl_pattern -> State 69
       var_or_let -> State 70
-      assign_pattern -> State 326
-      case_pattern -> State 444
       optional_label_decl -> State 85
-      sequence_expr -> State 329
+      sequence_expr -> State 444
       call_expr -> State 50
       atom_expr -> State 43
       parse_error_expr -> State 62
@@ -16731,415 +16840,8 @@ Parser Debug States:
 
   State 409:
     Kernel Items:
-      if_expr: IF condition statement_block ELSE.statement_block
-      if_expr: IF condition statement_block ELSE.if_expr
+      case_patterns: case_patterns COMMA.case_pattern
     Reduce:
-      (nil)
-    Goto:
-      IF -> State 149
-      LBRACE -> State 72
-      statement_block -> State 446
-      if_expr -> State 445
-
-  State 410:
-    Kernel Items:
-      field_var_pattern: IDENTIFIER ASSIGN var_pattern., *
-    Reduce:
-      * -> [field_var_pattern]
-    Goto:
-      (nil)
-
-  State 411:
-    Kernel Items:
-      field_var_patterns: field_var_patterns COMMA field_var_pattern., *
-    Reduce:
-      * -> [field_var_patterns]
-    Goto:
-      (nil)
-
-  State 412:
-    Kernel Items:
-      statement_body: CASE case_patterns COLON.optional_simple_statement_body
-    Reduce:
-      * -> [optional_label_decl]
-      NEWLINES -> [optional_simple_statement_body]
-      SEMICOLON -> [optional_simple_statement_body]
-    Goto:
-      INTEGER_LITERAL -> State 24
-      FLOAT_LITERAL -> State 20
-      RUNE_LITERAL -> State 32
-      STRING_LITERAL -> State 33
-      IDENTIFIER -> State 23
-      TRUE -> State 36
-      FALSE -> State 19
-      RETURN -> State 242
-      BREAK -> State 234
-      CONTINUE -> State 236
-      FALLTHROUGH -> State 239
-      UNSAFE -> State 181
-      STRUCT -> State 34
-      FUNC -> State 21
-      ASYNC -> State 233
-      DEFER -> State 238
-      VAR -> State 37
-      LET -> State 27
-      NOT -> State 30
-      LABEL_DECL -> State 25
-      LPAREN -> State 28
-      LBRACKET -> State 26
-      SUB -> State 35
-      MUL -> State 29
-      BIT_NEG -> State 18
-      BIT_AND -> State 17
-      GREATER -> State 22
-      PARSE_ERROR -> State 31
-      simple_statement_body -> State 414
-      optional_simple_statement_body -> State 447
-      expression_or_improper_struct_statement -> State 250
-      callback_op -> State 247
-      callback_op_statement -> State 248
-      unsafe_statement -> State 261
-      jump_statement -> State 254
-      jump_type -> State 255
-      expressions -> State 251
-      fallthrough_statement -> State 252
-      assign_statement -> State 245
-      unary_op_assign_statement -> State 260
-      binary_op_assign_statement -> State 246
-      var_decl_pattern -> State 69
-      var_or_let -> State 70
-      assign_pattern -> State 244
-      expression -> State 249
-      optional_label_decl -> State 60
-      sequence_expr -> State 256
-      call_expr -> State 50
-      atom_expr -> State 43
-      parse_error_expr -> State 62
-      literal_expr -> State 58
-      identifier_expr -> State 53
-      block_expr -> State 49
-      initialize_expr -> State 57
-      implicit_struct_expr -> State 54
-      accessible_expr -> State 243
-      access_expr -> State 38
-      index_expr -> State 55
-      postfixable_expr -> State 64
-      postfix_unary_expr -> State 63
-      prefixable_expr -> State 67
-      prefix_unary_expr -> State 65
-      prefix_unary_op -> State 66
-      mul_expr -> State 59
-      binary_mul_expr -> State 47
-      add_expr -> State 40
-      binary_add_expr -> State 44
-      cmp_expr -> State 51
-      binary_cmp_expr -> State 46
-      and_expr -> State 41
-      binary_and_expr -> State 45
-      or_expr -> State 61
-      binary_or_expr -> State 48
-      initializable_type -> State 56
-      explicit_struct_def -> State 52
-      anonymous_func_expr -> State 42
-
-  State 413:
-    Kernel Items:
-      statement_body: DEFAULT COLON optional_simple_statement_body., *
-    Reduce:
-      * -> [statement_body]
-    Goto:
-      (nil)
-
-  State 414:
-    Kernel Items:
-      optional_simple_statement_body: simple_statement_body., *
-    Reduce:
-      * -> [optional_simple_statement_body]
-    Goto:
-      (nil)
-
-  State 415:
-    Kernel Items:
-      import_clause_terminal: import_clause.NEWLINES
-      import_clause_terminal: import_clause.COMMA
-    Reduce:
-      (nil)
-    Goto:
-      NEWLINES -> State 449
-      COMMA -> State 448
-
-  State 416:
-    Kernel Items:
-      import_clauses: import_clause_terminal., *
-    Reduce:
-      * -> [import_clauses]
-    Goto:
-      (nil)
-
-  State 417:
-    Kernel Items:
-      import_statement: IMPORT LPAREN import_clauses.RPAREN
-      import_clauses: import_clauses.import_clause_terminal
-    Reduce:
-      (nil)
-    Goto:
-      STRING_LITERAL -> State 338
-      RPAREN -> State 450
-      import_clause -> State 415
-      import_clause_terminal -> State 451
-
-  State 418:
-    Kernel Items:
-      import_clause: STRING_LITERAL AS.IDENTIFIER
-    Reduce:
-      (nil)
-    Goto:
-      IDENTIFIER -> State 452
-
-  State 419:
-    Kernel Items:
-      binary_op_assign_statement: accessible_expr binary_op_assign expression., *
-    Reduce:
-      * -> [binary_op_assign_statement]
-    Goto:
-      (nil)
-
-  State 420:
-    Kernel Items:
-      assign_statement: assign_pattern ASSIGN expression., *
-    Reduce:
-      * -> [assign_statement]
-    Goto:
-      (nil)
-
-  State 421:
-    Kernel Items:
-      expressions: expressions COMMA expression., *
-    Reduce:
-      * -> [expressions]
-    Goto:
-      (nil)
-
-  State 422:
-    Kernel Items:
-      jump_statement: jump_type JUMP_LABEL expressions., *
-      expressions: expressions.COMMA expression
-    Reduce:
-      * -> [jump_statement]
-    Goto:
-      COMMA -> State 358
-
-  State 423:
-    Kernel Items:
-      generic_parameter_defs: generic_parameter_defs COMMA generic_parameter_def., *
-    Reduce:
-      * -> [generic_parameter_defs]
-    Goto:
-      (nil)
-
-  State 424:
-    Kernel Items:
-      trait_op_type: value_type.trait_op returnable_type
-      type_def: TYPE IDENTIFIER optional_generic_parameters value_type IMPLEMENTS value_type., *
-    Reduce:
-      * -> [type_def]
-    Goto:
-      ADD -> State 191
-      SUB -> State 196
-      MUL -> State 194
-      trait_op -> State 197
-
-  State 425:
-    Kernel Items:
-      named_func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN.return_type statement_block
-    Reduce:
-      LBRACE -> [return_type]
-    Goto:
-      IDENTIFIER -> State 93
-      STRUCT -> State 34
-      ENUM -> State 90
-      TRAIT -> State 98
-      FUNC -> State 92
-      LPAREN -> State 94
-      LBRACKET -> State 26
-      DOT -> State 89
-      QUESTION -> State 96
-      EXCLAIM -> State 91
-      TILDE_TILDE -> State 97
-      BIT_NEG -> State 88
-      BIT_AND -> State 87
-      PARSE_ERROR -> State 95
-      initializable_type -> State 104
-      atom_type -> State 99
-      parse_error_type -> State 105
-      returnable_type -> State 371
-      prefixed_type -> State 107
-      prefix_type_op -> State 106
-      implicit_struct_def -> State 103
-      explicit_struct_def -> State 52
-      implicit_enum_def -> State 102
-      explicit_enum_def -> State 100
-      trait_def -> State 109
-      return_type -> State 453
-      func_type -> State 101
-
-  State 426:
-    Kernel Items:
-      named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters.LPAREN optional_parameter_defs RPAREN return_type statement_block
-    Reduce:
-      (nil)
-    Goto:
-      LPAREN -> State 454
-
-  State 427:
-    Kernel Items:
-      anonymous_func_expr: FUNC LPAREN optional_parameter_defs RPAREN return_type statement_block., *
-    Reduce:
-      * -> [anonymous_func_expr]
-    Goto:
-      (nil)
-
-  State 428:
-    Kernel Items:
-      explicit_enum_value_defs: enum_value_def NEWLINES enum_value_def., RPAREN
-    Reduce:
-      RPAREN -> [explicit_enum_value_defs]
-    Goto:
-      (nil)
-
-  State 429:
-    Kernel Items:
-      implicit_enum_value_defs: enum_value_def OR enum_value_def., *
-      explicit_enum_value_defs: enum_value_def OR enum_value_def., RPAREN
-    Reduce:
-      * -> [implicit_enum_value_defs]
-      RPAREN -> [explicit_enum_value_defs]
-    Goto:
-      (nil)
-
-  State 430:
-    Kernel Items:
-      explicit_enum_value_defs: implicit_enum_value_defs NEWLINES enum_value_def., RPAREN
-    Reduce:
-      RPAREN -> [explicit_enum_value_defs]
-    Goto:
-      (nil)
-
-  State 431:
-    Kernel Items:
-      implicit_enum_value_defs: implicit_enum_value_defs OR enum_value_def., *
-      explicit_enum_value_defs: implicit_enum_value_defs OR enum_value_def., RPAREN
-    Reduce:
-      * -> [implicit_enum_value_defs]
-      RPAREN -> [explicit_enum_value_defs]
-    Goto:
-      (nil)
-
-  State 432:
-    Kernel Items:
-      trait_op_type: value_type.trait_op returnable_type
-      parameter_decl: IDENTIFIER ELLIPSIS value_type., *
-    Reduce:
-      * -> [parameter_decl]
-    Goto:
-      ADD -> State 191
-      SUB -> State 196
-      MUL -> State 194
-      trait_op -> State 197
-
-  State 433:
-    Kernel Items:
-      func_type: FUNC LPAREN optional_parameter_decls RPAREN return_type., *
-    Reduce:
-      * -> [func_type]
-    Goto:
-      (nil)
-
-  State 434:
-    Kernel Items:
-      parameter_decls: parameter_decls COMMA parameter_decl., *
-    Reduce:
-      * -> [parameter_decls]
-    Goto:
-      (nil)
-
-  State 435:
-    Kernel Items:
-      unsafe_statement: UNSAFE LESS IDENTIFIER GREATER.STRING_LITERAL
-    Reduce:
-      (nil)
-    Goto:
-      STRING_LITERAL -> State 455
-
-  State 436:
-    Kernel Items:
-      method_signature: FUNC IDENTIFIER LPAREN.optional_parameter_decls RPAREN return_type
-    Reduce:
-      RPAREN -> [optional_parameter_decls]
-    Goto:
-      IDENTIFIER -> State 282
-      STRUCT -> State 34
-      ENUM -> State 90
-      TRAIT -> State 98
-      FUNC -> State 92
-      LPAREN -> State 94
-      LBRACKET -> State 26
-      DOT -> State 89
-      QUESTION -> State 96
-      EXCLAIM -> State 91
-      ELLIPSIS -> State 281
-      TILDE_TILDE -> State 97
-      BIT_NEG -> State 88
-      BIT_AND -> State 87
-      PARSE_ERROR -> State 95
-      initializable_type -> State 104
-      atom_type -> State 99
-      parse_error_type -> State 105
-      returnable_type -> State 108
-      prefixed_type -> State 107
-      prefix_type_op -> State 106
-      value_type -> State 286
-      trait_op_type -> State 110
-      implicit_struct_def -> State 103
-      explicit_struct_def -> State 52
-      implicit_enum_def -> State 102
-      explicit_enum_def -> State 100
-      trait_def -> State 109
-      parameter_decl -> State 284
-      parameter_decls -> State 285
-      optional_parameter_decls -> State 456
-      func_type -> State 101
-
-  State 437:
-    Kernel Items:
-      trait_properties: trait_properties COMMA trait_property., *
-    Reduce:
-      * -> [trait_properties]
-    Goto:
-      (nil)
-
-  State 438:
-    Kernel Items:
-      trait_properties: trait_properties NEWLINES trait_property., *
-    Reduce:
-      * -> [trait_properties]
-    Goto:
-      (nil)
-
-  State 439:
-    Kernel Items:
-      loop_expr: FOR assign_pattern IN sequence_expr DO.statement_block
-    Reduce:
-      (nil)
-    Goto:
-      LBRACE -> State 72
-      statement_block -> State 457
-
-  State 440:
-    Kernel Items:
-      loop_expr: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON.optional_sequence_expr DO statement_block
-    Reduce:
-      DO -> [optional_sequence_expr]
       LBRACE -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 24
@@ -17151,12 +16853,13 @@ Parser Debug States:
       FALSE -> State 19
       STRUCT -> State 34
       FUNC -> State 21
-      VAR -> State 37
+      VAR -> State 326
       LET -> State 27
       NOT -> State 30
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
+      DOT -> State 325
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -17165,9 +16868,10 @@ Parser Debug States:
       PARSE_ERROR -> State 31
       var_decl_pattern -> State 69
       var_or_let -> State 70
+      assign_pattern -> State 327
+      case_pattern -> State 445
       optional_label_decl -> State 85
-      sequence_expr -> State 403
-      optional_sequence_expr -> State 458
+      sequence_expr -> State 330
       call_expr -> State 50
       atom_expr -> State 43
       parse_error_expr -> State 62
@@ -17198,7 +16902,476 @@ Parser Debug States:
       explicit_struct_def -> State 52
       anonymous_func_expr -> State 42
 
+  State 410:
+    Kernel Items:
+      if_expr: IF condition statement_block ELSE.statement_block
+      if_expr: IF condition statement_block ELSE.if_expr
+    Reduce:
+      (nil)
+    Goto:
+      IF -> State 149
+      LBRACE -> State 72
+      statement_block -> State 447
+      if_expr -> State 446
+
+  State 411:
+    Kernel Items:
+      field_var_pattern: IDENTIFIER ASSIGN var_pattern., *
+    Reduce:
+      * -> [field_var_pattern]
+    Goto:
+      (nil)
+
+  State 412:
+    Kernel Items:
+      field_var_patterns: field_var_patterns COMMA field_var_pattern., *
+    Reduce:
+      * -> [field_var_patterns]
+    Goto:
+      (nil)
+
+  State 413:
+    Kernel Items:
+      statement_body: CASE case_patterns COLON.optional_simple_statement_body
+    Reduce:
+      * -> [optional_label_decl]
+      NEWLINES -> [optional_simple_statement_body]
+      SEMICOLON -> [optional_simple_statement_body]
+    Goto:
+      INTEGER_LITERAL -> State 24
+      FLOAT_LITERAL -> State 20
+      RUNE_LITERAL -> State 32
+      STRING_LITERAL -> State 33
+      IDENTIFIER -> State 23
+      TRUE -> State 36
+      FALSE -> State 19
+      RETURN -> State 244
+      BREAK -> State 236
+      CONTINUE -> State 238
+      FALLTHROUGH -> State 241
+      UNSAFE -> State 181
+      STRUCT -> State 34
+      FUNC -> State 21
+      ASYNC -> State 235
+      DEFER -> State 240
+      VAR -> State 37
+      LET -> State 27
+      NOT -> State 30
+      LABEL_DECL -> State 25
+      LPAREN -> State 28
+      LBRACKET -> State 26
+      SUB -> State 35
+      MUL -> State 29
+      BIT_NEG -> State 18
+      BIT_AND -> State 17
+      GREATER -> State 22
+      PARSE_ERROR -> State 31
+      simple_statement_body -> State 415
+      optional_simple_statement_body -> State 448
+      expression_or_improper_struct_statement -> State 252
+      callback_op -> State 249
+      callback_op_statement -> State 250
+      unsafe_statement -> State 263
+      jump_statement -> State 256
+      jump_type -> State 257
+      expressions -> State 253
+      fallthrough_statement -> State 254
+      assign_statement -> State 247
+      unary_op_assign_statement -> State 262
+      binary_op_assign_statement -> State 248
+      var_decl_pattern -> State 69
+      var_or_let -> State 70
+      assign_pattern -> State 246
+      expression -> State 251
+      optional_label_decl -> State 60
+      sequence_expr -> State 258
+      call_expr -> State 50
+      atom_expr -> State 43
+      parse_error_expr -> State 62
+      literal_expr -> State 58
+      identifier_expr -> State 53
+      block_expr -> State 49
+      initialize_expr -> State 57
+      implicit_struct_expr -> State 54
+      accessible_expr -> State 245
+      access_expr -> State 38
+      index_expr -> State 55
+      postfixable_expr -> State 64
+      postfix_unary_expr -> State 63
+      prefixable_expr -> State 67
+      prefix_unary_expr -> State 65
+      prefix_unary_op -> State 66
+      mul_expr -> State 59
+      binary_mul_expr -> State 47
+      add_expr -> State 40
+      binary_add_expr -> State 44
+      cmp_expr -> State 51
+      binary_cmp_expr -> State 46
+      and_expr -> State 41
+      binary_and_expr -> State 45
+      or_expr -> State 61
+      binary_or_expr -> State 48
+      initializable_type -> State 56
+      explicit_struct_def -> State 52
+      anonymous_func_expr -> State 42
+
+  State 414:
+    Kernel Items:
+      statement_body: DEFAULT COLON optional_simple_statement_body., *
+    Reduce:
+      * -> [statement_body]
+    Goto:
+      (nil)
+
+  State 415:
+    Kernel Items:
+      optional_simple_statement_body: simple_statement_body., *
+    Reduce:
+      * -> [optional_simple_statement_body]
+    Goto:
+      (nil)
+
+  State 416:
+    Kernel Items:
+      import_clause_terminal: import_clause.NEWLINES
+      import_clause_terminal: import_clause.COMMA
+    Reduce:
+      (nil)
+    Goto:
+      NEWLINES -> State 450
+      COMMA -> State 449
+
+  State 417:
+    Kernel Items:
+      import_clauses: import_clause_terminal., *
+    Reduce:
+      * -> [import_clauses]
+    Goto:
+      (nil)
+
+  State 418:
+    Kernel Items:
+      import_statement: IMPORT LPAREN import_clauses.RPAREN
+      import_clauses: import_clauses.import_clause_terminal
+    Reduce:
+      (nil)
+    Goto:
+      STRING_LITERAL -> State 339
+      RPAREN -> State 451
+      import_clause -> State 416
+      import_clause_terminal -> State 452
+
+  State 419:
+    Kernel Items:
+      import_clause: STRING_LITERAL AS.IDENTIFIER
+    Reduce:
+      (nil)
+    Goto:
+      IDENTIFIER -> State 453
+
+  State 420:
+    Kernel Items:
+      binary_op_assign_statement: accessible_expr binary_op_assign expression., *
+    Reduce:
+      * -> [binary_op_assign_statement]
+    Goto:
+      (nil)
+
+  State 421:
+    Kernel Items:
+      assign_statement: assign_pattern ASSIGN expression., *
+    Reduce:
+      * -> [assign_statement]
+    Goto:
+      (nil)
+
+  State 422:
+    Kernel Items:
+      expressions: expressions COMMA expression., *
+    Reduce:
+      * -> [expressions]
+    Goto:
+      (nil)
+
+  State 423:
+    Kernel Items:
+      jump_statement: jump_type JUMP_LABEL expressions., *
+      expressions: expressions.COMMA expression
+    Reduce:
+      * -> [jump_statement]
+    Goto:
+      COMMA -> State 359
+
+  State 424:
+    Kernel Items:
+      generic_parameter_defs: generic_parameter_defs COMMA generic_parameter_def., *
+    Reduce:
+      * -> [generic_parameter_defs]
+    Goto:
+      (nil)
+
+  State 425:
+    Kernel Items:
+      trait_op_type: value_type.trait_op returnable_type
+      type_def: TYPE IDENTIFIER optional_generic_parameters value_type IMPLEMENTS value_type., *
+    Reduce:
+      * -> [type_def]
+    Goto:
+      ADD -> State 191
+      SUB -> State 196
+      MUL -> State 194
+      trait_op -> State 197
+
+  State 426:
+    Kernel Items:
+      named_func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN.return_type statement_block
+    Reduce:
+      LBRACE -> [return_type]
+    Goto:
+      IDENTIFIER -> State 93
+      STRUCT -> State 34
+      ENUM -> State 90
+      TRAIT -> State 98
+      FUNC -> State 92
+      LPAREN -> State 94
+      LBRACKET -> State 26
+      DOT -> State 89
+      QUESTION -> State 96
+      EXCLAIM -> State 91
+      TILDE_TILDE -> State 97
+      BIT_NEG -> State 88
+      BIT_AND -> State 87
+      PARSE_ERROR -> State 95
+      initializable_type -> State 104
+      atom_type -> State 99
+      parse_error_type -> State 105
+      returnable_type -> State 372
+      prefixed_type -> State 107
+      prefix_type_op -> State 106
+      implicit_struct_def -> State 103
+      explicit_struct_def -> State 52
+      implicit_enum_def -> State 102
+      explicit_enum_def -> State 100
+      trait_def -> State 109
+      return_type -> State 454
+      func_type -> State 101
+
+  State 427:
+    Kernel Items:
+      named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters.LPAREN optional_parameter_defs RPAREN return_type statement_block
+    Reduce:
+      (nil)
+    Goto:
+      LPAREN -> State 455
+
+  State 428:
+    Kernel Items:
+      anonymous_func_expr: FUNC LPAREN optional_parameter_defs RPAREN return_type statement_block., *
+    Reduce:
+      * -> [anonymous_func_expr]
+    Goto:
+      (nil)
+
+  State 429:
+    Kernel Items:
+      explicit_enum_value_defs: enum_value_def NEWLINES enum_value_def., RPAREN
+    Reduce:
+      RPAREN -> [explicit_enum_value_defs]
+    Goto:
+      (nil)
+
+  State 430:
+    Kernel Items:
+      implicit_enum_value_defs: enum_value_def OR enum_value_def., *
+      explicit_enum_value_defs: enum_value_def OR enum_value_def., RPAREN
+    Reduce:
+      * -> [implicit_enum_value_defs]
+      RPAREN -> [explicit_enum_value_defs]
+    Goto:
+      (nil)
+
+  State 431:
+    Kernel Items:
+      explicit_enum_value_defs: implicit_enum_value_defs NEWLINES enum_value_def., RPAREN
+    Reduce:
+      RPAREN -> [explicit_enum_value_defs]
+    Goto:
+      (nil)
+
+  State 432:
+    Kernel Items:
+      implicit_enum_value_defs: implicit_enum_value_defs OR enum_value_def., *
+      explicit_enum_value_defs: implicit_enum_value_defs OR enum_value_def., RPAREN
+    Reduce:
+      * -> [implicit_enum_value_defs]
+      RPAREN -> [explicit_enum_value_defs]
+    Goto:
+      (nil)
+
+  State 433:
+    Kernel Items:
+      trait_op_type: value_type.trait_op returnable_type
+      parameter_decl: IDENTIFIER ELLIPSIS value_type., *
+    Reduce:
+      * -> [parameter_decl]
+    Goto:
+      ADD -> State 191
+      SUB -> State 196
+      MUL -> State 194
+      trait_op -> State 197
+
+  State 434:
+    Kernel Items:
+      func_type: FUNC LPAREN optional_parameter_decls RPAREN return_type., *
+    Reduce:
+      * -> [func_type]
+    Goto:
+      (nil)
+
+  State 435:
+    Kernel Items:
+      parameter_decls: parameter_decls COMMA parameter_decl., *
+    Reduce:
+      * -> [parameter_decls]
+    Goto:
+      (nil)
+
+  State 436:
+    Kernel Items:
+      unsafe_statement: UNSAFE LESS IDENTIFIER GREATER.STRING_LITERAL
+    Reduce:
+      (nil)
+    Goto:
+      STRING_LITERAL -> State 456
+
+  State 437:
+    Kernel Items:
+      method_signature: FUNC IDENTIFIER LPAREN.optional_parameter_decls RPAREN return_type
+    Reduce:
+      RPAREN -> [optional_parameter_decls]
+    Goto:
+      IDENTIFIER -> State 284
+      STRUCT -> State 34
+      ENUM -> State 90
+      TRAIT -> State 98
+      FUNC -> State 92
+      LPAREN -> State 94
+      LBRACKET -> State 26
+      DOT -> State 89
+      QUESTION -> State 96
+      EXCLAIM -> State 91
+      ELLIPSIS -> State 283
+      TILDE_TILDE -> State 97
+      BIT_NEG -> State 88
+      BIT_AND -> State 87
+      PARSE_ERROR -> State 95
+      initializable_type -> State 104
+      atom_type -> State 99
+      parse_error_type -> State 105
+      returnable_type -> State 108
+      prefixed_type -> State 107
+      prefix_type_op -> State 106
+      value_type -> State 288
+      trait_op_type -> State 110
+      implicit_struct_def -> State 103
+      explicit_struct_def -> State 52
+      implicit_enum_def -> State 102
+      explicit_enum_def -> State 100
+      trait_def -> State 109
+      parameter_decl -> State 286
+      parameter_decls -> State 287
+      optional_parameter_decls -> State 457
+      func_type -> State 101
+
+  State 438:
+    Kernel Items:
+      trait_properties: trait_properties COMMA trait_property., *
+    Reduce:
+      * -> [trait_properties]
+    Goto:
+      (nil)
+
+  State 439:
+    Kernel Items:
+      trait_properties: trait_properties NEWLINES trait_property., *
+    Reduce:
+      * -> [trait_properties]
+    Goto:
+      (nil)
+
+  State 440:
+    Kernel Items:
+      loop_expr: FOR assign_pattern IN sequence_expr DO.statement_block
+    Reduce:
+      (nil)
+    Goto:
+      LBRACE -> State 72
+      statement_block -> State 458
+
   State 441:
+    Kernel Items:
+      loop_expr: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON.optional_sequence_expr DO statement_block
+    Reduce:
+      DO -> [optional_sequence_expr]
+      LBRACE -> [optional_label_decl]
+    Goto:
+      INTEGER_LITERAL -> State 24
+      FLOAT_LITERAL -> State 20
+      RUNE_LITERAL -> State 32
+      STRING_LITERAL -> State 33
+      IDENTIFIER -> State 23
+      TRUE -> State 36
+      FALSE -> State 19
+      STRUCT -> State 34
+      FUNC -> State 21
+      VAR -> State 37
+      LET -> State 27
+      NOT -> State 30
+      LABEL_DECL -> State 25
+      LPAREN -> State 28
+      LBRACKET -> State 26
+      SUB -> State 35
+      MUL -> State 29
+      BIT_NEG -> State 18
+      BIT_AND -> State 17
+      GREATER -> State 22
+      PARSE_ERROR -> State 31
+      var_decl_pattern -> State 69
+      var_or_let -> State 70
+      optional_label_decl -> State 85
+      sequence_expr -> State 404
+      optional_sequence_expr -> State 459
+      call_expr -> State 50
+      atom_expr -> State 43
+      parse_error_expr -> State 62
+      literal_expr -> State 58
+      identifier_expr -> State 53
+      block_expr -> State 49
+      initialize_expr -> State 57
+      implicit_struct_expr -> State 54
+      accessible_expr -> State 39
+      access_expr -> State 38
+      index_expr -> State 55
+      postfixable_expr -> State 64
+      postfix_unary_expr -> State 63
+      prefixable_expr -> State 67
+      prefix_unary_expr -> State 65
+      prefix_unary_op -> State 66
+      mul_expr -> State 59
+      binary_mul_expr -> State 47
+      add_expr -> State 40
+      binary_add_expr -> State 44
+      cmp_expr -> State 51
+      binary_cmp_expr -> State 46
+      and_expr -> State 41
+      binary_and_expr -> State 45
+      or_expr -> State 61
+      binary_or_expr -> State 48
+      initializable_type -> State 56
+      explicit_struct_def -> State 52
+      anonymous_func_expr -> State 42
+
+  State 442:
     Kernel Items:
       case_pattern: DOT IDENTIFIER implicit_struct_expr., *
     Reduce:
@@ -17206,16 +17379,16 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 442:
+  State 443:
     Kernel Items:
       case_pattern: VAR DOT IDENTIFIER.tuple_pattern
     Reduce:
       (nil)
     Goto:
       LPAREN -> State 158
-      tuple_pattern -> State 459
+      tuple_pattern -> State 460
 
-  State 443:
+  State 444:
     Kernel Items:
       condition: CASE case_patterns ASSIGN sequence_expr., LBRACE
     Reduce:
@@ -17223,7 +17396,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 444:
+  State 445:
     Kernel Items:
       case_patterns: case_patterns COMMA case_pattern., *
     Reduce:
@@ -17231,7 +17404,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 445:
+  State 446:
     Kernel Items:
       if_expr: IF condition statement_block ELSE if_expr., $
     Reduce:
@@ -17239,7 +17412,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 446:
+  State 447:
     Kernel Items:
       if_expr: IF condition statement_block ELSE statement_block., $
     Reduce:
@@ -17247,7 +17420,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 447:
+  State 448:
     Kernel Items:
       statement_body: CASE case_patterns COLON optional_simple_statement_body., *
     Reduce:
@@ -17255,7 +17428,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 448:
+  State 449:
     Kernel Items:
       import_clause_terminal: import_clause COMMA., *
     Reduce:
@@ -17263,7 +17436,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 449:
+  State 450:
     Kernel Items:
       import_clause_terminal: import_clause NEWLINES., *
     Reduce:
@@ -17271,7 +17444,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 450:
+  State 451:
     Kernel Items:
       import_statement: IMPORT LPAREN import_clauses RPAREN., *
     Reduce:
@@ -17279,7 +17452,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 451:
+  State 452:
     Kernel Items:
       import_clauses: import_clauses import_clause_terminal., *
     Reduce:
@@ -17287,7 +17460,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 452:
+  State 453:
     Kernel Items:
       import_clause: STRING_LITERAL AS IDENTIFIER., *
     Reduce:
@@ -17295,16 +17468,16 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 453:
+  State 454:
     Kernel Items:
       named_func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type.statement_block
     Reduce:
       (nil)
     Goto:
       LBRACE -> State 72
-      statement_block -> State 460
+      statement_block -> State 461
 
-  State 454:
+  State 455:
     Kernel Items:
       named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters LPAREN.optional_parameter_defs RPAREN return_type statement_block
     Reduce:
@@ -17313,9 +17486,9 @@ Parser Debug States:
       IDENTIFIER -> State 170
       parameter_def -> State 173
       parameter_defs -> State 174
-      optional_parameter_defs -> State 461
+      optional_parameter_defs -> State 462
 
-  State 455:
+  State 456:
     Kernel Items:
       unsafe_statement: UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL., *
     Reduce:
@@ -17323,15 +17496,15 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 456:
+  State 457:
     Kernel Items:
       method_signature: FUNC IDENTIFIER LPAREN optional_parameter_decls.RPAREN return_type
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 462
+      RPAREN -> State 463
 
-  State 457:
+  State 458:
     Kernel Items:
       loop_expr: FOR assign_pattern IN sequence_expr DO statement_block., $
     Reduce:
@@ -17339,15 +17512,15 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 458:
+  State 459:
     Kernel Items:
       loop_expr: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr.DO statement_block
     Reduce:
       (nil)
     Goto:
-      DO -> State 463
+      DO -> State 464
 
-  State 459:
+  State 460:
     Kernel Items:
       case_pattern: VAR DOT IDENTIFIER tuple_pattern., *
     Reduce:
@@ -17355,7 +17528,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 460:
+  State 461:
     Kernel Items:
       named_func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type statement_block., $
     Reduce:
@@ -17363,15 +17536,15 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 461:
+  State 462:
     Kernel Items:
       named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs.RPAREN return_type statement_block
     Reduce:
       (nil)
     Goto:
-      RPAREN -> State 464
+      RPAREN -> State 465
 
-  State 462:
+  State 463:
     Kernel Items:
       method_signature: FUNC IDENTIFIER LPAREN optional_parameter_decls RPAREN.return_type
     Reduce:
@@ -17394,7 +17567,7 @@ Parser Debug States:
       initializable_type -> State 104
       atom_type -> State 99
       parse_error_type -> State 105
-      returnable_type -> State 371
+      returnable_type -> State 372
       prefixed_type -> State 107
       prefix_type_op -> State 106
       implicit_struct_def -> State 103
@@ -17402,19 +17575,19 @@ Parser Debug States:
       implicit_enum_def -> State 102
       explicit_enum_def -> State 100
       trait_def -> State 109
-      return_type -> State 465
+      return_type -> State 466
       func_type -> State 101
 
-  State 463:
+  State 464:
     Kernel Items:
       loop_expr: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO.statement_block
     Reduce:
       (nil)
     Goto:
       LBRACE -> State 72
-      statement_block -> State 466
+      statement_block -> State 467
 
-  State 464:
+  State 465:
     Kernel Items:
       named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN.return_type statement_block
     Reduce:
@@ -17437,7 +17610,7 @@ Parser Debug States:
       initializable_type -> State 104
       atom_type -> State 99
       parse_error_type -> State 105
-      returnable_type -> State 371
+      returnable_type -> State 372
       prefixed_type -> State 107
       prefix_type_op -> State 106
       implicit_struct_def -> State 103
@@ -17445,10 +17618,10 @@ Parser Debug States:
       implicit_enum_def -> State 102
       explicit_enum_def -> State 100
       trait_def -> State 109
-      return_type -> State 467
+      return_type -> State 468
       func_type -> State 101
 
-  State 465:
+  State 466:
     Kernel Items:
       method_signature: FUNC IDENTIFIER LPAREN optional_parameter_decls RPAREN return_type., *
     Reduce:
@@ -17456,7 +17629,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 466:
+  State 467:
     Kernel Items:
       loop_expr: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO statement_block., $
     Reduce:
@@ -17464,16 +17637,16 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 467:
+  State 468:
     Kernel Items:
       named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type.statement_block
     Reduce:
       (nil)
     Goto:
       LBRACE -> State 72
-      statement_block -> State 468
+      statement_block -> State 469
 
-  State 468:
+  State 469:
     Kernel Items:
       named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type statement_block., $
     Reduce:
@@ -17481,12 +17654,12 @@ Parser Debug States:
     Goto:
       (nil)
 
-Number of states: 468
-Number of shift actions: 3728
+Number of states: 469
+Number of shift actions: 3782
 Number of reduce actions: 394
 Number of shift/reduce conflicts: 0
 Number of reduce/reduce conflicts: 0
-Number of unoptimized states: 3902
-Number of unoptimized shift actions: 31484
-Number of unoptimized reduce actions: 26006
+Number of unoptimized states: 4280
+Number of unoptimized shift actions: 35188
+Number of unoptimized reduce actions: 29121
 */

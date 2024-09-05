@@ -191,7 +191,7 @@ func (expr AccessExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
 		"%s%s[AccessExpr: Field=%s\n", indent, label, expr.Field.Value)
 	result += expr.Operand.TreeString(indent+"  ", "Operand=")
-	result += indent + "]"
+	result += "\n" + indent + "]"
 	return result
 }
 
@@ -262,8 +262,8 @@ func (expr UnaryExpr) TreeString(indent string, label string) string {
 		label,
 		expr.IsPrefix,
 		SymbolId(expr.Op))
-	result += expr.Operand.TreeString(indent+"  ", "Operand=") + "\n"
-	result += fmt.Sprintf("%s]", indent)
+	result += expr.Operand.TreeString(indent+"  ", "Operand=")
+	result += "\n" + indent + "]"
 	return result
 }
 
@@ -352,8 +352,8 @@ func (expr BinaryExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
 		"%s%s[BinaryExpr: Op=%s\n", indent, label, SymbolId(expr.Op))
 	result += expr.Left.TreeString(indent+"  ", "Left=") + "\n"
-	result += expr.Right.TreeString(indent+"  ", "Right=") + "\n"
-	result += fmt.Sprintf("%s]", indent)
+	result += expr.Right.TreeString(indent+"  ", "Right=")
+	result += "\n" + indent + "]"
 	return result
 }
 
@@ -444,3 +444,173 @@ func (reducer *BinaryExprReducer) ToBinaryOrExpr(
 ) {
 	return reducer.toBinaryExpr(left, op, right)
 }
+
+//
+// Argument / argument list
+//
+
+type ArgumentKind int
+
+const (
+	PositionalArgument = ArgumentKind(iota)
+	NamedAssignmentArgument
+	VarargAssignmentArgument
+	ColonExprArgument
+	SkipPatternArgument
+)
+
+type Argument struct {
+	StartPos Location
+	EndPos   Location
+	LeadingTrailingComments
+
+	Kind ArgumentKind
+
+	// Only set for named assignment
+	OptionalName string
+
+	// NOTE: Expr may be nil for Ellipsis only pattern argument.
+	Expr Expression
+
+	HasEllipsis bool
+}
+
+var _ Node = &Argument{}
+
+func (arg *Argument) Loc() Location {
+	return arg.StartPos
+}
+
+func (arg *Argument) End() Location {
+	return arg.StartPos
+}
+
+func (arg *Argument) String() string {
+	return arg.TreeString("", "")
+}
+
+func (arg *Argument) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[Argument: Kind=%v OptionalName=%s HasEllipsis=%v",
+		indent,
+		label,
+		arg.Kind,
+		arg.OptionalName,
+		arg.HasEllipsis)
+	if arg.Expr == nil {
+		result += "\n"
+		result += arg.Expr.TreeString(indent+"  ", "")
+		result += "\n" + indent + "]"
+	} else {
+		result += "]"
+	}
+
+	return result
+}
+
+type ArgumentReducerImpl struct {
+}
+
+var _ ArgumentReducer = ArgumentReducerImpl{}
+
+func (ArgumentReducerImpl) PositionalToArgument(
+	expr Expression,
+) (
+	*Argument,
+	error,
+) {
+	return &Argument{
+		StartPos: expr.Loc(),
+		EndPos:   expr.End(),
+		LeadingTrailingComments: LeadingTrailingComments{
+			LeadingComment:  expr.TakeLeading(),
+			TrailingComment: expr.TakeTrailing(),
+		},
+		Kind:        PositionalArgument,
+		Expr:        expr,
+		HasEllipsis: false,
+	}, nil
+}
+
+func (ArgumentReducerImpl) ColonExprToArgument(
+	expr Expression,
+) (
+	*Argument,
+	error,
+) {
+	return &Argument{
+		StartPos: expr.Loc(),
+		EndPos:   expr.End(),
+		LeadingTrailingComments: LeadingTrailingComments{
+			LeadingComment:  expr.TakeLeading(),
+			TrailingComment: expr.TakeTrailing(),
+		},
+		Kind:        ColonExprArgument,
+		Expr:        expr,
+		HasEllipsis: false,
+	}, nil
+}
+
+func (ArgumentReducerImpl) NamedAssignmentToArgument(
+  name TokenValue,
+  assign TokenValue,
+	expr Expression,
+) (
+	*Argument,
+	error,
+) {
+  arg := &Argument{
+    StartPos: name.Loc(),
+    EndPos: expr.End(),
+    Kind: NamedAssignmentArgument,
+    Expr: expr,
+    HasEllipsis: false,
+  }
+
+  arg.LeadingComment = name.TakeLeading()
+  // prepend in reverse order
+  expr.PrependToLeading(assign.TakeTrailing())
+  expr.PrependToLeading(assign.TakeLeading())
+  expr.PrependToLeading(name.TakeTrailing())
+  arg.TrailingComment = expr.TakeTrailing()
+
+  return arg, nil
+}
+
+func (ArgumentReducerImpl) VarargAssignmentToArgument(
+	expr Expression,
+  ellipsis TokenValue,
+) (
+	*Argument,
+	error,
+) {
+  arg := &Argument{
+    StartPos: expr.Loc(),
+    EndPos: ellipsis.End(),
+    Kind: VarargAssignmentArgument,
+    Expr: expr,
+    HasEllipsis: true,
+  }
+
+  arg.LeadingComment = expr.TakeLeading()
+  expr.AppendToTrailing(ellipsis.TakeLeading())
+  arg.TrailingComment = ellipsis.TakeTrailing()
+  return arg, nil
+}
+
+func (ArgumentReducerImpl) SkipPatternToArgument(
+	ellipsis TokenValue,
+) (
+	*Argument,
+	error,
+) {
+	return &Argument{
+		StartPos: ellipsis.Loc(),
+		EndPos:   ellipsis.End(),
+		LeadingTrailingComments: ellipsis.LeadingTrailingComments,
+		Kind:        SkipPatternArgument,
+		Expr:        nil,
+		HasEllipsis: true,
+	}, nil
+}
+

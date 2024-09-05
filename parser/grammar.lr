@@ -441,21 +441,26 @@ arguments ->
   argument |
   add: arguments COMMA argument
 
-argument ->
+argument<Argument> ->
   positional: expression |
-  named: IDENTIFIER ASSIGN expression |
-  colon_expressions |
-  // NOTE: ... is not a real expression.  Unexpected usage in real expressions
-  // are rejected during type checking.
-  ELLIPSIS
+  colon_expr |
+  named_assignment: IDENTIFIER ASSIGN expression |
+  // XXX: Under golang-style vararg assignment, the signature f(args ...int)
+  // will not accept f(0, 1, x...) where x an int slice.  Maybe relax this into
+  // vararg expansion instead?
+  vararg_assignment: expression ELLIPSIS |
+  // NOTE: ... is not a real expression, and is only used for pattern matching.
+  // Unexpected usage in real expressions are rejected during type checking.
+  skip_pattern: ELLIPSIS
 
-colon_expressions ->
-  pair: optional_expression COLON optional_expression |
-  add: colon_expressions COLON optional_expression
-
-optional_expression<Expression> ->
-  expression |
-  nil:
+// An (n >= 2)-tuple expression usable only as an argument
+colon_expr<Expression> ->
+  unit_unit_pair: COLON |
+  expr_unit_pair: expression COLON |
+  unit_expr_pair: COLON expression |
+  expr_expr_pair: expression COLON expression |
+  colon_expr_unit_tuple: colon_expr COLON |
+  colon_expr_expr_tuple: colon_expr COLON expression
 
 //
 // Simple expressions (in decreasing order precedence)
@@ -833,5 +838,6 @@ go:
     Statements: "[]Statement"
     SourceDefinition: "SourceDefinition"
     SourceDefinitions: "[]SourceDefinition"
+    Argument: "*Argument"
   generate_end_pos: True
 }%%
