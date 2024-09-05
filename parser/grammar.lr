@@ -437,9 +437,13 @@ optional_arguments ->
   arguments |
   nil:
 
+comma_arguments ->
+  add: comma_arguments COMMA argument |
+  nil:
+
 arguments ->
-  argument |
-  add: arguments COMMA argument
+  proper: argument comma_arguments |
+  improper: argument comma_arguments COMMA
 
 argument<Argument> ->
   positional: expression |
