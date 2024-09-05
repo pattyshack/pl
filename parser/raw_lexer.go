@@ -194,7 +194,7 @@ func (lexer *RawLexer) peekNextToken() (SymbolId, int, error) {
 		return RbracketToken, 1, nil
 	case '.':
 		if len(peeked) > 2 && peeked[1] == '.' && peeked[2] == '.' {
-			return DotDotDotToken, 3, nil
+			return EllipsisToken, 3, nil
 		}
 
 		if len(peeked) > 1 && '0' <= peeked[1] && peeked[1] <= '9' {

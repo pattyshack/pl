@@ -31,7 +31,7 @@
 %token<Value> LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
 %token<Value> DOT COMMA QUESTION SEMICOLON COLON EXCLAIM
 %token<Value> DOLLAR_LBRACKET // $[
-%token<Value> DOT_DOT_DOT // ...
+%token<Value> ELLIPSIS // ...
 %token<Value> TILDE_TILDE
 
 %token<Value> ASSIGN
@@ -296,7 +296,7 @@ field_var_patterns ->
 field_var_pattern ->
   positional: var_pattern |
   named: IDENTIFIER ASSIGN var_pattern |
-  DOT_DOT_DOT
+  ELLIPSIS
 
 optional_value_type<TypeExpression> ->
   = value_type |
@@ -447,7 +447,7 @@ argument ->
   colon_expressions |
   // NOTE: ... is not a real expression.  Unexpected usage in real expressions
   // are rejected during type checking.
-  DOT_DOT_DOT
+  ELLIPSIS
 
 colon_expressions ->
   pair: optional_expression COLON optional_expression |
@@ -501,6 +501,8 @@ accessible_expr<Expression> ->
 
 access_expr<Expression> -> accessible_expr DOT IDENTIFIER
 
+// Note: post analysis need to check to ensure argument either a positional
+// or colon expressions argument.
 index_expr<Expression> -> accessible_expr LBRACKET argument RBRACKET
 
 postfixable_expr<Expression> ->
@@ -753,9 +755,9 @@ return_type<TypeExpression> ->
 
 parameter_decl ->
   arg: IDENTIFIER value_type |
-  vararg: IDENTIFIER DOT_DOT_DOT value_type |
+  vararg: IDENTIFIER ELLIPSIS value_type |
   unamed: value_type |
-  unnamed_vararg: DOT_DOT_DOT value_type
+  unnamed_vararg: ELLIPSIS value_type
 
 parameter_decls ->
   parameter_decl |
@@ -784,9 +786,9 @@ method_signature -> FUNC IDENTIFIER LPAREN optional_parameter_decls RPAREN retur
 // as its type will be inferred as copy-on-mutable reference by default.
 parameter_def ->
   inferred_ref_arg: IDENTIFIER |
-  inferred_ref_vararg: IDENTIFIER DOT_DOT_DOT |
+  inferred_ref_vararg: IDENTIFIER ELLIPSIS |
   arg: IDENTIFIER value_type |
-  vararg: IDENTIFIER DOT_DOT_DOT value_type
+  vararg: IDENTIFIER ELLIPSIS value_type
 
 parameter_defs ->
   parameter_def |

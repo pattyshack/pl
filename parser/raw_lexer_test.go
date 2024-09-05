@@ -93,8 +93,8 @@ func (s *RawLexerSuite) TestDotTokens(t *testing.T) {
 	s.lex(t, ".", DotToken)
 	s.lex(t, "+.-", AddToken, DotToken, SubToken)
 
-	s.lex(t, "...", DotDotDotToken)
-	s.lex(t, "+...-", AddToken, DotDotDotToken, SubToken)
+	s.lex(t, "...", EllipsisToken)
+	s.lex(t, "+...-", AddToken, EllipsisToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestCommaTokens(t *testing.T) {

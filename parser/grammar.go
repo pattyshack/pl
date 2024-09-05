@@ -64,7 +64,7 @@ const (
 	ColonToken           = SymbolId(306)
 	ExclaimToken         = SymbolId(307)
 	DollarLbracketToken  = SymbolId(308)
-	DotDotDotToken       = SymbolId(309)
+	EllipsisToken        = SymbolId(309)
 	TildeTildeToken      = SymbolId(310)
 	AssignToken          = SymbolId(311)
 	AddAssignToken       = SymbolId(312)
@@ -361,8 +361,8 @@ type FieldVarPatternReducer interface {
 	// 298:2: field_var_pattern -> named: ...
 	NamedToFieldVarPattern(Identifier_ TokenValue, Assign_ TokenValue, VarPattern_ GenericSymbol) (GenericSymbol, error)
 
-	// 299:2: field_var_pattern -> DOT_DOT_DOT: ...
-	DotDotDotToFieldVarPattern(DotDotDot_ TokenValue) (GenericSymbol, error)
+	// 299:2: field_var_pattern -> ELLIPSIS: ...
+	EllipsisToFieldVarPattern(Ellipsis_ TokenValue) (GenericSymbol, error)
 }
 
 type OptionalValueTypeReducer interface {
@@ -525,8 +525,8 @@ type ArgumentReducer interface {
 	// 447:2: argument -> colon_expressions: ...
 	ColonExpressionsToArgument(ColonExpressions_ GenericSymbol) (GenericSymbol, error)
 
-	// 450:2: argument -> DOT_DOT_DOT: ...
-	DotDotDotToArgument(DotDotDot_ TokenValue) (GenericSymbol, error)
+	// 450:2: argument -> ELLIPSIS: ...
+	EllipsisToArgument(Ellipsis_ TokenValue) (GenericSymbol, error)
 }
 
 type ColonExpressionsReducer interface {
@@ -596,354 +596,354 @@ type AccessExprReducer interface {
 }
 
 type IndexExprReducer interface {
-	// 504:26: index_expr -> ...
+	// 506:26: index_expr -> ...
 	ToIndexExpr(AccessibleExpr_ Expression, Lbracket_ TokenValue, Argument_ GenericSymbol, Rbracket_ TokenValue) (Expression, error)
 }
 
 type PostfixUnaryExprReducer interface {
-	// 510:35: postfix_unary_expr -> ...
+	// 512:35: postfix_unary_expr -> ...
 	ToPostfixUnaryExpr(AccessibleExpr_ Expression, Question_ TokenValue) (Expression, error)
 }
 
 type PrefixUnaryExprReducer interface {
-	// 516:33: prefix_unary_expr -> ...
+	// 518:33: prefix_unary_expr -> ...
 	ToPrefixUnaryExpr(PrefixUnaryOp_ TokenValue, PrefixableExpr_ Expression) (Expression, error)
 }
 
 type BinaryMulExprReducer interface {
-	// 533:31: binary_mul_expr -> ...
+	// 535:31: binary_mul_expr -> ...
 	ToBinaryMulExpr(MulExpr_ Expression, MulOp_ TokenValue, PrefixableExpr_ Expression) (Expression, error)
 }
 
 type BinaryAddExprReducer interface {
-	// 547:31: binary_add_expr -> ...
+	// 549:31: binary_add_expr -> ...
 	ToBinaryAddExpr(AddExpr_ Expression, AddOp_ TokenValue, MulExpr_ Expression) (Expression, error)
 }
 
 type BinaryCmpExprReducer interface {
-	// 559:31: binary_cmp_expr -> ...
+	// 561:31: binary_cmp_expr -> ...
 	ToBinaryCmpExpr(CmpExpr_ Expression, CmpOp_ TokenValue, AddExpr_ Expression) (Expression, error)
 }
 
 type BinaryAndExprReducer interface {
-	// 573:31: binary_and_expr -> ...
+	// 575:31: binary_and_expr -> ...
 	ToBinaryAndExpr(AndExpr_ Expression, And_ TokenValue, CmpExpr_ Expression) (Expression, error)
 }
 
 type BinaryOrExprReducer interface {
-	// 579:30: binary_or_expr -> ...
+	// 581:30: binary_or_expr -> ...
 	ToBinaryOrExpr(OrExpr_ Expression, Or_ TokenValue, AndExpr_ Expression) (Expression, error)
 }
 
 type InitializableTypeReducer interface {
 
-	// 589:2: initializable_type -> slice: ...
+	// 591:2: initializable_type -> slice: ...
 	SliceToInitializableType(Lbracket_ TokenValue, ValueType_ TypeExpression, Rbracket_ TokenValue) (TypeExpression, error)
 
-	// 590:2: initializable_type -> array: ...
+	// 592:2: initializable_type -> array: ...
 	ArrayToInitializableType(Lbracket_ TokenValue, ValueType_ TypeExpression, Comma_ TokenValue, IntegerLiteral_ TokenValue, Rbracket_ TokenValue) (TypeExpression, error)
 
-	// 591:2: initializable_type -> map: ...
+	// 593:2: initializable_type -> map: ...
 	MapToInitializableType(Lbracket_ TokenValue, ValueType_ TypeExpression, Colon_ TokenValue, ValueType_2 TypeExpression, Rbracket_ TokenValue) (TypeExpression, error)
 }
 
 type AtomTypeReducer interface {
 
-	// 595:2: atom_type -> named: ...
+	// 597:2: atom_type -> named: ...
 	NamedToAtomType(Identifier_ TokenValue, OptionalGenericBinding_ GenericSymbol) (TypeExpression, error)
 
-	// 596:2: atom_type -> extern_named: ...
+	// 598:2: atom_type -> extern_named: ...
 	ExternNamedToAtomType(Identifier_ TokenValue, Dot_ TokenValue, Identifier_2 TokenValue, OptionalGenericBinding_ GenericSymbol) (TypeExpression, error)
 
-	// 597:2: atom_type -> inferred: ...
+	// 599:2: atom_type -> inferred: ...
 	InferredToAtomType(Dot_ TokenValue, OptionalGenericBinding_ GenericSymbol) (TypeExpression, error)
 }
 
 type ParseErrorTypeReducer interface {
-	// 605:36: parse_error_type -> ...
+	// 607:36: parse_error_type -> ...
 	ToParseErrorType(ParseError_ ParseErrorSymbol) (TypeExpression, error)
 }
 
 type PrefixedTypeReducer interface {
-	// 614:33: prefixed_type -> ...
+	// 616:33: prefixed_type -> ...
 	ToPrefixedType(PrefixTypeOp_ TokenValue, ReturnableType_ TypeExpression) (TypeExpression, error)
 }
 
 type TraitOpTypeReducer interface {
-	// 629:33: trait_op_type -> ...
+	// 631:33: trait_op_type -> ...
 	ToTraitOpType(ValueType_ TypeExpression, TraitOp_ TokenValue, ReturnableType_ TypeExpression) (TypeExpression, error)
 }
 
 type TypeDefReducer interface {
-	// 637:2: type_def -> definition: ...
+	// 639:2: type_def -> definition: ...
 	DefinitionToTypeDef(Type_ TokenValue, Identifier_ TokenValue, OptionalGenericParameters_ GenericSymbol, ValueType_ TypeExpression) (SourceDefinition, error)
 
-	// 638:2: type_def -> constrained_def: ...
+	// 640:2: type_def -> constrained_def: ...
 	ConstrainedDefToTypeDef(Type_ TokenValue, Identifier_ TokenValue, OptionalGenericParameters_ GenericSymbol, ValueType_ TypeExpression, Implements_ TokenValue, ValueType_2 TypeExpression) (SourceDefinition, error)
 
-	// 639:2: type_def -> alias: ...
+	// 641:2: type_def -> alias: ...
 	AliasToTypeDef(Type_ TokenValue, Identifier_ TokenValue, Assign_ TokenValue, ValueType_ TypeExpression) (SourceDefinition, error)
 }
 
 type GenericParameterDefReducer interface {
-	// 647:2: generic_parameter_def -> unconstrained: ...
+	// 649:2: generic_parameter_def -> unconstrained: ...
 	UnconstrainedToGenericParameterDef(Identifier_ TokenValue) (GenericSymbol, error)
 
-	// 648:2: generic_parameter_def -> constrained: ...
+	// 650:2: generic_parameter_def -> constrained: ...
 	ConstrainedToGenericParameterDef(Identifier_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 }
 
 type GenericParameterDefsReducer interface {
-	// 651:2: generic_parameter_defs -> generic_parameter_def: ...
+	// 653:2: generic_parameter_defs -> generic_parameter_def: ...
 	GenericParameterDefToGenericParameterDefs(GenericParameterDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 652:2: generic_parameter_defs -> add: ...
+	// 654:2: generic_parameter_defs -> add: ...
 	AddToGenericParameterDefs(GenericParameterDefs_ GenericSymbol, Comma_ TokenValue, GenericParameterDef_ GenericSymbol) (GenericSymbol, error)
 }
 
 type OptionalGenericParameterDefsReducer interface {
-	// 655:2: optional_generic_parameter_defs -> generic_parameter_defs: ...
+	// 657:2: optional_generic_parameter_defs -> generic_parameter_defs: ...
 	GenericParameterDefsToOptionalGenericParameterDefs(GenericParameterDefs_ GenericSymbol) (GenericSymbol, error)
 
-	// 656:2: optional_generic_parameter_defs -> nil: ...
+	// 658:2: optional_generic_parameter_defs -> nil: ...
 	NilToOptionalGenericParameterDefs() (GenericSymbol, error)
 }
 
 type OptionalGenericParametersReducer interface {
-	// 659:2: optional_generic_parameters -> generic: ...
+	// 661:2: optional_generic_parameters -> generic: ...
 	GenericToOptionalGenericParameters(DollarLbracket_ TokenValue, OptionalGenericParameterDefs_ GenericSymbol, Rbracket_ TokenValue) (GenericSymbol, error)
 
-	// 660:2: optional_generic_parameters -> nil: ...
+	// 662:2: optional_generic_parameters -> nil: ...
 	NilToOptionalGenericParameters() (GenericSymbol, error)
 }
 
 type FieldDefReducer interface {
-	// 667:2: field_def -> explicit: ...
+	// 669:2: field_def -> explicit: ...
 	ExplicitToFieldDef(Identifier_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 
-	// 668:2: field_def -> implicit: ...
+	// 670:2: field_def -> implicit: ...
 	ImplicitToFieldDef(ValueType_ TypeExpression) (GenericSymbol, error)
 
-	// 669:2: field_def -> unsafe_statement: ...
+	// 671:2: field_def -> unsafe_statement: ...
 	UnsafeStatementToFieldDef(UnsafeStatement_ Statement) (GenericSymbol, error)
 }
 
 type ImplicitFieldDefsReducer interface {
-	// 672:2: implicit_field_defs -> field_def: ...
+	// 674:2: implicit_field_defs -> field_def: ...
 	FieldDefToImplicitFieldDefs(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 673:2: implicit_field_defs -> add: ...
+	// 675:2: implicit_field_defs -> add: ...
 	AddToImplicitFieldDefs(ImplicitFieldDefs_ GenericSymbol, Comma_ TokenValue, FieldDef_ GenericSymbol) (GenericSymbol, error)
 }
 
 type OptionalImplicitFieldDefsReducer interface {
-	// 676:2: optional_implicit_field_defs -> implicit_field_defs: ...
+	// 678:2: optional_implicit_field_defs -> implicit_field_defs: ...
 	ImplicitFieldDefsToOptionalImplicitFieldDefs(ImplicitFieldDefs_ GenericSymbol) (GenericSymbol, error)
 
-	// 677:2: optional_implicit_field_defs -> nil: ...
+	// 679:2: optional_implicit_field_defs -> nil: ...
 	NilToOptionalImplicitFieldDefs() (GenericSymbol, error)
 }
 
 type ImplicitStructDefReducer interface {
-	// 680:2: implicit_struct_def -> ...
+	// 682:2: implicit_struct_def -> ...
 	ToImplicitStructDef(Lparen_ TokenValue, OptionalImplicitFieldDefs_ GenericSymbol, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type ExplicitFieldDefsReducer interface {
-	// 683:2: explicit_field_defs -> field_def: ...
+	// 685:2: explicit_field_defs -> field_def: ...
 	FieldDefToExplicitFieldDefs(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 684:2: explicit_field_defs -> implicit: ...
+	// 686:2: explicit_field_defs -> implicit: ...
 	ImplicitToExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol, Newlines_ TokenCount, FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 685:2: explicit_field_defs -> explicit: ...
+	// 687:2: explicit_field_defs -> explicit: ...
 	ExplicitToExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol, Comma_ TokenValue, FieldDef_ GenericSymbol) (GenericSymbol, error)
 }
 
 type OptionalExplicitFieldDefsReducer interface {
-	// 688:2: optional_explicit_field_defs -> explicit_field_defs: ...
+	// 690:2: optional_explicit_field_defs -> explicit_field_defs: ...
 	ExplicitFieldDefsToOptionalExplicitFieldDefs(ExplicitFieldDefs_ GenericSymbol) (GenericSymbol, error)
 
-	// 689:2: optional_explicit_field_defs -> nil: ...
+	// 691:2: optional_explicit_field_defs -> nil: ...
 	NilToOptionalExplicitFieldDefs() (GenericSymbol, error)
 }
 
 type ExplicitStructDefReducer interface {
-	// 692:2: explicit_struct_def -> ...
+	// 694:2: explicit_struct_def -> ...
 	ToExplicitStructDef(Struct_ TokenValue, Lparen_ TokenValue, OptionalExplicitFieldDefs_ GenericSymbol, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type EnumValueDefReducer interface {
-	// 700:2: enum_value_def -> field_def: ...
+	// 702:2: enum_value_def -> field_def: ...
 	FieldDefToEnumValueDef(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 701:2: enum_value_def -> default: ...
+	// 703:2: enum_value_def -> default: ...
 	DefaultToEnumValueDef(FieldDef_ GenericSymbol, Assign_ TokenValue, Default_ TokenValue) (GenericSymbol, error)
 }
 
 type ImplicitEnumValueDefsReducer interface {
-	// 713:2: implicit_enum_value_defs -> pair: ...
+	// 715:2: implicit_enum_value_defs -> pair: ...
 	PairToImplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Or_ TokenValue, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
-	// 714:2: implicit_enum_value_defs -> add: ...
+	// 716:2: implicit_enum_value_defs -> add: ...
 	AddToImplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Or_ TokenValue, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 }
 
 type ImplicitEnumDefReducer interface {
-	// 716:37: implicit_enum_def -> ...
+	// 718:37: implicit_enum_def -> ...
 	ToImplicitEnumDef(Lparen_ TokenValue, ImplicitEnumValueDefs_ GenericSymbol, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type ExplicitEnumValueDefsReducer interface {
-	// 719:2: explicit_enum_value_defs -> explicit_pair: ...
+	// 721:2: explicit_enum_value_defs -> explicit_pair: ...
 	ExplicitPairToExplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Or_ TokenValue, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
-	// 720:2: explicit_enum_value_defs -> implicit_pair: ...
+	// 722:2: explicit_enum_value_defs -> implicit_pair: ...
 	ImplicitPairToExplicitEnumValueDefs(EnumValueDef_ GenericSymbol, Newlines_ TokenCount, EnumValueDef_2 GenericSymbol) (GenericSymbol, error)
 
-	// 721:2: explicit_enum_value_defs -> explicit_add: ...
+	// 723:2: explicit_enum_value_defs -> explicit_add: ...
 	ExplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Or_ TokenValue, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 722:2: explicit_enum_value_defs -> implicit_add: ...
+	// 724:2: explicit_enum_value_defs -> implicit_add: ...
 	ImplicitAddToExplicitEnumValueDefs(ImplicitEnumValueDefs_ GenericSymbol, Newlines_ TokenCount, EnumValueDef_ GenericSymbol) (GenericSymbol, error)
 }
 
 type ExplicitEnumDefReducer interface {
-	// 724:37: explicit_enum_def -> ...
+	// 726:37: explicit_enum_def -> ...
 	ToExplicitEnumDef(Enum_ TokenValue, Lparen_ TokenValue, ExplicitEnumValueDefs_ GenericSymbol, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type TraitPropertyReducer interface {
-	// 731:2: trait_property -> field_def: ...
+	// 733:2: trait_property -> field_def: ...
 	FieldDefToTraitProperty(FieldDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 732:2: trait_property -> method_signature: ...
+	// 734:2: trait_property -> method_signature: ...
 	MethodSignatureToTraitProperty(MethodSignature_ GenericSymbol) (GenericSymbol, error)
 }
 
 type TraitPropertiesReducer interface {
-	// 735:2: trait_properties -> trait_property: ...
+	// 737:2: trait_properties -> trait_property: ...
 	TraitPropertyToTraitProperties(TraitProperty_ GenericSymbol) (GenericSymbol, error)
 
-	// 736:2: trait_properties -> implicit: ...
+	// 738:2: trait_properties -> implicit: ...
 	ImplicitToTraitProperties(TraitProperties_ GenericSymbol, Newlines_ TokenCount, TraitProperty_ GenericSymbol) (GenericSymbol, error)
 
-	// 737:2: trait_properties -> explicit: ...
+	// 739:2: trait_properties -> explicit: ...
 	ExplicitToTraitProperties(TraitProperties_ GenericSymbol, Comma_ TokenValue, TraitProperty_ GenericSymbol) (GenericSymbol, error)
 }
 
 type OptionalTraitPropertiesReducer interface {
-	// 740:2: optional_trait_properties -> trait_properties: ...
+	// 742:2: optional_trait_properties -> trait_properties: ...
 	TraitPropertiesToOptionalTraitProperties(TraitProperties_ GenericSymbol) (GenericSymbol, error)
 
-	// 741:2: optional_trait_properties -> nil: ...
+	// 743:2: optional_trait_properties -> nil: ...
 	NilToOptionalTraitProperties() (GenericSymbol, error)
 }
 
 type TraitDefReducer interface {
-	// 743:29: trait_def -> ...
+	// 745:29: trait_def -> ...
 	ToTraitDef(Trait_ TokenValue, Lparen_ TokenValue, OptionalTraitProperties_ GenericSymbol, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type ReturnTypeReducer interface {
-	// 751:2: return_type -> returnable_type: ...
+	// 753:2: return_type -> returnable_type: ...
 	ReturnableTypeToReturnType(ReturnableType_ TypeExpression) (TypeExpression, error)
 
-	// 752:2: return_type -> nil: ...
+	// 754:2: return_type -> nil: ...
 	NilToReturnType() (TypeExpression, error)
 }
 
 type ParameterDeclReducer interface {
-	// 755:2: parameter_decl -> arg: ...
+	// 757:2: parameter_decl -> arg: ...
 	ArgToParameterDecl(Identifier_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 
-	// 756:2: parameter_decl -> vararg: ...
-	VarargToParameterDecl(Identifier_ TokenValue, DotDotDot_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
+	// 758:2: parameter_decl -> vararg: ...
+	VarargToParameterDecl(Identifier_ TokenValue, Ellipsis_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 
-	// 757:2: parameter_decl -> unamed: ...
+	// 759:2: parameter_decl -> unamed: ...
 	UnamedToParameterDecl(ValueType_ TypeExpression) (GenericSymbol, error)
 
-	// 758:2: parameter_decl -> unnamed_vararg: ...
-	UnnamedVarargToParameterDecl(DotDotDot_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
+	// 760:2: parameter_decl -> unnamed_vararg: ...
+	UnnamedVarargToParameterDecl(Ellipsis_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 }
 
 type ParameterDeclsReducer interface {
-	// 761:2: parameter_decls -> parameter_decl: ...
+	// 763:2: parameter_decls -> parameter_decl: ...
 	ParameterDeclToParameterDecls(ParameterDecl_ GenericSymbol) (GenericSymbol, error)
 
-	// 762:2: parameter_decls -> add: ...
+	// 764:2: parameter_decls -> add: ...
 	AddToParameterDecls(ParameterDecls_ GenericSymbol, Comma_ TokenValue, ParameterDecl_ GenericSymbol) (GenericSymbol, error)
 }
 
 type OptionalParameterDeclsReducer interface {
-	// 765:2: optional_parameter_decls -> parameter_decls: ...
+	// 767:2: optional_parameter_decls -> parameter_decls: ...
 	ParameterDeclsToOptionalParameterDecls(ParameterDecls_ GenericSymbol) (GenericSymbol, error)
 
-	// 766:2: optional_parameter_decls -> nil: ...
+	// 768:2: optional_parameter_decls -> nil: ...
 	NilToOptionalParameterDecls() (GenericSymbol, error)
 }
 
 type FuncTypeReducer interface {
-	// 769:2: func_type -> ...
+	// 771:2: func_type -> ...
 	ToFuncType(Func_ TokenValue, Lparen_ TokenValue, OptionalParameterDecls_ GenericSymbol, Rparen_ TokenValue, ReturnType_ TypeExpression) (TypeExpression, error)
 }
 
 type MethodSignatureReducer interface {
-	// 780:20: method_signature -> ...
+	// 782:20: method_signature -> ...
 	ToMethodSignature(Func_ TokenValue, Identifier_ TokenValue, Lparen_ TokenValue, OptionalParameterDecls_ GenericSymbol, Rparen_ TokenValue, ReturnType_ TypeExpression) (GenericSymbol, error)
 }
 
 type ParameterDefReducer interface {
-	// 786:2: parameter_def -> inferred_ref_arg: ...
+	// 788:2: parameter_def -> inferred_ref_arg: ...
 	InferredRefArgToParameterDef(Identifier_ TokenValue) (GenericSymbol, error)
 
-	// 787:2: parameter_def -> inferred_ref_vararg: ...
-	InferredRefVarargToParameterDef(Identifier_ TokenValue, DotDotDot_ TokenValue) (GenericSymbol, error)
+	// 789:2: parameter_def -> inferred_ref_vararg: ...
+	InferredRefVarargToParameterDef(Identifier_ TokenValue, Ellipsis_ TokenValue) (GenericSymbol, error)
 
-	// 788:2: parameter_def -> arg: ...
+	// 790:2: parameter_def -> arg: ...
 	ArgToParameterDef(Identifier_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 
-	// 789:2: parameter_def -> vararg: ...
-	VarargToParameterDef(Identifier_ TokenValue, DotDotDot_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
+	// 791:2: parameter_def -> vararg: ...
+	VarargToParameterDef(Identifier_ TokenValue, Ellipsis_ TokenValue, ValueType_ TypeExpression) (GenericSymbol, error)
 }
 
 type ParameterDefsReducer interface {
-	// 792:2: parameter_defs -> parameter_def: ...
+	// 794:2: parameter_defs -> parameter_def: ...
 	ParameterDefToParameterDefs(ParameterDef_ GenericSymbol) (GenericSymbol, error)
 
-	// 793:2: parameter_defs -> add: ...
+	// 795:2: parameter_defs -> add: ...
 	AddToParameterDefs(ParameterDefs_ GenericSymbol, Comma_ TokenValue, ParameterDef_ GenericSymbol) (GenericSymbol, error)
 }
 
 type OptionalParameterDefsReducer interface {
-	// 796:2: optional_parameter_defs -> parameter_defs: ...
+	// 798:2: optional_parameter_defs -> parameter_defs: ...
 	ParameterDefsToOptionalParameterDefs(ParameterDefs_ GenericSymbol) (GenericSymbol, error)
 
-	// 797:2: optional_parameter_defs -> nil: ...
+	// 799:2: optional_parameter_defs -> nil: ...
 	NilToOptionalParameterDefs() (GenericSymbol, error)
 }
 
 type NamedFuncDefReducer interface {
-	// 800:2: named_func_def -> func_def: ...
+	// 802:2: named_func_def -> func_def: ...
 	FuncDefToNamedFuncDef(Func_ TokenValue, Identifier_ TokenValue, OptionalGenericParameters_ GenericSymbol, Lparen_ TokenValue, OptionalParameterDefs_ GenericSymbol, Rparen_ TokenValue, ReturnType_ TypeExpression, StatementBlock_ GenericSymbol) (SourceDefinition, error)
 
-	// 801:2: named_func_def -> method_def: ...
+	// 803:2: named_func_def -> method_def: ...
 	MethodDefToNamedFuncDef(Func_ TokenValue, Lparen_ TokenValue, ParameterDef_ GenericSymbol, Rparen_ TokenValue, Identifier_ TokenValue, OptionalGenericParameters_ GenericSymbol, Lparen_2 TokenValue, OptionalParameterDefs_ GenericSymbol, Rparen_2 TokenValue, ReturnType_ TypeExpression, StatementBlock_ GenericSymbol) (SourceDefinition, error)
 
-	// 802:2: named_func_def -> alias: ...
+	// 804:2: named_func_def -> alias: ...
 	AliasToNamedFuncDef(Func_ TokenValue, Identifier_ TokenValue, Assign_ TokenValue, Expression_ Expression) (SourceDefinition, error)
 }
 
 type AnonymousFuncExprReducer interface {
-	// 806:2: anonymous_func_expr -> ...
+	// 808:2: anonymous_func_expr -> ...
 	ToAnonymousFuncExpr(Func_ TokenValue, Lparen_ TokenValue, OptionalParameterDefs_ GenericSymbol, Rparen_ TokenValue, ReturnType_ TypeExpression, StatementBlock_ GenericSymbol) (Expression, error)
 }
 
 type PackageDefReducer interface {
-	// 818:2: package_def -> no_spec: ...
+	// 820:2: package_def -> no_spec: ...
 	NoSpecToPackageDef(Package_ TokenValue) (SourceDefinition, error)
 
-	// 819:2: package_def -> with_spec: ...
+	// 821:2: package_def -> with_spec: ...
 	WithSpecToPackageDef(Package_ TokenValue, StatementBlock_ GenericSymbol) (SourceDefinition, error)
 }
 
@@ -1369,8 +1369,8 @@ func (i SymbolId) String() string {
 		return "EXCLAIM"
 	case DollarLbracketToken:
 		return "DOLLAR_LBRACKET"
-	case DotDotDotToken:
-		return "DOT_DOT_DOT"
+	case EllipsisToken:
+		return "ELLIPSIS"
 	case TildeTildeToken:
 		return "TILDE_TILDE"
 	case AssignToken:
@@ -1936,7 +1936,7 @@ const (
 	_ReduceAddToFieldVarPatterns                                    = _ReduceType(83)
 	_ReducePositionalToFieldVarPattern                              = _ReduceType(84)
 	_ReduceNamedToFieldVarPattern                                   = _ReduceType(85)
-	_ReduceDotDotDotToFieldVarPattern                               = _ReduceType(86)
+	_ReduceEllipsisToFieldVarPattern                                = _ReduceType(86)
 	_ReduceValueTypeToOptionalValueType                             = _ReduceType(87)
 	_ReduceNilToOptionalValueType                                   = _ReduceType(88)
 	_ReduceToAssignPattern                                          = _ReduceType(89)
@@ -1981,7 +1981,7 @@ const (
 	_ReducePositionalToArgument                                     = _ReduceType(128)
 	_ReduceNamedToArgument                                          = _ReduceType(129)
 	_ReduceColonExpressionsToArgument                               = _ReduceType(130)
-	_ReduceDotDotDotToArgument                                      = _ReduceType(131)
+	_ReduceEllipsisToArgument                                       = _ReduceType(131)
 	_ReducePairToColonExpressions                                   = _ReduceType(132)
 	_ReduceAddToColonExpressions                                    = _ReduceType(133)
 	_ReduceExpressionToOptionalExpression                           = _ReduceType(134)
@@ -2324,8 +2324,8 @@ func (i _ReduceType) String() string {
 		return "PositionalToFieldVarPattern"
 	case _ReduceNamedToFieldVarPattern:
 		return "NamedToFieldVarPattern"
-	case _ReduceDotDotDotToFieldVarPattern:
-		return "DotDotDotToFieldVarPattern"
+	case _ReduceEllipsisToFieldVarPattern:
+		return "EllipsisToFieldVarPattern"
 	case _ReduceValueTypeToOptionalValueType:
 		return "ValueTypeToOptionalValueType"
 	case _ReduceNilToOptionalValueType:
@@ -2414,8 +2414,8 @@ func (i _ReduceType) String() string {
 		return "NamedToArgument"
 	case _ReduceColonExpressionsToArgument:
 		return "ColonExpressionsToArgument"
-	case _ReduceDotDotDotToArgument:
-		return "DotDotDotToArgument"
+	case _ReduceEllipsisToArgument:
+		return "EllipsisToArgument"
 	case _ReducePairToColonExpressions:
 		return "PairToColonExpressions"
 	case _ReduceAddToColonExpressions:
@@ -3288,7 +3288,7 @@ func NewSymbol(token Token) (*Symbol, error) {
 				token.Loc())
 		}
 		symbol.ParseError = val
-	case CommentGroupsToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
+	case CommentGroupsToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
 		val, ok := token.(TokenValue)
 		if !ok {
 			return nil, fmt.Errorf(
@@ -3351,7 +3351,7 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case CommentGroupsToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, CallbackOpType, UnaryOpAssignType, BinaryOpAssignType, JumpTypeType, VarOrLetType, OptionalLabelDeclType, PrefixUnaryOpType, MulOpType, AddOpType, CmpOpType, PrefixTypeOpType, TraitOpType:
+	case CommentGroupsToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, CallbackOpType, UnaryOpAssignType, BinaryOpAssignType, JumpTypeType, VarOrLetType, OptionalLabelDeclType, PrefixUnaryOpType, MulOpType, AddOpType, CmpOpType, PrefixTypeOpType, TraitOpType:
 		loc, ok := interface{}(s.Value).(locator)
 		if ok {
 			return loc.Loc()
@@ -3403,7 +3403,7 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case CommentGroupsToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, DotDotDotToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, CallbackOpType, UnaryOpAssignType, BinaryOpAssignType, JumpTypeType, VarOrLetType, OptionalLabelDeclType, PrefixUnaryOpType, MulOpType, AddOpType, CmpOpType, PrefixTypeOpType, TraitOpType:
+	case CommentGroupsToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, AsToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, CallbackOpType, UnaryOpAssignType, BinaryOpAssignType, JumpTypeType, VarOrLetType, OptionalLabelDeclType, PrefixUnaryOpType, MulOpType, AddOpType, CmpOpType, PrefixTypeOpType, TraitOpType:
 		loc, ok := interface{}(s.Value).(locator)
 		if ok {
 			return loc.End()
@@ -3959,11 +3959,11 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = FieldVarPatternType
 		symbol.Generic_, err = reducer.NamedToFieldVarPattern(args[0].Value, args[1].Value, args[2].Generic_)
-	case _ReduceDotDotDotToFieldVarPattern:
+	case _ReduceEllipsisToFieldVarPattern:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = FieldVarPatternType
-		symbol.Generic_, err = reducer.DotDotDotToFieldVarPattern(args[0].Value)
+		symbol.Generic_, err = reducer.EllipsisToFieldVarPattern(args[0].Value)
 	case _ReduceValueTypeToOptionalValueType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -4180,11 +4180,11 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ArgumentType
 		symbol.Generic_, err = reducer.ColonExpressionsToArgument(args[0].Generic_)
-	case _ReduceDotDotDotToArgument:
+	case _ReduceEllipsisToArgument:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ArgumentType
-		symbol.Generic_, err = reducer.DotDotDotToArgument(args[0].Value)
+		symbol.Generic_, err = reducer.EllipsisToArgument(args[0].Value)
 	case _ReducePairToColonExpressions:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -4349,14 +4349,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixableExprType
-		//line grammar.lr:507:4
+		//line grammar.lr:509:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReducePostfixUnaryExprToPostfixableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixableExprType
-		//line grammar.lr:508:4
+		//line grammar.lr:510:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToPostfixUnaryExpr:
@@ -4368,14 +4368,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixableExprType
-		//line grammar.lr:513:4
+		//line grammar.lr:515:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReducePrefixUnaryExprToPrefixableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixableExprType
-		//line grammar.lr:514:4
+		//line grammar.lr:516:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToPrefixUnaryExpr:
@@ -4387,49 +4387,49 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:519:4
+		//line grammar.lr:521:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitNegToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:520:4
+		//line grammar.lr:522:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:521:4
+		//line grammar.lr:523:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceMulToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:524:4
+		//line grammar.lr:526:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:527:4
+		//line grammar.lr:529:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReducePrefixableExprToMulExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulExprType
-		//line grammar.lr:530:4
+		//line grammar.lr:532:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryMulExprToMulExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulExprType
-		//line grammar.lr:531:4
+		//line grammar.lr:533:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryMulExpr:
@@ -4441,56 +4441,56 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:536:4
+		//line grammar.lr:538:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDivToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:537:4
+		//line grammar.lr:539:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceModToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:538:4
+		//line grammar.lr:540:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:539:4
+		//line grammar.lr:541:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitLshiftToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:540:4
+		//line grammar.lr:542:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitRshiftToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:541:4
+		//line grammar.lr:543:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceMulExprToAddExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddExprType
-		//line grammar.lr:544:4
+		//line grammar.lr:546:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryAddExprToAddExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddExprType
-		//line grammar.lr:545:4
+		//line grammar.lr:547:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryAddExpr:
@@ -4502,42 +4502,42 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:550:4
+		//line grammar.lr:552:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:551:4
+		//line grammar.lr:553:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitOrToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:552:4
+		//line grammar.lr:554:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitXorToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:553:4
+		//line grammar.lr:555:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAddExprToCmpExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpExprType
-		//line grammar.lr:556:4
+		//line grammar.lr:558:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryCmpExprToCmpExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpExprType
-		//line grammar.lr:557:4
+		//line grammar.lr:559:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryCmpExpr:
@@ -4549,56 +4549,56 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:562:4
+		//line grammar.lr:564:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceNotEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:563:4
+		//line grammar.lr:565:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceLessToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:564:4
+		//line grammar.lr:566:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceLessOrEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:565:4
+		//line grammar.lr:567:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceGreaterToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:566:4
+		//line grammar.lr:568:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceGreaterOrEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:567:4
+		//line grammar.lr:569:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceCmpExprToAndExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AndExprType
-		//line grammar.lr:570:4
+		//line grammar.lr:572:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryAndExprToAndExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AndExprType
-		//line grammar.lr:571:4
+		//line grammar.lr:573:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryAndExpr:
@@ -4610,14 +4610,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OrExprType
-		//line grammar.lr:576:4
+		//line grammar.lr:578:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryOrExprToOrExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OrExprType
-		//line grammar.lr:577:4
+		//line grammar.lr:579:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryOrExpr:
@@ -4629,7 +4629,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = InitializableTypeType
-		//line grammar.lr:588:4
+		//line grammar.lr:590:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceSliceToInitializableType:
@@ -4651,7 +4651,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:594:4
+		//line grammar.lr:596:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceNamedToAtomType:
@@ -4673,42 +4673,42 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:598:4
+		//line grammar.lr:600:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceExplicitEnumDefToAtomType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:599:4
+		//line grammar.lr:601:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceImplicitEnumDefToAtomType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:600:4
+		//line grammar.lr:602:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceTraitDefToAtomType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:601:4
+		//line grammar.lr:603:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceFuncTypeToAtomType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:602:4
+		//line grammar.lr:604:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceParseErrorTypeToAtomType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeType
-		//line grammar.lr:603:4
+		//line grammar.lr:605:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceToParseErrorType:
@@ -4720,14 +4720,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnableTypeType
-		//line grammar.lr:611:4
+		//line grammar.lr:613:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReducePrefixedTypeToReturnableType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnableTypeType
-		//line grammar.lr:612:4
+		//line grammar.lr:614:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceToPrefixedType:
@@ -4739,49 +4739,49 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixTypeOpType
-		//line grammar.lr:617:4
+		//line grammar.lr:619:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceExclaimToPrefixTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixTypeOpType
-		//line grammar.lr:618:4
+		//line grammar.lr:620:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToPrefixTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixTypeOpType
-		//line grammar.lr:619:4
+		//line grammar.lr:621:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitNegToPrefixTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixTypeOpType
-		//line grammar.lr:620:4
+		//line grammar.lr:622:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceTildeTildeToPrefixTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixTypeOpType
-		//line grammar.lr:621:4
+		//line grammar.lr:623:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceReturnableTypeToValueType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ValueTypeType
-		//line grammar.lr:626:4
+		//line grammar.lr:628:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceTraitOpTypeToValueType:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ValueTypeType
-		//line grammar.lr:627:4
+		//line grammar.lr:629:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceToTraitOpType:
@@ -4793,21 +4793,21 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TraitOpType
-		//line grammar.lr:632:4
+		//line grammar.lr:634:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAddToTraitOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TraitOpType
-		//line grammar.lr:633:4
+		//line grammar.lr:635:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubToTraitOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TraitOpType
-		//line grammar.lr:634:4
+		//line grammar.lr:636:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDefinitionToTypeDef:
@@ -5726,7 +5726,7 @@ var (
 	_ReduceAddToFieldVarPatternsAction                                    = &_Action{_ReduceAction, 0, _ReduceAddToFieldVarPatterns}
 	_ReducePositionalToFieldVarPatternAction                              = &_Action{_ReduceAction, 0, _ReducePositionalToFieldVarPattern}
 	_ReduceNamedToFieldVarPatternAction                                   = &_Action{_ReduceAction, 0, _ReduceNamedToFieldVarPattern}
-	_ReduceDotDotDotToFieldVarPatternAction                               = &_Action{_ReduceAction, 0, _ReduceDotDotDotToFieldVarPattern}
+	_ReduceEllipsisToFieldVarPatternAction                                = &_Action{_ReduceAction, 0, _ReduceEllipsisToFieldVarPattern}
 	_ReduceValueTypeToOptionalValueTypeAction                             = &_Action{_ReduceAction, 0, _ReduceValueTypeToOptionalValueType}
 	_ReduceNilToOptionalValueTypeAction                                   = &_Action{_ReduceAction, 0, _ReduceNilToOptionalValueType}
 	_ReduceToAssignPatternAction                                          = &_Action{_ReduceAction, 0, _ReduceToAssignPattern}
@@ -5771,7 +5771,7 @@ var (
 	_ReducePositionalToArgumentAction                                     = &_Action{_ReduceAction, 0, _ReducePositionalToArgument}
 	_ReduceNamedToArgumentAction                                          = &_Action{_ReduceAction, 0, _ReduceNamedToArgument}
 	_ReduceColonExpressionsToArgumentAction                               = &_Action{_ReduceAction, 0, _ReduceColonExpressionsToArgument}
-	_ReduceDotDotDotToArgumentAction                                      = &_Action{_ReduceAction, 0, _ReduceDotDotDotToArgument}
+	_ReduceEllipsisToArgumentAction                                       = &_Action{_ReduceAction, 0, _ReduceEllipsisToArgument}
 	_ReducePairToColonExpressionsAction                                   = &_Action{_ReduceAction, 0, _ReducePairToColonExpressions}
 	_ReduceAddToColonExpressionsAction                                    = &_Action{_ReduceAction, 0, _ReduceAddToColonExpressions}
 	_ReduceExpressionToOptionalExpressionAction                           = &_Action{_ReduceAction, 0, _ReduceExpressionToOptionalExpression}
@@ -6131,7 +6131,7 @@ var _ActionTable = _ActionTableType{
 	{_State28, LabelDeclToken}:                           _GotoState25Action,
 	{_State28, LparenToken}:                              _GotoState28Action,
 	{_State28, LbracketToken}:                            _GotoState26Action,
-	{_State28, DotDotDotToken}:                           _GotoState112Action,
+	{_State28, EllipsisToken}:                            _GotoState112Action,
 	{_State28, SubToken}:                                 _GotoState35Action,
 	{_State28, MulToken}:                                 _GotoState29Action,
 	{_State28, BitNegToken}:                              _GotoState18Action,
@@ -6434,7 +6434,7 @@ var _ActionTable = _ActionTableType{
 	{_State123, LabelDeclToken}:                          _GotoState25Action,
 	{_State123, LparenToken}:                             _GotoState28Action,
 	{_State123, LbracketToken}:                           _GotoState26Action,
-	{_State123, DotDotDotToken}:                          _GotoState112Action,
+	{_State123, EllipsisToken}:                           _GotoState112Action,
 	{_State123, SubToken}:                                _GotoState35Action,
 	{_State123, MulToken}:                                _GotoState29Action,
 	{_State123, BitNegToken}:                             _GotoState18Action,
@@ -6620,7 +6620,7 @@ var _ActionTable = _ActionTableType{
 	{_State139, LabelDeclToken}:                          _GotoState25Action,
 	{_State139, LparenToken}:                             _GotoState28Action,
 	{_State139, LbracketToken}:                           _GotoState26Action,
-	{_State139, DotDotDotToken}:                          _GotoState112Action,
+	{_State139, EllipsisToken}:                           _GotoState112Action,
 	{_State139, SubToken}:                                _GotoState35Action,
 	{_State139, MulToken}:                                _GotoState29Action,
 	{_State139, BitNegToken}:                             _GotoState18Action,
@@ -6920,7 +6920,7 @@ var _ActionTable = _ActionTableType{
 	{_State155, AnonymousFuncExprType}:                   _GotoState42Action,
 	{_State158, IdentifierToken}:                         _GotoState227Action,
 	{_State158, LparenToken}:                             _GotoState158Action,
-	{_State158, DotDotDotToken}:                          _GotoState226Action,
+	{_State158, EllipsisToken}:                           _GotoState226Action,
 	{_State158, VarPatternType}:                          _GotoState230Action,
 	{_State158, TuplePatternType}:                        _GotoState159Action,
 	{_State158, FieldVarPatternsType}:                    _GotoState229Action,
@@ -7231,7 +7231,7 @@ var _ActionTable = _ActionTableType{
 	{_State170, DotToken}:                                _GotoState89Action,
 	{_State170, QuestionToken}:                           _GotoState96Action,
 	{_State170, ExclaimToken}:                            _GotoState91Action,
-	{_State170, DotDotDotToken}:                          _GotoState272Action,
+	{_State170, EllipsisToken}:                           _GotoState272Action,
 	{_State170, TildeTildeToken}:                         _GotoState97Action,
 	{_State170, BitNegToken}:                             _GotoState88Action,
 	{_State170, BitAndToken}:                             _GotoState87Action,
@@ -7297,7 +7297,7 @@ var _ActionTable = _ActionTableType{
 	{_State177, DotToken}:                                _GotoState89Action,
 	{_State177, QuestionToken}:                           _GotoState96Action,
 	{_State177, ExclaimToken}:                            _GotoState91Action,
-	{_State177, DotDotDotToken}:                          _GotoState281Action,
+	{_State177, EllipsisToken}:                           _GotoState281Action,
 	{_State177, TildeTildeToken}:                         _GotoState97Action,
 	{_State177, BitNegToken}:                             _GotoState88Action,
 	{_State177, BitAndToken}:                             _GotoState87Action,
@@ -7521,7 +7521,7 @@ var _ActionTable = _ActionTableType{
 	{_State199, LabelDeclToken}:                          _GotoState25Action,
 	{_State199, LparenToken}:                             _GotoState28Action,
 	{_State199, LbracketToken}:                           _GotoState26Action,
-	{_State199, DotDotDotToken}:                          _GotoState112Action,
+	{_State199, EllipsisToken}:                           _GotoState112Action,
 	{_State199, SubToken}:                                _GotoState35Action,
 	{_State199, MulToken}:                                _GotoState29Action,
 	{_State199, BitNegToken}:                             _GotoState18Action,
@@ -7702,7 +7702,7 @@ var _ActionTable = _ActionTableType{
 	{_State211, LabelDeclToken}:                          _GotoState25Action,
 	{_State211, LparenToken}:                             _GotoState28Action,
 	{_State211, LbracketToken}:                           _GotoState26Action,
-	{_State211, DotDotDotToken}:                          _GotoState112Action,
+	{_State211, EllipsisToken}:                           _GotoState112Action,
 	{_State211, SubToken}:                                _GotoState35Action,
 	{_State211, MulToken}:                                _GotoState29Action,
 	{_State211, BitNegToken}:                             _GotoState18Action,
@@ -8164,7 +8164,7 @@ var _ActionTable = _ActionTableType{
 	{_State282, QuestionToken}:                           _GotoState96Action,
 	{_State282, ExclaimToken}:                            _GotoState91Action,
 	{_State282, DollarLbracketToken}:                     _GotoState121Action,
-	{_State282, DotDotDotToken}:                          _GotoState379Action,
+	{_State282, EllipsisToken}:                           _GotoState379Action,
 	{_State282, TildeTildeToken}:                         _GotoState97Action,
 	{_State282, BitNegToken}:                             _GotoState88Action,
 	{_State282, BitAndToken}:                             _GotoState87Action,
@@ -8628,7 +8628,7 @@ var _ActionTable = _ActionTableType{
 	{_State332, TuplePatternType}:                        _GotoState159Action,
 	{_State333, IdentifierToken}:                         _GotoState227Action,
 	{_State333, LparenToken}:                             _GotoState158Action,
-	{_State333, DotDotDotToken}:                          _GotoState226Action,
+	{_State333, EllipsisToken}:                           _GotoState226Action,
 	{_State333, VarPatternType}:                          _GotoState230Action,
 	{_State333, TuplePatternType}:                        _GotoState159Action,
 	{_State333, FieldVarPatternType}:                     _GotoState411Action,
@@ -9185,7 +9185,7 @@ var _ActionTable = _ActionTableType{
 	{_State382, DotToken}:                                _GotoState89Action,
 	{_State382, QuestionToken}:                           _GotoState96Action,
 	{_State382, ExclaimToken}:                            _GotoState91Action,
-	{_State382, DotDotDotToken}:                          _GotoState281Action,
+	{_State382, EllipsisToken}:                           _GotoState281Action,
 	{_State382, TildeTildeToken}:                         _GotoState97Action,
 	{_State382, BitNegToken}:                             _GotoState88Action,
 	{_State382, BitAndToken}:                             _GotoState87Action,
@@ -9528,7 +9528,7 @@ var _ActionTable = _ActionTableType{
 	{_State436, DotToken}:                                _GotoState89Action,
 	{_State436, QuestionToken}:                           _GotoState96Action,
 	{_State436, ExclaimToken}:                            _GotoState91Action,
-	{_State436, DotDotDotToken}:                          _GotoState281Action,
+	{_State436, EllipsisToken}:                           _GotoState281Action,
 	{_State436, TildeTildeToken}:                         _GotoState97Action,
 	{_State436, BitNegToken}:                             _GotoState88Action,
 	{_State436, BitAndToken}:                             _GotoState87Action,
@@ -9768,7 +9768,7 @@ var _ActionTable = _ActionTableType{
 	{_State108, _WildcardMarker}:                         _ReduceReturnableTypeToValueTypeAction,
 	{_State109, _WildcardMarker}:                         _ReduceTraitDefToAtomTypeAction,
 	{_State110, _WildcardMarker}:                         _ReduceTraitOpTypeToValueTypeAction,
-	{_State112, _WildcardMarker}:                         _ReduceDotDotDotToArgumentAction,
+	{_State112, _WildcardMarker}:                         _ReduceEllipsisToArgumentAction,
 	{_State113, _WildcardMarker}:                         _ReduceToIdentifierExprAction,
 	{_State114, _WildcardMarker}:                         _ReduceArgumentToArgumentsAction,
 	{_State115, RparenToken}:                             _ReduceArgumentsToOptionalArgumentsAction,
@@ -9871,7 +9871,7 @@ var _ActionTable = _ActionTableType{
 	{_State221, LbraceToken}:                             _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State223, LbraceToken}:                             _ReduceSequenceExprToConditionAction,
 	{_State225, _WildcardMarker}:                         _ReduceToBinaryOrExprAction,
-	{_State226, _WildcardMarker}:                         _ReduceDotDotDotToFieldVarPatternAction,
+	{_State226, _WildcardMarker}:                         _ReduceEllipsisToFieldVarPatternAction,
 	{_State227, _WildcardMarker}:                         _ReduceIdentifierToVarPatternAction,
 	{_State228, _WildcardMarker}:                         _ReduceFieldVarPatternToFieldVarPatternsAction,
 	{_State230, _WildcardMarker}:                         _ReducePositionalToFieldVarPatternAction,
@@ -10474,7 +10474,7 @@ Parser Debug States:
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      DOT_DOT_DOT -> State 112
+      ELLIPSIS -> State 112
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -11356,7 +11356,7 @@ Parser Debug States:
 
   State 112:
     Kernel Items:
-      argument: DOT_DOT_DOT., *
+      argument: ELLIPSIS., *
     Reduce:
       * -> [argument]
     Goto:
@@ -11530,7 +11530,7 @@ Parser Debug States:
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      DOT_DOT_DOT -> State 112
+      ELLIPSIS -> State 112
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -11841,7 +11841,7 @@ Parser Debug States:
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      DOT_DOT_DOT -> State 112
+      ELLIPSIS -> State 112
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -12291,7 +12291,7 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 227
       LPAREN -> State 158
-      DOT_DOT_DOT -> State 226
+      ELLIPSIS -> State 226
       var_pattern -> State 230
       tuple_pattern -> State 159
       field_var_patterns -> State 229
@@ -12678,9 +12678,9 @@ Parser Debug States:
   State 170:
     Kernel Items:
       parameter_def: IDENTIFIER., *
-      parameter_def: IDENTIFIER.DOT_DOT_DOT
+      parameter_def: IDENTIFIER.ELLIPSIS
       parameter_def: IDENTIFIER.value_type
-      parameter_def: IDENTIFIER.DOT_DOT_DOT value_type
+      parameter_def: IDENTIFIER.ELLIPSIS value_type
     Reduce:
       * -> [parameter_def]
     Goto:
@@ -12694,7 +12694,7 @@ Parser Debug States:
       DOT -> State 89
       QUESTION -> State 96
       EXCLAIM -> State 91
-      DOT_DOT_DOT -> State 272
+      ELLIPSIS -> State 272
       TILDE_TILDE -> State 97
       BIT_NEG -> State 88
       BIT_AND -> State 87
@@ -12812,7 +12812,7 @@ Parser Debug States:
       DOT -> State 89
       QUESTION -> State 96
       EXCLAIM -> State 91
-      DOT_DOT_DOT -> State 281
+      ELLIPSIS -> State 281
       TILDE_TILDE -> State 97
       BIT_NEG -> State 88
       BIT_AND -> State 87
@@ -13206,7 +13206,7 @@ Parser Debug States:
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      DOT_DOT_DOT -> State 112
+      ELLIPSIS -> State 112
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -13488,7 +13488,7 @@ Parser Debug States:
       LABEL_DECL -> State 25
       LPAREN -> State 28
       LBRACKET -> State 26
-      DOT_DOT_DOT -> State 112
+      ELLIPSIS -> State 112
       SUB -> State 35
       MUL -> State 29
       BIT_NEG -> State 18
@@ -13736,7 +13736,7 @@ Parser Debug States:
 
   State 226:
     Kernel Items:
-      field_var_pattern: DOT_DOT_DOT., *
+      field_var_pattern: ELLIPSIS., *
     Reduce:
       * -> [field_var_pattern]
     Goto:
@@ -14333,8 +14333,8 @@ Parser Debug States:
 
   State 272:
     Kernel Items:
-      parameter_def: IDENTIFIER DOT_DOT_DOT., *
-      parameter_def: IDENTIFIER DOT_DOT_DOT.value_type
+      parameter_def: IDENTIFIER ELLIPSIS., *
+      parameter_def: IDENTIFIER ELLIPSIS.value_type
     Reduce:
       * -> [parameter_def]
     Goto:
@@ -14471,7 +14471,7 @@ Parser Debug States:
 
   State 281:
     Kernel Items:
-      parameter_decl: DOT_DOT_DOT.value_type
+      parameter_decl: ELLIPSIS.value_type
     Reduce:
       (nil)
     Goto:
@@ -14509,7 +14509,7 @@ Parser Debug States:
       atom_type: IDENTIFIER.optional_generic_binding
       atom_type: IDENTIFIER.DOT IDENTIFIER optional_generic_binding
       parameter_decl: IDENTIFIER.value_type
-      parameter_decl: IDENTIFIER.DOT_DOT_DOT value_type
+      parameter_decl: IDENTIFIER.ELLIPSIS value_type
     Reduce:
       * -> [optional_generic_binding]
     Goto:
@@ -14524,7 +14524,7 @@ Parser Debug States:
       QUESTION -> State 96
       EXCLAIM -> State 91
       DOLLAR_LBRACKET -> State 121
-      DOT_DOT_DOT -> State 379
+      ELLIPSIS -> State 379
       TILDE_TILDE -> State 97
       BIT_NEG -> State 88
       BIT_AND -> State 87
@@ -15378,7 +15378,7 @@ Parser Debug States:
     Goto:
       IDENTIFIER -> State 227
       LPAREN -> State 158
-      DOT_DOT_DOT -> State 226
+      ELLIPSIS -> State 226
       var_pattern -> State 230
       tuple_pattern -> State 159
       field_var_pattern -> State 411
@@ -16004,7 +16004,7 @@ Parser Debug States:
   State 368:
     Kernel Items:
       trait_op_type: value_type.trait_op returnable_type
-      parameter_def: IDENTIFIER DOT_DOT_DOT value_type., *
+      parameter_def: IDENTIFIER ELLIPSIS value_type., *
     Reduce:
       * -> [parameter_def]
     Goto:
@@ -16216,7 +16216,7 @@ Parser Debug States:
   State 378:
     Kernel Items:
       trait_op_type: value_type.trait_op returnable_type
-      parameter_decl: DOT_DOT_DOT value_type., *
+      parameter_decl: ELLIPSIS value_type., *
     Reduce:
       * -> [parameter_decl]
     Goto:
@@ -16227,7 +16227,7 @@ Parser Debug States:
 
   State 379:
     Kernel Items:
-      parameter_decl: IDENTIFIER DOT_DOT_DOT.value_type
+      parameter_decl: IDENTIFIER ELLIPSIS.value_type
     Reduce:
       (nil)
     Goto:
@@ -16322,7 +16322,7 @@ Parser Debug States:
       DOT -> State 89
       QUESTION -> State 96
       EXCLAIM -> State 91
-      DOT_DOT_DOT -> State 281
+      ELLIPSIS -> State 281
       TILDE_TILDE -> State 97
       BIT_NEG -> State 88
       BIT_AND -> State 87
@@ -17038,7 +17038,7 @@ Parser Debug States:
   State 432:
     Kernel Items:
       trait_op_type: value_type.trait_op returnable_type
-      parameter_decl: IDENTIFIER DOT_DOT_DOT value_type., *
+      parameter_decl: IDENTIFIER ELLIPSIS value_type., *
     Reduce:
       * -> [parameter_decl]
     Goto:
@@ -17087,7 +17087,7 @@ Parser Debug States:
       DOT -> State 89
       QUESTION -> State 96
       EXCLAIM -> State 91
-      DOT_DOT_DOT -> State 281
+      ELLIPSIS -> State 281
       TILDE_TILDE -> State 97
       BIT_NEG -> State 88
       BIT_AND -> State 87
