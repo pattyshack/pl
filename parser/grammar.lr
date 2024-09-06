@@ -49,26 +49,17 @@
 
 %start source package_def type_def named_func_def expression
 
-source<SourceDefinitions> -> optional_definitions
-
-optional_definitions ->
-  NEWLINES |
-  definitions: optional_newlines definitions optional_newlines |
-  nil:
-
-optional_newlines ->
-  NEWLINES |
-  nil:
+source<SourceDefinitions> -> definitions
 
 definitions<SourceDefinitions> ->
-  definition |
-  add: definitions NEWLINES definition
+  add: definitions definition NEWLINES |
+  nil:
 
 definition<SourceDefinition> ->
   // There can only be one package_def per package
-  package_def |
-  type_def |
-  named_func_def |
+  = package_def |
+  = type_def |
+  = named_func_def |
   global_var_def: var_decl_pattern |
   global_var_assignment: var_decl_pattern ASSIGN expression |
   // There can only be at most one statement_block per package, which act as
@@ -99,15 +90,18 @@ definition<SourceDefinition> ->
 // real value type, or PARSE_ERROR's value type
 statement_block -> LBRACE statements RBRACE
 
+proper_statements<Statements> ->
+  add_implicit: proper_statements NEWLINES statement |
+  add_explicit: proper_statements SEMICOLON statement |
+  statement
+
 statements<Statements> ->
-  empty_list: |
-  add: statements statement
+  = proper_statements |
+  improper_implicit: proper_statements NEWLINES |
+  improper_explicit: proper_statements SEMICOLON |
+  nil:
 
-statement<Statement> ->
-  implicit: statement_body NEWLINES |
-  explicit: statement_body SEMICOLON
-
-simple_statement_body<Statement> ->
+simple_statement<Statement> ->
   = unsafe_statement |
 
   = expression_or_improper_struct_statement |
@@ -134,8 +128,8 @@ simple_statement_body<Statement> ->
   // case branch)
   = fallthrough_statement
 
-statement_body<Statement> ->
-  = simple_statement_body |
+statement<Statement> ->
+  = simple_statement |
 
   // NOTE: Only applicable to package_def
   = import_statement |
@@ -143,18 +137,22 @@ statement_body<Statement> ->
   // NOTE: Only applicable to switch case block.
   // Post analysis is needed to associate statements to cases (move trailing
   // non-case statements into case's data structure).
-  case_branch_statement: CASE case_patterns COLON optional_simple_statement_body |
-  default_branch_statement: DEFAULT COLON optional_simple_statement_body
+  case_branch_statement: CASE case_patterns COLON optional_simple_statement |
+  default_branch_statement: DEFAULT COLON optional_simple_statement
 
-optional_simple_statement_body<Statement> ->
-  = simple_statement_body |
+optional_simple_statement<Statement> ->
+  = simple_statement |
   nil:
 
 //
-//
+// expression / improper struct statement
 //
 
 expression_or_improper_struct_statement<Statement> -> expressions
+
+expressions ->
+  expression |
+  add: expressions COMMA expression
 
 //
 // Async / defer statements
@@ -183,27 +181,6 @@ callback_op<Value> ->
 callback_op_statement<Statement> -> callback_op call_expr
 
 //
-// Assign statements
-//
-
-unary_op_assign<Value> ->
-  = ADD_ONE_ASSIGN |
-  = SUB_ONE_ASSIGN
-
-binary_op_assign<Value> ->
-  = ADD_ASSIGN |
-  = SUB_ASSIGN |
-  = MUL_ASSIGN |
-  = DIV_ASSIGN |
-  = MOD_ASSIGN |
-  = BIT_NEG_ASSIGN |
-  = BIT_AND_ASSIGN |
-  = BIT_OR_ASSIGN |
-  = BIT_XOR_ASSIGN |
-  = BIT_LSHIFT_ASSIGN |
-  = BIT_RSHIFT_ASSIGN
-
-//
 // Unsafe statement
 //
 
@@ -226,10 +203,6 @@ jump_type<Value> ->
   = BREAK |
   = CONTINUE
 
-expressions ->
-  expression |
-  add: expressions COMMA expression
-
 fallthrough_statement<Statement> -> FALLTHROUGH
 
 //
@@ -240,7 +213,24 @@ assign_statement<Statement> -> assign_pattern ASSIGN expression
 
 unary_op_assign_statement<Statement> -> accessible_expr unary_op_assign
 
+unary_op_assign<Value> ->
+  = ADD_ONE_ASSIGN |
+  = SUB_ONE_ASSIGN
+
 binary_op_assign_statement<Statement> -> accessible_expr binary_op_assign expression
+
+binary_op_assign<Value> ->
+  = ADD_ASSIGN |
+  = SUB_ASSIGN |
+  = MUL_ASSIGN |
+  = DIV_ASSIGN |
+  = MOD_ASSIGN |
+  = BIT_NEG_ASSIGN |
+  = BIT_AND_ASSIGN |
+  = BIT_OR_ASSIGN |
+  = BIT_XOR_ASSIGN |
+  = BIT_LSHIFT_ASSIGN |
+  = BIT_RSHIFT_ASSIGN
 
 //
 // Import statement
@@ -254,13 +244,15 @@ import_clause ->
   STRING_LITERAL |
   alias: STRING_LITERAL AS IDENTIFIER
 
-import_clause_terminal ->
-  implicit: import_clause NEWLINES |
-  explicit: import_clause COMMA
+proper_import_clauses ->
+  add_implicit: proper_import_clauses NEWLINES import_clause |
+  add_explicit: proper_import_clauses COMMA import_clause |
+  import_clause
 
 import_clauses ->
-  first: import_clause_terminal |
-  add: import_clauses import_clause_terminal
+  = proper_import_clauses |
+  implicit: proper_import_clauses NEWLINES |
+  explicit: proper_import_clauses COMMA
 
 //
 // Case statement
@@ -418,36 +410,29 @@ for_assignment ->
 //
 
 call_expr<Expression> ->
-  accessible_expr optional_generic_binding LPAREN optional_arguments RPAREN
+  accessible_expr optional_generic_binding LPAREN arguments RPAREN
 
 optional_generic_binding ->
-  binding: DOLLAR_LBRACKET optional_generic_arguments RBRACKET |
+  binding: DOLLAR_LBRACKET generic_arguments RBRACKET |
   nil:
 
-optional_generic_arguments ->
-  = generic_arguments |
-  nil:
+proper_generic_arguments ->
+  add: proper_generic_arguments COMMA value_type |
+  value_type
 
-comma_generic_arguments ->
-  add: comma_generic_arguments COMMA value_type |
-  nil:
-
-// XXX allow named generic argument?
 generic_arguments ->
-  proper: value_type comma_generic_arguments |
-  improper: value_type comma_generic_arguments COMMA
-
-optional_arguments<ArgumentList> ->
-  = arguments |
+  = proper_generic_arguments |
+  improper: proper_generic_arguments COMMA |
   nil:
 
-comma_arguments<ArgumentList> ->
-  add: comma_arguments COMMA argument |
-  nil:
+proper_arguments<ArgumentList> ->
+  add: proper_arguments COMMA argument |
+  argument
 
 arguments<ArgumentList> ->
-  proper: argument comma_arguments |
-  improper: argument comma_arguments COMMA
+  = proper_arguments |
+  improper: proper_arguments COMMA |
+  nil:
 
 argument<Argument> ->
   positional: expression |
@@ -501,10 +486,9 @@ identifier_expr<Expression> ->  IDENTIFIER
 
 block_expr<Expression> ->  optional_label_decl statement_block
 
-initialize_expr<Expression> ->
-  initializable_type LPAREN optional_arguments RPAREN
+initialize_expr<Expression> -> initializable_type LPAREN arguments RPAREN
 
-implicit_struct_expr<Expression> -> LPAREN optional_arguments RPAREN
+implicit_struct_expr<Expression> -> LPAREN arguments RPAREN
 
 accessible_expr<Expression> ->
   = atom_expr |
@@ -601,9 +585,17 @@ binary_or_expr<Expression> -> or_expr OR and_expr
 // initialize_expr
 initializable_type<TypeExpression> ->
   = explicit_struct_def |
-  slice: LBRACKET value_type RBRACKET |  // shorthand for Slice$[ <value_type> ]
-  array: LBRACKET value_type COMMA INTEGER_LITERAL RBRACKET |
-  map: LBRACKET value_type COLON value_type RBRACKET // shorthand for Map$[ <value_type> , <value_type> ]
+  = slice_type |
+  = array_type |
+  = map_type
+
+// shorthand for Slice$[ <value_type> ]
+slice_type<TypeExpression> -> LBRACKET value_type RBRACKET
+
+array_type<TypeExpression> -> LBRACKET value_type COMMA INTEGER_LITERAL RBRACKET
+
+// shorthand for Map$[ <value_type> , <value_type> ]
+map_type<TypeExpression> -> LBRACKET value_type COLON value_type RBRACKET
 
 atom_type<TypeExpression> ->
   = initializable_type |
@@ -662,20 +654,17 @@ generic_parameter_def ->
   unconstrained: IDENTIFIER |
   constrained: IDENTIFIER value_type
 
-comma_generic_parameter_defs ->
-  add: comma_generic_parameter_defs COMMA generic_parameter_def |
-  nil:
+proper_generic_parameter_defs ->
+  add: proper_generic_parameter_defs COMMA generic_parameter_def |
+  generic_parameter_def
 
 generic_parameter_defs ->
-  proper: generic_parameter_def comma_generic_parameter_defs |
-  improper: generic_parameter_def comma_generic_parameter_defs COMMA
-
-optional_generic_parameter_defs ->
-  generic_parameter_defs |
+  = proper_generic_parameter_defs |
+  improper: proper_generic_parameter_defs COMMA |
   nil:
 
 optional_generic_parameters ->
-  generic: DOLLAR_LBRACKET optional_generic_parameter_defs RBRACKET |
+  generic: DOLLAR_LBRACKET generic_parameter_defs RBRACKET |
   nil:
 
 //
@@ -687,37 +676,31 @@ field_def ->
   implicit: value_type |
   unsafe_statement
 
-comma_implicit_field_defs ->
-  add: comma_implicit_field_defs COMMA field_def |
-  nil:
+proper_implicit_field_defs ->
+  add: proper_implicit_field_defs COMMA field_def |
+  field_def
 
 implicit_field_defs ->
-  proper: field_def comma_implicit_field_defs |
-  improper: field_def comma_implicit_field_defs COMMA
-
-optional_implicit_field_defs ->
-  implicit_field_defs |
+  = proper_implicit_field_defs |
+  improper: proper_implicit_field_defs COMMA |
   nil:
 
 implicit_struct_def<TypeExpression> ->
-  LPAREN optional_implicit_field_defs RPAREN
+  LPAREN implicit_field_defs RPAREN
 
-terminal_explicit_field_defs ->
-  add_implicit: terminal_explicit_field_defs NEWLINES field_def |
-  add_explicit: terminal_explicit_field_defs COMMA field_def |
-  nil:
+proper_explicit_field_defs ->
+  add_implicit: proper_explicit_field_defs NEWLINES field_def |
+  add_explicit: proper_explicit_field_defs COMMA field_def |
+  field_def
 
 explicit_field_defs ->
-  proper: field_def terminal_explicit_field_defs |
-  improper_implicit: field_def terminal_explicit_field_defs NEWLINES |
-  improper_explicit: field_def terminal_explicit_field_defs COMMA
-
-optional_explicit_field_defs ->
-  explicit_field_defs |
+  = proper_explicit_field_defs |
+  improper_implicit: proper_explicit_field_defs NEWLINES |
+  improper_explicit: proper_explicit_field_defs COMMA |
   nil:
 
 explicit_struct_def<TypeExpression> ->
-  STRUCT LPAREN optional_explicit_field_defs RPAREN
+  STRUCT LPAREN explicit_field_defs RPAREN
 
 //
 // Explicit/Implicit enum definition
@@ -759,21 +742,18 @@ trait_property ->
   field_def |
   method_signature
 
-terminal_trait_properties ->
-  add_implicit: terminal_trait_properties NEWLINES trait_property |
-  add_explicit: terminal_trait_properties COMMA trait_property |
-  nil:
+proper_trait_properties ->
+  implicit: proper_trait_properties NEWLINES trait_property |
+  explicit: proper_trait_properties COMMA trait_property |
+  trait_property
 
 trait_properties ->
-  proper: trait_property terminal_trait_properties |
-  improper_implicit: trait_property terminal_trait_properties NEWLINES |
-  improper_explicit: trait_property terminal_trait_properties COMMA
-
-optional_trait_properties ->
-  trait_properties |
+  = proper_trait_properties |
+  improper_implicit: proper_trait_properties NEWLINES |
+  improper_explicit: proper_trait_properties COMMA |
   nil:
 
-trait_def<TypeExpression> -> TRAIT LPAREN optional_trait_properties RPAREN
+trait_def<TypeExpression> -> TRAIT LPAREN trait_properties RPAREN
 
 //
 // Function type, definition, trait method signature
@@ -790,20 +770,17 @@ parameter_decl ->
   unamed: value_type |
   unnamed_vararg: ELLIPSIS value_type
 
-comma_parameter_decls ->
-  add: comma_parameter_decls COMMA parameter_decl |
-  nil:
+proper_parameter_decls ->
+  add: proper_parameter_decls COMMA parameter_decl |
+  parameter_decl
 
 parameter_decls ->
-  proper: parameter_decl comma_parameter_decls |
-  improper: parameter_decl comma_parameter_decls COMMA
-
-optional_parameter_decls ->
-  parameter_decls |
+  = proper_parameter_decls |
+  improper: proper_parameter_decls COMMA |
   nil:
 
 func_type<TypeExpression> ->
-  FUNC LPAREN optional_parameter_decls RPAREN return_type
+  FUNC LPAREN parameter_decls RPAREN return_type
 
 // NOTE: FUNC is needed to disambiguate method signature from field def.
 // e.g., Foo (int, int) could mean a field named Foo with type
@@ -814,7 +791,7 @@ func_type<TypeExpression> ->
 // Ideally yes.  We should allow function overloading as long as the functions
 // all conforms to the same (unconstrainted) generic parameterized signature.
 // Ambiguous usage would need to explicitly specify the generic parameter.
-method_signature -> FUNC IDENTIFIER LPAREN optional_parameter_decls RPAREN return_type
+method_signature -> FUNC IDENTIFIER LPAREN parameter_decls RPAREN return_type
 
 // NOTE: Parameter that don't specify any value will be inferred as a mutable
 // reference by default, i.e., equivalent to "&.".  Parameter that specify "."
@@ -825,26 +802,23 @@ parameter_def ->
   arg: IDENTIFIER value_type |
   vararg: IDENTIFIER ELLIPSIS value_type
 
-comma_parameter_defs ->
-  add: comma_parameter_defs COMMA parameter_def |
-  nil:
+proper_parameter_defs ->
+  add: proper_parameter_defs COMMA parameter_def |
+  parameter_def
 
 parameter_defs ->
-  proper: parameter_def comma_parameter_defs |
-  improper: parameter_def comma_parameter_defs COMMA
-
-optional_parameter_defs ->
-  parameter_defs |
+  = proper_parameter_defs |
+  improper: proper_parameter_defs COMMA |
   nil:
 
 named_func_def<SourceDefinition> ->
-  func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type statement_block |
-  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters LPAREN optional_parameter_defs RPAREN return_type statement_block |
+  func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN parameter_defs RPAREN return_type statement_block |
+  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters LPAREN parameter_defs RPAREN return_type statement_block |
   alias: FUNC IDENTIFIER ASSIGN expression
 
 
 anonymous_func_expr<Expression> ->
-  FUNC LPAREN optional_parameter_defs RPAREN return_type statement_block
+  FUNC LPAREN parameter_defs RPAREN return_type statement_block
 
 //
 // Package definition =========================================================
