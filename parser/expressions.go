@@ -622,6 +622,8 @@ type ArgumentList struct {
 	StartPos Location
 	EndPos   Location
 
+	// Note: the leading / trailing comments from the the list start/end marker
+	// tokens (either () or [])
 	LeadingTrailingComments
 
 	// MiddleComment is only used when the list is empty, but contains a comment,
@@ -659,8 +661,61 @@ func (args *ArgumentList) TreeString(indent string, label string) string {
 	return result
 }
 
-// TODO
 type ArgumentListReducer struct{}
+
+var _ ProperArgumentsReducer = &ArgumentListReducer{}
+var _ ArgumentsReducer = &ArgumentListReducer{}
+
+func (reducer *ArgumentListReducer) AddToProperArguments(
+	list *ArgumentList,
+	comma TokenValue,
+	arg *Argument,
+) (
+	*ArgumentList,
+	error,
+) {
+	list.EndPos = arg.End()
+
+	prevArg := list.Arguments[len(list.Arguments)-1]
+	prevArg.AppendToTrailing(comma.TakeLeading())
+	prevArg.AppendToTrailing(comma.TakeTrailing())
+
+	list.Arguments = append(list.Arguments, arg)
+	return list, nil
+}
+
+func (reducer *ArgumentListReducer) ArgumentToProperArguments(
+	arg *Argument,
+) (
+	*ArgumentList,
+	error,
+) {
+	return &ArgumentList{
+		StartPos:  arg.Loc(),
+		EndPos:    arg.End(),
+		Arguments: []*Argument{arg},
+	}, nil
+}
+
+func (reducer *ArgumentListReducer) ImproperToArguments(
+	list *ArgumentList,
+	comma TokenValue,
+) (
+	*ArgumentList,
+	error,
+) {
+	list.EndPos = comma.End()
+
+	lastArg := list.Arguments[len(list.Arguments)-1]
+	lastArg.AppendToTrailing(comma.TakeLeading())
+	lastArg.AppendToTrailing(comma.TakeTrailing())
+
+	return list, nil
+}
+
+func (reducer *ArgumentListReducer) NilToArguments() (*ArgumentList, error) {
+	return nil, nil
+}
 
 //
 // ImplicitStructExpr
@@ -699,28 +754,24 @@ func (reducer *ImplicitStructExprReducerImpl) ToImplicitStructExpr(
 	expr := &ImplicitStructExpr{}
 	if optionalArgs != nil {
 		expr.ArgumentList = *optionalArgs
+
+		expr.LeadingComment = lparen.TakeLeading()
+		expr.Arguments[0].PrependToLeading(lparen.TakeTrailing())
+
+		expr.Arguments[len(expr.Arguments)-1].AppendToTrailing(rparen.TakeLeading())
+		expr.TrailingComment = rparen.TakeTrailing()
+	} else {
+		expr.LeadingComment = lparen.TakeLeading()
+
+		expr.MiddleComment.Append(lparen.TakeTrailing())
+		expr.MiddleComment.Append(rparen.TakeLeading())
+
+		expr.TrailingComment = rparen.TakeTrailing()
+
 	}
 
 	expr.StartPos = lparen.Loc()
 	expr.EndPos = rparen.End()
-
-	if len(expr.Arguments) > 0 {
-		expr.Arguments[0].PrependToLeading(expr.TakeLeading())
-		expr.Arguments[0].PrependToLeading(lparen.TakeTrailing())
-		expr.LeadingComment = lparen.TakeLeading()
-
-		expr.Arguments[len(expr.Arguments)-1].AppendToTrailing(expr.TakeTrailing())
-		expr.Arguments[len(expr.Arguments)-1].AppendToTrailing(rparen.TakeLeading())
-		expr.TrailingComment = rparen.TakeTrailing()
-	} else {
-		expr.MiddleComment.Append(lparen.TakeTrailing())
-		expr.MiddleComment.Append(expr.TakeLeading())
-		expr.MiddleComment.Append(expr.TakeTrailing())
-		expr.MiddleComment.Append(rparen.TakeLeading())
-
-		expr.LeadingComment = lparen.TakeLeading()
-		expr.TrailingComment = rparen.TakeTrailing()
-	}
 
 	return expr, nil
 }
