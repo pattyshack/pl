@@ -415,19 +415,19 @@ for_assignment ->
 //
 
 call_expr<Expression> ->
-  accessible_expr optional_generic_binding LPAREN arguments RPAREN
+  accessible_expr generic_type_arguments LPAREN arguments RPAREN
 
-optional_generic_binding ->
-  binding: DOLLAR_LBRACKET generic_arguments RBRACKET |
+generic_type_arguments<TypeArgumentList> ->
+  binding: DOLLAR_LBRACKET type_arguments RBRACKET |
   nil:
 
-proper_generic_arguments ->
-  add: proper_generic_arguments COMMA value_type |
+proper_type_arguments<TypeArgumentList> ->
+  add: proper_type_arguments COMMA value_type |
   value_type
 
-generic_arguments ->
-  = proper_generic_arguments |
-  improper: proper_generic_arguments COMMA |
+type_arguments<TypeArgumentList> ->
+  = proper_type_arguments |
+  improper: proper_type_arguments COMMA |
   nil:
 
 proper_arguments<ArgumentList> ->
@@ -604,9 +604,9 @@ map_type<TypeExpression> -> LBRACKET value_type COLON value_type RBRACKET
 
 atom_type<TypeExpression> ->
   = initializable_type |
-  named: IDENTIFIER optional_generic_binding |
-  extern_named: IDENTIFIER DOT IDENTIFIER optional_generic_binding |
-  inferred: DOT optional_generic_binding |  // XXX: maybe use a different token symbol
+  named: IDENTIFIER generic_type_arguments |
+  extern_named: IDENTIFIER DOT IDENTIFIER generic_type_arguments |
+  inferred: DOT generic_type_arguments |  // XXX: maybe use a different token symbol
   = implicit_struct_def |
   = explicit_enum_def |
   = implicit_enum_def |
@@ -846,13 +846,14 @@ go:
     Count: "TokenCount"
     Value: "TokenValue"
     Expression: "Expression"
+    ColonExpr: "*ColonExpr"
+    Argument: "*Argument"
+    ArgumentList: "ArgumentList"
     TypeExpression: "TypeExpression"
+    TypeArgumentList: "*TypeArgumentList"
     Statement: "Statement"
     Statements: "[]Statement"
     SourceDefinition: "SourceDefinition"
     SourceDefinitions: "[]SourceDefinition"
-    Argument: "*Argument"
-    ArgumentList: "*ArgumentList"
-    ColonExpr: "*ColonExpr"
   generate_end_pos: True
 }%%

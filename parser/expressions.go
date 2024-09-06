@@ -670,11 +670,11 @@ var _ ProperArgumentsReducer = &ArgumentListReducer{}
 var _ ArgumentsReducer = &ArgumentListReducer{}
 
 func (reducer *ArgumentListReducer) AddToProperArguments(
-	list *ArgumentList,
+	list ArgumentList,
 	comma TokenValue,
 	arg *Argument,
 ) (
-	*ArgumentList,
+	ArgumentList,
 	error,
 ) {
 	list.EndPos = arg.End()
@@ -690,10 +690,10 @@ func (reducer *ArgumentListReducer) AddToProperArguments(
 func (reducer *ArgumentListReducer) ArgumentToProperArguments(
 	arg *Argument,
 ) (
-	*ArgumentList,
+	ArgumentList,
 	error,
 ) {
-	return &ArgumentList{
+	return ArgumentList{
 		StartPos:  arg.Loc(),
 		EndPos:    arg.End(),
 		Arguments: []*Argument{arg},
@@ -701,10 +701,10 @@ func (reducer *ArgumentListReducer) ArgumentToProperArguments(
 }
 
 func (reducer *ArgumentListReducer) ImproperToArguments(
-	list *ArgumentList,
+	list ArgumentList,
 	comma TokenValue,
 ) (
-	*ArgumentList,
+	ArgumentList,
 	error,
 ) {
 	list.EndPos = comma.End()
@@ -716,8 +716,8 @@ func (reducer *ArgumentListReducer) ImproperToArguments(
 	return list, nil
 }
 
-func (reducer *ArgumentListReducer) NilToArguments() (*ArgumentList, error) {
-	return nil, nil
+func (reducer *ArgumentListReducer) NilToArguments() (ArgumentList, error) {
+	return ArgumentList{}, nil
 }
 
 //
@@ -748,33 +748,30 @@ var _ ImplicitStructExprReducer = &ImplicitStructExprReducerImpl{}
 
 func (reducer *ImplicitStructExprReducerImpl) ToImplicitStructExpr(
 	lparen TokenValue,
-	optionalArgs *ArgumentList,
+	args ArgumentList,
 	rparen TokenValue,
 ) (
 	Expression,
 	error,
 ) {
-	expr := &ImplicitStructExpr{}
-	if optionalArgs != nil {
-		expr.ArgumentList = *optionalArgs
-
-		expr.LeadingComment = lparen.TakeLeading()
-		expr.Arguments[0].PrependToLeading(lparen.TakeTrailing())
-
-		expr.Arguments[len(expr.Arguments)-1].AppendToTrailing(rparen.TakeLeading())
-		expr.TrailingComment = rparen.TakeTrailing()
-	} else {
-		expr.LeadingComment = lparen.TakeLeading()
-
-		expr.MiddleComment.Append(lparen.TakeTrailing())
-		expr.MiddleComment.Append(rparen.TakeLeading())
-
-		expr.TrailingComment = rparen.TakeTrailing()
-
+	expr := &ImplicitStructExpr{
+		ArgumentList: args,
 	}
 
 	expr.StartPos = lparen.Loc()
 	expr.EndPos = rparen.End()
+
+	expr.LeadingComment = lparen.TakeLeading()
+
+	if len(expr.Arguments) > 0 {
+		expr.Arguments[0].PrependToLeading(lparen.TakeTrailing())
+		expr.Arguments[len(expr.Arguments)-1].AppendToTrailing(rparen.TakeLeading())
+	} else {
+		expr.MiddleComment = lparen.TakeTrailing()
+		expr.MiddleComment.Append(rparen.TakeLeading())
+	}
+
+	expr.TrailingComment = rparen.TakeTrailing()
 
 	return expr, nil
 }
