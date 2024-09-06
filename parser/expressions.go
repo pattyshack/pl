@@ -621,48 +621,7 @@ func (ArgumentReducerImpl) SkipPatternToArgument(
 // Argument list
 //
 
-type ArgumentList struct {
-	StartPos Location
-	EndPos   Location
-
-	// Note: the leading / trailing comments from the the list start/end marker
-	// tokens (either () or [])
-	LeadingTrailingComments
-
-	// MiddleComment is only used when the list is empty, but contains a comment,
-	// e.g., Foo(/*comment*/)
-	MiddleComment CommentGroups
-
-	Arguments []*Argument
-}
-
-var _ Node = &ArgumentList{}
-
-func (args *ArgumentList) Loc() Location {
-	return args.StartPos
-}
-
-func (args *ArgumentList) End() Location {
-	return args.StartPos
-}
-
-func (args *ArgumentList) String() string {
-	return args.TreeString("", "")
-}
-
-func (args *ArgumentList) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[ArgumentList:", indent, label)
-	if len(args.Arguments) == 0 {
-		return result + "]"
-	}
-
-	for idx, arg := range args.Arguments {
-		result += "\n" + arg.TreeString(indent+"  ", fmt.Sprintf("Arg %d=", idx))
-	}
-
-	result += "\n" + indent + "]"
-	return result
-}
+type ArgumentList = NodeList[*Argument]
 
 type ArgumentListReducer struct{}
 
@@ -670,54 +629,39 @@ var _ ProperArgumentsReducer = &ArgumentListReducer{}
 var _ ArgumentsReducer = &ArgumentListReducer{}
 
 func (reducer *ArgumentListReducer) AddToProperArguments(
-	list ArgumentList,
+	list *ArgumentList,
 	comma TokenValue,
 	arg *Argument,
 ) (
-	ArgumentList,
+	*ArgumentList,
 	error,
 ) {
-	list.EndPos = arg.End()
-
-	prevArg := list.Arguments[len(list.Arguments)-1]
-	prevArg.AppendToTrailing(comma.TakeLeading())
-	prevArg.AppendToTrailing(comma.TakeTrailing())
-
-	list.Arguments = append(list.Arguments, arg)
+	list.reduceAdd(comma, arg)
 	return list, nil
 }
 
 func (reducer *ArgumentListReducer) ArgumentToProperArguments(
 	arg *Argument,
 ) (
-	ArgumentList,
+	*ArgumentList,
 	error,
 ) {
-	return ArgumentList{
-		StartPos:  arg.Loc(),
-		EndPos:    arg.End(),
-		Arguments: []*Argument{arg},
-	}, nil
+	return newNodeList[*Argument]("ArgumentList", arg), nil
 }
 
 func (reducer *ArgumentListReducer) ImproperToArguments(
-	list ArgumentList,
+	list *ArgumentList,
 	comma TokenValue,
 ) (
-	ArgumentList,
+	*ArgumentList,
 	error,
 ) {
-	list.EndPos = comma.End()
-
-	lastArg := list.Arguments[len(list.Arguments)-1]
-	lastArg.AppendToTrailing(comma.TakeLeading())
-	lastArg.AppendToTrailing(comma.TakeTrailing())
-
+	list.reduceImproper(comma)
 	return list, nil
 }
 
-func (reducer *ArgumentListReducer) NilToArguments() (ArgumentList, error) {
-	return ArgumentList{}, nil
+func (reducer *ArgumentListReducer) NilToArguments() (*ArgumentList, error) {
+	return nil, nil
 }
 
 //
@@ -748,31 +692,20 @@ var _ ImplicitStructExprReducer = &ImplicitStructExprReducerImpl{}
 
 func (reducer *ImplicitStructExprReducerImpl) ToImplicitStructExpr(
 	lparen TokenValue,
-	args ArgumentList,
+	args *ArgumentList,
 	rparen TokenValue,
 ) (
 	Expression,
 	error,
 ) {
+	args.reduceMarkers(lparen, rparen)
+	args.ListType = "ImplicitStructExpr"
+
 	expr := &ImplicitStructExpr{
-		ArgumentList: args,
+		ArgumentList: *args,
 	}
 
-	expr.StartPos = lparen.Loc()
-	expr.EndPos = rparen.End()
-
-	expr.LeadingComment = lparen.TakeLeading()
-
-	if len(expr.Arguments) > 0 {
-		expr.Arguments[0].PrependToLeading(lparen.TakeTrailing())
-		expr.Arguments[len(expr.Arguments)-1].AppendToTrailing(rparen.TakeLeading())
-	} else {
-		expr.MiddleComment = lparen.TakeTrailing()
-		expr.MiddleComment.Append(rparen.TakeLeading())
-	}
-
-	expr.TrailingComment = rparen.TakeTrailing()
-
+	reducer.ImplicitStructExprs = append(reducer.ImplicitStructExprs, expr)
 	return expr, nil
 }
 
@@ -785,54 +718,39 @@ type ColonExpr struct {
 	ArgumentList
 }
 
-func (expr *ColonExpr) String() string {
-	return expr.TreeString("", "")
-}
-
-func (expr *ColonExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[ColonExpr:\n", indent, label)
-	result += expr.ArgumentList.TreeString(indent+"  ", "")
-	result += "\n" + indent + "]\n"
-	return result
-}
-
 type ColonExprReducerImpl struct {
 }
 
 var _ ColonExprReducer = &ColonExprReducerImpl{}
 
-func (reducer *ColonExprReducerImpl) UnitUnitPairToColonExpr(
+func (ColonExprReducerImpl) UnitUnitPairToColonExpr(
 	colon TokenValue,
 ) (
 	*ColonExpr,
 	error,
 ) {
-	left := &Argument{
+	leftArg := &Argument{
 		StartPos: colon.Loc(),
 		EndPos:   colon.End(),
 		Kind:     IsImplicitUnitArgument,
 	}
-	left.TrailingComment = colon.TakeLeading()
 
-	right := &Argument{
+	rightArg := &Argument{
 		StartPos: colon.Loc(),
 		EndPos:   colon.End(),
 		Kind:     IsImplicitUnitArgument,
 	}
-	right.LeadingComment = colon.TakeTrailing()
+	rightArg.LeadingComment = colon.TakeTrailing()
 
-	expr := &ColonExpr{
-		ArgumentList: ArgumentList{
-			StartPos:  colon.Loc(),
-			EndPos:    colon.End(),
-			Arguments: []*Argument{left, right},
-		},
-	}
+	args := newNodeList[*Argument]("ColonExpr", leftArg)
+	args.reduceAdd(colon, rightArg)
 
-	return expr, nil
+	return &ColonExpr{
+		ArgumentList: *args,
+	}, nil
 }
 
-func (reducer *ColonExprReducerImpl) ExprUnitPairToColonExpr(
+func (ColonExprReducerImpl) ExprUnitPairToColonExpr(
 	leftExpr Expression,
 	colon TokenValue,
 ) (
@@ -847,7 +765,6 @@ func (reducer *ColonExprReducerImpl) ExprUnitPairToColonExpr(
 	}
 	leftArg.LeadingComment = leftExpr.TakeLeading()
 	leftArg.TrailingComment = leftExpr.TakeTrailing()
-	leftArg.AppendToTrailing(colon.TakeLeading())
 
 	rightArg := &Argument{
 		StartPos: colon.Loc(),
@@ -856,15 +773,12 @@ func (reducer *ColonExprReducerImpl) ExprUnitPairToColonExpr(
 	}
 	rightArg.LeadingComment = colon.TakeTrailing()
 
-	expr := &ColonExpr{
-		ArgumentList: ArgumentList{
-			StartPos:  leftExpr.Loc(),
-			EndPos:    colon.End(),
-			Arguments: []*Argument{leftArg, rightArg},
-		},
-	}
+	args := newNodeList[*Argument]("ColonExpr", leftArg)
+	args.reduceAdd(colon, rightArg)
 
-	return expr, nil
+	return &ColonExpr{
+		ArgumentList: *args,
+	}, nil
 }
 
 func (reducer *ColonExprReducerImpl) UnitExprPairToColonExpr(
@@ -879,7 +793,6 @@ func (reducer *ColonExprReducerImpl) UnitExprPairToColonExpr(
 		EndPos:   colon.End(),
 		Kind:     IsImplicitUnitArgument,
 	}
-	leftArg.TrailingComment = colon.TakeLeading()
 
 	rightArg := &Argument{
 		StartPos: rightExpr.Loc(),
@@ -891,15 +804,12 @@ func (reducer *ColonExprReducerImpl) UnitExprPairToColonExpr(
 	rightArg.TrailingComment = rightExpr.TakeTrailing()
 	rightArg.PrependToLeading(colon.TakeTrailing())
 
-	expr := &ColonExpr{
-		ArgumentList: ArgumentList{
-			StartPos:  colon.Loc(),
-			EndPos:    rightExpr.End(),
-			Arguments: []*Argument{leftArg, rightArg},
-		},
-	}
+	args := newNodeList[*Argument]("ColonExpr", leftArg)
+	args.reduceAdd(colon, rightArg)
 
-	return expr, nil
+	return &ColonExpr{
+		ArgumentList: *args,
+	}, nil
 }
 
 func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
@@ -918,7 +828,6 @@ func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
 	}
 	leftArg.LeadingComment = leftExpr.TakeLeading()
 	leftArg.TrailingComment = leftExpr.TakeTrailing()
-	leftArg.AppendToTrailing(colon.TakeLeading())
 
 	rightArg := &Argument{
 		StartPos: rightExpr.Loc(),
@@ -930,15 +839,12 @@ func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
 	rightArg.TrailingComment = rightExpr.TakeTrailing()
 	rightArg.PrependToLeading(colon.TakeTrailing())
 
-	expr := &ColonExpr{
-		ArgumentList: ArgumentList{
-			StartPos:  leftExpr.Loc(),
-			EndPos:    rightExpr.End(),
-			Arguments: []*Argument{leftArg, rightArg},
-		},
-	}
+	args := newNodeList[*Argument]("ColonExpr", leftArg)
+	args.reduceAdd(colon, rightArg)
 
-	return expr, nil
+	return &ColonExpr{
+		ArgumentList: *args,
+	}, nil
 }
 
 func (reducer *ColonExprReducerImpl) ColonExprUnitTupleToColonExpr(
@@ -948,8 +854,6 @@ func (reducer *ColonExprReducerImpl) ColonExprUnitTupleToColonExpr(
 	*ColonExpr,
 	error,
 ) {
-	list.Arguments[len(list.Arguments)-1].AppendToTrailing(colon.TakeLeading())
-
 	arg := &Argument{
 		StartPos: colon.Loc(),
 		EndPos:   colon.End(),
@@ -957,9 +861,7 @@ func (reducer *ColonExprReducerImpl) ColonExprUnitTupleToColonExpr(
 	}
 	arg.LeadingComment = colon.TakeTrailing()
 
-	list.EndPos = colon.End()
-	list.Arguments = append(list.Arguments, arg)
-
+	list.reduceAdd(colon, arg)
 	return list, nil
 }
 
@@ -971,8 +873,6 @@ func (reducer *ColonExprReducerImpl) ColonExprExprTupleToColonExpr(
 	*ColonExpr,
 	error,
 ) {
-	list.Arguments[len(list.Arguments)-1].AppendToTrailing(colon.TakeLeading())
-
 	arg := &Argument{
 		StartPos: expr.Loc(),
 		EndPos:   expr.End(),
@@ -983,8 +883,6 @@ func (reducer *ColonExprReducerImpl) ColonExprExprTupleToColonExpr(
 	arg.TrailingComment = expr.TakeTrailing()
 	arg.PrependToLeading(colon.TakeTrailing())
 
-	list.EndPos = expr.End()
-	list.Arguments = append(list.Arguments, arg)
-
+	list.reduceAdd(colon, arg)
 	return list, nil
 }

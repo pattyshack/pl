@@ -465,7 +465,7 @@ type ForAssignmentReducer interface {
 
 type CallExprReducer interface {
 	// 418:2: call_expr -> ...
-	ToCallExpr(AccessibleExpr_ Expression, GenericTypeArguments_ *TypeArgumentList, Lparen_ TokenValue, Arguments_ ArgumentList, Rparen_ TokenValue) (Expression, error)
+	ToCallExpr(AccessibleExpr_ Expression, GenericTypeArguments_ *TypeArgumentList, Lparen_ TokenValue, Arguments_ *ArgumentList, Rparen_ TokenValue) (Expression, error)
 }
 
 type GenericTypeArgumentsReducer interface {
@@ -495,19 +495,19 @@ type TypeArgumentsReducer interface {
 
 type ProperArgumentsReducer interface {
 	// 434:2: proper_arguments -> add: ...
-	AddToProperArguments(ProperArguments_ ArgumentList, Comma_ TokenValue, Argument_ *Argument) (ArgumentList, error)
+	AddToProperArguments(ProperArguments_ *ArgumentList, Comma_ TokenValue, Argument_ *Argument) (*ArgumentList, error)
 
 	// 435:2: proper_arguments -> argument: ...
-	ArgumentToProperArguments(Argument_ *Argument) (ArgumentList, error)
+	ArgumentToProperArguments(Argument_ *Argument) (*ArgumentList, error)
 }
 
 type ArgumentsReducer interface {
 
 	// 439:2: arguments -> improper: ...
-	ImproperToArguments(ProperArguments_ ArgumentList, Comma_ TokenValue) (ArgumentList, error)
+	ImproperToArguments(ProperArguments_ *ArgumentList, Comma_ TokenValue) (*ArgumentList, error)
 
 	// 440:2: arguments -> nil: ...
-	NilToArguments() (ArgumentList, error)
+	NilToArguments() (*ArgumentList, error)
 }
 
 type ArgumentReducer interface {
@@ -584,12 +584,12 @@ type BlockExprReducer interface {
 
 type InitializeExprReducer interface {
 	// 494:31: initialize_expr -> ...
-	ToInitializeExpr(InitializableType_ TypeExpression, Lparen_ TokenValue, Arguments_ ArgumentList, Rparen_ TokenValue) (Expression, error)
+	ToInitializeExpr(InitializableType_ TypeExpression, Lparen_ TokenValue, Arguments_ *ArgumentList, Rparen_ TokenValue) (Expression, error)
 }
 
 type ImplicitStructExprReducer interface {
 	// 496:36: implicit_struct_expr -> ...
-	ToImplicitStructExpr(Lparen_ TokenValue, Arguments_ ArgumentList, Rparen_ TokenValue) (Expression, error)
+	ToImplicitStructExpr(Lparen_ TokenValue, Arguments_ *ArgumentList, Rparen_ TokenValue) (Expression, error)
 }
 
 type AccessExprReducer interface {
@@ -3296,7 +3296,7 @@ type Symbol struct {
 	Generic_ GenericSymbol
 
 	Argument          *Argument
-	ArgumentList      ArgumentList
+	ArgumentList      *ArgumentList
 	ColonExpr         *ColonExpr
 	Count             TokenCount
 	Expression        Expression

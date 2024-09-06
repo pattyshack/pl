@@ -272,3 +272,89 @@ func (reducer *ParseErrorReducer) ToParseErrorType(
 	reducer.ParseErrors = append(reducer.ParseErrors, ptr)
 	return ptr, nil
 }
+
+type NodeList[T Node] struct {
+	StartPos Location
+	EndPos   Location
+
+	// The leading / trailing comments from the list's start/end marker tokens.
+	LeadingTrailingComments
+
+	// MiddleComment is only used when the list is empty, but contains comments.
+	MiddleComment CommentGroups
+
+	Elements []T
+
+	// Only used for TreeString() / String()
+	ListType string
+}
+
+func (list NodeList[T]) Loc() Location {
+	return list.StartPos
+}
+
+func (list NodeList[T]) End() Location {
+	return list.EndPos
+}
+
+func (list NodeList[T]) String() string {
+	return list.TreeString("", "")
+}
+
+func (list NodeList[T]) TreeString(indent string, label string) string {
+	result := fmt.Sprintf("%s%s[%s:", indent, label, list.ListType)
+	if len(list.Elements) == 0 {
+		return result + "]"
+	}
+
+	for idx, element := range list.Elements {
+		result += "\n" + element.TreeString(
+			indent+"  ",
+			fmt.Sprintf("Element%d=", idx))
+	}
+
+	result += "\n" + indent + "]"
+	return result
+}
+
+func newNodeList[T Node](listType string, element T) *NodeList[T] {
+	return &NodeList[T]{
+		StartPos: element.Loc(),
+		EndPos:   element.End(),
+		Elements: []T{element},
+		ListType: listType,
+	}
+}
+
+func (list *NodeList[T]) reduceAdd(separator TokenValue, element T) {
+	list.EndPos = element.End()
+
+	prev := list.Elements[len(list.Elements)-1]
+	prev.AppendToTrailing(separator.TakeLeading())
+	prev.AppendToTrailing(separator.TakeTrailing())
+
+	list.Elements = append(list.Elements, element)
+}
+
+func (list *NodeList[T]) reduceImproper(separator TokenValue) {
+	list.EndPos = separator.End()
+
+	lastElement := list.Elements[len(list.Elements)-1]
+	lastElement.AppendToTrailing(separator.TakeLeading())
+	lastElement.AppendToTrailing(separator.TakeTrailing())
+}
+
+func (list *NodeList[T]) reduceMarkers(start TokenValue, end TokenValue) {
+	list.StartPos = start.Loc()
+	list.EndPos = end.End()
+
+	list.LeadingComment = start.TakeLeading()
+	if len(list.Elements) > 0 {
+		list.Elements[0].PrependToLeading(start.TakeTrailing())
+		list.Elements[len(list.Elements)-1].AppendToTrailing(end.TakeLeading())
+	} else {
+		list.MiddleComment = start.TakeTrailing()
+		list.MiddleComment.Append(end.TakeLeading())
+	}
+	list.TrailingComment = end.TakeTrailing()
+}

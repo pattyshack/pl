@@ -848,7 +848,7 @@ go:
     Expression: "Expression"
     ColonExpr: "*ColonExpr"
     Argument: "*Argument"
-    ArgumentList: "ArgumentList"
+    ArgumentList: "*ArgumentList"
     TypeExpression: "TypeExpression"
     TypeArgumentList: "*TypeArgumentList"
     Statement: "Statement"

@@ -1,51 +1,8 @@
 package parser
 
-import (
-	"fmt"
-)
-
-type TypeArgumentList struct {
-	StartPos Location
-	EndPos   Location
-
-	// The leading / trailing comments form the generic argument start/end marker
-	// tokens $[ ]
-	LeadingTrailingComments
-
-	// MiddleComment is only used when the list is empty, but contains a comment,
-	// e.g., Foo$[/*comment*/]
-	MiddleComment CommentGroups
-
-	TypeArguments []TypeExpression
-}
+type TypeArgumentList = NodeList[TypeExpression]
 
 var _ Node = &TypeArgumentList{}
-
-func (list *TypeArgumentList) Loc() Location {
-	return list.StartPos
-}
-
-func (list *TypeArgumentList) End() Location {
-	return list.EndPos
-}
-
-func (list *TypeArgumentList) String() string {
-	return list.TreeString("", "")
-}
-
-func (list *TypeArgumentList) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[TypeArgumentList:", indent, label)
-	if len(list.TypeArguments) == 0 {
-		return result + "]"
-	}
-
-	for idx, arg := range list.TypeArguments {
-		result += "\n" + arg.TreeString(indent+"  ", fmt.Sprintf("Arg %d=", idx))
-	}
-
-	result += "\n" + indent + "]"
-	return result
-}
 
 type TypeArgumentListReducer struct{}
 
@@ -61,22 +18,7 @@ func (reducer *TypeArgumentListReducer) BindingToGenericTypeArguments(
 	*TypeArgumentList,
 	error,
 ) {
-	list.StartPos = dollarLbracket.Loc()
-	list.EndPos = rbracket.End()
-
-	list.LeadingComment = dollarLbracket.TakeLeading()
-
-	if len(list.TypeArguments) > 0 {
-		list.TypeArguments[0].PrependToLeading(dollarLbracket.TakeTrailing())
-		list.TypeArguments[len(list.TypeArguments)-1].AppendToTrailing(
-			rbracket.TakeLeading())
-	} else {
-		list.MiddleComment = dollarLbracket.TakeTrailing()
-		list.MiddleComment.Append(rbracket.TakeLeading())
-	}
-
-	list.TrailingComment = rbracket.TakeTrailing()
-
+	list.reduceMarkers(dollarLbracket, rbracket)
 	return list, nil
 }
 
@@ -95,13 +37,7 @@ func (reducer *TypeArgumentListReducer) AddToProperTypeArguments(
 	*TypeArgumentList,
 	error,
 ) {
-	list.EndPos = arg.End()
-
-	prevArg := list.TypeArguments[len(list.TypeArguments)-1]
-	prevArg.AppendToTrailing(comma.TakeLeading())
-	prevArg.AppendToTrailing(comma.TakeTrailing())
-
-	list.TypeArguments = append(list.TypeArguments, arg)
+	list.reduceAdd(comma, arg)
 	return list, nil
 }
 
@@ -111,11 +47,7 @@ func (reducer *TypeArgumentListReducer) ValueTypeToProperTypeArguments(
 	*TypeArgumentList,
 	error,
 ) {
-	return &TypeArgumentList{
-		StartPos:      arg.Loc(),
-		EndPos:        arg.End(),
-		TypeArguments: []TypeExpression{arg},
-	}, nil
+	return newNodeList[TypeExpression]("TypeArgumentList", arg), nil
 }
 
 func (reducer *TypeArgumentListReducer) ImproperToTypeArguments(
@@ -125,12 +57,7 @@ func (reducer *TypeArgumentListReducer) ImproperToTypeArguments(
 	*TypeArgumentList,
 	error,
 ) {
-	list.EndPos = comma.End()
-
-	lastArg := list.TypeArguments[len(list.TypeArguments)-1]
-	lastArg.AppendToTrailing(comma.TakeLeading())
-	lastArg.AppendToTrailing(comma.TakeTrailing())
-
+	list.reduceImproper(comma)
 	return list, nil
 }
 
@@ -138,5 +65,5 @@ func (reducer *TypeArgumentListReducer) NilToTypeArguments() (
 	*TypeArgumentList,
 	error,
 ) {
-	return &TypeArgumentList{}, nil
+	return nil, nil
 }
