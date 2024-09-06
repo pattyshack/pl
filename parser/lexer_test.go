@@ -227,13 +227,13 @@ func (s *TerminalNewlinesLexerSuite) lex(
 }
 
 func (s *TerminalNewlinesLexerSuite) TestEOF(t *testing.T) {
-	s.lex(t, "+", AddToken, NewlinesToken)
-	s.lex(t, "+\n", AddToken, NewlinesToken)
-	s.lex(t, ",", CommaToken, NewlinesToken)
-	s.lex(t, ",\n", CommaToken, NewlinesToken)
-	s.lex(t, "// comment", CommentGroupsToken, NewlinesToken)
-	s.lex(t, "// comment\n", CommentGroupsToken, NewlinesToken)
-	s.lex(t, "a", IdentifierToken, NewlinesToken)
+	s.lex(t, "+", AddToken)
+	s.lex(t, "+\n", AddToken)
+	s.lex(t, ",", CommaToken)
+	s.lex(t, ",\n", CommaToken)
+	s.lex(t, "// comment", CommentGroupsToken)
+	s.lex(t, "// comment\n", CommentGroupsToken)
+	s.lex(t, "a", IdentifierToken)
 	s.lex(t, "a\n", IdentifierToken, NewlinesToken)
 	s.lex(t, "a // comment \n", IdentifierToken, NewlinesToken)
 }
@@ -241,94 +241,80 @@ func (s *TerminalNewlinesLexerSuite) TestEOF(t *testing.T) {
 func (s *TerminalNewlinesLexerSuite) TestIdentifier(t *testing.T) {
 	s.lex(
 		t, "a // foo \n+ b",
-		IdentifierToken, NewlinesToken, AddToken, IdentifierToken, NewlinesToken)
+		IdentifierToken, NewlinesToken, AddToken, IdentifierToken)
 	s.lex(
 		t, "a + b\n c",
-		IdentifierToken, AddToken, IdentifierToken, NewlinesToken,
-		IdentifierToken, NewlinesToken)
+		IdentifierToken, AddToken, IdentifierToken, NewlinesToken, IdentifierToken)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestLiteral(t *testing.T) {
 	s.lex(
 		t, "1 \n + b",
-		IntegerLiteralToken, NewlinesToken,
-		AddToken, IdentifierToken, NewlinesToken)
+		IntegerLiteralToken, NewlinesToken, AddToken, IdentifierToken)
 	s.lex(
 		t, "a + 0x123\n c",
 		IdentifierToken, AddToken, IntegerLiteralToken, NewlinesToken,
-		IdentifierToken, NewlinesToken)
+		IdentifierToken)
 	s.lex(
 		t, "1. \n + b",
-		FloatLiteralToken, NewlinesToken,
-		AddToken, IdentifierToken, NewlinesToken)
+		FloatLiteralToken, NewlinesToken, AddToken, IdentifierToken)
 	s.lex(
 		t, "'a' \n + b",
-		RuneLiteralToken, NewlinesToken,
-		AddToken, IdentifierToken, NewlinesToken)
+		RuneLiteralToken, NewlinesToken, AddToken, IdentifierToken)
 	s.lex(
 		t, "\"string\" \n + b",
-		StringLiteralToken, NewlinesToken,
-		AddToken, IdentifierToken, NewlinesToken)
+		StringLiteralToken, NewlinesToken, AddToken, IdentifierToken)
 	s.lex(
 		t, "true \n + b",
-		TrueToken, NewlinesToken, AddToken, IdentifierToken, NewlinesToken)
+		TrueToken, NewlinesToken, AddToken, IdentifierToken)
 	s.lex(
 		t, "false \n + b",
-		FalseToken, NewlinesToken, AddToken, IdentifierToken, NewlinesToken)
+		FalseToken, NewlinesToken, AddToken, IdentifierToken)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestJumps(t *testing.T) {
 	s.lex(t, "return @label\n}",
-		ReturnToken, JumpLabelToken, NewlinesToken, RbraceToken, NewlinesToken)
+		ReturnToken, JumpLabelToken, NewlinesToken, RbraceToken)
 	s.lex(t, "return @label // comment \n}",
-		ReturnToken, JumpLabelToken, NewlinesToken, RbraceToken, NewlinesToken)
-	s.lex(t, "return\n}",
-		ReturnToken, NewlinesToken, RbraceToken, NewlinesToken)
-	s.lex(t, "break\n}",
-		BreakToken, NewlinesToken, RbraceToken, NewlinesToken)
-	s.lex(t, "continue\n}",
-		ContinueToken, NewlinesToken, RbraceToken, NewlinesToken)
-	s.lex(t, "fallthrough\n}",
-		FallthroughToken, NewlinesToken, RbraceToken, NewlinesToken)
+		ReturnToken, JumpLabelToken, NewlinesToken, RbraceToken)
+	s.lex(t, "return\n}", ReturnToken, NewlinesToken, RbraceToken)
+	s.lex(t, "break\n}", BreakToken, NewlinesToken, RbraceToken)
+	s.lex(t, "continue\n}", ContinueToken, NewlinesToken, RbraceToken)
+	s.lex(t, "fallthrough\n}", FallthroughToken, NewlinesToken, RbraceToken)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestSuffixUnary(t *testing.T) {
 	s.lex(t, "a++\n}",
-		IdentifierToken, AddOneAssignToken, NewlinesToken,
-		RbraceToken, NewlinesToken)
+		IdentifierToken, AddOneAssignToken, NewlinesToken, RbraceToken)
 	s.lex(t, "b--\n}",
-		IdentifierToken, SubOneAssignToken, NewlinesToken,
-		RbraceToken, NewlinesToken)
+		IdentifierToken, SubOneAssignToken, NewlinesToken, RbraceToken)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestEndScope(t *testing.T) {
-	s.lex(t, "}\na",
-		RbraceToken, NewlinesToken, IdentifierToken, NewlinesToken)
-	s.lex(t, ")\na",
-		RparenToken, NewlinesToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "]\na",
-		RbracketToken, NewlinesToken, IdentifierToken, NewlinesToken)
+	s.lex(t, "}\na", RbraceToken, NewlinesToken, IdentifierToken)
+	s.lex(t, ")\na", RparenToken, NewlinesToken, IdentifierToken)
+	s.lex(t, "]\na", RbracketToken, NewlinesToken, IdentifierToken)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestNonTerminalNewlines(t *testing.T) {
-	s.lex(t, ";\na", SemicolonToken, IdentifierToken, NewlinesToken)
-	s.lex(t, ".\na", DotToken, IdentifierToken, NewlinesToken)
-	s.lex(t, ",\na", CommaToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "=\na", AssignToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "+=\na", AddAssignToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "<\na", LessToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "+\na", AddToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "-\na", SubToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "*\na", MulToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "/\na", DivToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "%\na", ModToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "and\na", AndToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "or\na", OrToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "not\na", NotToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "async\na", AsyncToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "defer\na", DeferToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "func\na", FuncToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "type\na", TypeToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "var\na", VarToken, IdentifierToken, NewlinesToken)
-	s.lex(t, "let\na", LetToken, IdentifierToken, NewlinesToken)
+	s.lex(t, ";\na", SemicolonToken, IdentifierToken)
+	s.lex(t, ".\na", DotToken, IdentifierToken)
+	s.lex(t, ",\na", CommaToken, IdentifierToken)
+	s.lex(t, "=\na", AssignToken, IdentifierToken)
+	s.lex(t, "+=\na", AddAssignToken, IdentifierToken)
+	s.lex(t, "<\na", LessToken, IdentifierToken)
+	s.lex(t, "+\na", AddToken, IdentifierToken)
+	s.lex(t, "-\na", SubToken, IdentifierToken)
+	s.lex(t, "*\na", MulToken, IdentifierToken)
+	s.lex(t, "/\na", DivToken, IdentifierToken)
+	s.lex(t, "%\na", ModToken, IdentifierToken)
+	s.lex(t, "and\na", AndToken, IdentifierToken)
+	s.lex(t, "or\na", OrToken, IdentifierToken)
+	s.lex(t, "not\na", NotToken, IdentifierToken)
+	s.lex(t, "async\na", AsyncToken, IdentifierToken)
+	s.lex(t, "defer\na", DeferToken, IdentifierToken)
+	s.lex(t, "func\na", FuncToken, IdentifierToken)
+	s.lex(t, "type\na", TypeToken, IdentifierToken)
+	s.lex(t, "var\na", VarToken, IdentifierToken)
+	s.lex(t, "let\na", LetToken, IdentifierToken)
 }

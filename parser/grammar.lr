@@ -47,12 +47,17 @@
 
 %token<ParseError> PARSE_ERROR
 
-%start source package_def type_def named_func_def expression
+%start source statement expression value_type
 
 source<SourceDefinitions> -> definitions
 
+proper_definitions<SourceDefinitions> ->
+  add: proper_definitions NEWLINES definition |
+  definition
+
 definitions<SourceDefinitions> ->
-  add: definitions definition NEWLINES |
+  = proper_definitions |
+  improper: proper_definitions NEWLINES |
   nil:
 
 definition<SourceDefinition> ->

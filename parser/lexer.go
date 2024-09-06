@@ -285,9 +285,6 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 //  4. one of the keywords: `break`, `continue`, `fallthrough`, `return`,
 //     `true`, or `false`
 //  5. one of: `++`, `--`, `)`, `}`, or `]`
-//
-// In addition, if the last token before EOF is not a newline, the lexer will
-// explicitly insert a pseudo newline to terminate the statement.
 type TerminalNewlinesLexer struct {
 	*lexutil.BufferedReader[Token]
 	base Lexer
@@ -319,27 +316,9 @@ func (lexer *TerminalNewlinesLexer) CurrentLocation() Location {
 }
 
 func (lexer *TerminalNewlinesLexer) Next() (Token, error) {
-	var discardedNewlines Token
 	for {
 		token, err := readToken(lexer)
 		if err != nil {
-			if err == io.EOF && lexer.previousId != NewlinesToken {
-				lexer.previousId = NewlinesToken
-
-				// Use the real newlines token whenever possible
-				if discardedNewlines != nil {
-					return discardedNewlines, nil
-				} else {
-					loc := Location(lexer.CurrentLocation())
-					return TokenCount{
-						SymbolId: NewlinesToken,
-						StartPos: loc,
-						EndPos:   loc,
-						Count:    1,
-					}, nil
-				}
-			}
-
 			return nil, err
 		}
 
@@ -360,8 +339,6 @@ func (lexer *TerminalNewlinesLexer) Next() (Token, error) {
 
 			lexer.previousId = NewlinesToken
 			return token, nil
-		default:
-			discardedNewlines = token
 		}
 	}
 }

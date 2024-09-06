@@ -17,8 +17,6 @@ go explicitly inserts ';' to terminate statement.  we'll conditionally emit newl
 4. one of the keywords: `break`, `continue`, `fallthrough`, `return`, `true`, or `false`
 5. one of: `++`, `--`, `)`, `}`, or `]`
 
-In addition, if the last token before EOF is not a newline, we will explicitly insert a pseudo newline to terminate the statement.
-
 ### Comment
 Raw comments are folded into other tokens via multi-staged lexing.
 
