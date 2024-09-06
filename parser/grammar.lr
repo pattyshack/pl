@@ -452,7 +452,7 @@ argument<Argument> ->
   skip_pattern: ELLIPSIS
 
 // An (n >= 2)-tuple expression usable only as an argument
-colon_expr<Expression> ->
+colon_expr<ColonExpr> ->
   unit_unit_pair: COLON |
   expr_unit_pair: expression COLON |
   unit_expr_pair: COLON expression |
@@ -853,5 +853,6 @@ go:
     SourceDefinitions: "[]SourceDefinition"
     Argument: "*Argument"
     ArgumentList: "*ArgumentList"
+    ColonExpr: "*ColonExpr"
   generate_end_pos: True
 }%%

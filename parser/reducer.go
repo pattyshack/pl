@@ -9,6 +9,7 @@ type ReducerImpl struct {
 	UnaryExprReducer
 	BinaryExprReducer
 	ImplicitStructExprReducerImpl
+	ColonExprReducerImpl
 
 	ArgumentReducerImpl
 	ArgumentListReducer

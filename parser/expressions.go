@@ -456,7 +456,10 @@ const (
 	NamedAssignmentArgument
 	VarargAssignmentArgument
 	ColonExprArgument
+	// Only used by patterns
 	SkipPatternArgument
+	// Only used by ColonExpr
+	IsImplicitUnitArgument
 )
 
 type Argument struct {
@@ -469,7 +472,7 @@ type Argument struct {
 	// Only set for named assignment
 	OptionalName string
 
-	// NOTE: Expr may be nil for Ellipsis only pattern argument.
+	// NOTE: Expr may be nil for SkipPatternArgument or IsImplicitUnit.
 	Expr Expression
 
 	HasEllipsis bool
@@ -533,7 +536,7 @@ func (ArgumentReducerImpl) PositionalToArgument(
 }
 
 func (ArgumentReducerImpl) ColonExprToArgument(
-	expr Expression,
+	expr *ColonExpr,
 ) (
 	*Argument,
 	error,
@@ -774,4 +777,217 @@ func (reducer *ImplicitStructExprReducerImpl) ToImplicitStructExpr(
 	expr.EndPos = rparen.End()
 
 	return expr, nil
+}
+
+//
+// ColonExpr
+//
+
+type ColonExpr struct {
+	isExpression
+	ArgumentList
+}
+
+func (expr *ColonExpr) String() string {
+	return expr.TreeString("", "")
+}
+
+func (expr *ColonExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf("%s%s[ColonExpr:\n", indent, label)
+	result += expr.ArgumentList.TreeString(indent+"  ", "")
+	result += "\n" + indent + "]\n"
+	return result
+}
+
+type ColonExprReducerImpl struct {
+}
+
+var _ ColonExprReducer = &ColonExprReducerImpl{}
+
+func (reducer *ColonExprReducerImpl) UnitUnitPairToColonExpr(
+	colon TokenValue,
+) (
+	*ColonExpr,
+	error,
+) {
+	left := &Argument{
+		StartPos: colon.Loc(),
+		EndPos:   colon.End(),
+		Kind:     IsImplicitUnitArgument,
+	}
+	left.TrailingComment = colon.TakeLeading()
+
+	right := &Argument{
+		StartPos: colon.Loc(),
+		EndPos:   colon.End(),
+		Kind:     IsImplicitUnitArgument,
+	}
+	right.LeadingComment = colon.TakeTrailing()
+
+	expr := &ColonExpr{
+		ArgumentList: ArgumentList{
+			StartPos:  colon.Loc(),
+			EndPos:    colon.End(),
+			Arguments: []*Argument{left, right},
+		},
+	}
+
+	return expr, nil
+}
+
+func (reducer *ColonExprReducerImpl) ExprUnitPairToColonExpr(
+	leftExpr Expression,
+	colon TokenValue,
+) (
+	*ColonExpr,
+	error,
+) {
+	leftArg := &Argument{
+		StartPos: leftExpr.Loc(),
+		EndPos:   leftExpr.End(),
+		Kind:     PositionalArgument,
+		Expr:     leftExpr,
+	}
+	leftArg.LeadingComment = leftExpr.TakeLeading()
+	leftArg.TrailingComment = leftExpr.TakeTrailing()
+	leftArg.AppendToTrailing(colon.TakeLeading())
+
+	rightArg := &Argument{
+		StartPos: colon.Loc(),
+		EndPos:   colon.End(),
+		Kind:     IsImplicitUnitArgument,
+	}
+	rightArg.LeadingComment = colon.TakeTrailing()
+
+	expr := &ColonExpr{
+		ArgumentList: ArgumentList{
+			StartPos:  leftExpr.Loc(),
+			EndPos:    colon.End(),
+			Arguments: []*Argument{leftArg, rightArg},
+		},
+	}
+
+	return expr, nil
+}
+
+func (reducer *ColonExprReducerImpl) UnitExprPairToColonExpr(
+	colon TokenValue,
+	rightExpr Expression,
+) (
+	*ColonExpr,
+	error,
+) {
+	leftArg := &Argument{
+		StartPos: colon.Loc(),
+		EndPos:   colon.End(),
+		Kind:     IsImplicitUnitArgument,
+	}
+	leftArg.TrailingComment = colon.TakeLeading()
+
+	rightArg := &Argument{
+		StartPos: rightExpr.Loc(),
+		EndPos:   rightExpr.End(),
+		Kind:     PositionalArgument,
+		Expr:     rightExpr,
+	}
+	rightArg.LeadingComment = rightExpr.TakeLeading()
+	rightArg.TrailingComment = rightExpr.TakeTrailing()
+	rightArg.PrependToLeading(colon.TakeTrailing())
+
+	expr := &ColonExpr{
+		ArgumentList: ArgumentList{
+			StartPos:  colon.Loc(),
+			EndPos:    rightExpr.End(),
+			Arguments: []*Argument{leftArg, rightArg},
+		},
+	}
+
+	return expr, nil
+}
+
+func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
+	leftExpr Expression,
+	colon TokenValue,
+	rightExpr Expression,
+) (
+	*ColonExpr,
+	error,
+) {
+	leftArg := &Argument{
+		StartPos: leftExpr.Loc(),
+		EndPos:   leftExpr.End(),
+		Kind:     PositionalArgument,
+		Expr:     leftExpr,
+	}
+	leftArg.LeadingComment = leftExpr.TakeLeading()
+	leftArg.TrailingComment = leftExpr.TakeTrailing()
+	leftArg.AppendToTrailing(colon.TakeLeading())
+
+	rightArg := &Argument{
+		StartPos: rightExpr.Loc(),
+		EndPos:   rightExpr.End(),
+		Kind:     PositionalArgument,
+		Expr:     rightExpr,
+	}
+	rightArg.LeadingComment = rightExpr.TakeLeading()
+	rightArg.TrailingComment = rightExpr.TakeTrailing()
+	rightArg.PrependToLeading(colon.TakeTrailing())
+
+	expr := &ColonExpr{
+		ArgumentList: ArgumentList{
+			StartPos:  leftExpr.Loc(),
+			EndPos:    rightExpr.End(),
+			Arguments: []*Argument{leftArg, rightArg},
+		},
+	}
+
+	return expr, nil
+}
+
+func (reducer *ColonExprReducerImpl) ColonExprUnitTupleToColonExpr(
+	list *ColonExpr,
+	colon TokenValue,
+) (
+	*ColonExpr,
+	error,
+) {
+	list.Arguments[len(list.Arguments)-1].AppendToTrailing(colon.TakeLeading())
+
+	arg := &Argument{
+		StartPos: colon.Loc(),
+		EndPos:   colon.End(),
+		Kind:     IsImplicitUnitArgument,
+	}
+	arg.LeadingComment = colon.TakeTrailing()
+
+	list.EndPos = colon.End()
+	list.Arguments = append(list.Arguments, arg)
+
+	return list, nil
+}
+
+func (reducer *ColonExprReducerImpl) ColonExprExprTupleToColonExpr(
+	list *ColonExpr,
+	colon TokenValue,
+	expr Expression,
+) (
+	*ColonExpr,
+	error,
+) {
+	list.Arguments[len(list.Arguments)-1].AppendToTrailing(colon.TakeLeading())
+
+	arg := &Argument{
+		StartPos: expr.Loc(),
+		EndPos:   expr.End(),
+		Kind:     PositionalArgument,
+		Expr:     expr,
+	}
+	arg.LeadingComment = expr.TakeLeading()
+	arg.TrailingComment = expr.TakeTrailing()
+	arg.PrependToLeading(colon.TakeTrailing())
+
+	list.EndPos = expr.End()
+	list.Arguments = append(list.Arguments, arg)
+
+	return list, nil
 }

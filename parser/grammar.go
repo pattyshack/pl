@@ -515,7 +515,7 @@ type ArgumentReducer interface {
 	PositionalToArgument(Expression_ Expression) (*Argument, error)
 
 	// 444:2: argument -> colon_expr: ...
-	ColonExprToArgument(ColonExpr_ Expression) (*Argument, error)
+	ColonExprToArgument(ColonExpr_ *ColonExpr) (*Argument, error)
 
 	// 445:2: argument -> named_assignment: ...
 	NamedAssignmentToArgument(Identifier_ TokenValue, Assign_ TokenValue, Expression_ Expression) (*Argument, error)
@@ -529,22 +529,22 @@ type ArgumentReducer interface {
 
 type ColonExprReducer interface {
 	// 456:2: colon_expr -> unit_unit_pair: ...
-	UnitUnitPairToColonExpr(Colon_ TokenValue) (Expression, error)
+	UnitUnitPairToColonExpr(Colon_ TokenValue) (*ColonExpr, error)
 
 	// 457:2: colon_expr -> expr_unit_pair: ...
-	ExprUnitPairToColonExpr(Expression_ Expression, Colon_ TokenValue) (Expression, error)
+	ExprUnitPairToColonExpr(Expression_ Expression, Colon_ TokenValue) (*ColonExpr, error)
 
 	// 458:2: colon_expr -> unit_expr_pair: ...
-	UnitExprPairToColonExpr(Colon_ TokenValue, Expression_ Expression) (Expression, error)
+	UnitExprPairToColonExpr(Colon_ TokenValue, Expression_ Expression) (*ColonExpr, error)
 
 	// 459:2: colon_expr -> expr_expr_pair: ...
-	ExprExprPairToColonExpr(Expression_ Expression, Colon_ TokenValue, Expression_2 Expression) (Expression, error)
+	ExprExprPairToColonExpr(Expression_ Expression, Colon_ TokenValue, Expression_2 Expression) (*ColonExpr, error)
 
 	// 460:2: colon_expr -> colon_expr_unit_tuple: ...
-	ColonExprUnitTupleToColonExpr(ColonExpr_ Expression, Colon_ TokenValue) (Expression, error)
+	ColonExprUnitTupleToColonExpr(ColonExpr_ *ColonExpr, Colon_ TokenValue) (*ColonExpr, error)
 
 	// 461:2: colon_expr -> colon_expr_expr_tuple: ...
-	ColonExprExprTupleToColonExpr(ColonExpr_ Expression, Colon_ TokenValue, Expression_ Expression) (Expression, error)
+	ColonExprExprTupleToColonExpr(ColonExpr_ *ColonExpr, Colon_ TokenValue, Expression_ Expression) (*ColonExpr, error)
 }
 
 type ParseErrorExprReducer interface {
@@ -3297,6 +3297,7 @@ type Symbol struct {
 
 	Argument          *Argument
 	ArgumentList      *ArgumentList
+	ColonExpr         *ColonExpr
 	Count             TokenCount
 	Expression        Expression
 	ParseError        ParseErrorSymbol
@@ -3379,12 +3380,17 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
+	case ColonExprType:
+		loc, ok := interface{}(s.ColonExpr).(locator)
+		if ok {
+			return loc.Loc()
+		}
 	case NewlinesToken:
 		loc, ok := interface{}(s.Count).(locator)
 		if ok {
 			return loc.Loc()
 		}
-	case ExpressionType, SequenceExprType, IfExprType, SwitchExprType, LoopExprType, OptionalSequenceExprType, CallExprType, ColonExprType, AtomExprType, ParseErrorExprType, LiteralExprType, IdentifierExprType, BlockExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, AnonymousFuncExprType:
+	case ExpressionType, SequenceExprType, IfExprType, SwitchExprType, LoopExprType, OptionalSequenceExprType, CallExprType, AtomExprType, ParseErrorExprType, LiteralExprType, IdentifierExprType, BlockExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
 		if ok {
 			return loc.Loc()
@@ -3441,12 +3447,17 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
+	case ColonExprType:
+		loc, ok := interface{}(s.ColonExpr).(locator)
+		if ok {
+			return loc.End()
+		}
 	case NewlinesToken:
 		loc, ok := interface{}(s.Count).(locator)
 		if ok {
 			return loc.End()
 		}
-	case ExpressionType, SequenceExprType, IfExprType, SwitchExprType, LoopExprType, OptionalSequenceExprType, CallExprType, ColonExprType, AtomExprType, ParseErrorExprType, LiteralExprType, IdentifierExprType, BlockExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, AnonymousFuncExprType:
+	case ExpressionType, SequenceExprType, IfExprType, SwitchExprType, LoopExprType, OptionalSequenceExprType, CallExprType, AtomExprType, ParseErrorExprType, LiteralExprType, IdentifierExprType, BlockExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
 		if ok {
 			return loc.End()
@@ -4295,7 +4306,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ArgumentType
-		symbol.Argument, err = reducer.ColonExprToArgument(args[0].Expression)
+		symbol.Argument, err = reducer.ColonExprToArgument(args[0].ColonExpr)
 	case _ReduceNamedAssignmentToArgument:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -4315,32 +4326,32 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ColonExprType
-		symbol.Expression, err = reducer.UnitUnitPairToColonExpr(args[0].Value)
+		symbol.ColonExpr, err = reducer.UnitUnitPairToColonExpr(args[0].Value)
 	case _ReduceExprUnitPairToColonExpr:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ColonExprType
-		symbol.Expression, err = reducer.ExprUnitPairToColonExpr(args[0].Expression, args[1].Value)
+		symbol.ColonExpr, err = reducer.ExprUnitPairToColonExpr(args[0].Expression, args[1].Value)
 	case _ReduceUnitExprPairToColonExpr:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ColonExprType
-		symbol.Expression, err = reducer.UnitExprPairToColonExpr(args[0].Value, args[1].Expression)
+		symbol.ColonExpr, err = reducer.UnitExprPairToColonExpr(args[0].Value, args[1].Expression)
 	case _ReduceExprExprPairToColonExpr:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ColonExprType
-		symbol.Expression, err = reducer.ExprExprPairToColonExpr(args[0].Expression, args[1].Value, args[2].Expression)
+		symbol.ColonExpr, err = reducer.ExprExprPairToColonExpr(args[0].Expression, args[1].Value, args[2].Expression)
 	case _ReduceColonExprUnitTupleToColonExpr:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ColonExprType
-		symbol.Expression, err = reducer.ColonExprUnitTupleToColonExpr(args[0].Expression, args[1].Value)
+		symbol.ColonExpr, err = reducer.ColonExprUnitTupleToColonExpr(args[0].ColonExpr, args[1].Value)
 	case _ReduceColonExprExprTupleToColonExpr:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ColonExprType
-		symbol.Expression, err = reducer.ColonExprExprTupleToColonExpr(args[0].Expression, args[1].Value, args[2].Expression)
+		symbol.ColonExpr, err = reducer.ColonExprExprTupleToColonExpr(args[0].ColonExpr, args[1].Value, args[2].Expression)
 	case _ReduceParseErrorExprToAtomExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
