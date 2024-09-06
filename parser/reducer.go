@@ -8,6 +8,7 @@ type ReducerImpl struct {
 	AccessExprReducerImpl
 	UnaryExprReducer
 	BinaryExprReducer
+	ImplicitStructExprReducerImpl
 
 	ArgumentReducerImpl
 	ArgumentListReducer
