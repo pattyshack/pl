@@ -256,6 +256,7 @@ type ParseErrorReducer struct {
 }
 
 var _ ParseErrorExprReducer = &ParseErrorReducer{}
+var _ ParseErrorTypeExprReducer = &ParseErrorReducer{}
 
 func (reducer *ParseErrorReducer) ToParseErrorExpr(
 	pe ParseErrorSymbol,
@@ -265,7 +266,7 @@ func (reducer *ParseErrorReducer) ToParseErrorExpr(
 	return ptr, nil
 }
 
-func (reducer *ParseErrorReducer) ToParseErrorType(
+func (reducer *ParseErrorReducer) ToParseErrorTypeExpr(
 	pe ParseErrorSymbol,
 ) (TypeExpression, error) {
 	ptr := &pe

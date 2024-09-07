@@ -47,7 +47,7 @@
 
 %token<ParseError> PARSE_ERROR
 
-%start source statement expression value_type
+%start source statement expr type_expr
 
 source<SourceDefinitions> -> definitions
 
@@ -66,7 +66,7 @@ definition<SourceDefinition> ->
   = type_def |
   = named_func_def |
   global_var_def: var_decl_pattern |
-  global_var_assignment: var_decl_pattern ASSIGN expression |
+  global_var_assignment: var_decl_pattern ASSIGN expr |
   // There can only be at most one statement_block per package, which act as
   // the package's init function
   statement_block |
@@ -109,7 +109,7 @@ statements<Statements> ->
 simple_statement<Statement> ->
   = unsafe_statement |
 
-  = expression_or_improper_struct_statement |
+  = expr_or_improper_struct_statement |
 
   // NOTE: Only applicable in expression blocks
   = callback_op_statement |
@@ -153,11 +153,11 @@ optional_simple_statement<Statement> ->
 // expression / improper struct statement
 //
 
-expression_or_improper_struct_statement<Statement> -> expressions
+expr_or_improper_struct_statement<Statement> -> exprs
 
-expressions ->
-  expression |
-  add: expressions COMMA expression
+exprs ->
+  expr |
+  add: exprs COMMA expr
 
 //
 // Async / defer statements
@@ -199,9 +199,9 @@ unsafe_statement<Statement> -> UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
 
 jump_statement<Statement> ->
   unlabeled_no_value: jump_type |
-  unlabeled_valued: jump_type expressions |
+  unlabeled_valued: jump_type exprs |
   labeled_no_value: jump_type JUMP_LABEL |
-  labeled_valued: jump_type JUMP_LABEL expressions
+  labeled_valued: jump_type JUMP_LABEL exprs
 
 jump_type<Value> ->
   = RETURN |
@@ -214,7 +214,7 @@ fallthrough_statement<Statement> -> FALLTHROUGH
 // Assignment statements
 //
 
-assign_statement<Statement> -> assign_pattern ASSIGN expression
+assign_statement<Statement> -> assign_pattern ASSIGN expr
 
 unary_op_assign_statement<Statement> -> accessible_expr unary_op_assign
 
@@ -222,7 +222,7 @@ unary_op_assign<Value> ->
   = ADD_ONE_ASSIGN |
   = SUB_ONE_ASSIGN
 
-binary_op_assign_statement<Statement> -> accessible_expr binary_op_assign expression
+binary_op_assign_statement<Statement> -> accessible_expr binary_op_assign expr
 
 binary_op_assign<Value> ->
   = ADD_ASSIGN |
@@ -274,7 +274,7 @@ case_patterns ->
 // VAR declares a reassignable variable. LET declares a non-reassignable
 // variable.  A "constant" is a LET variable associated with a type with no
 // public access to fields, and no mutation methods.
-var_decl_pattern -> var_or_let var_pattern optional_value_type
+var_decl_pattern -> var_or_let var_pattern optional_type_expr
 
 var_or_let<Value> ->
   = VAR |
@@ -295,8 +295,8 @@ field_var_pattern ->
   named: IDENTIFIER ASSIGN var_pattern |
   ELLIPSIS
 
-optional_value_type<TypeExpression> ->
-  = value_type |
+optional_type_expr<TypeExpression> ->
+  = type_expr |
   nil:
 
 // NOTE: expression captures identifier and tuple vars, as well as fully
@@ -321,7 +321,7 @@ case_pattern ->
 // Expressions ================================================================
 //
 
-expression<Expression> ->
+expr<Expression> ->
   if_expr: optional_label_decl if_expr |
   switch_expr: optional_label_decl switch_expr |
   loop_expr: optional_label_decl loop_expr |
@@ -422,8 +422,8 @@ generic_type_arguments<TypeArgumentList> ->
   nil:
 
 proper_type_arguments<TypeArgumentList> ->
-  add: proper_type_arguments COMMA value_type |
-  value_type
+  add: proper_type_arguments COMMA type_expr |
+  type_expr
 
 type_arguments<TypeArgumentList> ->
   = proper_type_arguments |
@@ -440,13 +440,13 @@ arguments<ArgumentList> ->
   nil:
 
 argument<Argument> ->
-  positional: expression |
+  positional: expr |
   colon_expr |
-  named_assignment: IDENTIFIER ASSIGN expression |
+  named_assignment: IDENTIFIER ASSIGN expr |
   // XXX: Under golang-style vararg assignment, the signature f(args ...int)
   // will not accept f(0, 1, x...) where x an int slice.  Maybe relax this into
   // vararg expansion instead?
-  vararg_assignment: expression ELLIPSIS |
+  vararg_assignment: expr ELLIPSIS |
   // NOTE: ... is not a real expression, and is only used for pattern matching.
   // Unexpected usage in real expressions are rejected during type checking.
   skip_pattern: ELLIPSIS
@@ -454,11 +454,11 @@ argument<Argument> ->
 // An (n >= 2)-tuple expression usable only as an argument
 colon_expr<ColonExpr> ->
   unit_unit_pair: COLON |
-  expr_unit_pair: expression COLON |
-  unit_expr_pair: COLON expression |
-  expr_expr_pair: expression COLON expression |
+  expr_unit_pair: expr COLON |
+  unit_expr_pair: COLON expr |
+  expr_expr_pair: expr COLON expr |
   colon_expr_unit_tuple: colon_expr COLON |
-  colon_expr_expr_tuple: colon_expr COLON expression
+  colon_expr_expr_tuple: colon_expr COLON expr
 
 //
 // Simple expressions (in decreasing order precedence)
@@ -491,7 +491,7 @@ identifier_expr<Expression> ->  IDENTIFIER
 
 block_expr<Expression> ->  optional_label_decl statement_block
 
-initialize_expr<Expression> -> initializable_type LPAREN arguments RPAREN
+initialize_expr<Expression> -> initializable_type_expr LPAREN arguments RPAREN
 
 implicit_struct_expr<Expression> -> LPAREN arguments RPAREN
 
@@ -588,57 +588,67 @@ binary_or_expr<Expression> -> or_expr OR and_expr
 
 // Note: named type initializations are parsed as call_expr instead of
 // initialize_expr
-initializable_type<TypeExpression> ->
-  = explicit_struct_def |
-  = slice_type |
-  = array_type |
-  = map_type
+initializable_type_expr<TypeExpression> ->
+  = explicit_struct_type_expr |
+  = slice_type_expr |
+  = array_type_expr |
+  = map_type_expr
 
-// shorthand for Slice$[ <value_type> ]
-slice_type<TypeExpression> -> LBRACKET value_type RBRACKET
+// shorthand for Slice$[ <type_expr> ]
+slice_type_expr<TypeExpression> -> LBRACKET type_expr RBRACKET
 
-array_type<TypeExpression> -> LBRACKET value_type COMMA INTEGER_LITERAL RBRACKET
+array_type_expr<TypeExpression> ->
+  LBRACKET type_expr COMMA INTEGER_LITERAL RBRACKET
 
-// shorthand for Map$[ <value_type> , <value_type> ]
-map_type<TypeExpression> -> LBRACKET value_type COLON value_type RBRACKET
+// shorthand for Map$[ <type_expr> , <type_expr> ]
+map_type_expr<TypeExpression> -> LBRACKET type_expr COLON type_expr RBRACKET
 
-atom_type<TypeExpression> ->
-  = initializable_type |
-  named: IDENTIFIER generic_type_arguments |
-  extern_named: IDENTIFIER DOT IDENTIFIER generic_type_arguments |
-  inferred: DOT generic_type_arguments |  // XXX: maybe use a different token symbol
-  = implicit_struct_def |
-  = explicit_enum_def |
-  = implicit_enum_def |
-  = trait_def |
-  = func_type |
-  = parse_error_type
+atom_type_expr<TypeExpression> ->
+  = initializable_type_expr |
+  = named_type_expr |
+  = inferred_type_expr |
+  = implicit_struct_type_expr |
+  = explicit_enum_type_expr |
+  = implicit_enum_type_expr |
+  = trait_type_expr |
+  = func_type_expr |
+  = parse_error_type_expr
 
-parse_error_type<TypeExpression> -> PARSE_ERROR
+named_type_expr<TypeExpression> ->
+  local: IDENTIFIER generic_type_arguments |
+  external: IDENTIFIER DOT IDENTIFIER generic_type_arguments
+
+// NOTE: Maybe allow "DOT generic_type_arguments", which potentially only infer
+// a name rather than a type_expr.
+//
+// XXX: maybe use a different token?
+inferred_type_expr<TypeExpression> -> DOT
+
+parse_error_type_expr<TypeExpression> -> PARSE_ERROR
 
 // NOTE: allowing return type to use trait algebra without explicitly wrapping
 // inside a trait() would cause to ambiguity.  e.g.,
 // "func() A + B" could mean func() returning "A + B" or "func() A" + "B"
-returnable_type<TypeExpression> ->
-  = atom_type |
-  = prefixed_type
+returnable_type_expr<TypeExpression> ->
+  = atom_type_expr |
+  = prefixed_type_expr
 
-prefixed_type<TypeExpression> -> prefix_type_op returnable_type
+prefixed_type_expr<TypeExpression> -> prefix_type_op returnable_type_expr
 
 prefix_type_op<Value> ->
-  = QUESTION | // shorthand for Optional$[ <atom_type> ]
-  = EXCLAIM | // shorthand for Result$[ <atom_type> ]
+  = QUESTION | // shorthand for Optional$[ <atom_type_expr> ]
+  = EXCLAIM | // shorthand for Result$[ <atom_type_expr> ]
   = BIT_AND | // reference type
   = BIT_NEG | // type's public method signatures trait
   = TILDE_TILDE // type's public method signatures and fields trait
 
 // NOTE: use explicit trait() to specify op precedence e.g.,
 // trait( trait(A+B) * C)
-value_type<TypeExpression> ->
-  = returnable_type |
-  = trait_op_type
+type_expr<TypeExpression> ->
+  = returnable_type_expr |
+  = trait_op_type_expr
 
-trait_op_type<TypeExpression> -> value_type trait_op returnable_type
+trait_op_type_expr<TypeExpression> -> type_expr trait_op returnable_type_expr
 
 trait_op<Value> ->
   = MUL | // trait intersect
@@ -646,9 +656,9 @@ trait_op<Value> ->
   = SUB // trait difference
 
 type_def<SourceDefinition> ->
-  definition: TYPE IDENTIFIER optional_generic_parameters value_type |
-  constrained_def: TYPE IDENTIFIER optional_generic_parameters value_type IMPLEMENTS value_type |
-  alias: TYPE IDENTIFIER ASSIGN value_type
+  definition: TYPE IDENTIFIER optional_generic_parameters type_expr |
+  constrained_def: TYPE IDENTIFIER optional_generic_parameters type_expr IMPLEMENTS type_expr |
+  alias: TYPE IDENTIFIER ASSIGN type_expr
 
 //
 // Generic parameter definition
@@ -657,7 +667,7 @@ type_def<SourceDefinition> ->
 // XXX: allow default generic parameter value?
 generic_parameter_def ->
   unconstrained: IDENTIFIER |
-  constrained: IDENTIFIER value_type
+  constrained: IDENTIFIER type_expr
 
 proper_generic_parameter_defs ->
   add: proper_generic_parameter_defs COMMA generic_parameter_def |
@@ -677,8 +687,8 @@ optional_generic_parameters ->
 //
 
 field_def ->
-  explicit: IDENTIFIER value_type |
-  implicit: value_type |
+  explicit: IDENTIFIER type_expr |
+  implicit: type_expr |
   unsafe_statement
 
 proper_implicit_field_defs ->
@@ -690,7 +700,7 @@ implicit_field_defs ->
   improper: proper_implicit_field_defs COMMA |
   nil:
 
-implicit_struct_def<TypeExpression> ->
+implicit_struct_type_expr<TypeExpression> ->
   LPAREN implicit_field_defs RPAREN
 
 proper_explicit_field_defs ->
@@ -704,7 +714,7 @@ explicit_field_defs ->
   improper_explicit: proper_explicit_field_defs COMMA |
   nil:
 
-explicit_struct_def<TypeExpression> ->
+explicit_struct_type_expr<TypeExpression> ->
   STRUCT LPAREN explicit_field_defs RPAREN
 
 //
@@ -716,20 +726,20 @@ enum_value_def ->
   field_def |
   default: field_def ASSIGN DEFAULT
 
-// NOTE: inferred "<value_type> OR ()" should be treated as
-// Optional$[<value_type>]
+// NOTE: inferred "<type_expr> OR ()" should be treated as
+// Optional$[<type_expr>]
 //
-// NOTE: inferred "<value_type> OR Error" should be treated as
-// Result$[<value_type>]
+// NOTE: inferred "<type_expr> OR Error" should be treated as
+// Result$[<type_expr>]
 //
-// NOTE: both inferred types "<value_type> OR Error or ()" and
-// "<value_type> OR () OR Error" should be treated as
-// Result$[ Optional$[ <value_type> ] ]
+// NOTE: both inferred types "<type_expr> OR Error or ()" and
+// "<type_expr> OR () OR Error" should be treated as
+// Result$[ Optional$[ <type_expr> ] ]
 implicit_enum_value_defs ->
   pair: enum_value_def OR enum_value_def |
   add: implicit_enum_value_defs OR enum_value_def
 
-implicit_enum_def<TypeExpression> -> LPAREN implicit_enum_value_defs RPAREN
+implicit_enum_type_expr<TypeExpression> -> LPAREN implicit_enum_value_defs RPAREN
 
 explicit_enum_value_defs ->
   explicit_pair: enum_value_def OR enum_value_def |
@@ -737,7 +747,8 @@ explicit_enum_value_defs ->
   explicit_add: implicit_enum_value_defs OR enum_value_def |
   implicit_add: implicit_enum_value_defs NEWLINES enum_value_def
 
-explicit_enum_def<TypeExpression> -> ENUM LPAREN explicit_enum_value_defs RPAREN
+explicit_enum_type_expr<TypeExpression> ->
+  ENUM LPAREN explicit_enum_value_defs RPAREN
 
 //
 // Trait definition
@@ -758,7 +769,7 @@ trait_properties ->
   improper_explicit: proper_trait_properties COMMA |
   nil:
 
-trait_def<TypeExpression> -> TRAIT LPAREN trait_properties RPAREN
+trait_type_expr<TypeExpression> -> TRAIT LPAREN trait_properties RPAREN
 
 //
 // Function type, definition, trait method signature
@@ -766,14 +777,14 @@ trait_def<TypeExpression> -> TRAIT LPAREN trait_properties RPAREN
 //
 
 return_type<TypeExpression> ->
-  returnable_type |
+  returnable_type_expr |
   nil:
 
 parameter_decl ->
-  arg: IDENTIFIER value_type |
-  vararg: IDENTIFIER ELLIPSIS value_type |
-  unamed: value_type |
-  unnamed_vararg: ELLIPSIS value_type
+  arg: IDENTIFIER type_expr |
+  vararg: IDENTIFIER ELLIPSIS type_expr |
+  unamed: type_expr |
+  unnamed_vararg: ELLIPSIS type_expr
 
 proper_parameter_decls ->
   add: proper_parameter_decls COMMA parameter_decl |
@@ -784,7 +795,7 @@ parameter_decls ->
   improper: proper_parameter_decls COMMA |
   nil:
 
-func_type<TypeExpression> ->
+func_type_expr<TypeExpression> ->
   FUNC LPAREN parameter_decls RPAREN return_type
 
 // NOTE: FUNC is needed to disambiguate method signature from field def.
@@ -804,8 +815,8 @@ method_signature -> FUNC IDENTIFIER LPAREN parameter_decls RPAREN return_type
 parameter_def ->
   inferred_ref_arg: IDENTIFIER |
   inferred_ref_vararg: IDENTIFIER ELLIPSIS |
-  arg: IDENTIFIER value_type |
-  vararg: IDENTIFIER ELLIPSIS value_type
+  arg: IDENTIFIER type_expr |
+  vararg: IDENTIFIER ELLIPSIS type_expr
 
 proper_parameter_defs ->
   add: proper_parameter_defs COMMA parameter_def |
@@ -819,7 +830,7 @@ parameter_defs ->
 named_func_def<SourceDefinition> ->
   func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN parameter_defs RPAREN return_type statement_block |
   method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters LPAREN parameter_defs RPAREN return_type statement_block |
-  alias: FUNC IDENTIFIER ASSIGN expression
+  alias: FUNC IDENTIFIER ASSIGN expr
 
 
 anonymous_func_expr<Expression> ->

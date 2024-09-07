@@ -41,7 +41,7 @@ func (reducer *TypeArgumentListReducer) AddToProperTypeArguments(
 	return list, nil
 }
 
-func (reducer *TypeArgumentListReducer) ValueTypeToProperTypeArguments(
+func (reducer *TypeArgumentListReducer) TypeExprToProperTypeArguments(
 	arg TypeExpression,
 ) (
 	*TypeArgumentList,
