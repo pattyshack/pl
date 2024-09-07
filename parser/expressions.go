@@ -970,3 +970,70 @@ func (reducer *CallExprReducerImpl) ToCallExpr(
 	reducer.CallExprs = append(reducer.CallExprs, expr)
 	return expr, nil
 }
+
+//
+// IndexExpr
+//
+
+type IndexExpr struct {
+	isExpression
+	StartPos Location
+	EndPos   Location
+	LeadingTrailingComments
+
+	Accessible Expression
+	Index      Argument
+}
+
+func (expr IndexExpr) Loc() Location {
+	return expr.StartPos
+}
+
+func (expr IndexExpr) End() Location {
+	return expr.EndPos
+}
+
+func (expr IndexExpr) String() string {
+	return expr.TreeString("", "")
+}
+
+func (expr IndexExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf("%s%s[IndexExpr\n", indent, label)
+	result += expr.Accessible.TreeString(indent+"  ", "Accessible=")
+	result += "\n" + expr.Index.TreeString(indent+"  ", "Argument=")
+	result += "\n" + indent + "]"
+	return result
+}
+
+type IndexExprReducerImpl struct {
+	IndexExprs []*IndexExpr
+}
+
+var _ IndexExprReducer = &IndexExprReducerImpl{}
+
+func (reducer *IndexExprReducerImpl) ToIndexExpr(
+	accessible Expression,
+	lbracket TokenValue,
+	index *Argument,
+	rbracket TokenValue,
+) (
+	Expression,
+	error,
+) {
+	accessible.AppendToTrailing(lbracket.TakeLeading())
+	index.PrependToLeading(lbracket.TakeTrailing())
+	index.AppendToTrailing(rbracket.TakeLeading())
+
+	expr := &IndexExpr{
+		StartPos:   accessible.Loc(),
+		EndPos:     rbracket.End(),
+		Accessible: accessible,
+		Index:      *index,
+	}
+
+	expr.LeadingComment = accessible.TakeLeading()
+	expr.TrailingComment = rbracket.TakeTrailing()
+
+	reducer.IndexExprs = append(reducer.IndexExprs, expr)
+	return expr, nil
+}
