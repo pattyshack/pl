@@ -8,6 +8,7 @@ type ReducerImpl struct {
 	CallExprReducerImpl
 	ColonExprReducerImpl
 	IdentifierExprReducerImpl
+	InitializeExprReducerImpl
 	ImplicitStructExprReducerImpl
 	IndexExprReducerImpl
 	LiteralExprReducerImpl

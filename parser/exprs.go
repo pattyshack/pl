@@ -1037,3 +1037,68 @@ func (reducer *IndexExprReducerImpl) ToIndexExpr(
 	reducer.IndexExprs = append(reducer.IndexExprs, expr)
 	return expr, nil
 }
+
+//
+// InitializeExpr
+//
+
+type InitializeExpr struct {
+	isExpression
+	StartPos Location
+	EndPos   Location
+	LeadingTrailingComments
+
+	Initializable TypeExpression
+	Arguments     ArgumentList
+}
+
+func (expr InitializeExpr) Loc() Location {
+	return expr.StartPos
+}
+
+func (expr InitializeExpr) End() Location {
+	return expr.EndPos
+}
+
+func (expr InitializeExpr) String() string {
+	return expr.TreeString("", "")
+}
+
+func (expr InitializeExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf("%s%s[InitializeExpr:\n", indent, label)
+	result += expr.Initializable.TreeString(indent+"  ", "Initialiable=") + "\n"
+	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
+	result += "\n" + indent + "]"
+	return result
+}
+
+type InitializeExprReducerImpl struct {
+	InitializeExprs []*InitializeExpr
+}
+
+var _ InitializeExprReducer = &InitializeExprReducerImpl{}
+
+func (reducer *InitializeExprReducerImpl) ToInitializeExpr(
+	initializable TypeExpression,
+	lparen TokenValue,
+	arguments *ArgumentList,
+	rparen TokenValue,
+) (
+	Expression,
+	error,
+) {
+	arguments.reduceMarkers(lparen, rparen)
+
+	expr := &InitializeExpr{
+		StartPos:      initializable.Loc(),
+		EndPos:        rparen.End(),
+		Initializable: initializable,
+		Arguments:     *arguments,
+	}
+
+	expr.LeadingComment = expr.Initializable.TakeLeading()
+	expr.TrailingComment = expr.Arguments.TakeTrailing()
+
+	reducer.InitializeExprs = append(reducer.InitializeExprs, expr)
+	return expr, nil
+}
