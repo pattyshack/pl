@@ -671,6 +671,10 @@ func (reducer *ArgumentListReducer) NilToArguments() (*ArgumentList, error) {
 type ImplicitStructExpr struct {
 	isExpression
 	ArgumentList
+
+	// An improper struct is the a comma separated list of expressions without
+	// left/right paren.  e.g., return 1, 2, 3
+	IsImproper bool
 }
 
 func (expr *ImplicitStructExpr) String() string {
@@ -678,7 +682,11 @@ func (expr *ImplicitStructExpr) String() string {
 }
 
 func (expr *ImplicitStructExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[ImplicitStructExpr:\n", indent, label)
+	result := fmt.Sprintf(
+		"%s%s[ImplicitStructExpr: IsImproper=%v\n",
+		indent,
+		label,
+		expr.IsImproper)
 	result += expr.ArgumentList.TreeString(indent+"  ", "")
 	result += "\n" + indent + "]\n"
 	return result
@@ -885,4 +893,80 @@ func (reducer *ColonExprReducerImpl) ColonExprExprTupleToColonExpr(
 
 	list.reduceAdd(colon, arg)
 	return list, nil
+}
+
+//
+// CallExpr
+//
+
+type CallExpr struct {
+	isExpression
+	StartPos Location
+	EndPos   Location
+	LeadingTrailingComments
+
+	FuncExpr      Expression
+	TypeArguments TypeArgumentList
+	Arguments     ArgumentList
+}
+
+func (expr CallExpr) Loc() Location {
+	return expr.StartPos
+}
+
+func (expr CallExpr) End() Location {
+	return expr.EndPos
+}
+
+func (expr CallExpr) String() string {
+	return expr.TreeString("", "")
+}
+
+func (expr CallExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf("%s%s[CallExpr\n", indent, label)
+	result += expr.FuncExpr.TreeString(indent+"  ", "FuncExpr=") + "\n"
+	if len(expr.TypeArguments.Elements) > 0 {
+		result += expr.TypeArguments.TreeString(indent+"  ", "TypeArguments=")
+		result += "\n"
+	}
+	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
+	result += indent + "]"
+
+	return result
+}
+
+var _ Expression = &CallExpr{}
+
+type CallExprReducerImpl struct {
+	CallExprs []*CallExpr
+}
+
+var _ CallExprReducer = &CallExprReducerImpl{}
+
+func (reducer *CallExprReducerImpl) ToCallExpr(
+	funcExpr Expression,
+	typeArguments *TypeArgumentList,
+	lparen TokenValue,
+	arguments *ArgumentList,
+	rparen TokenValue,
+) (
+	Expression,
+	error,
+) {
+	arguments.reduceMarkers(lparen, rparen)
+
+	expr := &CallExpr{
+		StartPos: funcExpr.Loc(),
+		EndPos:   rparen.End(),
+		LeadingTrailingComments: LeadingTrailingComments{
+			LeadingComment:  funcExpr.TakeLeading(),
+			TrailingComment: arguments.TakeTrailing(),
+		},
+		FuncExpr:      funcExpr,
+		TypeArguments: *typeArguments,
+		Arguments:     *arguments,
+	}
+
+	reducer.CallExprs = append(reducer.CallExprs, expr)
+	return expr, nil
 }

@@ -3,14 +3,16 @@ package parser
 type ReducerImpl struct {
 	ParseErrorReducer
 
-	LiteralExprReducerImpl
-	IdentifierExprReducerImpl
 	AccessExprReducerImpl
-	UnaryExprReducer
 	BinaryExprReducer
-	ImplicitStructExprReducerImpl
+	CallExprReducerImpl
 	ColonExprReducerImpl
+	IdentifierExprReducerImpl
+	ImplicitStructExprReducerImpl
+	LiteralExprReducerImpl
+	UnaryExprReducer
 
-	ArgumentReducerImpl
 	ArgumentListReducer
+	ArgumentReducerImpl
+	TypeArgumentListReducer
 }
