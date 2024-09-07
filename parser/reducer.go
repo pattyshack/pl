@@ -13,6 +13,10 @@ type ReducerImpl struct {
 	LiteralExprReducerImpl
 	UnaryExprReducer
 
+	SliceTypeExprReducerImpl
+	ArrayTypeExprReducerImpl
+	MapTypeExprReducerImpl
+
 	ArgumentListReducer
 	ArgumentReducerImpl
 	TypeArgumentListReducer
