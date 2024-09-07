@@ -685,13 +685,23 @@ optional_generic_parameters ->
   nil:
 
 //
-// Explicit/Implicit struct definition
+// Explicit/Implicit struct/enum/trait definition
 //
 
+// NOTE: optional_default is only usable in enum.  method_signature is only
+// usable in trait.  These are checked post parsing.
+//
+// NOTE: use "_" for field type to denote no data is associated with the
+// enum value.
 field_def ->
-  explicit: IDENTIFIER type_expr |
-  implicit: type_expr |
+  explicit: IDENTIFIER type_expr optional_default |
+  implicit: type_expr optional_default |
+  method_signature |
   unsafe_statement
+
+optional_default ->
+  default: AS DEFAULT |
+  nil:
 
 proper_implicit_field_defs ->
   add: proper_implicit_field_defs COMMA field_def |
@@ -719,14 +729,8 @@ explicit_field_defs ->
 explicit_struct_type_expr<TypeExpression> ->
   STRUCT LPAREN explicit_field_defs RPAREN
 
-//
-// Explicit/Implicit enum definition
-//
-
-// NOTE: use "_" for field type denote no data associated with the  enum value.
-enum_value_def ->
-  field_def |
-  default: field_def ASSIGN DEFAULT
+trait_type_expr<TypeExpression> ->
+  TRAIT LPAREN explicit_field_defs RPAREN
 
 // NOTE: inferred "<type_expr> OR ()" should be treated as
 // Optional$[<type_expr>]
@@ -734,44 +738,33 @@ enum_value_def ->
 // NOTE: inferred "<type_expr> OR Error" should be treated as
 // Result$[<type_expr>]
 //
-// NOTE: both inferred types "<type_expr> OR Error or ()" and
-// "<type_expr> OR () OR Error" should be treated as
-// Result$[ Optional$[ <type_expr> ] ]
-implicit_enum_value_defs ->
-  pair: enum_value_def OR enum_value_def |
-  add: implicit_enum_value_defs OR enum_value_def
+// NOTE: inferred types "<type_expr> OR Error or ()" (in any order) should be
+// treated as Result$[ Optional$[ <type_expr> ] ]
+proper_implicit_enum_value_defs ->
+  pair: field_def OR field_def |
+  add: proper_implicit_enum_value_defs OR field_def
 
-implicit_enum_type_expr<TypeExpression> -> LPAREN implicit_enum_value_defs RPAREN
+implicit_enum_value_defs ->
+  = proper_implicit_enum_value_defs |
+  // allow ) on a different line
+  improper: proper_implicit_enum_value_defs NEWLINES
+
+implicit_enum_type_expr<TypeExpression> ->
+  LPAREN implicit_enum_value_defs RPAREN
+
+proper_explicit_enum_value_defs ->
+  explicit_pair: field_def OR field_def |
+  implicit_pair: field_def NEWLINES field_def |
+  explicit_add: proper_explicit_enum_value_defs OR field_def |
+  implicit_add: proper_explicit_enum_value_defs NEWLINES field_def
 
 explicit_enum_value_defs ->
-  explicit_pair: enum_value_def OR enum_value_def |
-  implicit_pair: enum_value_def NEWLINES enum_value_def |
-  explicit_add: implicit_enum_value_defs OR enum_value_def |
-  implicit_add: implicit_enum_value_defs NEWLINES enum_value_def
+  = proper_explicit_enum_value_defs |
+  // allow ) on a different line
+  improper: proper_explicit_enum_value_defs NEWLINES
 
 explicit_enum_type_expr<TypeExpression> ->
   ENUM LPAREN explicit_enum_value_defs RPAREN
-
-//
-// Trait definition
-//
-
-trait_property ->
-  field_def |
-  method_signature
-
-proper_trait_properties ->
-  implicit: proper_trait_properties NEWLINES trait_property |
-  explicit: proper_trait_properties COMMA trait_property |
-  trait_property
-
-trait_properties ->
-  = proper_trait_properties |
-  improper_implicit: proper_trait_properties NEWLINES |
-  improper_explicit: proper_trait_properties COMMA |
-  nil:
-
-trait_type_expr<TypeExpression> -> TRAIT LPAREN trait_properties RPAREN
 
 //
 // Function type, definition, trait method signature
