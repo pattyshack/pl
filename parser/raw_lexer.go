@@ -361,10 +361,9 @@ func (lexer *RawLexer) lexSpacesToken() (Token, error) {
 	}
 
 	return TokenCount{
-		SymbolId: spacesToken,
-		StartPos: loc,
-		EndPos:   Location(lexer.Location),
-		Count:    numSpaceBytes,
+		SymbolId:    spacesToken,
+		StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+		Count:       numSpaceBytes,
 	}, nil
 }
 
@@ -384,10 +383,9 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 		}
 
 		return TokenCount{
-			SymbolId: NewlinesToken,
-			StartPos: loc,
-			EndPos:   Location(lexer.Location),
-			Count:    numNewlines,
+			SymbolId:    NewlinesToken,
+			StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+			Count:       numNewlines,
 		}, nil
 	} else if foundInvalidNewline {
 		_, err := lexer.Discard(1)
@@ -396,9 +394,8 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 		}
 
 		return ParseErrorSymbol{
-			StartPos: loc,
-			EndPos:   Location(lexer.Location),
-			Error:    fmt.Errorf("unexpected utf8 rune"),
+			StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+			Error:       fmt.Errorf("unexpected utf8 rune"),
 		}, nil
 	}
 
@@ -428,10 +425,9 @@ func (lexer *RawLexer) lexLineCommentToken() (Token, error) {
 	}
 
 	return TokenValue{
-		SymbolId: lineCommentToken,
-		StartPos: loc,
-		EndPos:   Location(lexer.Location),
-		Value:    value,
+		SymbolId:    lineCommentToken,
+		StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+		Value:       value,
 	}, nil
 }
 
@@ -460,17 +456,15 @@ func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
 
 	if scopeLevel > 0 {
 		return ParseErrorSymbol{
-			StartPos: loc,
-			EndPos:   Location(lexer.Location),
-			Error:    fmt.Errorf("block comment not terminated"),
+			StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+			Error:       fmt.Errorf("block comment not terminated"),
 		}, nil
 	}
 
 	return TokenValue{
-		SymbolId: blockCommentToken,
-		StartPos: loc,
-		EndPos:   Location(lexer.Location),
-		Value:    value,
+		SymbolId:    blockCommentToken,
+		StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+		Value:       value,
 	}, nil
 }
 
@@ -654,18 +648,16 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 
 	if !hasDigits {
 		return ParseErrorSymbol{
-			StartPos: loc,
-			EndPos:   Location(lexer.Location),
-			Error:    fmt.Errorf("%s has no digits", subType),
+			StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+			Error:       fmt.Errorf("%s has no digits", subType),
 		}, nil
 	}
 
 	return TokenValue{
-		SymbolId: IntegerLiteralToken,
-		StartPos: loc,
-		EndPos:   Location(lexer.Location),
-		Value:    value,
-		SubType:  subType,
+		SymbolId:    IntegerLiteralToken,
+		StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+		Value:       value,
+		SubType:     subType,
 	}, nil
 }
 
@@ -804,11 +796,10 @@ func (lexer *RawLexer) maybeLexIntPrefixedFloat(
 	}
 
 	return TokenValue{
-		SymbolId: FloatLiteralToken,
-		StartPos: loc,
-		EndPos:   Location(lexer.Location),
-		Value:    value,
-		SubType:  subType,
+		SymbolId:    FloatLiteralToken,
+		StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+		Value:       value,
+		SubType:     subType,
 	}, nil
 }
 
@@ -836,11 +827,10 @@ func (lexer *RawLexer) lexDotDecimalFloatLiteralToken() (Token, error) {
 	}
 
 	return TokenValue{
-		SymbolId: FloatLiteralToken,
-		StartPos: loc,
-		EndPos:   Location(lexer.Location),
-		Value:    value,
-		SubType:  DecimalFloat,
+		SymbolId:    FloatLiteralToken,
+		StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+		Value:       value,
+		SubType:     DecimalFloat,
 	}, nil
 }
 
@@ -1061,17 +1051,15 @@ func (lexer *RawLexer) lexRuneLiteralToken() (Token, error) {
 
 	if result.errorMsg != "" {
 		return ParseErrorSymbol{
-			StartPos: loc,
-			EndPos:   Location(lexer.Location),
-			Error:    fmt.Errorf(result.errorMsg),
+			StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+			Error:       fmt.Errorf(result.errorMsg),
 		}, nil
 	}
 
 	return TokenValue{
-		SymbolId: RuneLiteralToken,
-		StartPos: loc,
-		EndPos:   Location(lexer.Location),
-		Value:    value,
+		SymbolId:    RuneLiteralToken,
+		StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+		Value:       value,
 	}, nil
 }
 
@@ -1120,18 +1108,16 @@ func (lexer *RawLexer) lexStringLiteralToken(
 
 	if result.errorMsg != "" {
 		return ParseErrorSymbol{
-			StartPos: loc,
-			EndPos:   Location(lexer.Location),
-			Error:    fmt.Errorf(result.errorMsg),
+			StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+			Error:       fmt.Errorf(result.errorMsg),
 		}, nil
 	}
 
 	return TokenValue{
-		SymbolId: StringLiteralToken,
-		StartPos: loc,
-		EndPos:   Location(lexer.Location),
-		Value:    value,
-		SubType:  subType,
+		SymbolId:    StringLiteralToken,
+		StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+		Value:       value,
+		SubType:     subType,
 	}, nil
 }
 
@@ -1155,9 +1141,8 @@ func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
 		}
 
 		return ParseErrorSymbol{
-			StartPos: loc,
-			EndPos:   Location(lexer.Location),
-			Error:    fmt.Errorf("no label name associated with @"),
+			StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+			Error:       fmt.Errorf("no label name associated with @"),
 		}, nil
 	}
 
@@ -1176,10 +1161,9 @@ func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
 	}
 
 	return TokenValue{
-		SymbolId: JumpLabelToken,
-		StartPos: loc,
-		EndPos:   Location(lexer.Location),
-		Value:    jumpLabel,
+		SymbolId:    JumpLabelToken,
+		StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+		Value:       jumpLabel,
 	}, nil
 }
 
@@ -1221,10 +1205,9 @@ func (lexer *RawLexer) lexIdentifierKeywordsOrLabelDeclToken() (
 	}
 
 	return TokenValue{
-		SymbolId: symbolId,
-		StartPos: loc,
-		EndPos:   Location(lexer.Location),
-		Value:    value,
+		SymbolId:    symbolId,
+		StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+		Value:       value,
 	}, nil
 }
 
@@ -1243,9 +1226,8 @@ func (lexer *RawLexer) Next() (Token, error) {
 		}
 
 		return ParseErrorSymbol{
-			StartPos: loc,
-			EndPos:   Location(lexer.Location),
-			Error:    fmt.Errorf("unexpected utf8 rune"),
+			StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
+			Error:       fmt.Errorf("unexpected utf8 rune"),
 		}, nil
 	}
 
@@ -1258,9 +1240,8 @@ func (lexer *RawLexer) Next() (Token, error) {
 		}
 
 		return TokenValue{
-			SymbolId: symbolId,
-			StartPos: loc,
-			EndPos:   Location(lexer.Location),
+			SymbolId:    symbolId,
+			StartEndPos: newStartEndPos(loc, Location(lexer.Location)),
 		}, nil
 	}
 

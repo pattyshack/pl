@@ -24,7 +24,6 @@ type Node interface {
 	Loc() Location
 	End() Location
 
-	String() string
 	TreeString(indent string, label string) string
 
 	PrependToLeading(CommentGroups)
@@ -172,29 +171,39 @@ func (s *LeadingTrailingComments) TakeTrailing() CommentGroups {
 	return tmp
 }
 
-type TokenCount struct {
-	SymbolId
+type StartEndPos struct {
 	StartPos Location
 	EndPos   Location
-	Count    int
+}
+
+func newStartEndPos(start Location, end Location) StartEndPos {
+	return StartEndPos{
+		StartPos: start,
+		EndPos:   end,
+	}
+}
+
+func (sep StartEndPos) Loc() Location {
+	return sep.StartPos
+}
+
+func (sep StartEndPos) End() Location {
+	return sep.EndPos
+}
+
+type TokenCount struct {
+	SymbolId
+	StartEndPos
+	Count int
 }
 
 func (s TokenCount) Id() SymbolId {
 	return s.SymbolId
 }
 
-func (s TokenCount) Loc() Location {
-	return s.StartPos
-}
-
-func (s TokenCount) End() Location {
-	return s.EndPos
-}
-
 type TokenValue struct {
 	SymbolId
-	StartPos Location
-	EndPos   Location
+	StartEndPos
 	LeadingTrailingComments
 
 	// The value string is optional if the value is fully determined by SymbolId.
@@ -207,20 +216,11 @@ func (s TokenValue) Id() SymbolId {
 	return s.SymbolId
 }
 
-func (s TokenValue) Loc() Location {
-	return s.StartPos
-}
-
-func (s TokenValue) End() Location {
-	return s.EndPos
-}
-
 type ParseErrorSymbol struct {
 	isExpression
 	isTypeExpression
 
-	StartPos Location
-	EndPos   Location
+	StartEndPos
 	LeadingTrailingComments
 
 	Error error
@@ -228,18 +228,6 @@ type ParseErrorSymbol struct {
 
 func (ParseErrorSymbol) Id() SymbolId {
 	return ParseErrorToken
-}
-
-func (s ParseErrorSymbol) Loc() Location {
-	return s.StartPos
-}
-
-func (s ParseErrorSymbol) End() Location {
-	return s.EndPos
-}
-
-func (s ParseErrorSymbol) String() string {
-	return s.TreeString("", "")
 }
 
 func (s ParseErrorSymbol) TreeString(indent string, label string) string {
@@ -275,8 +263,7 @@ func (reducer *ParseErrorReducer) ToParseErrorTypeExpr(
 }
 
 type NodeList[T Node] struct {
-	StartPos Location
-	EndPos   Location
+	StartEndPos
 
 	// The leading / trailing comments from the list's start/end marker tokens.
 	LeadingTrailingComments
@@ -288,18 +275,6 @@ type NodeList[T Node] struct {
 
 	// Only used for TreeString() / String()
 	ListType string
-}
-
-func (list NodeList[T]) Loc() Location {
-	return list.StartPos
-}
-
-func (list NodeList[T]) End() Location {
-	return list.EndPos
-}
-
-func (list NodeList[T]) String() string {
-	return list.TreeString("", "")
 }
 
 func (list NodeList[T]) TreeString(indent string, label string) string {
@@ -320,10 +295,9 @@ func (list NodeList[T]) TreeString(indent string, label string) string {
 
 func newNodeList[T Node](listType string, element T) *NodeList[T] {
 	return &NodeList[T]{
-		StartPos: element.Loc(),
-		EndPos:   element.End(),
-		Elements: []T{element},
-		ListType: listType,
+		StartEndPos: newStartEndPos(element.Loc(), element.End()),
+		Elements:    []T{element},
+		ListType:    listType,
 	}
 }
 

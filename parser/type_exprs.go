@@ -30,7 +30,7 @@ func (reducer *TypeArgumentListReducer) NilToGenericTypeArguments() (
 	*TypeArgumentList,
 	error,
 ) {
-	return nil, nil
+	return &TypeArgumentList{}, nil
 }
 
 func (reducer *TypeArgumentListReducer) AddToProperTypeArguments(
@@ -69,7 +69,7 @@ func (reducer *TypeArgumentListReducer) NilToTypeArguments() (
 	*TypeArgumentList,
 	error,
 ) {
-	return nil, nil
+	return &TypeArgumentList{}, nil
 }
 
 //
@@ -78,23 +78,10 @@ func (reducer *TypeArgumentListReducer) NilToTypeArguments() (
 
 type SliceTypeExpr struct {
 	isTypeExpression
-	StartPos Location
-	EndPos   Location
+	StartEndPos
 	LeadingTrailingComments
 
 	Value TypeExpression
-}
-
-func (slice SliceTypeExpr) Loc() Location {
-	return slice.StartPos
-}
-
-func (slice SliceTypeExpr) End() Location {
-	return slice.StartPos
-}
-
-func (slice SliceTypeExpr) String() string {
-	return slice.TreeString("", "")
 }
 
 func (slice SliceTypeExpr) TreeString(indent string, label string) string {
@@ -117,9 +104,8 @@ func (SliceTypeExprReducerImpl) ToSliceTypeExpr(
 	error,
 ) {
 	slice := &SliceTypeExpr{
-		StartPos: lbracket.Loc(),
-		EndPos:   rbracket.End(),
-		Value:    value,
+		StartEndPos: newStartEndPos(lbracket.Loc(), rbracket.End()),
+		Value:       value,
 	}
 
 	slice.LeadingComment = lbracket.TakeLeading()
@@ -135,24 +121,11 @@ func (SliceTypeExprReducerImpl) ToSliceTypeExpr(
 
 type ArrayTypeExpr struct {
 	isTypeExpression
-	StartPos Location
-	EndPos   Location
+	StartEndPos
 	LeadingTrailingComments
 
 	Value TypeExpression
 	Size  TokenValue
-}
-
-func (array ArrayTypeExpr) Loc() Location {
-	return array.StartPos
-}
-
-func (array ArrayTypeExpr) End() Location {
-	return array.StartPos
-}
-
-func (array ArrayTypeExpr) String() string {
-	return array.TreeString("", "")
 }
 
 func (array ArrayTypeExpr) TreeString(indent string, label string) string {
@@ -181,10 +154,9 @@ func (ArrayTypeExprReducerImpl) ToArrayTypeExpr(
 	error,
 ) {
 	array := &ArrayTypeExpr{
-		StartPos: lbracket.Loc(),
-		EndPos:   rbracket.End(),
-		Value:    value,
-		Size:     size,
+		StartEndPos: newStartEndPos(lbracket.Loc(), rbracket.End()),
+		Value:       value,
+		Size:        size,
 	}
 
 	array.LeadingComment = lbracket.TakeLeading()
@@ -202,24 +174,11 @@ func (ArrayTypeExprReducerImpl) ToArrayTypeExpr(
 
 type MapTypeExpr struct {
 	isTypeExpression
-	StartPos Location
-	EndPos   Location
+	StartEndPos
 	LeadingTrailingComments
 
 	Key   TypeExpression
 	Value TypeExpression
-}
-
-func (dict MapTypeExpr) Loc() Location {
-	return dict.StartPos
-}
-
-func (dict MapTypeExpr) End() Location {
-	return dict.StartPos
-}
-
-func (dict MapTypeExpr) String() string {
-	return dict.TreeString("", "")
 }
 
 func (dict MapTypeExpr) TreeString(indent string, label string) string {
@@ -245,10 +204,9 @@ func (MapTypeExprReducerImpl) ToMapTypeExpr(
 	error,
 ) {
 	dict := &MapTypeExpr{
-		StartPos: lbracket.Loc(),
-		EndPos:   rbracket.End(),
-		Key:      key,
-		Value:    value,
+		StartEndPos: newStartEndPos(lbracket.Loc(), rbracket.End()),
+		Key:         key,
+		Value:       value,
 	}
 
 	dict.LeadingComment = lbracket.TakeLeading()

@@ -13,10 +13,6 @@ type BoolLiteralExpr struct {
 	TokenValue
 }
 
-func (expr BoolLiteralExpr) String() string {
-	return expr.TreeString("", "")
-}
-
 func (expr BoolLiteralExpr) TreeString(indent string, label string) string {
 	return fmt.Sprintf("%s%s[BoolLiteralExpr: %s]", indent, label, expr.Value)
 }
@@ -24,10 +20,6 @@ func (expr BoolLiteralExpr) TreeString(indent string, label string) string {
 type IntLiteralExpr struct {
 	isExpression
 	TokenValue
-}
-
-func (expr IntLiteralExpr) String() string {
-	return expr.TreeString("", "")
 }
 
 func (expr IntLiteralExpr) TreeString(indent string, label string) string {
@@ -39,10 +31,6 @@ type FloatLiteralExpr struct {
 	TokenValue
 }
 
-func (expr FloatLiteralExpr) String() string {
-	return expr.TreeString("", "")
-}
-
 func (expr FloatLiteralExpr) TreeString(indent string, label string) string {
 	return fmt.Sprintf("%s%s[FloatLiteralExpr: %s]", indent, label, expr.Value)
 }
@@ -52,10 +40,6 @@ type RuneLiteralExpr struct {
 	TokenValue
 }
 
-func (expr RuneLiteralExpr) String() string {
-	return expr.TreeString("", "")
-}
-
 func (expr RuneLiteralExpr) TreeString(indent string, label string) string {
 	return fmt.Sprintf("%s%s[RuneLiteralExpr: %s]", indent, label, expr.Value)
 }
@@ -63,10 +47,6 @@ func (expr RuneLiteralExpr) TreeString(indent string, label string) string {
 type StringLiteralExpr struct {
 	isExpression
 	TokenValue
-}
-
-func (expr StringLiteralExpr) String() string {
-	return expr.TreeString("", "")
 }
 
 func (expr StringLiteralExpr) TreeString(indent string, label string) string {
@@ -140,10 +120,6 @@ type IdentifierExpr struct {
 	TokenValue
 }
 
-func (expr IdentifierExpr) String() string {
-	return expr.TreeString("", "")
-}
-
 func (expr IdentifierExpr) TreeString(indent string, label string) string {
 	return fmt.Sprintf("%s%s[IdentifierExpr: %s]", indent, label, expr.Value)
 }
@@ -168,23 +144,11 @@ func (reducer *IdentifierExprReducerImpl) ToIdentifierExpr(
 
 type AccessExpr struct {
 	isExpression
-
+	StartEndPos
 	LeadingTrailingComments
 
 	Operand Expression
 	Field   TokenValue
-}
-
-func (expr AccessExpr) Loc() Location {
-	return expr.Operand.Loc()
-}
-
-func (expr AccessExpr) End() Location {
-	return expr.Field.End()
-}
-
-func (expr AccessExpr) String() string {
-	return expr.TreeString("", "")
 }
 
 func (expr AccessExpr) TreeString(indent string, label string) string {
@@ -210,8 +174,9 @@ func (reducer *AccessExprReducerImpl) ToAccessExpr(
 	error,
 ) {
 	expr := &AccessExpr{
-		Operand: operand,
-		Field:   field,
+		StartEndPos: newStartEndPos(operand.Loc(), field.End()),
+		Operand:     operand,
+		Field:       field,
 	}
 
 	expr.LeadingComment = operand.TakeLeading()
@@ -233,26 +198,13 @@ type UnaryOp SymbolId
 type UnaryExpr struct {
 	isExpression
 
-	StartPos Location
-	EndPos   Location
+	StartEndPos
 	LeadingTrailingComments
 
 	IsPrefix bool
 
 	Op      UnaryOp
 	Operand Expression
-}
-
-func (expr UnaryExpr) Loc() Location {
-	return expr.StartPos
-}
-
-func (expr UnaryExpr) End() Location {
-	return expr.EndPos
-}
-
-func (expr UnaryExpr) String() string {
-	return expr.TreeString("", "")
 }
 
 func (expr UnaryExpr) TreeString(indent string, label string) string {
@@ -282,11 +234,10 @@ func (reducer *UnaryExprReducer) ToPostfixUnaryExpr(
 	error,
 ) {
 	expr := &UnaryExpr{
-		StartPos: operand.Loc(),
-		EndPos:   op.End(),
-		IsPrefix: false,
-		Op:       UnaryOp(op.SymbolId),
-		Operand:  operand,
+		StartEndPos: newStartEndPos(operand.Loc(), op.End()),
+		IsPrefix:    false,
+		Op:          UnaryOp(op.SymbolId),
+		Operand:     operand,
 	}
 
 	expr.LeadingComment = operand.TakeLeading()
@@ -305,11 +256,10 @@ func (reducer *UnaryExprReducer) ToPrefixUnaryExpr(
 	error,
 ) {
 	expr := &UnaryExpr{
-		StartPos: op.Loc(),
-		EndPos:   operand.End(),
-		IsPrefix: true,
-		Op:       UnaryOp(op.SymbolId),
-		Operand:  operand,
+		StartEndPos: newStartEndPos(op.Loc(), operand.End()),
+		IsPrefix:    true,
+		Op:          UnaryOp(op.SymbolId),
+		Operand:     operand,
 	}
 
 	expr.LeadingComment = op.TakeLeading()
@@ -329,23 +279,12 @@ type BinaryOp SymbolId
 
 type BinaryExpr struct {
 	isExpression
+	StartEndPos
 	LeadingTrailingComments
 
 	Left  Expression
 	Op    BinaryOp
 	Right Expression
-}
-
-func (expr BinaryExpr) Loc() Location {
-	return expr.Left.Loc()
-}
-
-func (expr BinaryExpr) End() Location {
-	return expr.Right.End()
-}
-
-func (expr BinaryExpr) String() string {
-	return expr.TreeString("", "")
 }
 
 func (expr BinaryExpr) TreeString(indent string, label string) string {
@@ -376,9 +315,10 @@ func (reducer *BinaryExprReducer) toBinaryExpr(
 	error,
 ) {
 	expr := &BinaryExpr{
-		Left:  left,
-		Op:    BinaryOp(op.SymbolId),
-		Right: right,
+		StartEndPos: newStartEndPos(left.Loc(), right.End()),
+		Left:        left,
+		Op:          BinaryOp(op.SymbolId),
+		Right:       right,
 	}
 
 	expr.LeadingComment = left.TakeLeading()
@@ -463,8 +403,7 @@ const (
 )
 
 type Argument struct {
-	StartPos Location
-	EndPos   Location
+	StartEndPos
 	LeadingTrailingComments
 
 	Kind ArgumentKind
@@ -479,18 +418,6 @@ type Argument struct {
 }
 
 var _ Node = &Argument{}
-
-func (arg *Argument) Loc() Location {
-	return arg.StartPos
-}
-
-func (arg *Argument) End() Location {
-	return arg.StartPos
-}
-
-func (arg *Argument) String() string {
-	return arg.TreeString("", "")
-}
 
 func (arg *Argument) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
@@ -523,8 +450,7 @@ func (ArgumentReducerImpl) PositionalToArgument(
 	error,
 ) {
 	return &Argument{
-		StartPos: expr.Loc(),
-		EndPos:   expr.End(),
+		StartEndPos: newStartEndPos(expr.Loc(), expr.End()),
 		LeadingTrailingComments: LeadingTrailingComments{
 			LeadingComment:  expr.TakeLeading(),
 			TrailingComment: expr.TakeTrailing(),
@@ -542,8 +468,7 @@ func (ArgumentReducerImpl) ColonExprToArgument(
 	error,
 ) {
 	return &Argument{
-		StartPos: expr.Loc(),
-		EndPos:   expr.End(),
+		StartEndPos: newStartEndPos(expr.Loc(), expr.End()),
 		LeadingTrailingComments: LeadingTrailingComments{
 			LeadingComment:  expr.TakeLeading(),
 			TrailingComment: expr.TakeTrailing(),
@@ -563,8 +488,7 @@ func (ArgumentReducerImpl) NamedAssignmentToArgument(
 	error,
 ) {
 	arg := &Argument{
-		StartPos:    name.Loc(),
-		EndPos:      expr.End(),
+		StartEndPos: newStartEndPos(name.Loc(), expr.End()),
 		Kind:        NamedAssignmentArgument,
 		Expr:        expr,
 		HasEllipsis: false,
@@ -588,8 +512,7 @@ func (ArgumentReducerImpl) VarargAssignmentToArgument(
 	error,
 ) {
 	arg := &Argument{
-		StartPos:    expr.Loc(),
-		EndPos:      ellipsis.End(),
+		StartEndPos: newStartEndPos(expr.Loc(), ellipsis.End()),
 		Kind:        VarargAssignmentArgument,
 		Expr:        expr,
 		HasEllipsis: true,
@@ -608,8 +531,7 @@ func (ArgumentReducerImpl) SkipPatternToArgument(
 	error,
 ) {
 	return &Argument{
-		StartPos:                ellipsis.Loc(),
-		EndPos:                  ellipsis.End(),
+		StartEndPos:             newStartEndPos(ellipsis.Loc(), ellipsis.End()),
 		LeadingTrailingComments: ellipsis.LeadingTrailingComments,
 		Kind:                    SkipPatternArgument,
 		Expr:                    nil,
@@ -661,7 +583,7 @@ func (reducer *ArgumentListReducer) ImproperToArguments(
 }
 
 func (reducer *ArgumentListReducer) NilToArguments() (*ArgumentList, error) {
-	return nil, nil
+	return &ArgumentList{}, nil
 }
 
 //
@@ -675,10 +597,6 @@ type ImplicitStructExpr struct {
 	// An improper struct is the a comma separated list of expressions without
 	// left/right paren.  e.g., return 1, 2, 3
 	IsImproper bool
-}
-
-func (expr *ImplicitStructExpr) String() string {
-	return expr.TreeString("", "")
 }
 
 func (expr *ImplicitStructExpr) TreeString(indent string, label string) string {
@@ -738,15 +656,13 @@ func (ColonExprReducerImpl) UnitUnitPairToColonExpr(
 	error,
 ) {
 	leftArg := &Argument{
-		StartPos: colon.Loc(),
-		EndPos:   colon.End(),
-		Kind:     IsImplicitUnitArgument,
+		StartEndPos: newStartEndPos(colon.Loc(), colon.End()),
+		Kind:        IsImplicitUnitArgument,
 	}
 
 	rightArg := &Argument{
-		StartPos: colon.Loc(),
-		EndPos:   colon.End(),
-		Kind:     IsImplicitUnitArgument,
+		StartEndPos: newStartEndPos(colon.Loc(), colon.End()),
+		Kind:        IsImplicitUnitArgument,
 	}
 	rightArg.LeadingComment = colon.TakeTrailing()
 
@@ -766,18 +682,16 @@ func (ColonExprReducerImpl) ExprUnitPairToColonExpr(
 	error,
 ) {
 	leftArg := &Argument{
-		StartPos: leftExpr.Loc(),
-		EndPos:   leftExpr.End(),
-		Kind:     PositionalArgument,
-		Expr:     leftExpr,
+		StartEndPos: newStartEndPos(leftExpr.Loc(), leftExpr.End()),
+		Kind:        PositionalArgument,
+		Expr:        leftExpr,
 	}
 	leftArg.LeadingComment = leftExpr.TakeLeading()
 	leftArg.TrailingComment = leftExpr.TakeTrailing()
 
 	rightArg := &Argument{
-		StartPos: colon.Loc(),
-		EndPos:   colon.End(),
-		Kind:     IsImplicitUnitArgument,
+		StartEndPos: newStartEndPos(colon.Loc(), colon.End()),
+		Kind:        IsImplicitUnitArgument,
 	}
 	rightArg.LeadingComment = colon.TakeTrailing()
 
@@ -797,16 +711,14 @@ func (reducer *ColonExprReducerImpl) UnitExprPairToColonExpr(
 	error,
 ) {
 	leftArg := &Argument{
-		StartPos: colon.Loc(),
-		EndPos:   colon.End(),
-		Kind:     IsImplicitUnitArgument,
+		StartEndPos: newStartEndPos(colon.Loc(), colon.End()),
+		Kind:        IsImplicitUnitArgument,
 	}
 
 	rightArg := &Argument{
-		StartPos: rightExpr.Loc(),
-		EndPos:   rightExpr.End(),
-		Kind:     PositionalArgument,
-		Expr:     rightExpr,
+		StartEndPos: newStartEndPos(rightExpr.Loc(), rightExpr.End()),
+		Kind:        PositionalArgument,
+		Expr:        rightExpr,
 	}
 	rightArg.LeadingComment = rightExpr.TakeLeading()
 	rightArg.TrailingComment = rightExpr.TakeTrailing()
@@ -829,19 +741,17 @@ func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
 	error,
 ) {
 	leftArg := &Argument{
-		StartPos: leftExpr.Loc(),
-		EndPos:   leftExpr.End(),
-		Kind:     PositionalArgument,
-		Expr:     leftExpr,
+		StartEndPos: newStartEndPos(leftExpr.Loc(), leftExpr.End()),
+		Kind:        PositionalArgument,
+		Expr:        leftExpr,
 	}
 	leftArg.LeadingComment = leftExpr.TakeLeading()
 	leftArg.TrailingComment = leftExpr.TakeTrailing()
 
 	rightArg := &Argument{
-		StartPos: rightExpr.Loc(),
-		EndPos:   rightExpr.End(),
-		Kind:     PositionalArgument,
-		Expr:     rightExpr,
+		StartEndPos: newStartEndPos(rightExpr.Loc(), rightExpr.End()),
+		Kind:        PositionalArgument,
+		Expr:        rightExpr,
 	}
 	rightArg.LeadingComment = rightExpr.TakeLeading()
 	rightArg.TrailingComment = rightExpr.TakeTrailing()
@@ -863,9 +773,8 @@ func (reducer *ColonExprReducerImpl) ColonExprUnitTupleToColonExpr(
 	error,
 ) {
 	arg := &Argument{
-		StartPos: colon.Loc(),
-		EndPos:   colon.End(),
-		Kind:     IsImplicitUnitArgument,
+		StartEndPos: newStartEndPos(colon.Loc(), colon.End()),
+		Kind:        IsImplicitUnitArgument,
 	}
 	arg.LeadingComment = colon.TakeTrailing()
 
@@ -882,10 +791,9 @@ func (reducer *ColonExprReducerImpl) ColonExprExprTupleToColonExpr(
 	error,
 ) {
 	arg := &Argument{
-		StartPos: expr.Loc(),
-		EndPos:   expr.End(),
-		Kind:     PositionalArgument,
-		Expr:     expr,
+		StartEndPos: newStartEndPos(expr.Loc(), expr.End()),
+		Kind:        PositionalArgument,
+		Expr:        expr,
 	}
 	arg.LeadingComment = expr.TakeLeading()
 	arg.TrailingComment = expr.TakeTrailing()
@@ -901,25 +809,12 @@ func (reducer *ColonExprReducerImpl) ColonExprExprTupleToColonExpr(
 
 type CallExpr struct {
 	isExpression
-	StartPos Location
-	EndPos   Location
+	StartEndPos
 	LeadingTrailingComments
 
 	FuncExpr      Expression
 	TypeArguments TypeArgumentList
 	Arguments     ArgumentList
-}
-
-func (expr CallExpr) Loc() Location {
-	return expr.StartPos
-}
-
-func (expr CallExpr) End() Location {
-	return expr.EndPos
-}
-
-func (expr CallExpr) String() string {
-	return expr.TreeString("", "")
 }
 
 func (expr CallExpr) TreeString(indent string, label string) string {
@@ -956,8 +851,7 @@ func (reducer *CallExprReducerImpl) ToCallExpr(
 	arguments.reduceMarkers(lparen, rparen)
 
 	expr := &CallExpr{
-		StartPos: funcExpr.Loc(),
-		EndPos:   rparen.End(),
+		StartEndPos: newStartEndPos(funcExpr.Loc(), rparen.End()),
 		LeadingTrailingComments: LeadingTrailingComments{
 			LeadingComment:  funcExpr.TakeLeading(),
 			TrailingComment: arguments.TakeTrailing(),
@@ -977,24 +871,11 @@ func (reducer *CallExprReducerImpl) ToCallExpr(
 
 type IndexExpr struct {
 	isExpression
-	StartPos Location
-	EndPos   Location
+	StartEndPos
 	LeadingTrailingComments
 
 	Accessible Expression
 	Index      Argument
-}
-
-func (expr IndexExpr) Loc() Location {
-	return expr.StartPos
-}
-
-func (expr IndexExpr) End() Location {
-	return expr.EndPos
-}
-
-func (expr IndexExpr) String() string {
-	return expr.TreeString("", "")
 }
 
 func (expr IndexExpr) TreeString(indent string, label string) string {
@@ -1025,10 +906,9 @@ func (reducer *IndexExprReducerImpl) ToIndexExpr(
 	index.AppendToTrailing(rbracket.TakeLeading())
 
 	expr := &IndexExpr{
-		StartPos:   accessible.Loc(),
-		EndPos:     rbracket.End(),
-		Accessible: accessible,
-		Index:      *index,
+		StartEndPos: newStartEndPos(accessible.Loc(), rbracket.End()),
+		Accessible:  accessible,
+		Index:       *index,
 	}
 
 	expr.LeadingComment = accessible.TakeLeading()
@@ -1044,24 +924,11 @@ func (reducer *IndexExprReducerImpl) ToIndexExpr(
 
 type InitializeExpr struct {
 	isExpression
-	StartPos Location
-	EndPos   Location
+	StartEndPos
 	LeadingTrailingComments
 
 	Initializable TypeExpression
 	Arguments     ArgumentList
-}
-
-func (expr InitializeExpr) Loc() Location {
-	return expr.StartPos
-}
-
-func (expr InitializeExpr) End() Location {
-	return expr.EndPos
-}
-
-func (expr InitializeExpr) String() string {
-	return expr.TreeString("", "")
 }
 
 func (expr InitializeExpr) TreeString(indent string, label string) string {
@@ -1090,8 +957,7 @@ func (reducer *InitializeExprReducerImpl) ToInitializeExpr(
 	arguments.reduceMarkers(lparen, rparen)
 
 	expr := &InitializeExpr{
-		StartPos:      initializable.Loc(),
-		EndPos:        rparen.End(),
+		StartEndPos:   newStartEndPos(initializable.Loc(), rparen.End()),
 		Initializable: initializable,
 		Arguments:     *arguments,
 	}
