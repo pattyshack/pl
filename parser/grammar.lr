@@ -631,11 +631,12 @@ parse_error_type_expr<TypeExpression> -> PARSE_ERROR
 // "func() A + B" could mean func() returning "A + B" or "func() A" + "B"
 returnable_type_expr<TypeExpression> ->
   = atom_type_expr |
-  = prefixed_type_expr
+  = prefixed_unary_type_expr
 
-prefixed_type_expr<TypeExpression> -> prefix_type_op returnable_type_expr
+prefixed_unary_type_expr<TypeExpression> ->
+  prefix_unary_type_op returnable_type_expr
 
-prefix_type_op<Value> ->
+prefix_unary_type_op<Value> ->
   = QUESTION | // shorthand for Optional$[ <atom_type_expr> ]
   = EXCLAIM | // shorthand for Result$[ <atom_type_expr> ]
   = BIT_AND | // reference type
@@ -646,11 +647,12 @@ prefix_type_op<Value> ->
 // trait( trait(A+B) * C)
 type_expr<TypeExpression> ->
   = returnable_type_expr |
-  = trait_op_type_expr
+  = binary_type_expr
 
-trait_op_type_expr<TypeExpression> -> type_expr trait_op returnable_type_expr
+binary_type_expr<TypeExpression> ->
+  type_expr binary_type_op returnable_type_expr
 
-trait_op<Value> ->
+binary_type_op<Value> ->
   = MUL | // trait intersect
   = ADD | // trait union
   = SUB // trait difference

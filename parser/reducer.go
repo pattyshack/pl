@@ -17,6 +17,8 @@ type ReducerImpl struct {
 	SliceTypeExprReducerImpl
 	ArrayTypeExprReducerImpl
 	MapTypeExprReducerImpl
+	InferredTypeExprReducerImpl
+	NamedTypeExprReducerImpl
 
 	ArgumentListReducer
 	ArgumentReducerImpl

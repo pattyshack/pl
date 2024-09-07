@@ -848,6 +848,10 @@ func (reducer *CallExprReducerImpl) ToCallExpr(
 	Expression,
 	error,
 ) {
+	if typeArguments == nil {
+		typeArguments = &TypeArgumentList{}
+	}
+
 	arguments.reduceMarkers(lparen, rparen)
 
 	expr := &CallExpr{
