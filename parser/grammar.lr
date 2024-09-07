@@ -852,7 +852,7 @@ go:
     TypeExpression: "TypeExpression"
     TypeArgumentList: "*TypeArgumentList"
     Statement: "Statement"
-    Statements: "[]Statement"
+    Statements: "*StatementList"
     SourceDefinition: "SourceDefinition"
     SourceDefinitions: "[]SourceDefinition"
   generate_end_pos: True

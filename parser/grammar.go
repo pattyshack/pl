@@ -179,30 +179,30 @@ type DefinitionReducer interface {
 
 type StatementBlockReducer interface {
 	// 96:19: statement_block -> ...
-	ToStatementBlock(Lbrace_ TokenValue, Statements_ []Statement, Rbrace_ TokenValue) (GenericSymbol, error)
+	ToStatementBlock(Lbrace_ TokenValue, Statements_ *StatementList, Rbrace_ TokenValue) (GenericSymbol, error)
 }
 
 type ProperStatementsReducer interface {
 	// 99:2: proper_statements -> add_implicit: ...
-	AddImplicitToProperStatements(ProperStatements_ []Statement, Newlines_ TokenCount, Statement_ Statement) ([]Statement, error)
+	AddImplicitToProperStatements(ProperStatements_ *StatementList, Newlines_ TokenCount, Statement_ Statement) (*StatementList, error)
 
 	// 100:2: proper_statements -> add_explicit: ...
-	AddExplicitToProperStatements(ProperStatements_ []Statement, Semicolon_ TokenValue, Statement_ Statement) ([]Statement, error)
+	AddExplicitToProperStatements(ProperStatements_ *StatementList, Semicolon_ TokenValue, Statement_ Statement) (*StatementList, error)
 
 	// 101:2: proper_statements -> statement: ...
-	StatementToProperStatements(Statement_ Statement) ([]Statement, error)
+	StatementToProperStatements(Statement_ Statement) (*StatementList, error)
 }
 
 type StatementsReducer interface {
 
 	// 105:2: statements -> improper_implicit: ...
-	ImproperImplicitToStatements(ProperStatements_ []Statement, Newlines_ TokenCount) ([]Statement, error)
+	ImproperImplicitToStatements(ProperStatements_ *StatementList, Newlines_ TokenCount) (*StatementList, error)
 
 	// 106:2: statements -> improper_explicit: ...
-	ImproperExplicitToStatements(ProperStatements_ []Statement, Semicolon_ TokenValue) ([]Statement, error)
+	ImproperExplicitToStatements(ProperStatements_ *StatementList, Semicolon_ TokenValue) (*StatementList, error)
 
 	// 107:2: statements -> nil: ...
-	NilToStatements() ([]Statement, error)
+	NilToStatements() (*StatementList, error)
 }
 
 type StatementReducer interface {
@@ -3304,7 +3304,7 @@ type Symbol struct {
 	SourceDefinition  SourceDefinition
 	SourceDefinitions []SourceDefinition
 	Statement         Statement
-	Statements        []Statement
+	Statements        *StatementList
 	TypeArgumentList  *TypeArgumentList
 	TypeExpression    TypeExpression
 	Value             TokenValue
