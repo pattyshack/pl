@@ -64,6 +64,7 @@ var (
 		"and":         AndToken,
 		"or":          OrToken,
 		"not":         NotToken,
+		"_":           UnderscoreToken,
 	}
 )
 

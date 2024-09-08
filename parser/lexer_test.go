@@ -245,6 +245,9 @@ func (s *TerminalNewlinesLexerSuite) TestIdentifier(t *testing.T) {
 	s.lex(
 		t, "a + b\n c",
 		IdentifierToken, AddToken, IdentifierToken, NewlinesToken, IdentifierToken)
+	s.lex(
+		t, "a + _\n c",
+		IdentifierToken, AddToken, UnderscoreToken, NewlinesToken, IdentifierToken)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestLiteral(t *testing.T) {

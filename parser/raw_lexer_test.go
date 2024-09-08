@@ -419,7 +419,7 @@ func (s *RawLexerSuite) TestBinaryIntegerLiteral(t *testing.T) {
 
 	tokens = s.lex(
 		t, "+0B_-",
-		AddToken, ParseErrorToken, IdentifierToken, SubToken)
+		AddToken, ParseErrorToken, UnderscoreToken, SubToken)
 	expectError(t, tokens[1], "binary integer literal has no digits")
 
 	tokens = s.lex(
@@ -465,7 +465,7 @@ func (s *RawLexerSuite) TestZeroOPrefixedOctalIntegerLiteral(t *testing.T) {
 
 	tokens = s.lex(
 		t, "+0O_-",
-		AddToken, ParseErrorToken, IdentifierToken, SubToken)
+		AddToken, ParseErrorToken, UnderscoreToken, SubToken)
 	expectError(t, tokens[1], "0o-prefixed octal integer literal has no digits")
 
 	tokens = s.lex(
@@ -590,7 +590,7 @@ func (s *RawLexerSuite) TestHexadecimalIntegerLiteral(t *testing.T) {
 
 	tokens = s.lex(
 		t, "+0X_-",
-		AddToken, ParseErrorToken, IdentifierToken, SubToken)
+		AddToken, ParseErrorToken, UnderscoreToken, SubToken)
 	expectError(t, tokens[1], "hexadecimal integer literal has no digits")
 	expectValue(t, "_", tokens[2])
 

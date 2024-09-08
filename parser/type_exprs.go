@@ -239,8 +239,12 @@ type InferredTypeExpr struct {
 	TokenValue
 }
 
-func (InferredTypeExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[InferredTypeExpr]", indent, label)
+func (expr InferredTypeExpr) TreeString(indent string, label string) string {
+	return fmt.Sprintf(
+		"%s%s[InferredTypeExpr: SymbolId=%s]",
+		indent,
+		label,
+		expr.SymbolId)
 }
 
 type InferredTypeExprReducerImpl struct {
@@ -249,13 +253,24 @@ type InferredTypeExprReducerImpl struct {
 
 var _ InferredTypeExprReducer = &InferredTypeExprReducerImpl{}
 
-func (reducer *InferredTypeExprReducerImpl) ToInferredTypeExpr(
+func (reducer *InferredTypeExprReducerImpl) DotToInferredTypeExpr(
 	dot TokenValue,
 ) (
 	TypeExpression,
 	error,
 ) {
 	expr := &InferredTypeExpr{TokenValue: dot}
+	reducer.InferredTypeExprs = append(reducer.InferredTypeExprs, expr)
+	return expr, nil
+}
+
+func (reducer *InferredTypeExprReducerImpl) UnderscoreToInferredTypeExpr(
+	underscore TokenValue,
+) (
+	TypeExpression,
+	error,
+) {
+	expr := &InferredTypeExpr{TokenValue: underscore}
 	reducer.InferredTypeExprs = append(reducer.InferredTypeExprs, expr)
 	return expr, nil
 }

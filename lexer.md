@@ -11,7 +11,7 @@ Sequence of ' ' or '\t'.  Only serve to separate tokens.  Spaces are ignored by 
 Sequence of '\n' or '\r\n' ('\r' not paired with '\n' is not a newline).  Serve to separate tokens and may terminate a statement.
 
 go explicitly inserts ';' to terminate statement.  we'll conditionally emit newline to the parser the same way. newline is emitted if the line's final token is
-1. an identifier
+1. an identifier or `_`
 2. a literal
 3. a jump label
 4. one of the keywords: `break`, `continue`, `fallthrough`, `return`, `true`, or `false`
@@ -185,6 +185,7 @@ struct   switch
 trait    true         type
 unsafe
 var
+_
 ```
 
 ### Operators and punctuations

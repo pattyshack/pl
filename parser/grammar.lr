@@ -4,11 +4,18 @@
 
 %token<Value> INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
 
-// _ is never a real identifier, and is only used as a variable or type
-// placeholder.  Identifiers with prefix "_" are private to the package.
-// nameing convention is lower camelcase for variables, upper camelcase for
-// types.
+// Identifiers with prefix "_" are private to the package (Note that "_" is a
+// keyword, not an identifier). Nameing convention is lower camelcase for
+// variables, upper camelcase for types.
 %token<Value> IDENTIFIER
+
+// "_" is a keyword that has different meanings in different context:
+//  1. As an expression, it's an assignable, but inaccessible, variable
+//     placeholder that can be used anywhere without val/let declaration.
+//  2. As an type expression:
+//    a. When used as an enum value type, the enum value has no associated data.
+//    b. Everywhere else, it is an inferred mutable reference type.
+%token<Value> UNDERSCORE
 
 %token<Value> TRUE FALSE
 
@@ -247,7 +254,8 @@ import_statement<Statement> ->
 
 import_clause ->
   STRING_LITERAL |
-  alias: STRING_LITERAL AS IDENTIFIER
+  alias: STRING_LITERAL AS IDENTIFIER |
+  unusable_import: STRING_LITERAL AS UNDERSCORE
 
 proper_import_clauses ->
   add_implicit: proper_import_clauses NEWLINES import_clause |
@@ -282,6 +290,7 @@ var_or_let<Value> ->
 
 var_pattern ->
   IDENTIFIER |
+  UNDERSCORE |
   tuple_pattern
 
 tuple_pattern -> LPAREN field_var_patterns RPAREN
@@ -315,6 +324,7 @@ case_pattern ->
   // actually parses explicit enum match pattern, where VARs are inside the
   // data list, but we should reject this form for consistency)
   enum_match_pattern: DOT IDENTIFIER implicit_struct_expr |
+  enum_nondata_match_patten: DOT IDENTIFIER |
   enum_var_decl_pattern: VAR DOT IDENTIFIER tuple_pattern
 
 //
@@ -471,7 +481,7 @@ colon_expr<ColonExpr> ->
 atom_expr<Expression> ->
   = parse_error_expr |
   = literal_expr |
-  = identifier_expr |
+  = named_expr |
   = block_expr |
   = anonymous_func_expr |
   = initialize_expr |
@@ -487,7 +497,9 @@ literal_expr<Expression> ->
   RUNE_LITERAL |
   STRING_LITERAL
 
-identifier_expr<Expression> ->  IDENTIFIER
+named_expr<Expression> ->
+  IDENTIFIER |
+  UNDERSCORE
 
 block_expr<Expression> ->  optional_label_decl statement_block
 
@@ -618,11 +630,14 @@ named_type_expr<TypeExpression> ->
   local: IDENTIFIER generic_type_arguments |
   external: IDENTIFIER DOT IDENTIFIER generic_type_arguments
 
+// NOTE: "." infers to a copy-on-mutate reference by default, whereas "_"
+// infers to a mutable reference by default (or a non-data enum value).
+//
 // NOTE: Maybe allow "DOT generic_type_arguments", which potentially only infer
 // a name rather than a type_expr.
-//
-// XXX: maybe use a different token?
-inferred_type_expr<TypeExpression> -> DOT
+inferred_type_expr<TypeExpression> ->
+  DOT |
+  UNDERSCORE
 
 parse_error_type_expr<TypeExpression> -> PARSE_ERROR
 
@@ -689,14 +704,17 @@ optional_generic_parameters ->
 //
 
 // NOTE: optional_default is only usable in enum.  method_signature is only
-// usable in trait.  These are checked post parsing.
+// usable in trait.  struct_padding is only usable in struct.
+// These are checked post parsing.
 //
-// NOTE: use "_" for field type to denote no data is associated with the
-// enum value.
+// NOTE: In general, type_expr must be concrete (i.e., can't have any inferred
+// type).  Enum value can use "_" as type to indicate no data is associated
+// with the enum value.
 field_def ->
-  explicit: IDENTIFIER type_expr optional_default |
-  implicit: type_expr optional_default |
-  method_signature |
+  named: IDENTIFIER type_expr optional_default |
+  unnamed: type_expr optional_default |
+  struct_padding: UNDERSCORE type_expr |
+  = method_signature |
   unsafe_statement
 
 optional_default ->
@@ -775,11 +793,15 @@ return_type<TypeExpression> ->
   returnable_type_expr |
   nil:
 
+// NOTE: inferred mutable reference is declared either as "_" or "IDENTIFIER _".
+// copy-on-mutate reference is declared either as "." or "IDENTIFIER ."
 parameter_decl ->
+  unnamed_arg: type_expr |
+  unnamed_vararg: ELLIPSIS type_expr |
+  underscore_arg: UNDERSCORE type_expr |
+  underscore_vararg: UNDERSCORE ELLIPSIS type_expr |
   arg: IDENTIFIER type_expr |
-  vararg: IDENTIFIER ELLIPSIS type_expr |
-  unamed: type_expr |
-  unnamed_vararg: ELLIPSIS type_expr
+  vararg: IDENTIFIER ELLIPSIS type_expr
 
 proper_parameter_decls ->
   add: proper_parameter_decls COMMA parameter_decl |
@@ -804,14 +826,19 @@ func_type_expr<TypeExpression> ->
 // Ambiguous usage would need to explicitly specify the generic parameter.
 method_signature -> FUNC IDENTIFIER LPAREN parameter_decls RPAREN return_type
 
-// NOTE: Parameter that don't specify any value will be inferred as a mutable
-// reference by default, i.e., equivalent to "&.".  Parameter that specify "."
-// as its type will be inferred as copy-on-mutable reference by default.
+// NOTE: Parameter that don't specify any type, or has type "_",  will be
+// inferred as a mutable reference by default, i.e., equivalent to "&.".
+// Parameter that specify "." as its type will be inferred as copy-on-mutate
+// reference by default.
 parameter_def ->
   inferred_ref_arg: IDENTIFIER |
   inferred_ref_vararg: IDENTIFIER ELLIPSIS |
   arg: IDENTIFIER type_expr |
-  vararg: IDENTIFIER ELLIPSIS type_expr
+  vararg: IDENTIFIER ELLIPSIS type_expr |
+  ignore_inferred_ref_arg: UNDERSCORE |
+  ignore_inferred_ref_vararg: UNDERSCORE ELLIPSIS |
+  ignore_arg: UNDERSCORE type_expr |
+  ignore_vararg: UNDERSCORE ELLIPSIS type_expr
 
 proper_parameter_defs ->
   add: proper_parameter_defs COMMA parameter_def |

@@ -112,29 +112,37 @@ func (reducer *LiteralExprReducerImpl) StringLiteralToLiteralExpr(
 }
 
 //
-// IdentifierExpr
+// NamedExpr
 //
 
-type IdentifierExpr struct {
+type NamedExpr struct {
 	isExpression
 	TokenValue
 }
 
-func (expr IdentifierExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[IdentifierExpr: %s]", indent, label, expr.Value)
+func (expr NamedExpr) TreeString(indent string, label string) string {
+	return fmt.Sprintf("%s%s[NamedExpr: %s]", indent, label, expr.Value)
 }
 
-type IdentifierExprReducerImpl struct {
-	IdentifierExprs []*IdentifierExpr
+type NamedExprReducerImpl struct {
+	NamedExprs []*NamedExpr
 }
 
-var _ IdentifierExprReducer = &IdentifierExprReducerImpl{}
+var _ NamedExprReducer = &NamedExprReducerImpl{}
 
-func (reducer *IdentifierExprReducerImpl) ToIdentifierExpr(
+func (reducer *NamedExprReducerImpl) IdentifierToNamedExpr(
 	value TokenValue,
 ) (Expression, error) {
-	expr := &IdentifierExpr{TokenValue: value}
-	reducer.IdentifierExprs = append(reducer.IdentifierExprs, expr)
+	expr := &NamedExpr{TokenValue: value}
+	reducer.NamedExprs = append(reducer.NamedExprs, expr)
+	return expr, nil
+}
+
+func (reducer *NamedExprReducerImpl) UnderscoreToNamedExpr(
+	value TokenValue,
+) (Expression, error) {
+	expr := &NamedExpr{TokenValue: value}
+	reducer.NamedExprs = append(reducer.NamedExprs, expr)
 	return expr, nil
 }
 

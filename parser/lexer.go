@@ -328,7 +328,7 @@ func (lexer *TerminalNewlinesLexer) Next() (Token, error) {
 		}
 
 		switch lexer.previousId {
-		case IdentifierToken,
+		case IdentifierToken, UnderscoreToken,
 			IntegerLiteralToken, StringLiteralToken,
 			RuneLiteralToken, FloatLiteralToken,
 			JumpLabelToken,

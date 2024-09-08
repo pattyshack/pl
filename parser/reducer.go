@@ -7,11 +7,11 @@ type ReducerImpl struct {
 	BinaryExprReducer
 	CallExprReducerImpl
 	ColonExprReducerImpl
-	IdentifierExprReducerImpl
 	InitializeExprReducerImpl
 	ImplicitStructExprReducerImpl
 	IndexExprReducerImpl
 	LiteralExprReducerImpl
+	NamedExprReducerImpl
 	UnaryExprReducer
 
 	SliceTypeExprReducerImpl
