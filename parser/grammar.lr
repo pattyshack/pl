@@ -794,23 +794,47 @@ return_type<TypeExpression> ->
   returnable_type_expr |
   nil:
 
+proper_parameter_def<Parameter> ->
+  named_typed_arg: IDENTIFIER type_expr |
+  named_typed_vararg: IDENTIFIER ELLIPSIS type_expr |
+  named_inferred_vararg: IDENTIFIER ELLIPSIS |
+  ignore_typed_arg: UNDERSCORE type_expr |
+  ignore_inferred_vararg: UNDERSCORE ELLIPSIS |
+  ignore_typed_vararg: UNDERSCORE ELLIPSIS type_expr
+
 // NOTE: inferred mutable reference is declared either as "_" or "IDENTIFIER _".
 // copy-on-mutate reference is declared either as "." or "IDENTIFIER ."
-parameter_decl ->
+parameter_decl<Parameter> ->
+  = proper_parameter_def |
   unnamed_typed_arg: type_expr |
   unnamed_inferred_vararg: ELLIPSIS |
-  unnamed_typed_vararg: ELLIPSIS type_expr |
-  named_typed_arg: IDENTIFIER type_expr |
-  named_inferred_vararg: IDENTIFIER ELLIPSIS |
-  named_typed_vararg: IDENTIFIER ELLIPSIS type_expr
+  unnamed_typed_vararg: ELLIPSIS type_expr
 
-proper_parameter_decls ->
+// NOTE: Parameter that don't specify any type, or has type "_",  will be
+// inferred as a mutable reference by default, i.e., equivalent to "&.".
+// Parameter that specify "." as its type will be inferred as copy-on-mutate
+// reference by default.
+parameter_def<Parameter> ->
+  = proper_parameter_def |
+  named_inferred_arg: IDENTIFIER |
+  ignore_inferred_arg: UNDERSCORE
+
+proper_parameter_decls<Parameters> ->
   add: proper_parameter_decls COMMA parameter_decl |
   parameter_decl
 
-parameter_decls ->
+parameter_decls<Parameters> ->
   = proper_parameter_decls |
   improper: proper_parameter_decls COMMA |
+  nil:
+
+proper_parameter_defs<Parameters> ->
+  add: proper_parameter_defs COMMA parameter_def |
+  parameter_def
+
+parameter_defs<Parameters> ->
+  = proper_parameter_defs |
+  improper: proper_parameter_defs COMMA |
   nil:
 
 func_type_expr<TypeExpression> ->
@@ -826,29 +850,6 @@ func_type_expr<TypeExpression> ->
 // all conforms to the same (unconstrainted) generic parameterized signature.
 // Ambiguous usage would need to explicitly specify the generic parameter.
 method_signature -> FUNC IDENTIFIER LPAREN parameter_decls RPAREN return_type
-
-// NOTE: Parameter that don't specify any type, or has type "_",  will be
-// inferred as a mutable reference by default, i.e., equivalent to "&.".
-// Parameter that specify "." as its type will be inferred as copy-on-mutate
-// reference by default.
-parameter_def ->
-  inferred_arg: IDENTIFIER |
-  typed_arg: IDENTIFIER type_expr |
-  inferred_vararg: IDENTIFIER ELLIPSIS |
-  typed_vararg: IDENTIFIER ELLIPSIS type_expr |
-  ignore_inferred_arg: UNDERSCORE |
-  ignore_typed_arg: UNDERSCORE type_expr |
-  ignore_inferred_vararg: UNDERSCORE ELLIPSIS |
-  ignore_typed_vararg: UNDERSCORE ELLIPSIS type_expr
-
-proper_parameter_defs ->
-  add: proper_parameter_defs COMMA parameter_def |
-  parameter_def
-
-parameter_defs ->
-  = proper_parameter_defs |
-  improper: proper_parameter_defs COMMA |
-  nil:
 
 // XXX: allow generic parameters in method definition? No, for go transpiler.
 named_func_def<SourceDefinition> ->
@@ -889,5 +890,7 @@ go:
     Statements: "*StatementList"
     SourceDefinition: "SourceDefinition"
     SourceDefinitions: "[]SourceDefinition"
+    Parameter: "*Parameter"
+    Parameters: "*ParameterList"
   generate_end_pos: True
 }%%

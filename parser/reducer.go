@@ -25,5 +25,7 @@ type ReducerImpl struct {
 	ArgumentListReducerImpl
 	ArgumentReducerImpl
 	TypeArgumentListReducerImpl
+	ParameterReducerImpl
+	ParameterListReducerImpl
 	StatementListReducerImpl
 }
