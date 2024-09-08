@@ -6,12 +6,12 @@ package parser
 
 type StatementList = NodeList[Statement]
 
-type StatementListReducer struct{}
+type StatementListReducerImpl struct{}
 
-var _ ProperStatementsReducer = &StatementListReducer{}
-var _ StatementsReducer = &StatementListReducer{}
+var _ ProperStatementsReducer = &StatementListReducerImpl{}
+var _ StatementsReducer = &StatementListReducerImpl{}
 
-func (StatementListReducer) AddImplicitToProperStatements(
+func (StatementListReducerImpl) AddImplicitToProperStatements(
 	statements *StatementList,
 	newlines TokenCount,
 	statement Statement,
@@ -23,7 +23,7 @@ func (StatementListReducer) AddImplicitToProperStatements(
 	return statements, nil
 }
 
-func (StatementListReducer) AddExplicitToProperStatements(
+func (StatementListReducerImpl) AddExplicitToProperStatements(
 	statements *StatementList,
 	semicolon TokenValue,
 	statement Statement,
@@ -35,7 +35,7 @@ func (StatementListReducer) AddExplicitToProperStatements(
 	return statements, nil
 }
 
-func (StatementListReducer) StatementToProperStatements(
+func (StatementListReducerImpl) StatementToProperStatements(
 	statement Statement,
 ) (
 	*StatementList,
@@ -44,7 +44,7 @@ func (StatementListReducer) StatementToProperStatements(
 	return newNodeList[Statement]("StatementList", statement), nil
 }
 
-func (StatementListReducer) ImproperImplicitToStatements(
+func (StatementListReducerImpl) ImproperImplicitToStatements(
 	statements *StatementList,
 	newlines TokenCount,
 ) (
@@ -54,7 +54,7 @@ func (StatementListReducer) ImproperImplicitToStatements(
 	return statements, nil
 }
 
-func (StatementListReducer) ImproperExplicitToStatements(
+func (StatementListReducerImpl) ImproperExplicitToStatements(
 	statements *StatementList,
 	semicolon TokenValue,
 ) (
@@ -65,6 +65,6 @@ func (StatementListReducer) ImproperExplicitToStatements(
 	return statements, nil
 }
 
-func (StatementListReducer) NilToStatements() (*StatementList, error) {
+func (StatementListReducerImpl) NilToStatements() (*StatementList, error) {
 	return nil, nil
 }

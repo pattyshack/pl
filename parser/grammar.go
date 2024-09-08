@@ -688,9 +688,9 @@ type ParseErrorTypeExprReducer interface {
 	ToParseErrorTypeExpr(ParseError_ ParseErrorSymbol) (TypeExpression, error)
 }
 
-type PrefixedUnaryTypeExprReducer interface {
-	// 653:2: prefixed_unary_type_expr -> ...
-	ToPrefixedUnaryTypeExpr(PrefixUnaryTypeOp_ TokenValue, ReturnableTypeExpr_ TypeExpression) (TypeExpression, error)
+type PrefixUnaryTypeExprReducer interface {
+	// 653:2: prefix_unary_type_expr -> ...
+	ToPrefixUnaryTypeExpr(PrefixUnaryTypeOp_ TokenValue, ReturnableTypeExpr_ TypeExpression) (TypeExpression, error)
 }
 
 type BinaryTypeExprReducer interface {
@@ -1055,7 +1055,7 @@ type Reducer interface {
 	NamedTypeExprReducer
 	InferredTypeExprReducer
 	ParseErrorTypeExprReducer
-	PrefixedUnaryTypeExprReducer
+	PrefixUnaryTypeExprReducer
 	BinaryTypeExprReducer
 	TypeDefReducer
 	GenericParameterDefReducer
@@ -1634,8 +1634,8 @@ func (i SymbolId) String() string {
 		return "parse_error_type_expr"
 	case ReturnableTypeExprType:
 		return "returnable_type_expr"
-	case PrefixedUnaryTypeExprType:
-		return "prefixed_unary_type_expr"
+	case PrefixUnaryTypeExprType:
+		return "prefix_unary_type_expr"
 	case PrefixUnaryTypeOpType:
 		return "prefix_unary_type_op"
 	case TypeExprType:
@@ -1808,7 +1808,7 @@ const (
 	InferredTypeExprType              = SymbolId(431)
 	ParseErrorTypeExprType            = SymbolId(432)
 	ReturnableTypeExprType            = SymbolId(433)
-	PrefixedUnaryTypeExprType         = SymbolId(434)
+	PrefixUnaryTypeExprType           = SymbolId(434)
 	PrefixUnaryTypeOpType             = SymbolId(435)
 	TypeExprType                      = SymbolId(436)
 	BinaryTypeExprType                = SymbolId(437)
@@ -2108,8 +2108,8 @@ const (
 	_ReduceUnderscoreToInferredTypeExpr                       = _ReduceType(234)
 	_ReduceToParseErrorTypeExpr                               = _ReduceType(235)
 	_ReduceAtomTypeExprToReturnableTypeExpr                   = _ReduceType(236)
-	_ReducePrefixedUnaryTypeExprToReturnableTypeExpr          = _ReduceType(237)
-	_ReduceToPrefixedUnaryTypeExpr                            = _ReduceType(238)
+	_ReducePrefixUnaryTypeExprToReturnableTypeExpr            = _ReduceType(237)
+	_ReduceToPrefixUnaryTypeExpr                              = _ReduceType(238)
 	_ReduceQuestionToPrefixUnaryTypeOp                        = _ReduceType(239)
 	_ReduceExclaimToPrefixUnaryTypeOp                         = _ReduceType(240)
 	_ReduceBitAndToPrefixUnaryTypeOp                          = _ReduceType(241)
@@ -2677,10 +2677,10 @@ func (i _ReduceType) String() string {
 		return "ToParseErrorTypeExpr"
 	case _ReduceAtomTypeExprToReturnableTypeExpr:
 		return "AtomTypeExprToReturnableTypeExpr"
-	case _ReducePrefixedUnaryTypeExprToReturnableTypeExpr:
-		return "PrefixedUnaryTypeExprToReturnableTypeExpr"
-	case _ReduceToPrefixedUnaryTypeExpr:
-		return "ToPrefixedUnaryTypeExpr"
+	case _ReducePrefixUnaryTypeExprToReturnableTypeExpr:
+		return "PrefixUnaryTypeExprToReturnableTypeExpr"
+	case _ReduceToPrefixUnaryTypeExpr:
+		return "ToPrefixUnaryTypeExpr"
 	case _ReduceQuestionToPrefixUnaryTypeOp:
 		return "QuestionToPrefixUnaryTypeOp"
 	case _ReduceExclaimToPrefixUnaryTypeOp:
@@ -3496,7 +3496,7 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case OptionalTypeExprType, InitializableTypeExprType, SliceTypeExprType, ArrayTypeExprType, MapTypeExprType, AtomTypeExprType, NamedTypeExprType, InferredTypeExprType, ParseErrorTypeExprType, ReturnableTypeExprType, PrefixedUnaryTypeExprType, TypeExprType, BinaryTypeExprType, ImplicitStructTypeExprType, ExplicitStructTypeExprType, TraitTypeExprType, ImplicitEnumTypeExprType, ExplicitEnumTypeExprType, ReturnTypeType, FuncTypeExprType:
+	case OptionalTypeExprType, InitializableTypeExprType, SliceTypeExprType, ArrayTypeExprType, MapTypeExprType, AtomTypeExprType, NamedTypeExprType, InferredTypeExprType, ParseErrorTypeExprType, ReturnableTypeExprType, PrefixUnaryTypeExprType, TypeExprType, BinaryTypeExprType, ImplicitStructTypeExprType, ExplicitStructTypeExprType, TraitTypeExprType, ImplicitEnumTypeExprType, ExplicitEnumTypeExprType, ReturnTypeType, FuncTypeExprType:
 		loc, ok := interface{}(s.TypeExpression).(locator)
 		if ok {
 			return loc.Loc()
@@ -3568,7 +3568,7 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case OptionalTypeExprType, InitializableTypeExprType, SliceTypeExprType, ArrayTypeExprType, MapTypeExprType, AtomTypeExprType, NamedTypeExprType, InferredTypeExprType, ParseErrorTypeExprType, ReturnableTypeExprType, PrefixedUnaryTypeExprType, TypeExprType, BinaryTypeExprType, ImplicitStructTypeExprType, ExplicitStructTypeExprType, TraitTypeExprType, ImplicitEnumTypeExprType, ExplicitEnumTypeExprType, ReturnTypeType, FuncTypeExprType:
+	case OptionalTypeExprType, InitializableTypeExprType, SliceTypeExprType, ArrayTypeExprType, MapTypeExprType, AtomTypeExprType, NamedTypeExprType, InferredTypeExprType, ParseErrorTypeExprType, ReturnableTypeExprType, PrefixUnaryTypeExprType, TypeExprType, BinaryTypeExprType, ImplicitStructTypeExprType, ExplicitStructTypeExprType, TraitTypeExprType, ImplicitEnumTypeExprType, ExplicitEnumTypeExprType, ReturnTypeType, FuncTypeExprType:
 		loc, ok := interface{}(s.TypeExpression).(locator)
 		if ok {
 			return loc.End()
@@ -5018,18 +5018,18 @@ func (act *_Action) ReduceSymbol(
 		//line grammar.lr:649:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
-	case _ReducePrefixedUnaryTypeExprToReturnableTypeExpr:
+	case _ReducePrefixUnaryTypeExprToReturnableTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnableTypeExprType
 		//line grammar.lr:650:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
-	case _ReduceToPrefixedUnaryTypeExpr:
+	case _ReduceToPrefixUnaryTypeExpr:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
-		symbol.SymbolId_ = PrefixedUnaryTypeExprType
-		symbol.TypeExpression, err = reducer.ToPrefixedUnaryTypeExpr(args[0].Value, args[1].TypeExpression)
+		symbol.SymbolId_ = PrefixUnaryTypeExprType
+		symbol.TypeExpression, err = reducer.ToPrefixUnaryTypeExpr(args[0].Value, args[1].TypeExpression)
 	case _ReduceQuestionToPrefixUnaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -6258,8 +6258,8 @@ var (
 	_ReduceUnderscoreToInferredTypeExprAction                       = &_Action{_ReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}
 	_ReduceToParseErrorTypeExprAction                               = &_Action{_ReduceAction, 0, _ReduceToParseErrorTypeExpr}
 	_ReduceAtomTypeExprToReturnableTypeExprAction                   = &_Action{_ReduceAction, 0, _ReduceAtomTypeExprToReturnableTypeExpr}
-	_ReducePrefixedUnaryTypeExprToReturnableTypeExprAction          = &_Action{_ReduceAction, 0, _ReducePrefixedUnaryTypeExprToReturnableTypeExpr}
-	_ReduceToPrefixedUnaryTypeExprAction                            = &_Action{_ReduceAction, 0, _ReduceToPrefixedUnaryTypeExpr}
+	_ReducePrefixUnaryTypeExprToReturnableTypeExprAction            = &_Action{_ReduceAction, 0, _ReducePrefixUnaryTypeExprToReturnableTypeExpr}
+	_ReduceToPrefixUnaryTypeExprAction                              = &_Action{_ReduceAction, 0, _ReduceToPrefixUnaryTypeExpr}
 	_ReduceQuestionToPrefixUnaryTypeOpAction                        = &_Action{_ReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}
 	_ReduceExclaimToPrefixUnaryTypeOpAction                         = &_Action{_ReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}
 	_ReduceBitAndToPrefixUnaryTypeOpAction                          = &_Action{_ReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}
@@ -6542,8 +6542,8 @@ var _ActionTable = _ActionTableType{
 	{_State4, InferredTypeExprType}:                _GotoState126Action,
 	{_State4, ParseErrorTypeExprType}:              _GotoState129Action,
 	{_State4, ReturnableTypeExprType}:              _GotoState132Action,
-	{_State4, PrefixedUnaryTypeExprType}:           _GotoState131Action,
-	{_State4, PrefixUnaryTypeOpType}:               _GotoState130Action,
+	{_State4, PrefixUnaryTypeExprType}:             _GotoState130Action,
+	{_State4, PrefixUnaryTypeOpType}:               _GotoState131Action,
 	{_State4, TypeExprType}:                        _GotoState8Action,
 	{_State4, BinaryTypeExprType}:                  _GotoState121Action,
 	{_State4, ImplicitStructTypeExprType}:          _GotoState125Action,
@@ -6806,8 +6806,8 @@ var _ActionTable = _ActionTableType{
 	{_State42, InferredTypeExprType}:               _GotoState126Action,
 	{_State42, ParseErrorTypeExprType}:             _GotoState129Action,
 	{_State42, ReturnableTypeExprType}:             _GotoState132Action,
-	{_State42, PrefixedUnaryTypeExprType}:          _GotoState131Action,
-	{_State42, PrefixUnaryTypeOpType}:              _GotoState130Action,
+	{_State42, PrefixUnaryTypeExprType}:            _GotoState130Action,
+	{_State42, PrefixUnaryTypeOpType}:              _GotoState131Action,
 	{_State42, TypeExprType}:                       _GotoState164Action,
 	{_State42, BinaryTypeExprType}:                 _GotoState121Action,
 	{_State42, ImplicitStructTypeExprType}:         _GotoState125Action,
@@ -7107,8 +7107,8 @@ var _ActionTable = _ActionTableType{
 	{_State114, InferredTypeExprType}:              _GotoState126Action,
 	{_State114, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State114, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State114, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State114, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State114, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State114, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State114, TypeExprType}:                      _GotoState245Action,
 	{_State114, BinaryTypeExprType}:                _GotoState121Action,
 	{_State114, FieldDefType}:                      _GotoState239Action,
@@ -7124,38 +7124,38 @@ var _ActionTable = _ActionTableType{
 	{_State114, FuncTypeExprType}:                  _GotoState123Action,
 	{_State114, MethodSignatureType}:               _GotoState242Action,
 	{_State118, LparenToken}:                       _GotoState247Action,
-	{_State130, IdentifierToken}:                   _GotoState113Action,
-	{_State130, UnderscoreToken}:                   _GotoState119Action,
-	{_State130, StructToken}:                       _GotoState50Action,
-	{_State130, EnumToken}:                         _GotoState110Action,
-	{_State130, TraitToken}:                        _GotoState118Action,
-	{_State130, FuncToken}:                         _GotoState112Action,
-	{_State130, LparenToken}:                       _GotoState114Action,
-	{_State130, LbracketToken}:                     _GotoState42Action,
-	{_State130, DotToken}:                          _GotoState109Action,
-	{_State130, QuestionToken}:                     _GotoState116Action,
-	{_State130, ExclaimToken}:                      _GotoState111Action,
-	{_State130, TildeTildeToken}:                   _GotoState117Action,
-	{_State130, BitNegToken}:                       _GotoState108Action,
-	{_State130, BitAndToken}:                       _GotoState107Action,
-	{_State130, ParseErrorToken}:                   _GotoState115Action,
-	{_State130, InitializableTypeExprType}:         _GotoState127Action,
-	{_State130, SliceTypeExprType}:                 _GotoState101Action,
-	{_State130, ArrayTypeExprType}:                 _GotoState60Action,
-	{_State130, MapTypeExprType}:                   _GotoState88Action,
-	{_State130, AtomTypeExprType}:                  _GotoState120Action,
-	{_State130, NamedTypeExprType}:                 _GotoState128Action,
-	{_State130, InferredTypeExprType}:              _GotoState126Action,
-	{_State130, ParseErrorTypeExprType}:            _GotoState129Action,
-	{_State130, ReturnableTypeExprType}:            _GotoState248Action,
-	{_State130, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State130, PrefixUnaryTypeOpType}:             _GotoState130Action,
-	{_State130, ImplicitStructTypeExprType}:        _GotoState125Action,
-	{_State130, ExplicitStructTypeExprType}:        _GotoState75Action,
-	{_State130, TraitTypeExprType}:                 _GotoState133Action,
-	{_State130, ImplicitEnumTypeExprType}:          _GotoState124Action,
-	{_State130, ExplicitEnumTypeExprType}:          _GotoState122Action,
-	{_State130, FuncTypeExprType}:                  _GotoState123Action,
+	{_State131, IdentifierToken}:                   _GotoState113Action,
+	{_State131, UnderscoreToken}:                   _GotoState119Action,
+	{_State131, StructToken}:                       _GotoState50Action,
+	{_State131, EnumToken}:                         _GotoState110Action,
+	{_State131, TraitToken}:                        _GotoState118Action,
+	{_State131, FuncToken}:                         _GotoState112Action,
+	{_State131, LparenToken}:                       _GotoState114Action,
+	{_State131, LbracketToken}:                     _GotoState42Action,
+	{_State131, DotToken}:                          _GotoState109Action,
+	{_State131, QuestionToken}:                     _GotoState116Action,
+	{_State131, ExclaimToken}:                      _GotoState111Action,
+	{_State131, TildeTildeToken}:                   _GotoState117Action,
+	{_State131, BitNegToken}:                       _GotoState108Action,
+	{_State131, BitAndToken}:                       _GotoState107Action,
+	{_State131, ParseErrorToken}:                   _GotoState115Action,
+	{_State131, InitializableTypeExprType}:         _GotoState127Action,
+	{_State131, SliceTypeExprType}:                 _GotoState101Action,
+	{_State131, ArrayTypeExprType}:                 _GotoState60Action,
+	{_State131, MapTypeExprType}:                   _GotoState88Action,
+	{_State131, AtomTypeExprType}:                  _GotoState120Action,
+	{_State131, NamedTypeExprType}:                 _GotoState128Action,
+	{_State131, InferredTypeExprType}:              _GotoState126Action,
+	{_State131, ParseErrorTypeExprType}:            _GotoState129Action,
+	{_State131, ReturnableTypeExprType}:            _GotoState248Action,
+	{_State131, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State131, PrefixUnaryTypeOpType}:             _GotoState131Action,
+	{_State131, ImplicitStructTypeExprType}:        _GotoState125Action,
+	{_State131, ExplicitStructTypeExprType}:        _GotoState75Action,
+	{_State131, TraitTypeExprType}:                 _GotoState133Action,
+	{_State131, ImplicitEnumTypeExprType}:          _GotoState124Action,
+	{_State131, ExplicitEnumTypeExprType}:          _GotoState122Action,
+	{_State131, FuncTypeExprType}:                  _GotoState123Action,
 	{_State134, DollarLbracketToken}:               _GotoState254Action,
 	{_State134, AssignToken}:                       _GotoState253Action,
 	{_State134, OptionalGenericParametersType}:     _GotoState255Action,
@@ -7274,8 +7274,8 @@ var _ActionTable = _ActionTableType{
 	{_State147, InferredTypeExprType}:              _GotoState126Action,
 	{_State147, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State147, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State147, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State147, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State147, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State147, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State147, TypeExprType}:                      _GotoState272Action,
 	{_State147, BinaryTypeExprType}:                _GotoState121Action,
 	{_State147, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -7483,8 +7483,8 @@ var _ActionTable = _ActionTableType{
 	{_State173, InferredTypeExprType}:              _GotoState126Action,
 	{_State173, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State173, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State173, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State173, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State173, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State173, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State173, TypeExprType}:                      _GotoState245Action,
 	{_State173, BinaryTypeExprType}:                _GotoState121Action,
 	{_State173, FieldDefType}:                      _GotoState299Action,
@@ -7524,8 +7524,8 @@ var _ActionTable = _ActionTableType{
 	{_State184, InferredTypeExprType}:              _GotoState126Action,
 	{_State184, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State184, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State184, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State184, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State184, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State184, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State184, TypeExprType}:                      _GotoState304Action,
 	{_State184, BinaryTypeExprType}:                _GotoState121Action,
 	{_State184, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -8342,8 +8342,8 @@ var _ActionTable = _ActionTableType{
 	{_State232, InferredTypeExprType}:              _GotoState126Action,
 	{_State232, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State232, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State232, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State232, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State232, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State232, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State232, TypeExprType}:                      _GotoState245Action,
 	{_State232, BinaryTypeExprType}:                _GotoState121Action,
 	{_State232, FieldDefType}:                      _GotoState327Action,
@@ -8381,8 +8381,8 @@ var _ActionTable = _ActionTableType{
 	{_State233, InferredTypeExprType}:              _GotoState126Action,
 	{_State233, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State233, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State233, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State233, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State233, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State233, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State233, TypeExprType}:                      _GotoState335Action,
 	{_State233, BinaryTypeExprType}:                _GotoState121Action,
 	{_State233, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -8423,8 +8423,8 @@ var _ActionTable = _ActionTableType{
 	{_State237, InferredTypeExprType}:              _GotoState126Action,
 	{_State237, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State237, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State237, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State237, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State237, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State237, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State237, TypeExprType}:                      _GotoState339Action,
 	{_State237, BinaryTypeExprType}:                _GotoState121Action,
 	{_State237, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -8457,8 +8457,8 @@ var _ActionTable = _ActionTableType{
 	{_State238, InferredTypeExprType}:              _GotoState126Action,
 	{_State238, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State238, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State238, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State238, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State238, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State238, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State238, TypeExprType}:                      _GotoState340Action,
 	{_State238, BinaryTypeExprType}:                _GotoState121Action,
 	{_State238, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -8505,8 +8505,8 @@ var _ActionTable = _ActionTableType{
 	{_State247, InferredTypeExprType}:              _GotoState126Action,
 	{_State247, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State247, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State247, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State247, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State247, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State247, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State247, TypeExprType}:                      _GotoState245Action,
 	{_State247, BinaryTypeExprType}:                _GotoState121Action,
 	{_State247, FieldDefType}:                      _GotoState299Action,
@@ -8543,8 +8543,8 @@ var _ActionTable = _ActionTableType{
 	{_State252, InferredTypeExprType}:              _GotoState126Action,
 	{_State252, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State252, ReturnableTypeExprType}:            _GotoState350Action,
-	{_State252, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State252, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State252, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State252, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State252, ImplicitStructTypeExprType}:        _GotoState125Action,
 	{_State252, ExplicitStructTypeExprType}:        _GotoState75Action,
 	{_State252, TraitTypeExprType}:                 _GotoState133Action,
@@ -8640,8 +8640,8 @@ var _ActionTable = _ActionTableType{
 	{_State256, InferredTypeExprType}:              _GotoState126Action,
 	{_State256, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State256, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State256, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State256, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State256, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State256, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State256, TypeExprType}:                      _GotoState358Action,
 	{_State256, BinaryTypeExprType}:                _GotoState121Action,
 	{_State256, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -8675,8 +8675,8 @@ var _ActionTable = _ActionTableType{
 	{_State257, InferredTypeExprType}:              _GotoState126Action,
 	{_State257, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State257, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State257, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State257, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State257, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State257, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State257, TypeExprType}:                      _GotoState360Action,
 	{_State257, BinaryTypeExprType}:                _GotoState121Action,
 	{_State257, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -8878,8 +8878,8 @@ var _ActionTable = _ActionTableType{
 	{_State262, InferredTypeExprType}:              _GotoState126Action,
 	{_State262, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State262, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State262, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State262, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State262, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State262, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State262, TypeExprType}:                      _GotoState364Action,
 	{_State262, BinaryTypeExprType}:                _GotoState121Action,
 	{_State262, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -8912,8 +8912,8 @@ var _ActionTable = _ActionTableType{
 	{_State263, InferredTypeExprType}:              _GotoState126Action,
 	{_State263, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State263, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State263, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State263, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State263, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State263, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State263, TypeExprType}:                      _GotoState365Action,
 	{_State263, BinaryTypeExprType}:                _GotoState121Action,
 	{_State263, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -9102,8 +9102,8 @@ var _ActionTable = _ActionTableType{
 	{_State288, InferredTypeExprType}:              _GotoState126Action,
 	{_State288, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State288, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State288, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State288, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State288, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State288, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State288, TypeExprType}:                      _GotoState378Action,
 	{_State288, BinaryTypeExprType}:                _GotoState121Action,
 	{_State288, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -9551,8 +9551,8 @@ var _ActionTable = _ActionTableType{
 	{_State329, InferredTypeExprType}:              _GotoState126Action,
 	{_State329, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State329, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State329, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State329, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State329, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State329, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State329, TypeExprType}:                      _GotoState406Action,
 	{_State329, BinaryTypeExprType}:                _GotoState121Action,
 	{_State329, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -9588,8 +9588,8 @@ var _ActionTable = _ActionTableType{
 	{_State330, InferredTypeExprType}:              _GotoState126Action,
 	{_State330, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State330, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State330, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State330, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State330, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State330, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State330, TypeExprType}:                      _GotoState408Action,
 	{_State330, BinaryTypeExprType}:                _GotoState121Action,
 	{_State330, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -9623,8 +9623,8 @@ var _ActionTable = _ActionTableType{
 	{_State331, InferredTypeExprType}:              _GotoState126Action,
 	{_State331, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State331, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State331, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State331, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State331, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State331, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State331, TypeExprType}:                      _GotoState410Action,
 	{_State331, BinaryTypeExprType}:                _GotoState121Action,
 	{_State331, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -9679,8 +9679,8 @@ var _ActionTable = _ActionTableType{
 	{_State341, InferredTypeExprType}:              _GotoState126Action,
 	{_State341, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State341, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State341, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State341, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State341, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State341, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State341, TypeExprType}:                      _GotoState245Action,
 	{_State341, BinaryTypeExprType}:                _GotoState121Action,
 	{_State341, FieldDefType}:                      _GotoState416Action,
@@ -9717,8 +9717,8 @@ var _ActionTable = _ActionTableType{
 	{_State345, InferredTypeExprType}:              _GotoState126Action,
 	{_State345, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State345, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State345, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State345, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State345, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State345, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State345, TypeExprType}:                      _GotoState245Action,
 	{_State345, BinaryTypeExprType}:                _GotoState121Action,
 	{_State345, FieldDefType}:                      _GotoState417Action,
@@ -9755,8 +9755,8 @@ var _ActionTable = _ActionTableType{
 	{_State346, InferredTypeExprType}:              _GotoState126Action,
 	{_State346, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State346, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State346, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State346, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State346, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State346, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State346, TypeExprType}:                      _GotoState245Action,
 	{_State346, BinaryTypeExprType}:                _GotoState121Action,
 	{_State346, FieldDefType}:                      _GotoState418Action,
@@ -9793,8 +9793,8 @@ var _ActionTable = _ActionTableType{
 	{_State352, InferredTypeExprType}:              _GotoState126Action,
 	{_State352, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State352, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State352, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State352, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State352, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State352, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State352, TypeExprType}:                      _GotoState421Action,
 	{_State352, BinaryTypeExprType}:                _GotoState121Action,
 	{_State352, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -9834,8 +9834,8 @@ var _ActionTable = _ActionTableType{
 	{_State357, InferredTypeExprType}:              _GotoState126Action,
 	{_State357, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State357, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State357, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State357, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State357, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State357, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State357, TypeExprType}:                      _GotoState425Action,
 	{_State357, BinaryTypeExprType}:                _GotoState121Action,
 	{_State357, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -9872,8 +9872,8 @@ var _ActionTable = _ActionTableType{
 	{_State359, InferredTypeExprType}:              _GotoState126Action,
 	{_State359, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State359, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State359, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State359, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State359, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State359, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State359, TypeExprType}:                      _GotoState426Action,
 	{_State359, BinaryTypeExprType}:                _GotoState121Action,
 	{_State359, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -9934,8 +9934,8 @@ var _ActionTable = _ActionTableType{
 	{_State373, InferredTypeExprType}:              _GotoState126Action,
 	{_State373, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State373, ReturnableTypeExprType}:            _GotoState433Action,
-	{_State373, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State373, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State373, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State373, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State373, ImplicitStructTypeExprType}:        _GotoState125Action,
 	{_State373, ExplicitStructTypeExprType}:        _GotoState75Action,
 	{_State373, TraitTypeExprType}:                 _GotoState133Action,
@@ -9988,8 +9988,8 @@ var _ActionTable = _ActionTableType{
 	{_State385, InferredTypeExprType}:              _GotoState126Action,
 	{_State385, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State385, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State385, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State385, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State385, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State385, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State385, TypeExprType}:                      _GotoState245Action,
 	{_State385, BinaryTypeExprType}:                _GotoState121Action,
 	{_State385, FieldDefType}:                      _GotoState439Action,
@@ -10026,8 +10026,8 @@ var _ActionTable = _ActionTableType{
 	{_State386, InferredTypeExprType}:              _GotoState126Action,
 	{_State386, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State386, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State386, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State386, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State386, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State386, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State386, TypeExprType}:                      _GotoState245Action,
 	{_State386, BinaryTypeExprType}:                _GotoState121Action,
 	{_State386, FieldDefType}:                      _GotoState440Action,
@@ -10063,8 +10063,8 @@ var _ActionTable = _ActionTableType{
 	{_State388, InferredTypeExprType}:              _GotoState126Action,
 	{_State388, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State388, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State388, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State388, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State388, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State388, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State388, TypeExprType}:                      _GotoState442Action,
 	{_State388, BinaryTypeExprType}:                _GotoState121Action,
 	{_State388, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -10338,8 +10338,8 @@ var _ActionTable = _ActionTableType{
 	{_State402, InferredTypeExprType}:              _GotoState126Action,
 	{_State402, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State402, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State402, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State402, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State402, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State402, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State402, TypeExprType}:                      _GotoState245Action,
 	{_State402, BinaryTypeExprType}:                _GotoState121Action,
 	{_State402, FieldDefType}:                      _GotoState452Action,
@@ -10376,8 +10376,8 @@ var _ActionTable = _ActionTableType{
 	{_State403, InferredTypeExprType}:              _GotoState126Action,
 	{_State403, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State403, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State403, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State403, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State403, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State403, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State403, TypeExprType}:                      _GotoState245Action,
 	{_State403, BinaryTypeExprType}:                _GotoState121Action,
 	{_State403, FieldDefType}:                      _GotoState453Action,
@@ -10414,8 +10414,8 @@ var _ActionTable = _ActionTableType{
 	{_State404, InferredTypeExprType}:              _GotoState126Action,
 	{_State404, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State404, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State404, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State404, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State404, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State404, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State404, TypeExprType}:                      _GotoState245Action,
 	{_State404, BinaryTypeExprType}:                _GotoState121Action,
 	{_State404, FieldDefType}:                      _GotoState454Action,
@@ -10452,8 +10452,8 @@ var _ActionTable = _ActionTableType{
 	{_State405, InferredTypeExprType}:              _GotoState126Action,
 	{_State405, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State405, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State405, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State405, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State405, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State405, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State405, TypeExprType}:                      _GotoState245Action,
 	{_State405, BinaryTypeExprType}:                _GotoState121Action,
 	{_State405, FieldDefType}:                      _GotoState455Action,
@@ -10492,8 +10492,8 @@ var _ActionTable = _ActionTableType{
 	{_State407, InferredTypeExprType}:              _GotoState126Action,
 	{_State407, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State407, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State407, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State407, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State407, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State407, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State407, TypeExprType}:                      _GotoState456Action,
 	{_State407, BinaryTypeExprType}:                _GotoState121Action,
 	{_State407, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -10530,8 +10530,8 @@ var _ActionTable = _ActionTableType{
 	{_State409, InferredTypeExprType}:              _GotoState126Action,
 	{_State409, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State409, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State409, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State409, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State409, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State409, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State409, TypeExprType}:                      _GotoState457Action,
 	{_State409, BinaryTypeExprType}:                _GotoState121Action,
 	{_State409, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -10568,8 +10568,8 @@ var _ActionTable = _ActionTableType{
 	{_State411, InferredTypeExprType}:              _GotoState126Action,
 	{_State411, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State411, ReturnableTypeExprType}:            _GotoState433Action,
-	{_State411, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State411, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State411, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State411, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State411, ImplicitStructTypeExprType}:        _GotoState125Action,
 	{_State411, ExplicitStructTypeExprType}:        _GotoState75Action,
 	{_State411, TraitTypeExprType}:                 _GotoState133Action,
@@ -10602,8 +10602,8 @@ var _ActionTable = _ActionTableType{
 	{_State412, InferredTypeExprType}:              _GotoState126Action,
 	{_State412, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State412, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State412, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State412, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State412, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State412, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State412, TypeExprType}:                      _GotoState335Action,
 	{_State412, BinaryTypeExprType}:                _GotoState121Action,
 	{_State412, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -10638,8 +10638,8 @@ var _ActionTable = _ActionTableType{
 	{_State414, InferredTypeExprType}:              _GotoState126Action,
 	{_State414, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State414, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State414, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State414, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State414, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State414, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State414, TypeExprType}:                      _GotoState335Action,
 	{_State414, BinaryTypeExprType}:                _GotoState121Action,
 	{_State414, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -10692,8 +10692,8 @@ var _ActionTable = _ActionTableType{
 	{_State428, InferredTypeExprType}:              _GotoState126Action,
 	{_State428, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State428, ReturnableTypeExprType}:            _GotoState132Action,
-	{_State428, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State428, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State428, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State428, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State428, TypeExprType}:                      _GotoState464Action,
 	{_State428, BinaryTypeExprType}:                _GotoState121Action,
 	{_State428, ImplicitStructTypeExprType}:        _GotoState125Action,
@@ -10805,8 +10805,8 @@ var _ActionTable = _ActionTableType{
 	{_State462, InferredTypeExprType}:              _GotoState126Action,
 	{_State462, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State462, ReturnableTypeExprType}:            _GotoState433Action,
-	{_State462, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State462, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State462, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State462, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State462, ImplicitStructTypeExprType}:        _GotoState125Action,
 	{_State462, ExplicitStructTypeExprType}:        _GotoState75Action,
 	{_State462, TraitTypeExprType}:                 _GotoState133Action,
@@ -10904,8 +10904,8 @@ var _ActionTable = _ActionTableType{
 	{_State471, InferredTypeExprType}:              _GotoState126Action,
 	{_State471, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State471, ReturnableTypeExprType}:            _GotoState433Action,
-	{_State471, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State471, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State471, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State471, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State471, ImplicitStructTypeExprType}:        _GotoState125Action,
 	{_State471, ExplicitStructTypeExprType}:        _GotoState75Action,
 	{_State471, TraitTypeExprType}:                 _GotoState133Action,
@@ -10948,8 +10948,8 @@ var _ActionTable = _ActionTableType{
 	{_State480, InferredTypeExprType}:              _GotoState126Action,
 	{_State480, ParseErrorTypeExprType}:            _GotoState129Action,
 	{_State480, ReturnableTypeExprType}:            _GotoState433Action,
-	{_State480, PrefixedUnaryTypeExprType}:         _GotoState131Action,
-	{_State480, PrefixUnaryTypeOpType}:             _GotoState130Action,
+	{_State480, PrefixUnaryTypeExprType}:           _GotoState130Action,
+	{_State480, PrefixUnaryTypeOpType}:             _GotoState131Action,
 	{_State480, ImplicitStructTypeExprType}:        _GotoState125Action,
 	{_State480, ExplicitStructTypeExprType}:        _GotoState75Action,
 	{_State480, TraitTypeExprType}:                 _GotoState133Action,
@@ -11077,7 +11077,7 @@ var _ActionTable = _ActionTableType{
 	{_State127, _WildcardMarker}:                   _ReduceInitializableTypeExprToAtomTypeExprAction,
 	{_State128, _WildcardMarker}:                   _ReduceNamedTypeExprToAtomTypeExprAction,
 	{_State129, _WildcardMarker}:                   _ReduceParseErrorTypeExprToAtomTypeExprAction,
-	{_State131, _WildcardMarker}:                   _ReducePrefixedUnaryTypeExprToReturnableTypeExprAction,
+	{_State130, _WildcardMarker}:                   _ReducePrefixUnaryTypeExprToReturnableTypeExprAction,
 	{_State132, _WildcardMarker}:                   _ReduceReturnableTypeExprToTypeExprAction,
 	{_State133, _WildcardMarker}:                   _ReduceTraitTypeExprToAtomTypeExprAction,
 	{_State134, LparenToken}:                       _ReduceNilToOptionalGenericParametersAction,
@@ -11190,7 +11190,7 @@ var _ActionTable = _ActionTableType{
 	{_State245, _WildcardMarker}:                   _ReduceNilToOptionalDefaultAction,
 	{_State246, _WildcardMarker}:                   _ReduceUnsafeStatementToFieldDefAction,
 	{_State247, RparenToken}:                       _ReduceNilToExplicitFieldDefsAction,
-	{_State248, _WildcardMarker}:                   _ReduceToPrefixedUnaryTypeExprAction,
+	{_State248, _WildcardMarker}:                   _ReduceToPrefixUnaryTypeExprAction,
 	{_State249, _WildcardMarker}:                   _ReduceAddToBinaryTypeOpAction,
 	{_State250, _WildcardMarker}:                   _ReduceMulToBinaryTypeOpAction,
 	{_State251, _WildcardMarker}:                   _ReduceSubToBinaryTypeOpAction,
@@ -11601,8 +11601,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 8
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -12168,8 +12168,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 164
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -13060,8 +13060,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 245
       binary_type_expr -> State 121
       field_def -> State 239
@@ -13199,7 +13199,15 @@ Parser Debug States:
 
   State 130:
     Kernel Items:
-      prefixed_unary_type_expr: prefix_unary_type_op.returnable_type_expr
+      returnable_type_expr: prefix_unary_type_expr., *
+    Reduce:
+      * -> [returnable_type_expr]
+    Goto:
+      (nil)
+
+  State 131:
+    Kernel Items:
+      prefix_unary_type_expr: prefix_unary_type_op.returnable_type_expr
     Reduce:
       (nil)
     Goto:
@@ -13227,22 +13235,14 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 248
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       implicit_struct_type_expr -> State 125
       explicit_struct_type_expr -> State 75
       trait_type_expr -> State 133
       implicit_enum_type_expr -> State 124
       explicit_enum_type_expr -> State 122
       func_type_expr -> State 123
-
-  State 131:
-    Kernel Items:
-      returnable_type_expr: prefixed_unary_type_expr., *
-    Reduce:
-      * -> [returnable_type_expr]
-    Goto:
-      (nil)
 
   State 132:
     Kernel Items:
@@ -13488,8 +13488,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 272
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -13913,8 +13913,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 245
       binary_type_expr -> State 121
       field_def -> State 299
@@ -14040,8 +14040,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 304
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -15247,8 +15247,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 245
       binary_type_expr -> State 121
       field_def -> State 327
@@ -15293,8 +15293,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 335
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -15367,8 +15367,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 339
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -15409,8 +15409,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 340
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -15528,8 +15528,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 245
       binary_type_expr -> State 121
       field_def -> State 299
@@ -15545,9 +15545,9 @@ Parser Debug States:
 
   State 248:
     Kernel Items:
-      prefixed_unary_type_expr: prefix_unary_type_op returnable_type_expr., *
+      prefix_unary_type_expr: prefix_unary_type_op returnable_type_expr., *
     Reduce:
-      * -> [prefixed_unary_type_expr]
+      * -> [prefix_unary_type_expr]
     Goto:
       (nil)
 
@@ -15605,8 +15605,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 350
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       implicit_struct_type_expr -> State 125
       explicit_struct_type_expr -> State 75
       trait_type_expr -> State 133
@@ -15733,8 +15733,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 358
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -15778,8 +15778,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 360
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -16021,8 +16021,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 364
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -16063,8 +16063,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 365
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -16455,8 +16455,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 378
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -17244,8 +17244,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 406
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -17291,8 +17291,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 408
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -17335,8 +17335,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 410
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -17468,8 +17468,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 245
       binary_type_expr -> State 121
       field_def -> State 416
@@ -17537,8 +17537,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 245
       binary_type_expr -> State 121
       field_def -> State 417
@@ -17583,8 +17583,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 245
       binary_type_expr -> State 121
       field_def -> State 418
@@ -17667,8 +17667,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 421
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -17747,8 +17747,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 425
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -17801,8 +17801,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 426
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -17971,8 +17971,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 433
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       implicit_struct_type_expr -> State 125
       explicit_struct_type_expr -> State 75
       trait_type_expr -> State 133
@@ -18120,8 +18120,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 245
       binary_type_expr -> State 121
       field_def -> State 439
@@ -18166,8 +18166,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 245
       binary_type_expr -> State 121
       field_def -> State 440
@@ -18218,8 +18218,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 442
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -18600,8 +18600,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 245
       binary_type_expr -> State 121
       field_def -> State 452
@@ -18645,8 +18645,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 245
       binary_type_expr -> State 121
       field_def -> State 453
@@ -18691,8 +18691,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 245
       binary_type_expr -> State 121
       field_def -> State 454
@@ -18736,8 +18736,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 245
       binary_type_expr -> State 121
       field_def -> State 455
@@ -18791,8 +18791,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 456
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -18844,8 +18844,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 457
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -18897,8 +18897,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 433
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       implicit_struct_type_expr -> State 125
       explicit_struct_type_expr -> State 75
       trait_type_expr -> State 133
@@ -18939,8 +18939,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 335
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -18990,8 +18990,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 335
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -19153,8 +19153,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 132
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       type_expr -> State 464
       binary_type_expr -> State 121
       implicit_struct_type_expr -> State 125
@@ -19532,8 +19532,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 433
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       implicit_struct_type_expr -> State 125
       explicit_struct_type_expr -> State 75
       trait_type_expr -> State 133
@@ -19700,8 +19700,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 433
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       implicit_struct_type_expr -> State 125
       explicit_struct_type_expr -> State 75
       trait_type_expr -> State 133
@@ -19810,8 +19810,8 @@ Parser Debug States:
       inferred_type_expr -> State 126
       parse_error_type_expr -> State 129
       returnable_type_expr -> State 433
-      prefixed_unary_type_expr -> State 131
-      prefix_unary_type_op -> State 130
+      prefix_unary_type_expr -> State 130
+      prefix_unary_type_op -> State 131
       implicit_struct_type_expr -> State 125
       explicit_struct_type_expr -> State 75
       trait_type_expr -> State 133

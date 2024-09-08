@@ -239,14 +239,14 @@ func (s ParseErrorSymbol) TreeString(indent string, label string) string {
 		s.StartPos)
 }
 
-type ParseErrorReducer struct {
+type ParseErrorReducerImpl struct {
 	ParseErrors []*ParseErrorSymbol
 }
 
-var _ ParseErrorExprReducer = &ParseErrorReducer{}
-var _ ParseErrorTypeExprReducer = &ParseErrorReducer{}
+var _ ParseErrorExprReducer = &ParseErrorReducerImpl{}
+var _ ParseErrorTypeExprReducer = &ParseErrorReducerImpl{}
 
-func (reducer *ParseErrorReducer) ToParseErrorExpr(
+func (reducer *ParseErrorReducerImpl) ToParseErrorExpr(
 	pe ParseErrorSymbol,
 ) (Expression, error) {
 	ptr := &pe
@@ -254,7 +254,7 @@ func (reducer *ParseErrorReducer) ToParseErrorExpr(
 	return ptr, nil
 }
 
-func (reducer *ParseErrorReducer) ToParseErrorTypeExpr(
+func (reducer *ParseErrorReducerImpl) ToParseErrorTypeExpr(
 	pe ParseErrorSymbol,
 ) (TypeExpression, error) {
 	ptr := &pe

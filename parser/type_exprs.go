@@ -4,17 +4,21 @@ import (
 	"fmt"
 )
 
+//
+// TypeArgumentList
+//
+
 type TypeArgumentList = NodeList[TypeExpression]
 
 var _ Node = &TypeArgumentList{}
 
-type TypeArgumentListReducer struct{}
+type TypeArgumentListReducerImpl struct{}
 
-var _ GenericTypeArgumentsReducer = &TypeArgumentListReducer{}
-var _ ProperTypeArgumentsReducer = &TypeArgumentListReducer{}
-var _ TypeArgumentsReducer = &TypeArgumentListReducer{}
+var _ GenericTypeArgumentsReducer = &TypeArgumentListReducerImpl{}
+var _ ProperTypeArgumentsReducer = &TypeArgumentListReducerImpl{}
+var _ TypeArgumentsReducer = &TypeArgumentListReducerImpl{}
 
-func (reducer *TypeArgumentListReducer) BindingToGenericTypeArguments(
+func (reducer *TypeArgumentListReducerImpl) BindingToGenericTypeArguments(
 	dollarLbracket TokenValue,
 	list *TypeArgumentList,
 	rbracket TokenValue,
@@ -26,14 +30,14 @@ func (reducer *TypeArgumentListReducer) BindingToGenericTypeArguments(
 	return list, nil
 }
 
-func (reducer *TypeArgumentListReducer) NilToGenericTypeArguments() (
+func (reducer *TypeArgumentListReducerImpl) NilToGenericTypeArguments() (
 	*TypeArgumentList,
 	error,
 ) {
 	return nil, nil
 }
 
-func (reducer *TypeArgumentListReducer) AddToProperTypeArguments(
+func (reducer *TypeArgumentListReducerImpl) AddToProperTypeArguments(
 	list *TypeArgumentList,
 	comma TokenValue,
 	arg TypeExpression,
@@ -45,7 +49,7 @@ func (reducer *TypeArgumentListReducer) AddToProperTypeArguments(
 	return list, nil
 }
 
-func (reducer *TypeArgumentListReducer) TypeExprToProperTypeArguments(
+func (reducer *TypeArgumentListReducerImpl) TypeExprToProperTypeArguments(
 	arg TypeExpression,
 ) (
 	*TypeArgumentList,
@@ -54,7 +58,7 @@ func (reducer *TypeArgumentListReducer) TypeExprToProperTypeArguments(
 	return newNodeList[TypeExpression]("TypeArgumentList", arg), nil
 }
 
-func (reducer *TypeArgumentListReducer) ImproperToTypeArguments(
+func (reducer *TypeArgumentListReducerImpl) ImproperToTypeArguments(
 	list *TypeArgumentList,
 	comma TokenValue,
 ) (
@@ -65,7 +69,7 @@ func (reducer *TypeArgumentListReducer) ImproperToTypeArguments(
 	return list, nil
 }
 
-func (reducer *TypeArgumentListReducer) NilToTypeArguments() (
+func (reducer *TypeArgumentListReducerImpl) NilToTypeArguments() (
 	*TypeArgumentList,
 	error,
 ) {
@@ -371,4 +375,112 @@ func (reducer *NamedTypeExprReducerImpl) ExternalToNamedTypeExpr(
 	named.Pkg = pkg.Value
 	named.LeadingComment = pkg.TakeLeading()
 	return named, nil
+}
+
+//
+// UnaryTypeExpr
+//
+
+type UnaryTypeOp SymbolId
+
+type UnaryTypeExpr struct {
+	isTypeExpression
+	StartEndPos
+	LeadingTrailingComments
+
+	Op      UnaryTypeOp
+	Operand TypeExpression
+}
+
+func (expr UnaryTypeExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[UnaryTypeExpr: Op=%s\n",
+		indent,
+		label,
+		SymbolId(expr.Op))
+	result += expr.Operand.TreeString(indent+"  ", "Operand=")
+	result += "\n" + indent + "]"
+	return result
+}
+
+type UnaryTypeExprReducerImpl struct {
+	UnaryTypeExprs []*UnaryTypeExpr
+}
+
+var _ PrefixUnaryTypeExprReducer = &UnaryTypeExprReducerImpl{}
+
+func (reducer *UnaryTypeExprReducerImpl) ToPrefixUnaryTypeExpr(
+	op TokenValue,
+	operand TypeExpression,
+) (
+	TypeExpression,
+	error,
+) {
+	expr := &UnaryTypeExpr{
+		StartEndPos: newStartEndPos(op.Loc(), operand.End()),
+		Op:          UnaryTypeOp(op.SymbolId),
+		Operand:     operand,
+	}
+
+	expr.LeadingComment = op.TakeLeading()
+	operand.PrependToLeading(op.TakeTrailing())
+	expr.TrailingComment = operand.TakeTrailing()
+
+	reducer.UnaryTypeExprs = append(reducer.UnaryTypeExprs, expr)
+	return expr, nil
+}
+
+//
+// BinaryTypeExpr
+//
+
+type BinaryTypeOp SymbolId
+
+type BinaryTypeExpr struct {
+	isTypeExpression
+	StartEndPos
+	LeadingTrailingComments
+
+	Left  TypeExpression
+	Op    BinaryTypeOp
+	Right TypeExpression
+}
+
+func (expr BinaryTypeExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[BinaryTypeExpr: Op=%s\n", indent, label, SymbolId(expr.Op))
+	result += expr.Left.TreeString(indent+"  ", "Left=") + "\n"
+	result += expr.Right.TreeString(indent+"  ", "Right=")
+	result += "\n" + indent + "]"
+	return result
+}
+
+type BinaryTypeExprReducerImpl struct {
+	BinaryTypeExprs []*BinaryTypeExpr
+}
+
+var _ BinaryTypeExprReducer = &BinaryTypeExprReducerImpl{}
+
+func (reducer *BinaryTypeExprReducerImpl) ToBinaryTypeExpr(
+	left TypeExpression,
+	op TokenValue,
+	right TypeExpression,
+) (
+	TypeExpression,
+	error,
+) {
+	expr := &BinaryTypeExpr{
+		StartEndPos: newStartEndPos(left.Loc(), right.End()),
+		Left:        left,
+		Op:          BinaryTypeOp(op.SymbolId),
+		Right:       right,
+	}
+
+	expr.LeadingComment = left.TakeLeading()
+	left.AppendToTrailing(op.TakeLeading())
+	right.PrependToLeading(op.TakeTrailing())
+	expr.TrailingComment = right.TakeTrailing()
+
+	reducer.BinaryTypeExprs = append(reducer.BinaryTypeExprs, expr)
+	return expr, nil
 }

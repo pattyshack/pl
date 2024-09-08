@@ -227,14 +227,14 @@ func (expr UnaryExpr) TreeString(indent string, label string) string {
 	return result
 }
 
-type UnaryExprReducer struct {
+type UnaryExprReducerImpl struct {
 	UnaryExprs []*UnaryExpr
 }
 
-var _ PostfixUnaryExprReducer = &UnaryExprReducer{}
-var _ PrefixUnaryExprReducer = &UnaryExprReducer{}
+var _ PostfixUnaryExprReducer = &UnaryExprReducerImpl{}
+var _ PrefixUnaryExprReducer = &UnaryExprReducerImpl{}
 
-func (reducer *UnaryExprReducer) ToPostfixUnaryExpr(
+func (reducer *UnaryExprReducerImpl) ToPostfixUnaryExpr(
 	operand Expression,
 	op TokenValue,
 ) (
@@ -256,7 +256,7 @@ func (reducer *UnaryExprReducer) ToPostfixUnaryExpr(
 	return expr, nil
 }
 
-func (reducer *UnaryExprReducer) ToPrefixUnaryExpr(
+func (reducer *UnaryExprReducerImpl) ToPrefixUnaryExpr(
 	op TokenValue,
 	operand Expression,
 ) (
@@ -304,17 +304,17 @@ func (expr BinaryExpr) TreeString(indent string, label string) string {
 	return result
 }
 
-type BinaryExprReducer struct {
+type BinaryExprReducerImpl struct {
 	BinaryExprs []*BinaryExpr
 }
 
-var _ BinaryMulExprReducer = &BinaryExprReducer{}
-var _ BinaryAndExprReducer = &BinaryExprReducer{}
-var _ BinaryCmpExprReducer = &BinaryExprReducer{}
-var _ BinaryAndExprReducer = &BinaryExprReducer{}
-var _ BinaryOrExprReducer = &BinaryExprReducer{}
+var _ BinaryMulExprReducer = &BinaryExprReducerImpl{}
+var _ BinaryAndExprReducer = &BinaryExprReducerImpl{}
+var _ BinaryCmpExprReducer = &BinaryExprReducerImpl{}
+var _ BinaryAndExprReducer = &BinaryExprReducerImpl{}
+var _ BinaryOrExprReducer = &BinaryExprReducerImpl{}
 
-func (reducer *BinaryExprReducer) toBinaryExpr(
+func (reducer *BinaryExprReducerImpl) toBinaryExpr(
 	left Expression,
 	op TokenValue,
 	right Expression,
@@ -338,7 +338,7 @@ func (reducer *BinaryExprReducer) toBinaryExpr(
 	return expr, nil
 }
 
-func (reducer *BinaryExprReducer) ToBinaryMulExpr(
+func (reducer *BinaryExprReducerImpl) ToBinaryMulExpr(
 	left Expression,
 	op TokenValue,
 	right Expression,
@@ -349,7 +349,7 @@ func (reducer *BinaryExprReducer) ToBinaryMulExpr(
 	return reducer.toBinaryExpr(left, op, right)
 }
 
-func (reducer *BinaryExprReducer) ToBinaryAddExpr(
+func (reducer *BinaryExprReducerImpl) ToBinaryAddExpr(
 	left Expression,
 	op TokenValue,
 	right Expression,
@@ -360,7 +360,7 @@ func (reducer *BinaryExprReducer) ToBinaryAddExpr(
 	return reducer.toBinaryExpr(left, op, right)
 }
 
-func (reducer *BinaryExprReducer) ToBinaryCmpExpr(
+func (reducer *BinaryExprReducerImpl) ToBinaryCmpExpr(
 	left Expression,
 	op TokenValue,
 	right Expression,
@@ -371,7 +371,7 @@ func (reducer *BinaryExprReducer) ToBinaryCmpExpr(
 	return reducer.toBinaryExpr(left, op, right)
 }
 
-func (reducer *BinaryExprReducer) ToBinaryAndExpr(
+func (reducer *BinaryExprReducerImpl) ToBinaryAndExpr(
 	left Expression,
 	op TokenValue,
 	right Expression,
@@ -382,7 +382,7 @@ func (reducer *BinaryExprReducer) ToBinaryAndExpr(
 	return reducer.toBinaryExpr(left, op, right)
 }
 
-func (reducer *BinaryExprReducer) ToBinaryOrExpr(
+func (reducer *BinaryExprReducerImpl) ToBinaryOrExpr(
 	left Expression,
 	op TokenValue,
 	right Expression,
@@ -553,12 +553,12 @@ func (ArgumentReducerImpl) SkipPatternToArgument(
 
 type ArgumentList = NodeList[*Argument]
 
-type ArgumentListReducer struct{}
+type ArgumentListReducerImpl struct{}
 
-var _ ProperArgumentsReducer = &ArgumentListReducer{}
-var _ ArgumentsReducer = &ArgumentListReducer{}
+var _ ProperArgumentsReducer = &ArgumentListReducerImpl{}
+var _ ArgumentsReducer = &ArgumentListReducerImpl{}
 
-func (reducer *ArgumentListReducer) AddToProperArguments(
+func (reducer *ArgumentListReducerImpl) AddToProperArguments(
 	list *ArgumentList,
 	comma TokenValue,
 	arg *Argument,
@@ -570,7 +570,7 @@ func (reducer *ArgumentListReducer) AddToProperArguments(
 	return list, nil
 }
 
-func (reducer *ArgumentListReducer) ArgumentToProperArguments(
+func (reducer *ArgumentListReducerImpl) ArgumentToProperArguments(
 	arg *Argument,
 ) (
 	*ArgumentList,
@@ -579,7 +579,7 @@ func (reducer *ArgumentListReducer) ArgumentToProperArguments(
 	return newNodeList[*Argument]("ArgumentList", arg), nil
 }
 
-func (reducer *ArgumentListReducer) ImproperToArguments(
+func (reducer *ArgumentListReducerImpl) ImproperToArguments(
 	list *ArgumentList,
 	comma TokenValue,
 ) (
@@ -590,7 +590,10 @@ func (reducer *ArgumentListReducer) ImproperToArguments(
 	return list, nil
 }
 
-func (reducer *ArgumentListReducer) NilToArguments() (*ArgumentList, error) {
+func (reducer *ArgumentListReducerImpl) NilToArguments() (
+	*ArgumentList,
+	error,
+) {
 	return &ArgumentList{}, nil
 }
 

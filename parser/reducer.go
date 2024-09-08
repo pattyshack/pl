@@ -1,10 +1,10 @@
 package parser
 
 type ReducerImpl struct {
-	ParseErrorReducer
+	ParseErrorReducerImpl
 
 	AccessExprReducerImpl
-	BinaryExprReducer
+	BinaryExprReducerImpl
 	CallExprReducerImpl
 	ColonExprReducerImpl
 	InitializeExprReducerImpl
@@ -12,16 +12,18 @@ type ReducerImpl struct {
 	IndexExprReducerImpl
 	LiteralExprReducerImpl
 	NamedExprReducerImpl
-	UnaryExprReducer
+	UnaryExprReducerImpl
 
-	SliceTypeExprReducerImpl
 	ArrayTypeExprReducerImpl
-	MapTypeExprReducerImpl
+	BinaryTypeExprReducerImpl
 	InferredTypeExprReducerImpl
+	MapTypeExprReducerImpl
 	NamedTypeExprReducerImpl
+	SliceTypeExprReducerImpl
+	UnaryTypeExprReducerImpl
 
-	ArgumentListReducer
+	ArgumentListReducerImpl
 	ArgumentReducerImpl
-	TypeArgumentListReducer
-	StatementListReducer
+	TypeArgumentListReducerImpl
+	StatementListReducerImpl
 }

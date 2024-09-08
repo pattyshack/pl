@@ -647,9 +647,9 @@ parse_error_type_expr<TypeExpression> -> PARSE_ERROR
 // "func() A + B" could mean func() returning "A + B" or "func() A" + "B"
 returnable_type_expr<TypeExpression> ->
   = atom_type_expr |
-  = prefixed_unary_type_expr
+  = prefix_unary_type_expr
 
-prefixed_unary_type_expr<TypeExpression> ->
+prefix_unary_type_expr<TypeExpression> ->
   prefix_unary_type_op returnable_type_expr
 
 prefix_unary_type_op<Value> ->
