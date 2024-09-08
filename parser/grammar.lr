@@ -428,19 +428,6 @@ for_assignment ->
 call_expr<Expression> ->
   accessible_expr generic_type_arguments LPAREN arguments RPAREN
 
-generic_type_arguments<TypeArgumentList> ->
-  binding: DOLLAR_LBRACKET type_arguments RBRACKET |
-  nil:
-
-proper_type_arguments<TypeArgumentList> ->
-  add: proper_type_arguments COMMA type_expr |
-  type_expr
-
-type_arguments<TypeArgumentList> ->
-  = proper_type_arguments |
-  improper: proper_type_arguments COMMA |
-  nil:
-
 proper_arguments<ArgumentList> ->
   add: proper_arguments COMMA argument |
   argument
@@ -674,12 +661,12 @@ binary_type_op<Value> ->
   = SUB // trait difference
 
 type_def<SourceDefinition> ->
-  definition: TYPE IDENTIFIER optional_generic_parameters type_expr |
-  constrained_def: TYPE IDENTIFIER optional_generic_parameters type_expr IMPLEMENTS type_expr |
+  definition: TYPE IDENTIFIER generic_parameter_defs type_expr |
+  constrained_def: TYPE IDENTIFIER generic_parameter_defs type_expr IMPLEMENTS type_expr |
   alias: TYPE IDENTIFIER ASSIGN type_expr
 
 //
-// Generic parameter definition
+// Generic parameter definitions / arguments
 //
 
 // XXX: allow default generic parameter value?
@@ -687,17 +674,30 @@ generic_parameter_def ->
   unconstrained: IDENTIFIER |
   constrained: IDENTIFIER type_expr
 
-proper_generic_parameter_defs ->
-  add: proper_generic_parameter_defs COMMA generic_parameter_def |
-  generic_parameter_def
-
 generic_parameter_defs ->
-  = proper_generic_parameter_defs |
-  improper: proper_generic_parameter_defs COMMA |
+  generic: DOLLAR_LBRACKET generic_parameter_def_list RBRACKET |
   nil:
 
-optional_generic_parameters ->
-  generic: DOLLAR_LBRACKET generic_parameter_defs RBRACKET |
+proper_generic_parameter_def_list ->
+  add: proper_generic_parameter_def_list COMMA generic_parameter_def |
+  generic_parameter_def
+
+generic_parameter_def_list ->
+  = proper_generic_parameter_def_list |
+  improper: proper_generic_parameter_def_list COMMA |
+  nil:
+
+generic_type_arguments<TypeArgumentList> ->
+  binding: DOLLAR_LBRACKET type_arguments RBRACKET |
+  nil:
+
+proper_type_arguments<TypeArgumentList> ->
+  add: proper_type_arguments COMMA type_expr |
+  type_expr
+
+type_arguments<TypeArgumentList> ->
+  = proper_type_arguments |
+  improper: proper_type_arguments COMMA |
   nil:
 
 //
@@ -797,12 +797,12 @@ return_type<TypeExpression> ->
 // NOTE: inferred mutable reference is declared either as "_" or "IDENTIFIER _".
 // copy-on-mutate reference is declared either as "." or "IDENTIFIER ."
 parameter_decl ->
-  unnamed_arg: type_expr |
-  unnamed_vararg: ELLIPSIS type_expr |
-  underscore_arg: UNDERSCORE type_expr |
-  underscore_vararg: UNDERSCORE ELLIPSIS type_expr |
-  arg: IDENTIFIER type_expr |
-  vararg: IDENTIFIER ELLIPSIS type_expr
+  unnamed_typed_arg: type_expr |
+  unnamed_inferred_vararg: ELLIPSIS |
+  unnamed_typed_vararg: ELLIPSIS type_expr |
+  named_typed_arg: IDENTIFIER type_expr |
+  named_inferred_vararg: IDENTIFIER ELLIPSIS |
+  named_typed_vararg: IDENTIFIER ELLIPSIS type_expr
 
 proper_parameter_decls ->
   add: proper_parameter_decls COMMA parameter_decl |
@@ -832,14 +832,14 @@ method_signature -> FUNC IDENTIFIER LPAREN parameter_decls RPAREN return_type
 // Parameter that specify "." as its type will be inferred as copy-on-mutate
 // reference by default.
 parameter_def ->
-  inferred_ref_arg: IDENTIFIER |
-  inferred_ref_vararg: IDENTIFIER ELLIPSIS |
-  arg: IDENTIFIER type_expr |
-  vararg: IDENTIFIER ELLIPSIS type_expr |
-  ignore_inferred_ref_arg: UNDERSCORE |
-  ignore_inferred_ref_vararg: UNDERSCORE ELLIPSIS |
-  ignore_arg: UNDERSCORE type_expr |
-  ignore_vararg: UNDERSCORE ELLIPSIS type_expr
+  inferred_arg: IDENTIFIER |
+  typed_arg: IDENTIFIER type_expr |
+  inferred_vararg: IDENTIFIER ELLIPSIS |
+  typed_vararg: IDENTIFIER ELLIPSIS type_expr |
+  ignore_inferred_arg: UNDERSCORE |
+  ignore_typed_arg: UNDERSCORE type_expr |
+  ignore_inferred_vararg: UNDERSCORE ELLIPSIS |
+  ignore_typed_vararg: UNDERSCORE ELLIPSIS type_expr
 
 proper_parameter_defs ->
   add: proper_parameter_defs COMMA parameter_def |
@@ -850,11 +850,11 @@ parameter_defs ->
   improper: proper_parameter_defs COMMA |
   nil:
 
+// XXX: allow generic parameters in method definition? No, for go transpiler.
 named_func_def<SourceDefinition> ->
-  func_def: FUNC IDENTIFIER optional_generic_parameters LPAREN parameter_defs RPAREN return_type statement_block |
-  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER optional_generic_parameters LPAREN parameter_defs RPAREN return_type statement_block |
+  func_def: FUNC IDENTIFIER generic_parameter_defs LPAREN parameter_defs RPAREN return_type statement_block |
+  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER LPAREN parameter_defs RPAREN return_type statement_block |
   alias: FUNC IDENTIFIER ASSIGN expr
-
 
 anonymous_func_expr<Expression> ->
   FUNC LPAREN parameter_defs RPAREN return_type statement_block
