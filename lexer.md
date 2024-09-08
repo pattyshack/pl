@@ -169,7 +169,7 @@ identifer = letter (letter | unicode-number)*
 
 ### Keywords
 ```
-and      as           async
+and      async
 break
 case     continue
 default  defer        do

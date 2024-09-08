@@ -22,7 +22,7 @@
 %token<Value> IF ELSE SWITCH CASE DEFAULT FOR DO IN
 %token<Value> RETURN BREAK CONTINUE FALLTHROUGH
 
-%token<Value> PACKAGE IMPORT AS
+%token<Value> PACKAGE IMPORT
 
 %token<Value> UNSAFE
 
@@ -254,8 +254,9 @@ import_statement<Statement> ->
 
 import_clause ->
   STRING_LITERAL |
-  alias: STRING_LITERAL AS IDENTIFIER |
-  unusable_import: STRING_LITERAL AS UNDERSCORE
+  alias: IDENTIFIER STRING_LITERAL |
+  unusable_import: UNDERSCORE STRING_LITERAL |
+  import_to_local: DOT STRING_LITERAL
 
 proper_import_clauses ->
   add_implicit: proper_import_clauses NEWLINES import_clause |
@@ -718,7 +719,7 @@ field_def ->
   unsafe_statement
 
 optional_default ->
-  default: AS DEFAULT |
+  default: ASSIGN DEFAULT |
   nil:
 
 proper_implicit_field_defs ->

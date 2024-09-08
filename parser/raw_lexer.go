@@ -49,7 +49,6 @@ var (
 		"fallthrough": FallthroughToken,
 		"package":     PackageToken,
 		"import":      ImportToken,
-		"as":          AsToken,
 		"unsafe":      UnsafeToken,
 		"type":        TypeToken,
 		"implements":  ImplementsToken,
