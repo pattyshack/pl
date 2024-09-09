@@ -8,21 +8,21 @@ import (
 // Parameter
 //
 
-type ParameterKind int
+type ParameterKind string
 
 const (
 	// NOTE: There is no implicit unnamed inferred arg variant
-	NamedTypedArgParameter = ParameterKind(iota)
-	NamedInferredArgParameter
-	NamedTypedVarargParameter
-	NamedInferredVarargParameter
-	UnnamedTypedArgParameter
-	UnnamedTypedVarargParameter
-	UnnamedInferredVarargParameter
-	IgnoreTypedArgParameter
-	IgnoreInferredArgParameter
-	IgnoreTypedVarargParameter
-	IgnoreInferredVarargParameter
+	NamedTypedArgParameter         = ParameterKind("named-typed-arg")
+	NamedInferredArgParameter      = ParameterKind("named-inferred-arg")
+	NamedTypedVarargParameter      = ParameterKind("named-typed-vararg")
+	NamedInferredVarargParameter   = ParameterKind("named-inferred-vararg")
+	UnnamedTypedArgParameter       = ParameterKind("unnamed-typed-arg")
+	UnnamedTypedVarargParameter    = ParameterKind("unnamed-typed-vararg")
+	UnnamedInferredVarargParameter = ParameterKind("unnamed-inferred-vararg")
+	IgnoreTypedArgParameter        = ParameterKind("ignore-typed-arg")
+	IgnoreInferredArgParameter     = ParameterKind("ignore-inferred-arg")
+	IgnoreTypedVarargParameter     = ParameterKind("ignore-typed-vararg")
+	IgnoreInferredVarargParameter  = ParameterKind("ignore-inferred-vararg")
 )
 
 type Parameter struct {
@@ -402,17 +402,17 @@ func (reducer *ParameterListReducerImpl) NilToParameterDefs() (
 // Argument
 //
 
-type ArgumentKind int
+type ArgumentKind string
 
 const (
-	PositionalArgument = ArgumentKind(iota)
-	NamedAssignmentArgument
-	VarargAssignmentArgument
-	ColonExprArgument
+	PositionalArgument       = ArgumentKind("positional")
+	NamedAssignmentArgument  = ArgumentKind("named-assigned")
+	VarargAssignmentArgument = ArgumentKind("vararg-assigned")
+	ColonExprArgument        = ArgumentKind("colon-expr")
 	// Only used by patterns
-	SkipPatternArgument
+	SkipPatternArgument = ArgumentKind("skip-pattern")
 	// Only used by ColonExpr
-	IsImplicitUnitArgument
+	IsImplicitUnitArgument = ArgumentKind("implicit-unit")
 )
 
 type Argument struct {
@@ -473,7 +473,7 @@ func (ArgumentReducerImpl) PositionalToArgument(
 		HasEllipsis: false,
 	}
 
-  return arg, nil
+	return arg, nil
 }
 
 func (ArgumentReducerImpl) ColonExprToArgument(

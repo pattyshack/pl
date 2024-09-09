@@ -201,6 +201,10 @@ func (s TokenCount) Id() SymbolId {
 	return s.SymbolId
 }
 
+func (s TokenCount) String() string {
+	return fmt.Sprintf("[Symbol:%s Count=%d]", s.SymbolId, s.Count)
+}
+
 type TokenValue struct {
 	SymbolId
 	StartEndPos
@@ -214,6 +218,10 @@ type TokenValue struct {
 
 func (s TokenValue) Id() SymbolId {
 	return s.SymbolId
+}
+
+func (s TokenValue) String() string {
+	return fmt.Sprintf("[Symbol:%s Value=%s]", s.SymbolId, s.Value)
 }
 
 type ParseErrorSymbol struct {
