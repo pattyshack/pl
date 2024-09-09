@@ -1,0 +1,4 @@
+foo$[
+  T,
+  pkg.MyType$[T],
+]()

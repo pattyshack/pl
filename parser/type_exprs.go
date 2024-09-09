@@ -313,7 +313,7 @@ func (expr NamedTypeExpr) TreeString(indent string, label string) string {
 		return result + "]"
 	}
 
-	result += expr.TypeArguments.TreeString(indent+"  ", "TypeArguments=")
+	result += "\n" + expr.TypeArguments.TreeString(indent+"  ", "TypeArguments=")
 	result += "\n" + indent + "]"
 	return result
 }

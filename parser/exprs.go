@@ -635,7 +635,7 @@ func (expr CallExpr) TreeString(indent string, label string) string {
 		result += "\n"
 	}
 	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
-	result += indent + "]"
+	result += "\n" + indent + "]"
 
 	return result
 }
