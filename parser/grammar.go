@@ -11027,7 +11027,7 @@ var _ActionTable = _ActionTableType{
 	{_State480, StatementBlockType}:                _GotoState482Action,
 	{_State481, LbraceToken}:                       _GotoState11Action,
 	{_State481, StatementBlockType}:                _GotoState483Action,
-	{_State1, _EndMarker}:                          _ReduceNilToDefinitionsAction,
+	{_State1, _WildcardMarker}:                     _ReduceNilToDefinitionsAction,
 	{_State2, _WildcardMarker}:                     _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State3, _WildcardMarker}:                     _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State9, _WildcardMarker}:                     _ReduceCommentGroupsToDefinitionAction,
@@ -11037,10 +11037,10 @@ var _ActionTable = _ActionTableType{
 	{_State13, _WildcardMarker}:                    _ReduceNoSpecToPackageDefAction,
 	{_State15, _WildcardMarker}:                    _ReduceVarToVarOrLetAction,
 	{_State16, _WildcardMarker}:                    _ReduceDefinitionToProperDefinitionsAction,
-	{_State17, _EndMarker}:                         _ReduceToSourceAction,
+	{_State17, _WildcardMarker}:                    _ReduceToSourceAction,
 	{_State18, _WildcardMarker}:                    _ReduceNamedFuncDefToDefinitionAction,
 	{_State19, _WildcardMarker}:                    _ReducePackageDefToDefinitionAction,
-	{_State20, _EndMarker}:                         _ReduceProperDefinitionsToDefinitionsAction,
+	{_State20, _WildcardMarker}:                    _ReduceProperDefinitionsToDefinitionsAction,
 	{_State21, _WildcardMarker}:                    _ReduceStatementBlockToDefinitionAction,
 	{_State22, _WildcardMarker}:                    _ReduceTypeDefToDefinitionAction,
 	{_State23, _WildcardMarker}:                    _ReduceGlobalVarDefToDefinitionAction,
@@ -11048,13 +11048,13 @@ var _ActionTable = _ActionTableType{
 	{_State26, _WildcardMarker}:                    _ReduceBitAndToPrefixUnaryOpAction,
 	{_State27, _WildcardMarker}:                    _ReduceBitNegToPrefixUnaryOpAction,
 	{_State28, _WildcardMarker}:                    _ReduceBreakToJumpTypeAction,
-	{_State29, LbraceToken}:                        _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State29, _WildcardMarker}:                    _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State30, _WildcardMarker}:                    _ReduceContinueToJumpTypeAction,
 	{_State32, _WildcardMarker}:                    _ReduceDeferToCallbackOpAction,
-	{_State33, _EndMarker}:                         _ReduceToFallthroughStatementAction,
+	{_State33, _WildcardMarker}:                    _ReduceToFallthroughStatementAction,
 	{_State34, _WildcardMarker}:                    _ReduceFalseToLiteralExprAction,
 	{_State35, _WildcardMarker}:                    _ReduceFloatLiteralToLiteralExprAction,
-	{_State37, LbraceToken}:                        _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State37, _WildcardMarker}:                    _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State38, _WildcardMarker}:                    _ReduceIdentifierToNamedExprAction,
 	{_State40, _WildcardMarker}:                    _ReduceIntegerLiteralToLiteralExprAction,
 	{_State41, _WildcardMarker}:                    _ReduceLabelDeclToOptionalLabelDeclAction,
@@ -11076,37 +11076,37 @@ var _ActionTable = _ActionTableType{
 	{_State58, _WildcardMarker}:                    _ReduceAndExprToOrExprAction,
 	{_State59, _WildcardMarker}:                    _ReduceAnonymousFuncExprToAtomExprAction,
 	{_State60, _WildcardMarker}:                    _ReduceArrayTypeExprToInitializableTypeExprAction,
-	{_State62, _EndMarker}:                         _ReduceAssignStatementToSimpleStatementAction,
+	{_State62, _WildcardMarker}:                    _ReduceAssignStatementToSimpleStatementAction,
 	{_State63, _WildcardMarker}:                    _ReduceAtomExprToAccessibleExprAction,
 	{_State64, _WildcardMarker}:                    _ReduceBinaryAddExprToAddExprAction,
 	{_State65, _WildcardMarker}:                    _ReduceBinaryAndExprToAndExprAction,
 	{_State66, _WildcardMarker}:                    _ReduceBinaryCmpExprToCmpExprAction,
 	{_State67, _WildcardMarker}:                    _ReduceBinaryMulExprToMulExprAction,
-	{_State68, _EndMarker}:                         _ReduceBinaryOpAssignStatementToSimpleStatementAction,
+	{_State68, _WildcardMarker}:                    _ReduceBinaryOpAssignStatementToSimpleStatementAction,
 	{_State69, _WildcardMarker}:                    _ReduceBinaryOrExprToOrExprAction,
 	{_State70, _WildcardMarker}:                    _ReduceBlockExprToAtomExprAction,
 	{_State71, _WildcardMarker}:                    _ReduceCallExprToAccessibleExprAction,
-	{_State72, LbraceToken}:                        _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State73, _EndMarker}:                         _ReduceCallbackOpStatementToSimpleStatementAction,
+	{_State72, _WildcardMarker}:                    _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State73, _WildcardMarker}:                    _ReduceCallbackOpStatementToSimpleStatementAction,
 	{_State74, _WildcardMarker}:                    _ReduceCmpExprToAndExprAction,
 	{_State75, _WildcardMarker}:                    _ReduceExplicitStructTypeExprToInitializableTypeExprAction,
 	{_State76, _WildcardMarker}:                    _ReduceExprToExprsAction,
-	{_State77, _EndMarker}:                         _ReduceExprOrImproperStructStatementToSimpleStatementAction,
+	{_State77, _WildcardMarker}:                    _ReduceExprOrImproperStructStatementToSimpleStatementAction,
 	{_State78, _WildcardMarker}:                    _ReduceToExprOrImproperStructStatementAction,
-	{_State79, _EndMarker}:                         _ReduceFallthroughStatementToSimpleStatementAction,
-	{_State80, _EndMarker}:                         _ReduceIfExprToExprAction,
+	{_State79, _WildcardMarker}:                    _ReduceFallthroughStatementToSimpleStatementAction,
+	{_State80, _WildcardMarker}:                    _ReduceIfExprToExprAction,
 	{_State81, _WildcardMarker}:                    _ReduceImplicitStructExprToAtomExprAction,
-	{_State82, _EndMarker}:                         _ReduceImportStatementToStatementAction,
+	{_State82, _WildcardMarker}:                    _ReduceImportStatementToStatementAction,
 	{_State83, _WildcardMarker}:                    _ReduceIndexExprToAccessibleExprAction,
 	{_State85, _WildcardMarker}:                    _ReduceInitializeExprToAtomExprAction,
-	{_State86, _EndMarker}:                         _ReduceJumpStatementToSimpleStatementAction,
+	{_State86, _WildcardMarker}:                    _ReduceJumpStatementToSimpleStatementAction,
 	{_State87, _EndMarker}:                         _ReduceUnlabeledNoValueToJumpStatementAction,
 	{_State87, NewlinesToken}:                      _ReduceUnlabeledNoValueToJumpStatementAction,
 	{_State87, RbraceToken}:                        _ReduceUnlabeledNoValueToJumpStatementAction,
 	{_State87, SemicolonToken}:                     _ReduceUnlabeledNoValueToJumpStatementAction,
 	{_State87, _WildcardMarker}:                    _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State88, _WildcardMarker}:                    _ReduceLiteralExprToAtomExprAction,
-	{_State89, _EndMarker}:                         _ReduceLoopExprToExprAction,
+	{_State89, _WildcardMarker}:                    _ReduceLoopExprToExprAction,
 	{_State90, _WildcardMarker}:                    _ReduceMapTypeExprToInitializableTypeExprAction,
 	{_State91, _WildcardMarker}:                    _ReduceMulExprToAddExprAction,
 	{_State92, _WildcardMarker}:                    _ReduceNamedExprToAtomExprAction,
@@ -11115,25 +11115,25 @@ var _ActionTable = _ActionTableType{
 	{_State96, _WildcardMarker}:                    _ReducePostfixUnaryExprToPostfixableExprAction,
 	{_State97, _WildcardMarker}:                    _ReducePostfixableExprToPrefixableExprAction,
 	{_State98, _WildcardMarker}:                    _ReducePrefixUnaryExprToPrefixableExprAction,
-	{_State99, LbraceToken}:                        _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State99, _WildcardMarker}:                    _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State100, _WildcardMarker}:                   _ReducePrefixableExprToMulExprAction,
 	{_State101, AssignToken}:                       _ReduceToAssignPatternAction,
 	{_State101, _WildcardMarker}:                   _ReduceSequenceExprToExprAction,
-	{_State102, _EndMarker}:                        _ReduceSimpleStatementToStatementAction,
+	{_State102, _WildcardMarker}:                   _ReduceSimpleStatementToStatementAction,
 	{_State103, _WildcardMarker}:                   _ReduceSliceTypeExprToInitializableTypeExprAction,
-	{_State104, _EndMarker}:                        _ReduceSwitchExprToExprAction,
-	{_State105, _EndMarker}:                        _ReduceUnaryOpAssignStatementToSimpleStatementAction,
-	{_State106, _EndMarker}:                        _ReduceUnsafeStatementToSimpleStatementAction,
-	{_State107, _EndMarker}:                        _ReduceVarDeclPatternToSequenceExprAction,
+	{_State104, _WildcardMarker}:                   _ReduceSwitchExprToExprAction,
+	{_State105, _WildcardMarker}:                   _ReduceUnaryOpAssignStatementToSimpleStatementAction,
+	{_State106, _WildcardMarker}:                   _ReduceUnsafeStatementToSimpleStatementAction,
+	{_State107, _WildcardMarker}:                   _ReduceVarDeclPatternToSequenceExprAction,
 	{_State108, _WildcardMarker}:                   _ReduceAccessibleExprToPostfixableExprAction,
 	{_State108, LparenToken}:                       _ReduceNilToGenericTypeArgumentsAction,
-	{_State109, _EndMarker}:                        _ReduceSequenceExprToExprAction,
+	{_State109, _WildcardMarker}:                   _ReduceSequenceExprToExprAction,
 	{_State110, _WildcardMarker}:                   _ReduceBitAndToPrefixUnaryTypeOpAction,
 	{_State111, _WildcardMarker}:                   _ReduceBitNegToPrefixUnaryTypeOpAction,
 	{_State112, _WildcardMarker}:                   _ReduceDotToInferredTypeExprAction,
 	{_State114, _WildcardMarker}:                   _ReduceExclaimToPrefixUnaryTypeOpAction,
 	{_State116, _WildcardMarker}:                   _ReduceNilToGenericTypeArgumentsAction,
-	{_State117, RparenToken}:                       _ReduceNilToImplicitFieldDefsAction,
+	{_State117, _WildcardMarker}:                   _ReduceNilToImplicitFieldDefsAction,
 	{_State118, _WildcardMarker}:                   _ReduceToParseErrorTypeExprAction,
 	{_State119, _WildcardMarker}:                   _ReduceQuestionToPrefixUnaryTypeOpAction,
 	{_State120, _WildcardMarker}:                   _ReduceTildeTildeToPrefixUnaryTypeOpAction,
@@ -11151,12 +11151,12 @@ var _ActionTable = _ActionTableType{
 	{_State133, _WildcardMarker}:                   _ReducePrefixUnaryTypeExprToReturnableTypeExprAction,
 	{_State135, _WildcardMarker}:                   _ReduceReturnableTypeExprToTypeExprAction,
 	{_State136, _WildcardMarker}:                   _ReduceTraitTypeExprToAtomTypeExprAction,
-	{_State137, LparenToken}:                       _ReduceNilToGenericParameterDefsAction,
-	{_State139, RbraceToken}:                       _ReduceProperStatementsToStatementsAction,
+	{_State137, _WildcardMarker}:                   _ReduceNilToGenericParameterDefsAction,
+	{_State139, _WildcardMarker}:                   _ReduceProperStatementsToStatementsAction,
 	{_State140, _WildcardMarker}:                   _ReduceStatementToProperStatementsAction,
 	{_State142, _WildcardMarker}:                   _ReduceWithSpecToPackageDefAction,
 	{_State143, _WildcardMarker}:                   _ReduceNilToGenericParameterDefsAction,
-	{_State144, _EndMarker}:                        _ReduceImproperToDefinitionsAction,
+	{_State144, _WildcardMarker}:                   _ReduceImproperToDefinitionsAction,
 	{_State145, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State146, _WildcardMarker}:                   _ReduceIdentifierToVarPatternAction,
 	{_State148, _WildcardMarker}:                   _ReduceUnderscoreToVarPatternAction,
@@ -11171,10 +11171,10 @@ var _ActionTable = _ActionTableType{
 	{_State158, RbraceToken}:                       _ReduceNilToOptionalSimpleStatementAction,
 	{_State158, SemicolonToken}:                    _ReduceNilToOptionalSimpleStatementAction,
 	{_State158, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State159, RparenToken}:                       _ReduceNilToParameterDefsAction,
-	{_State160, _EndMarker}:                        _ReduceAssignVarPatternToSequenceExprAction,
-	{_State164, _EndMarker}:                        _ReduceStringLiteralToImportClauseAction,
-	{_State166, _EndMarker}:                        _ReduceSingleToImportStatementAction,
+	{_State159, _WildcardMarker}:                   _ReduceNilToParameterDefsAction,
+	{_State160, _WildcardMarker}:                   _ReduceAssignVarPatternToSequenceExprAction,
+	{_State164, _WildcardMarker}:                   _ReduceStringLiteralToImportClauseAction,
+	{_State166, _WildcardMarker}:                   _ReduceSingleToImportStatementAction,
 	{_State168, ColonToken}:                        _ReduceUnitUnitPairToColonExprAction,
 	{_State168, CommaToken}:                        _ReduceUnitUnitPairToColonExprAction,
 	{_State168, RbracketToken}:                     _ReduceUnitUnitPairToColonExprAction,
@@ -11185,10 +11185,10 @@ var _ActionTable = _ActionTableType{
 	{_State171, _WildcardMarker}:                   _ReduceArgumentToProperArgumentsAction,
 	{_State173, _WildcardMarker}:                   _ReduceColonExprToArgumentAction,
 	{_State174, _WildcardMarker}:                   _ReducePositionalToArgumentAction,
-	{_State175, RparenToken}:                       _ReduceProperArgumentsToArgumentsAction,
-	{_State176, RparenToken}:                       _ReduceNilToExplicitFieldDefsAction,
+	{_State175, _WildcardMarker}:                   _ReduceProperArgumentsToArgumentsAction,
+	{_State176, _WildcardMarker}:                   _ReduceNilToExplicitFieldDefsAction,
 	{_State178, _WildcardMarker}:                   _ReduceAddAssignToBinaryOpAssignAction,
-	{_State179, _EndMarker}:                        _ReduceAddOneAssignToUnaryOpAssignAction,
+	{_State179, _WildcardMarker}:                   _ReduceAddOneAssignToUnaryOpAssignAction,
 	{_State180, _WildcardMarker}:                   _ReduceBitAndAssignToBinaryOpAssignAction,
 	{_State181, _WildcardMarker}:                   _ReduceBitLshiftAssignToBinaryOpAssignAction,
 	{_State182, _WildcardMarker}:                   _ReduceBitNegAssignToBinaryOpAssignAction,
@@ -11196,25 +11196,25 @@ var _ActionTable = _ActionTableType{
 	{_State184, _WildcardMarker}:                   _ReduceBitRshiftAssignToBinaryOpAssignAction,
 	{_State185, _WildcardMarker}:                   _ReduceBitXorAssignToBinaryOpAssignAction,
 	{_State186, _WildcardMarker}:                   _ReduceDivAssignToBinaryOpAssignAction,
-	{_State187, RbracketToken}:                     _ReduceNilToTypeArgumentsAction,
+	{_State187, _WildcardMarker}:                   _ReduceNilToTypeArgumentsAction,
 	{_State189, _WildcardMarker}:                   _ReduceExclaimToPostfixUnaryOpAction,
 	{_State190, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State191, _WildcardMarker}:                   _ReduceModAssignToBinaryOpAssignAction,
 	{_State192, _WildcardMarker}:                   _ReduceMulAssignToBinaryOpAssignAction,
 	{_State193, _WildcardMarker}:                   _ReduceQuestionToPostfixUnaryOpAction,
 	{_State194, _WildcardMarker}:                   _ReduceSubAssignToBinaryOpAssignAction,
-	{_State195, _EndMarker}:                        _ReduceSubOneAssignToUnaryOpAssignAction,
+	{_State195, _WildcardMarker}:                   _ReduceSubOneAssignToUnaryOpAssignAction,
 	{_State196, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State198, _WildcardMarker}:                   _ReduceToPostfixUnaryExprAction,
-	{_State199, _EndMarker}:                        _ReduceToUnaryOpAssignStatementAction,
+	{_State199, _WildcardMarker}:                   _ReduceToUnaryOpAssignStatementAction,
 	{_State200, _WildcardMarker}:                   _ReduceAddToAddOpAction,
 	{_State201, _WildcardMarker}:                   _ReduceBitOrToAddOpAction,
 	{_State202, _WildcardMarker}:                   _ReduceBitXorToAddOpAction,
 	{_State203, _WildcardMarker}:                   _ReduceSubToAddOpAction,
-	{_State204, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State205, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State204, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State205, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State206, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State207, LparenToken}:                       _ReduceNilToGenericTypeArgumentsAction,
+	{_State207, _WildcardMarker}:                   _ReduceNilToGenericTypeArgumentsAction,
 	{_State208, _EndMarker}:                        _ReduceToCallbackOpStatementAction,
 	{_State208, NewlinesToken}:                     _ReduceToCallbackOpStatementAction,
 	{_State208, RbraceToken}:                       _ReduceToCallbackOpStatementAction,
@@ -11226,7 +11226,7 @@ var _ActionTable = _ActionTableType{
 	{_State212, _WildcardMarker}:                   _ReduceLessToCmpOpAction,
 	{_State213, _WildcardMarker}:                   _ReduceLessOrEqualToCmpOpAction,
 	{_State214, _WildcardMarker}:                   _ReduceNotEqualToCmpOpAction,
-	{_State215, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State215, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State216, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State217, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State217, RparenToken}:                       _ReduceNilToArgumentsAction,
@@ -11235,39 +11235,39 @@ var _ActionTable = _ActionTableType{
 	{_State218, RbraceToken}:                       _ReduceLabeledNoValueToJumpStatementAction,
 	{_State218, SemicolonToken}:                    _ReduceLabeledNoValueToJumpStatementAction,
 	{_State218, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State219, _EndMarker}:                        _ReduceUnlabeledValuedToJumpStatementAction,
+	{_State219, _WildcardMarker}:                   _ReduceUnlabeledValuedToJumpStatementAction,
 	{_State220, _WildcardMarker}:                   _ReduceBitAndToMulOpAction,
 	{_State221, _WildcardMarker}:                   _ReduceBitLshiftToMulOpAction,
 	{_State222, _WildcardMarker}:                   _ReduceBitRshiftToMulOpAction,
 	{_State223, _WildcardMarker}:                   _ReduceDivToMulOpAction,
 	{_State224, _WildcardMarker}:                   _ReduceModToMulOpAction,
 	{_State225, _WildcardMarker}:                   _ReduceMulToMulOpAction,
-	{_State226, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State228, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State229, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State230, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State231, _EndMarker}:                        _ReduceToIfExprAction,
-	{_State232, _EndMarker}:                        _ReduceToLoopExprAction,
+	{_State226, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State228, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State229, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State230, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State231, _WildcardMarker}:                   _ReduceToIfExprAction,
+	{_State232, _WildcardMarker}:                   _ReduceToLoopExprAction,
 	{_State233, _WildcardMarker}:                   _ReduceToBlockExprAction,
-	{_State234, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State234, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State235, _WildcardMarker}:                   _ReduceToPrefixUnaryExprAction,
-	{_State237, RparenToken}:                       _ReduceNilToParameterDeclsAction,
+	{_State237, _WildcardMarker}:                   _ReduceNilToParameterDeclsAction,
 	{_State239, _WildcardMarker}:                   _ReduceLocalToNamedTypeExprAction,
 	{_State241, _WildcardMarker}:                   _ReduceNilToGenericTypeArgumentsAction,
 	{_State242, _WildcardMarker}:                   _ReduceUnderscoreToInferredTypeExprAction,
 	{_State243, _WildcardMarker}:                   _ReduceFieldDefToProperImplicitFieldDefsAction,
 	{_State246, _WildcardMarker}:                   _ReduceMethodSignatureToFieldDefAction,
-	{_State247, RparenToken}:                       _ReduceProperImplicitEnumValueDefsToImplicitEnumValueDefsAction,
-	{_State248, RparenToken}:                       _ReduceProperImplicitFieldDefsToImplicitFieldDefsAction,
+	{_State247, _WildcardMarker}:                   _ReduceProperImplicitEnumValueDefsToImplicitEnumValueDefsAction,
+	{_State248, _WildcardMarker}:                   _ReduceProperImplicitFieldDefsToImplicitFieldDefsAction,
 	{_State249, _WildcardMarker}:                   _ReduceNilToOptionalDefaultAction,
 	{_State250, _WildcardMarker}:                   _ReduceUnsafeStatementToFieldDefAction,
-	{_State251, RparenToken}:                       _ReduceNilToExplicitFieldDefsAction,
+	{_State251, _WildcardMarker}:                   _ReduceNilToExplicitFieldDefsAction,
 	{_State252, _WildcardMarker}:                   _ReduceToPrefixUnaryTypeExprAction,
 	{_State253, _WildcardMarker}:                   _ReduceAddToBinaryTypeOpAction,
 	{_State254, _WildcardMarker}:                   _ReduceMulToBinaryTypeOpAction,
 	{_State255, _WildcardMarker}:                   _ReduceSubToBinaryTypeOpAction,
 	{_State257, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State258, RbracketToken}:                     _ReduceNilToGenericParameterDefListAction,
+	{_State258, _WildcardMarker}:                   _ReduceNilToGenericParameterDefListAction,
 	{_State260, _WildcardMarker}:                   _ReduceNamedInferredArgToParameterDefAction,
 	{_State261, _WildcardMarker}:                   _ReduceIgnoreInferredArgToParameterDefAction,
 	{_State263, _WildcardMarker}:                   _ReduceProperParameterDefToParameterDefAction,
@@ -11275,14 +11275,14 @@ var _ActionTable = _ActionTableType{
 	{_State264, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State265, RbraceToken}:                       _ReduceImproperExplicitToStatementsAction,
 	{_State265, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State266, _EndMarker}:                        _ReduceToStatementBlockAction,
+	{_State266, _WildcardMarker}:                   _ReduceToStatementBlockAction,
 	{_State269, _WildcardMarker}:                   _ReduceAddToProperDefinitionsAction,
 	{_State270, _WildcardMarker}:                   _ReduceGlobalVarAssignmentToDefinitionAction,
 	{_State271, _WildcardMarker}:                   _ReduceEllipsisToFieldVarPatternAction,
 	{_State272, _WildcardMarker}:                   _ReduceIdentifierToVarPatternAction,
 	{_State273, _WildcardMarker}:                   _ReduceFieldVarPatternToFieldVarPatternsAction,
 	{_State275, _WildcardMarker}:                   _ReducePositionalToFieldVarPatternAction,
-	{_State276, _EndMarker}:                        _ReduceToVarDeclPatternAction,
+	{_State276, _WildcardMarker}:                   _ReduceToVarDeclPatternAction,
 	{_State277, _WildcardMarker}:                   _ReduceTypeExprToOptionalTypeExprAction,
 	{_State278, _WildcardMarker}:                   _ReduceEnumNondataMatchPattenToCasePatternAction,
 	{_State280, _EndMarker}:                        _ReduceNilToOptionalSimpleStatementAction,
@@ -11290,16 +11290,16 @@ var _ActionTable = _ActionTableType{
 	{_State280, RbraceToken}:                       _ReduceNilToOptionalSimpleStatementAction,
 	{_State280, SemicolonToken}:                    _ReduceNilToOptionalSimpleStatementAction,
 	{_State280, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State281, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State282, _EndMarker}:                        _ReduceDefaultBranchStatementToStatementAction,
-	{_State283, _EndMarker}:                        _ReduceSimpleStatementToOptionalSimpleStatementAction,
+	{_State281, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State282, _WildcardMarker}:                   _ReduceDefaultBranchStatementToStatementAction,
+	{_State283, _WildcardMarker}:                   _ReduceSimpleStatementToOptionalSimpleStatementAction,
 	{_State284, _WildcardMarker}:                   _ReduceParameterDefToProperParameterDefsAction,
-	{_State286, RparenToken}:                       _ReduceProperParameterDefsToParameterDefsAction,
-	{_State287, _EndMarker}:                        _ReduceImportToLocalToImportClauseAction,
-	{_State288, _EndMarker}:                        _ReduceAliasToImportClauseAction,
+	{_State286, _WildcardMarker}:                   _ReduceProperParameterDefsToParameterDefsAction,
+	{_State287, _WildcardMarker}:                   _ReduceImportToLocalToImportClauseAction,
+	{_State288, _WildcardMarker}:                   _ReduceAliasToImportClauseAction,
 	{_State289, _WildcardMarker}:                   _ReduceImportClauseToProperImportClausesAction,
-	{_State291, RparenToken}:                       _ReduceProperImportClausesToImportClausesAction,
-	{_State292, _EndMarker}:                        _ReduceUnusableImportToImportClauseAction,
+	{_State291, _WildcardMarker}:                   _ReduceProperImportClausesToImportClausesAction,
+	{_State292, _WildcardMarker}:                   _ReduceUnusableImportToImportClauseAction,
 	{_State295, _WildcardMarker}:                   _ReduceToSliceTypeExprAction,
 	{_State296, _WildcardMarker}:                   _ReduceUnitExprPairToColonExprAction,
 	{_State297, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
@@ -11318,32 +11318,32 @@ var _ActionTable = _ActionTableType{
 	{_State302, RparenToken}:                       _ReduceImproperToArgumentsAction,
 	{_State302, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State304, _WildcardMarker}:                   _ReduceFieldDefToProperExplicitFieldDefsAction,
-	{_State305, RparenToken}:                       _ReduceProperExplicitFieldDefsToExplicitFieldDefsAction,
-	{_State307, RbracketToken}:                     _ReduceProperTypeArgumentsToTypeArgumentsAction,
+	{_State305, _WildcardMarker}:                   _ReduceProperExplicitFieldDefsToExplicitFieldDefsAction,
+	{_State307, _WildcardMarker}:                   _ReduceProperTypeArgumentsToTypeArgumentsAction,
 	{_State309, _WildcardMarker}:                   _ReduceTypeExprToProperTypeArgumentsAction,
 	{_State310, _WildcardMarker}:                   _ReduceToAccessExprAction,
-	{_State312, _EndMarker}:                        _ReduceToBinaryOpAssignStatementAction,
+	{_State312, _WildcardMarker}:                   _ReduceToBinaryOpAssignStatementAction,
 	{_State313, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State313, RparenToken}:                       _ReduceNilToArgumentsAction,
 	{_State314, _WildcardMarker}:                   _ReduceToBinaryAddExprAction,
 	{_State315, _WildcardMarker}:                   _ReduceToBinaryAndExprAction,
-	{_State316, _EndMarker}:                        _ReduceToAssignStatementAction,
+	{_State316, _WildcardMarker}:                   _ReduceToAssignStatementAction,
 	{_State317, _WildcardMarker}:                   _ReduceToBinaryCmpExprAction,
 	{_State318, _WildcardMarker}:                   _ReduceAddToExprsAction,
-	{_State320, _EndMarker}:                        _ReduceLabeledValuedToJumpStatementAction,
+	{_State320, _WildcardMarker}:                   _ReduceLabeledValuedToJumpStatementAction,
 	{_State321, _WildcardMarker}:                   _ReduceToBinaryMulExprAction,
 	{_State322, _WildcardMarker}:                   _ReduceInfiniteToLoopExprBodyAction,
 	{_State325, _WildcardMarker}:                   _ReduceToAssignPatternAction,
 	{_State325, SemicolonToken}:                    _ReduceSequenceExprToForAssignmentAction,
-	{_State326, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State328, LbraceToken}:                       _ReduceSequenceExprToConditionAction,
+	{_State326, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State328, _WildcardMarker}:                   _ReduceSequenceExprToConditionAction,
 	{_State330, _WildcardMarker}:                   _ReduceToBinaryOrExprAction,
-	{_State333, RparenToken}:                       _ReduceProperExplicitEnumValueDefsToExplicitEnumValueDefsAction,
+	{_State333, _WildcardMarker}:                   _ReduceProperExplicitEnumValueDefsToExplicitEnumValueDefsAction,
 	{_State334, _WildcardMarker}:                   _ReduceUnnamedInferredVarargToParameterDeclAction,
 	{_State335, _WildcardMarker}:                   _ReduceNilToGenericTypeArgumentsAction,
 	{_State336, _WildcardMarker}:                   _ReduceUnderscoreToInferredTypeExprAction,
 	{_State337, _WildcardMarker}:                   _ReduceParameterDeclToProperParameterDeclsAction,
-	{_State339, RparenToken}:                       _ReduceProperParameterDeclsToParameterDeclsAction,
+	{_State339, _WildcardMarker}:                   _ReduceProperParameterDeclsToParameterDeclsAction,
 	{_State340, _WildcardMarker}:                   _ReduceProperParameterDefToParameterDeclAction,
 	{_State341, _WildcardMarker}:                   _ReduceUnnamedTypedArgToParameterDeclAction,
 	{_State342, _WildcardMarker}:                   _ReduceNilToGenericTypeArgumentsAction,
@@ -11352,15 +11352,15 @@ var _ActionTable = _ActionTableType{
 	{_State346, _WildcardMarker}:                   _ReduceStructPaddingToFieldDefAction,
 	{_State348, _WildcardMarker}:                   _ReduceToImplicitEnumTypeExprAction,
 	{_State349, _WildcardMarker}:                   _ReduceToImplicitStructTypeExprAction,
-	{_State350, RparenToken}:                       _ReduceImproperToImplicitEnumValueDefsAction,
-	{_State352, RparenToken}:                       _ReduceImproperToImplicitFieldDefsAction,
+	{_State350, _WildcardMarker}:                   _ReduceImproperToImplicitEnumValueDefsAction,
+	{_State352, _WildcardMarker}:                   _ReduceImproperToImplicitFieldDefsAction,
 	{_State354, _WildcardMarker}:                   _ReduceUnnamedToFieldDefAction,
 	{_State356, _WildcardMarker}:                   _ReduceToBinaryTypeExprAction,
 	{_State357, _WildcardMarker}:                   _ReduceAliasToNamedFuncDefAction,
 	{_State358, _WildcardMarker}:                   _ReduceUnconstrainedToGenericParameterDefAction,
 	{_State359, _WildcardMarker}:                   _ReduceGenericParameterDefToProperGenericParameterDefListAction,
-	{_State361, RbracketToken}:                     _ReduceProperGenericParameterDefListToGenericParameterDefListAction,
-	{_State362, RparenToken}:                       _ReduceNilToParameterDefsAction,
+	{_State361, _WildcardMarker}:                   _ReduceProperGenericParameterDefListToGenericParameterDefListAction,
+	{_State362, _WildcardMarker}:                   _ReduceNilToParameterDefsAction,
 	{_State363, _WildcardMarker}:                   _ReduceNamedInferredVarargToProperParameterDefAction,
 	{_State364, _WildcardMarker}:                   _ReduceNamedTypedArgToProperParameterDefAction,
 	{_State365, _WildcardMarker}:                   _ReduceIgnoreInferredVarargToProperParameterDefAction,
@@ -11371,38 +11371,38 @@ var _ActionTable = _ActionTableType{
 	{_State371, _WildcardMarker}:                   _ReduceDefinitionToTypeDefAction,
 	{_State374, _WildcardMarker}:                   _ReduceToTuplePatternAction,
 	{_State375, _WildcardMarker}:                   _ReduceEnumMatchPatternToCasePatternAction,
-	{_State377, _EndMarker}:                        _ReduceCaseBranchStatementToStatementAction,
+	{_State377, _WildcardMarker}:                   _ReduceCaseBranchStatementToStatementAction,
 	{_State378, _WildcardMarker}:                   _ReduceMultipleToCasePatternsAction,
-	{_State379, LbraceToken}:                       _ReduceNilToReturnTypeAction,
-	{_State380, RparenToken}:                       _ReduceImproperToParameterDefsAction,
-	{_State381, _EndMarker}:                        _ReduceMultipleToImportStatementAction,
-	{_State382, RparenToken}:                       _ReduceExplicitToImportClausesAction,
-	{_State383, RparenToken}:                       _ReduceImplicitToImportClausesAction,
+	{_State379, _WildcardMarker}:                   _ReduceNilToReturnTypeAction,
+	{_State380, _WildcardMarker}:                   _ReduceImproperToParameterDefsAction,
+	{_State381, _WildcardMarker}:                   _ReduceMultipleToImportStatementAction,
+	{_State382, _WildcardMarker}:                   _ReduceExplicitToImportClausesAction,
+	{_State383, _WildcardMarker}:                   _ReduceImplicitToImportClausesAction,
 	{_State386, _WildcardMarker}:                   _ReduceNamedAssignmentToArgumentAction,
 	{_State387, _WildcardMarker}:                   _ReduceColonExprExprTupleToColonExprAction,
 	{_State388, _WildcardMarker}:                   _ReduceExprExprPairToColonExprAction,
 	{_State389, _WildcardMarker}:                   _ReduceAddToProperArgumentsAction,
 	{_State390, _WildcardMarker}:                   _ReduceToExplicitStructTypeExprAction,
-	{_State391, RparenToken}:                       _ReduceImproperExplicitToExplicitFieldDefsAction,
-	{_State392, RparenToken}:                       _ReduceImproperImplicitToExplicitFieldDefsAction,
-	{_State394, RbracketToken}:                     _ReduceImproperToTypeArgumentsAction,
+	{_State391, _WildcardMarker}:                   _ReduceImproperExplicitToExplicitFieldDefsAction,
+	{_State392, _WildcardMarker}:                   _ReduceImproperImplicitToExplicitFieldDefsAction,
+	{_State394, _WildcardMarker}:                   _ReduceImproperToTypeArgumentsAction,
 	{_State395, _WildcardMarker}:                   _ReduceBindingToGenericTypeArgumentsAction,
 	{_State396, _WildcardMarker}:                   _ReduceToIndexExprAction,
 	{_State398, _WildcardMarker}:                   _ReduceToInitializeExprAction,
-	{_State399, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State400, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State401, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State402, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State399, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State400, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State401, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State402, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State402, SemicolonToken}:                    _ReduceNilToOptionalSequenceExprAction,
 	{_State405, _WildcardMarker}:                   _ReduceNoElseToIfExprBodyAction,
-	{_State406, _EndMarker}:                        _ReduceToSwitchExprAction,
+	{_State406, _WildcardMarker}:                   _ReduceToSwitchExprAction,
 	{_State407, _WildcardMarker}:                   _ReduceToExplicitEnumTypeExprAction,
-	{_State410, RparenToken}:                       _ReduceImproperToExplicitEnumValueDefsAction,
+	{_State410, _WildcardMarker}:                   _ReduceImproperToExplicitEnumValueDefsAction,
 	{_State412, _WildcardMarker}:                   _ReduceUnnamedTypedVarargToParameterDeclAction,
 	{_State413, _WildcardMarker}:                   _ReduceNilToReturnTypeAction,
-	{_State414, RparenToken}:                       _ReduceImproperToParameterDeclsAction,
+	{_State414, _WildcardMarker}:                   _ReduceImproperToParameterDeclsAction,
 	{_State415, _WildcardMarker}:                   _ReduceExternalToNamedTypeExprAction,
-	{_State416, RparenToken}:                       _ReduceNilToParameterDeclsAction,
+	{_State416, _WildcardMarker}:                   _ReduceNilToParameterDeclsAction,
 	{_State417, _WildcardMarker}:                   _ReduceNamedToFieldDefAction,
 	{_State418, _WildcardMarker}:                   _ReducePairToProperImplicitEnumValueDefsAction,
 	{_State419, _WildcardMarker}:                   _ReduceAddToProperImplicitEnumValueDefsAction,
@@ -11411,7 +11411,7 @@ var _ActionTable = _ActionTableType{
 	{_State422, _WildcardMarker}:                   _ReduceToTraitTypeExprAction,
 	{_State423, _WildcardMarker}:                   _ReduceConstrainedToGenericParameterDefAction,
 	{_State424, _WildcardMarker}:                   _ReduceGenericToGenericParameterDefsAction,
-	{_State425, RbracketToken}:                     _ReduceImproperToGenericParameterDefListAction,
+	{_State425, _WildcardMarker}:                   _ReduceImproperToGenericParameterDefListAction,
 	{_State427, _WildcardMarker}:                   _ReduceNamedTypedVarargToProperParameterDefAction,
 	{_State428, _WildcardMarker}:                   _ReduceIgnoreTypedVarargToProperParameterDefAction,
 	{_State431, _WildcardMarker}:                   _ReduceNamedToFieldVarPatternAction,
@@ -11425,15 +11425,15 @@ var _ActionTable = _ActionTableType{
 	{_State440, _WildcardMarker}:                   _ReduceToArrayTypeExprAction,
 	{_State441, _WildcardMarker}:                   _ReduceAddExplicitToProperExplicitFieldDefsAction,
 	{_State442, _WildcardMarker}:                   _ReduceAddImplicitToProperExplicitFieldDefsAction,
-	{_State443, _EndMarker}:                        _ReduceToUnsafeStatementAction,
+	{_State443, _WildcardMarker}:                   _ReduceToUnsafeStatementAction,
 	{_State444, _WildcardMarker}:                   _ReduceAddToProperTypeArgumentsAction,
 	{_State445, _WildcardMarker}:                   _ReduceToCallExprAction,
-	{_State446, _EndMarker}:                        _ReduceDoWhileToLoopExprBodyAction,
-	{_State447, SemicolonToken}:                    _ReduceAssignToForAssignmentAction,
-	{_State450, DoToken}:                           _ReduceSequenceExprToOptionalSequenceExprAction,
-	{_State451, _EndMarker}:                        _ReduceWhileToLoopExprBodyAction,
-	{_State452, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
-	{_State453, IfToken}:                           _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State446, _WildcardMarker}:                   _ReduceDoWhileToLoopExprBodyAction,
+	{_State447, _WildcardMarker}:                   _ReduceAssignToForAssignmentAction,
+	{_State450, _WildcardMarker}:                   _ReduceSequenceExprToOptionalSequenceExprAction,
+	{_State451, _WildcardMarker}:                   _ReduceWhileToLoopExprBodyAction,
+	{_State452, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State453, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State454, _WildcardMarker}:                   _ReduceImplicitPairToProperExplicitEnumValueDefsAction,
 	{_State455, _WildcardMarker}:                   _ReduceExplicitPairToProperExplicitEnumValueDefsAction,
 	{_State456, _WildcardMarker}:                   _ReduceImplicitAddToProperExplicitEnumValueDefsAction,
@@ -11441,21 +11441,21 @@ var _ActionTable = _ActionTableType{
 	{_State458, _WildcardMarker}:                   _ReduceToFuncTypeExprAction,
 	{_State459, _WildcardMarker}:                   _ReduceAddToProperParameterDeclsAction,
 	{_State461, _WildcardMarker}:                   _ReduceAddToProperGenericParameterDefListAction,
-	{_State462, LbraceToken}:                       _ReduceNilToReturnTypeAction,
-	{_State463, RparenToken}:                       _ReduceNilToParameterDefsAction,
+	{_State462, _WildcardMarker}:                   _ReduceNilToReturnTypeAction,
+	{_State463, _WildcardMarker}:                   _ReduceNilToParameterDefsAction,
 	{_State464, _WildcardMarker}:                   _ReduceConstrainedDefToTypeDefAction,
 	{_State465, _WildcardMarker}:                   _ReduceToAnonymousFuncExprAction,
-	{_State467, LbraceToken}:                       _ReduceUnlabelledToOptionalLabelDeclAction,
+	{_State467, _WildcardMarker}:                   _ReduceUnlabelledToOptionalLabelDeclAction,
 	{_State467, DoToken}:                           _ReduceNilToOptionalSequenceExprAction,
-	{_State468, LbraceToken}:                       _ReduceCaseToConditionAction,
-	{_State469, _EndMarker}:                        _ReduceMultiIfElseToIfExprBodyAction,
-	{_State471, _EndMarker}:                        _ReduceIfElseToIfExprBodyAction,
+	{_State468, _WildcardMarker}:                   _ReduceCaseToConditionAction,
+	{_State469, _WildcardMarker}:                   _ReduceMultiIfElseToIfExprBodyAction,
+	{_State471, _WildcardMarker}:                   _ReduceIfElseToIfExprBodyAction,
 	{_State472, _WildcardMarker}:                   _ReduceNilToReturnTypeAction,
-	{_State475, _EndMarker}:                        _ReduceIteratorToLoopExprBodyAction,
+	{_State475, _WildcardMarker}:                   _ReduceIteratorToLoopExprBodyAction,
 	{_State477, _WildcardMarker}:                   _ReduceToMethodSignatureAction,
 	{_State478, _WildcardMarker}:                   _ReduceFuncDefToNamedFuncDefAction,
-	{_State479, LbraceToken}:                       _ReduceNilToReturnTypeAction,
-	{_State482, _EndMarker}:                        _ReduceForToLoopExprBodyAction,
+	{_State479, _WildcardMarker}:                   _ReduceNilToReturnTypeAction,
+	{_State482, _WildcardMarker}:                   _ReduceForToLoopExprBodyAction,
 	{_State483, _WildcardMarker}:                   _ReduceMethodDefToNamedFuncDefAction,
 }
 
@@ -11465,7 +11465,7 @@ Parser Debug States:
     Kernel Items:
       #accept: ^.source
     Reduce:
-      $ -> [definitions]
+      * -> [definitions]
     Goto:
       COMMENT_GROUPS -> State 9
       PACKAGE -> State 13
@@ -11887,9 +11887,9 @@ Parser Debug States:
 
   State 17:
     Kernel Items:
-      source: definitions., $
+      source: definitions., *
     Reduce:
-      $ -> [source]
+      * -> [source]
     Goto:
       (nil)
 
@@ -11912,10 +11912,10 @@ Parser Debug States:
   State 20:
     Kernel Items:
       proper_definitions: proper_definitions.NEWLINES definition
-      definitions: proper_definitions., $
+      definitions: proper_definitions., *
       definitions: proper_definitions.NEWLINES
     Reduce:
-      $ -> [definitions]
+      * -> [definitions]
     Goto:
       NEWLINES -> State 144
 
@@ -11992,7 +11992,7 @@ Parser Debug States:
     Kernel Items:
       statement: CASE.case_patterns COLON optional_simple_statement
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -12083,9 +12083,9 @@ Parser Debug States:
 
   State 33:
     Kernel Items:
-      fallthrough_statement: FALLTHROUGH., $
+      fallthrough_statement: FALLTHROUGH., *
     Reduce:
-      $ -> [fallthrough_statement]
+      * -> [fallthrough_statement]
     Goto:
       (nil)
 
@@ -12117,7 +12117,7 @@ Parser Debug States:
     Kernel Items:
       sequence_expr: GREATER.sequence_expr
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -12515,9 +12515,9 @@ Parser Debug States:
 
   State 62:
     Kernel Items:
-      simple_statement: assign_statement., $
+      simple_statement: assign_statement., *
     Reduce:
-      $ -> [simple_statement]
+      * -> [simple_statement]
     Goto:
       (nil)
 
@@ -12563,9 +12563,9 @@ Parser Debug States:
 
   State 68:
     Kernel Items:
-      simple_statement: binary_op_assign_statement., $
+      simple_statement: binary_op_assign_statement., *
     Reduce:
-      $ -> [simple_statement]
+      * -> [simple_statement]
     Goto:
       (nil)
 
@@ -12597,7 +12597,7 @@ Parser Debug States:
     Kernel Items:
       callback_op_statement: callback_op.call_expr
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -12634,9 +12634,9 @@ Parser Debug States:
 
   State 73:
     Kernel Items:
-      simple_statement: callback_op_statement., $
+      simple_statement: callback_op_statement., *
     Reduce:
-      $ -> [simple_statement]
+      * -> [simple_statement]
     Goto:
       (nil)
 
@@ -12673,9 +12673,9 @@ Parser Debug States:
 
   State 77:
     Kernel Items:
-      simple_statement: expr_or_improper_struct_statement., $
+      simple_statement: expr_or_improper_struct_statement., *
     Reduce:
-      $ -> [simple_statement]
+      * -> [simple_statement]
     Goto:
       (nil)
 
@@ -12690,17 +12690,17 @@ Parser Debug States:
 
   State 79:
     Kernel Items:
-      simple_statement: fallthrough_statement., $
+      simple_statement: fallthrough_statement., *
     Reduce:
-      $ -> [simple_statement]
+      * -> [simple_statement]
     Goto:
       (nil)
 
   State 80:
     Kernel Items:
-      expr: if_expr., $
+      expr: if_expr., *
     Reduce:
-      $ -> [expr]
+      * -> [expr]
     Goto:
       (nil)
 
@@ -12714,9 +12714,9 @@ Parser Debug States:
 
   State 82:
     Kernel Items:
-      statement: import_statement., $
+      statement: import_statement., *
     Reduce:
-      $ -> [statement]
+      * -> [statement]
     Goto:
       (nil)
 
@@ -12746,9 +12746,9 @@ Parser Debug States:
 
   State 86:
     Kernel Items:
-      simple_statement: jump_statement., $
+      simple_statement: jump_statement., *
     Reduce:
-      $ -> [simple_statement]
+      * -> [simple_statement]
     Goto:
       (nil)
 
@@ -12843,9 +12843,9 @@ Parser Debug States:
 
   State 89:
     Kernel Items:
-      expr: loop_expr., $
+      expr: loop_expr., *
     Reduce:
-      $ -> [expr]
+      * -> [expr]
     Goto:
       (nil)
 
@@ -12943,7 +12943,7 @@ Parser Debug States:
     Kernel Items:
       prefix_unary_expr: prefix_unary_op.prefixable_expr
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -13008,9 +13008,9 @@ Parser Debug States:
 
   State 102:
     Kernel Items:
-      statement: simple_statement., $
+      statement: simple_statement., *
     Reduce:
-      $ -> [statement]
+      * -> [statement]
     Goto:
       (nil)
 
@@ -13024,33 +13024,33 @@ Parser Debug States:
 
   State 104:
     Kernel Items:
-      expr: switch_expr., $
+      expr: switch_expr., *
     Reduce:
-      $ -> [expr]
+      * -> [expr]
     Goto:
       (nil)
 
   State 105:
     Kernel Items:
-      simple_statement: unary_op_assign_statement., $
+      simple_statement: unary_op_assign_statement., *
     Reduce:
-      $ -> [simple_statement]
+      * -> [simple_statement]
     Goto:
       (nil)
 
   State 106:
     Kernel Items:
-      simple_statement: unsafe_statement., $
+      simple_statement: unsafe_statement., *
     Reduce:
-      $ -> [simple_statement]
+      * -> [simple_statement]
     Goto:
       (nil)
 
   State 107:
     Kernel Items:
-      sequence_expr: var_decl_pattern., $
+      sequence_expr: var_decl_pattern., *
     Reduce:
-      $ -> [sequence_expr]
+      * -> [sequence_expr]
     Goto:
       (nil)
 
@@ -13075,9 +13075,9 @@ Parser Debug States:
 
   State 109:
     Kernel Items:
-      expr: sequence_expr., $
+      expr: sequence_expr., *
     Reduce:
-      $ -> [expr]
+      * -> [expr]
     Goto:
       (nil)
 
@@ -13145,7 +13145,7 @@ Parser Debug States:
       implicit_struct_type_expr: LPAREN.implicit_field_defs RPAREN
       implicit_enum_type_expr: LPAREN.implicit_enum_value_defs RPAREN
     Reduce:
-      RPAREN -> [implicit_field_defs]
+      * -> [implicit_field_defs]
     Goto:
       IDENTIFIER -> State 241
       UNDERSCORE -> State 242
@@ -13378,7 +13378,7 @@ Parser Debug States:
       named_func_def: FUNC IDENTIFIER.generic_parameter_defs LPAREN parameter_defs RPAREN return_type statement_block
       named_func_def: FUNC IDENTIFIER.ASSIGN expr
     Reduce:
-      LPAREN -> [generic_parameter_defs]
+      * -> [generic_parameter_defs]
     Goto:
       DOLLAR_LBRACKET -> State 258
       ASSIGN -> State 257
@@ -13399,11 +13399,11 @@ Parser Debug States:
     Kernel Items:
       proper_statements: proper_statements.NEWLINES statement
       proper_statements: proper_statements.SEMICOLON statement
-      statements: proper_statements., RBRACE
+      statements: proper_statements., *
       statements: proper_statements.NEWLINES
       statements: proper_statements.SEMICOLON
     Reduce:
-      RBRACE -> [statements]
+      * -> [statements]
     Goto:
       NEWLINES -> State 264
       SEMICOLON -> State 265
@@ -13447,9 +13447,9 @@ Parser Debug States:
   State 144:
     Kernel Items:
       proper_definitions: proper_definitions NEWLINES.definition
-      definitions: proper_definitions NEWLINES., $
+      definitions: proper_definitions NEWLINES., *
     Reduce:
-      $ -> [definitions]
+      * -> [definitions]
     Goto:
       COMMENT_GROUPS -> State 9
       PACKAGE -> State 13
@@ -13775,7 +13775,7 @@ Parser Debug States:
     Kernel Items:
       anonymous_func_expr: FUNC LPAREN.parameter_defs RPAREN return_type statement_block
     Reduce:
-      RPAREN -> [parameter_defs]
+      * -> [parameter_defs]
     Goto:
       IDENTIFIER -> State 260
       UNDERSCORE -> State 261
@@ -13786,9 +13786,9 @@ Parser Debug States:
 
   State 160:
     Kernel Items:
-      sequence_expr: GREATER sequence_expr., $
+      sequence_expr: GREATER sequence_expr., *
     Reduce:
-      $ -> [sequence_expr]
+      * -> [sequence_expr]
     Goto:
       (nil)
 
@@ -13824,9 +13824,9 @@ Parser Debug States:
 
   State 164:
     Kernel Items:
-      import_clause: STRING_LITERAL., $
+      import_clause: STRING_LITERAL., *
     Reduce:
-      $ -> [import_clause]
+      * -> [import_clause]
     Goto:
       (nil)
 
@@ -13840,9 +13840,9 @@ Parser Debug States:
 
   State 166:
     Kernel Items:
-      import_statement: IMPORT import_clause., $
+      import_statement: IMPORT import_clause., *
     Reduce:
-      $ -> [import_statement]
+      * -> [import_statement]
     Goto:
       (nil)
 
@@ -13998,10 +13998,10 @@ Parser Debug States:
   State 175:
     Kernel Items:
       proper_arguments: proper_arguments.COMMA argument
-      arguments: proper_arguments., RPAREN
+      arguments: proper_arguments., *
       arguments: proper_arguments.COMMA
     Reduce:
-      RPAREN -> [arguments]
+      * -> [arguments]
     Goto:
       COMMA -> State 302
 
@@ -14009,7 +14009,7 @@ Parser Debug States:
     Kernel Items:
       explicit_struct_type_expr: STRUCT LPAREN.explicit_field_defs RPAREN
     Reduce:
-      RPAREN -> [explicit_field_defs]
+      * -> [explicit_field_defs]
     Goto:
       IDENTIFIER -> State 241
       UNDERSCORE -> State 242
@@ -14070,9 +14070,9 @@ Parser Debug States:
 
   State 179:
     Kernel Items:
-      unary_op_assign: ADD_ONE_ASSIGN., $
+      unary_op_assign: ADD_ONE_ASSIGN., *
     Reduce:
-      $ -> [unary_op_assign]
+      * -> [unary_op_assign]
     Goto:
       (nil)
 
@@ -14136,7 +14136,7 @@ Parser Debug States:
     Kernel Items:
       generic_type_arguments: DOLLAR_LBRACKET.type_arguments RBRACKET
     Reduce:
-      RBRACKET -> [type_arguments]
+      * -> [type_arguments]
     Goto:
       IDENTIFIER -> State 116
       UNDERSCORE -> State 122
@@ -14298,9 +14298,9 @@ Parser Debug States:
 
   State 195:
     Kernel Items:
-      unary_op_assign: SUB_ONE_ASSIGN., $
+      unary_op_assign: SUB_ONE_ASSIGN., *
     Reduce:
-      $ -> [unary_op_assign]
+      * -> [unary_op_assign]
     Goto:
       (nil)
 
@@ -14391,9 +14391,9 @@ Parser Debug States:
 
   State 199:
     Kernel Items:
-      unary_op_assign_statement: accessible_expr unary_op_assign., $
+      unary_op_assign_statement: accessible_expr unary_op_assign., *
     Reduce:
-      $ -> [unary_op_assign_statement]
+      * -> [unary_op_assign_statement]
     Goto:
       (nil)
 
@@ -14433,7 +14433,7 @@ Parser Debug States:
     Kernel Items:
       binary_add_expr: add_expr add_op.mul_expr
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -14484,7 +14484,7 @@ Parser Debug States:
     Kernel Items:
       binary_and_expr: and_expr AND.cmp_expr
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -14610,7 +14610,7 @@ Parser Debug States:
       access_expr: accessible_expr.DOT IDENTIFIER
       index_expr: accessible_expr.LBRACKET argument RBRACKET
     Reduce:
-      LPAREN -> [generic_type_arguments]
+      * -> [generic_type_arguments]
     Goto:
       LBRACKET -> State 190
       DOT -> State 188
@@ -14685,7 +14685,7 @@ Parser Debug States:
     Kernel Items:
       binary_cmp_expr: cmp_expr cmp_op.add_expr
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -14960,9 +14960,9 @@ Parser Debug States:
   State 219:
     Kernel Items:
       exprs: exprs.COMMA expr
-      jump_statement: jump_type exprs., $
+      jump_statement: jump_type exprs., *
     Reduce:
-      $ -> [jump_statement]
+      * -> [jump_statement]
     Goto:
       COMMA -> State 216
 
@@ -15018,7 +15018,7 @@ Parser Debug States:
     Kernel Items:
       binary_mul_expr: mul_expr mul_op.prefixable_expr
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -15079,7 +15079,7 @@ Parser Debug States:
       loop_expr_body: FOR.assign_pattern IN sequence_expr DO statement_block
       loop_expr_body: FOR.for_assignment SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO statement_block
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -15148,7 +15148,7 @@ Parser Debug States:
       if_expr_body: IF.condition statement_block ELSE statement_block
       if_expr_body: IF.condition statement_block ELSE if_expr
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -15215,7 +15215,7 @@ Parser Debug States:
     Kernel Items:
       switch_expr: optional_label_decl SWITCH.sequence_expr statement_block
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -15278,17 +15278,17 @@ Parser Debug States:
 
   State 231:
     Kernel Items:
-      if_expr: optional_label_decl if_expr_body., $
+      if_expr: optional_label_decl if_expr_body., *
     Reduce:
-      $ -> [if_expr]
+      * -> [if_expr]
     Goto:
       (nil)
 
   State 232:
     Kernel Items:
-      loop_expr: optional_label_decl loop_expr_body., $
+      loop_expr: optional_label_decl loop_expr_body., *
     Reduce:
-      $ -> [loop_expr]
+      * -> [loop_expr]
     Goto:
       (nil)
 
@@ -15304,7 +15304,7 @@ Parser Debug States:
     Kernel Items:
       binary_or_expr: or_expr OR.and_expr
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -15416,7 +15416,7 @@ Parser Debug States:
     Kernel Items:
       func_type_expr: FUNC LPAREN.parameter_decls RPAREN return_type
     Reduce:
-      RPAREN -> [parameter_decls]
+      * -> [parameter_decls]
     Goto:
       IDENTIFIER -> State 335
       UNDERSCORE -> State 336
@@ -15607,10 +15607,10 @@ Parser Debug States:
   State 247:
     Kernel Items:
       proper_implicit_enum_value_defs: proper_implicit_enum_value_defs.OR field_def
-      implicit_enum_value_defs: proper_implicit_enum_value_defs., RPAREN
+      implicit_enum_value_defs: proper_implicit_enum_value_defs., *
       implicit_enum_value_defs: proper_implicit_enum_value_defs.NEWLINES
     Reduce:
-      RPAREN -> [implicit_enum_value_defs]
+      * -> [implicit_enum_value_defs]
     Goto:
       NEWLINES -> State 350
       OR -> State 351
@@ -15618,10 +15618,10 @@ Parser Debug States:
   State 248:
     Kernel Items:
       proper_implicit_field_defs: proper_implicit_field_defs.COMMA field_def
-      implicit_field_defs: proper_implicit_field_defs., RPAREN
+      implicit_field_defs: proper_implicit_field_defs., *
       implicit_field_defs: proper_implicit_field_defs.COMMA
     Reduce:
-      RPAREN -> [implicit_field_defs]
+      * -> [implicit_field_defs]
     Goto:
       COMMA -> State 352
 
@@ -15651,7 +15651,7 @@ Parser Debug States:
     Kernel Items:
       trait_type_expr: TRAIT LPAREN.explicit_field_defs RPAREN
     Reduce:
-      RPAREN -> [explicit_field_defs]
+      * -> [explicit_field_defs]
     Goto:
       IDENTIFIER -> State 241
       UNDERSCORE -> State 242
@@ -15838,7 +15838,7 @@ Parser Debug States:
     Kernel Items:
       generic_parameter_defs: DOLLAR_LBRACKET.generic_parameter_def_list RBRACKET
     Reduce:
-      RBRACKET -> [generic_parameter_def_list]
+      * -> [generic_parameter_def_list]
     Goto:
       IDENTIFIER -> State 358
       generic_parameter_def -> State 359
@@ -16153,9 +16153,9 @@ Parser Debug States:
 
   State 266:
     Kernel Items:
-      statement_block: LBRACE statements RBRACE., $
+      statement_block: LBRACE statements RBRACE., *
     Reduce:
-      $ -> [statement_block]
+      * -> [statement_block]
     Goto:
       (nil)
 
@@ -16303,9 +16303,9 @@ Parser Debug States:
 
   State 276:
     Kernel Items:
-      var_decl_pattern: var_or_let var_pattern optional_type_expr., $
+      var_decl_pattern: var_or_let var_pattern optional_type_expr., *
     Reduce:
-      $ -> [var_decl_pattern]
+      * -> [var_decl_pattern]
     Goto:
       (nil)
 
@@ -16437,7 +16437,7 @@ Parser Debug States:
     Kernel Items:
       case_patterns: case_patterns COMMA.case_pattern
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -16503,17 +16503,17 @@ Parser Debug States:
 
   State 282:
     Kernel Items:
-      statement: DEFAULT COLON optional_simple_statement., $
+      statement: DEFAULT COLON optional_simple_statement., *
     Reduce:
-      $ -> [statement]
+      * -> [statement]
     Goto:
       (nil)
 
   State 283:
     Kernel Items:
-      optional_simple_statement: simple_statement., $
+      optional_simple_statement: simple_statement., *
     Reduce:
-      $ -> [optional_simple_statement]
+      * -> [optional_simple_statement]
     Goto:
       (nil)
 
@@ -16536,26 +16536,26 @@ Parser Debug States:
   State 286:
     Kernel Items:
       proper_parameter_defs: proper_parameter_defs.COMMA parameter_def
-      parameter_defs: proper_parameter_defs., RPAREN
+      parameter_defs: proper_parameter_defs., *
       parameter_defs: proper_parameter_defs.COMMA
     Reduce:
-      RPAREN -> [parameter_defs]
+      * -> [parameter_defs]
     Goto:
       COMMA -> State 380
 
   State 287:
     Kernel Items:
-      import_clause: DOT STRING_LITERAL., $
+      import_clause: DOT STRING_LITERAL., *
     Reduce:
-      $ -> [import_clause]
+      * -> [import_clause]
     Goto:
       (nil)
 
   State 288:
     Kernel Items:
-      import_clause: IDENTIFIER STRING_LITERAL., $
+      import_clause: IDENTIFIER STRING_LITERAL., *
     Reduce:
-      $ -> [import_clause]
+      * -> [import_clause]
     Goto:
       (nil)
 
@@ -16579,20 +16579,20 @@ Parser Debug States:
     Kernel Items:
       proper_import_clauses: proper_import_clauses.NEWLINES import_clause
       proper_import_clauses: proper_import_clauses.COMMA import_clause
-      import_clauses: proper_import_clauses., RPAREN
+      import_clauses: proper_import_clauses., *
       import_clauses: proper_import_clauses.NEWLINES
       import_clauses: proper_import_clauses.COMMA
     Reduce:
-      RPAREN -> [import_clauses]
+      * -> [import_clauses]
     Goto:
       NEWLINES -> State 383
       COMMA -> State 382
 
   State 292:
     Kernel Items:
-      import_clause: UNDERSCORE STRING_LITERAL., $
+      import_clause: UNDERSCORE STRING_LITERAL., *
     Reduce:
-      $ -> [import_clause]
+      * -> [import_clause]
     Goto:
       (nil)
 
@@ -16995,11 +16995,11 @@ Parser Debug States:
     Kernel Items:
       proper_explicit_field_defs: proper_explicit_field_defs.NEWLINES field_def
       proper_explicit_field_defs: proper_explicit_field_defs.COMMA field_def
-      explicit_field_defs: proper_explicit_field_defs., RPAREN
+      explicit_field_defs: proper_explicit_field_defs., *
       explicit_field_defs: proper_explicit_field_defs.NEWLINES
       explicit_field_defs: proper_explicit_field_defs.COMMA
     Reduce:
-      RPAREN -> [explicit_field_defs]
+      * -> [explicit_field_defs]
     Goto:
       NEWLINES -> State 392
       COMMA -> State 391
@@ -17015,10 +17015,10 @@ Parser Debug States:
   State 307:
     Kernel Items:
       proper_type_arguments: proper_type_arguments.COMMA type_expr
-      type_arguments: proper_type_arguments., RBRACKET
+      type_arguments: proper_type_arguments., *
       type_arguments: proper_type_arguments.COMMA
     Reduce:
-      RBRACKET -> [type_arguments]
+      * -> [type_arguments]
     Goto:
       COMMA -> State 394
 
@@ -17060,9 +17060,9 @@ Parser Debug States:
 
   State 312:
     Kernel Items:
-      binary_op_assign_statement: accessible_expr binary_op_assign expr., $
+      binary_op_assign_statement: accessible_expr binary_op_assign expr., *
     Reduce:
-      $ -> [binary_op_assign_statement]
+      * -> [binary_op_assign_statement]
     Goto:
       (nil)
 
@@ -17174,9 +17174,9 @@ Parser Debug States:
 
   State 316:
     Kernel Items:
-      assign_statement: assign_pattern ASSIGN expr., $
+      assign_statement: assign_pattern ASSIGN expr., *
     Reduce:
-      $ -> [assign_statement]
+      * -> [assign_statement]
     Goto:
       (nil)
 
@@ -17212,9 +17212,9 @@ Parser Debug States:
   State 320:
     Kernel Items:
       exprs: exprs.COMMA expr
-      jump_statement: jump_type JUMP_LABEL exprs., $
+      jump_statement: jump_type JUMP_LABEL exprs., *
     Reduce:
-      $ -> [jump_statement]
+      * -> [jump_statement]
     Goto:
       COMMA -> State 216
 
@@ -17268,7 +17268,7 @@ Parser Debug States:
     Kernel Items:
       condition: CASE.case_patterns ASSIGN sequence_expr
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -17346,9 +17346,9 @@ Parser Debug States:
 
   State 328:
     Kernel Items:
-      condition: sequence_expr., LBRACE
+      condition: sequence_expr., *
     Reduce:
-      LBRACE -> [condition]
+      * -> [condition]
     Goto:
       (nil)
 
@@ -17392,10 +17392,10 @@ Parser Debug States:
     Kernel Items:
       proper_explicit_enum_value_defs: proper_explicit_enum_value_defs.OR field_def
       proper_explicit_enum_value_defs: proper_explicit_enum_value_defs.NEWLINES field_def
-      explicit_enum_value_defs: proper_explicit_enum_value_defs., RPAREN
+      explicit_enum_value_defs: proper_explicit_enum_value_defs., *
       explicit_enum_value_defs: proper_explicit_enum_value_defs.NEWLINES
     Reduce:
-      RPAREN -> [explicit_enum_value_defs]
+      * -> [explicit_enum_value_defs]
     Goto:
       NEWLINES -> State 410
       OR -> State 411
@@ -17554,10 +17554,10 @@ Parser Debug States:
   State 339:
     Kernel Items:
       proper_parameter_decls: proper_parameter_decls.COMMA parameter_decl
-      parameter_decls: proper_parameter_decls., RPAREN
+      parameter_decls: proper_parameter_decls., *
       parameter_decls: proper_parameter_decls.COMMA
     Reduce:
-      RPAREN -> [parameter_decls]
+      * -> [parameter_decls]
     Goto:
       COMMA -> State 414
 
@@ -17696,9 +17696,9 @@ Parser Debug States:
 
   State 350:
     Kernel Items:
-      implicit_enum_value_defs: proper_implicit_enum_value_defs NEWLINES., RPAREN
+      implicit_enum_value_defs: proper_implicit_enum_value_defs NEWLINES., *
     Reduce:
-      RPAREN -> [implicit_enum_value_defs]
+      * -> [implicit_enum_value_defs]
     Goto:
       (nil)
 
@@ -17750,9 +17750,9 @@ Parser Debug States:
   State 352:
     Kernel Items:
       proper_implicit_field_defs: proper_implicit_field_defs COMMA.field_def
-      implicit_field_defs: proper_implicit_field_defs COMMA., RPAREN
+      implicit_field_defs: proper_implicit_field_defs COMMA., *
     Reduce:
-      RPAREN -> [implicit_field_defs]
+      * -> [implicit_field_defs]
     Goto:
       IDENTIFIER -> State 241
       UNDERSCORE -> State 242
@@ -17894,10 +17894,10 @@ Parser Debug States:
   State 361:
     Kernel Items:
       proper_generic_parameter_def_list: proper_generic_parameter_def_list.COMMA generic_parameter_def
-      generic_parameter_def_list: proper_generic_parameter_def_list., RBRACKET
+      generic_parameter_def_list: proper_generic_parameter_def_list., *
       generic_parameter_def_list: proper_generic_parameter_def_list.COMMA
     Reduce:
-      RBRACKET -> [generic_parameter_def_list]
+      * -> [generic_parameter_def_list]
     Goto:
       COMMA -> State 425
 
@@ -17905,7 +17905,7 @@ Parser Debug States:
     Kernel Items:
       named_func_def: FUNC IDENTIFIER generic_parameter_defs LPAREN.parameter_defs RPAREN return_type statement_block
     Reduce:
-      RPAREN -> [parameter_defs]
+      * -> [parameter_defs]
     Goto:
       IDENTIFIER -> State 260
       UNDERSCORE -> State 261
@@ -18125,9 +18125,9 @@ Parser Debug States:
 
   State 377:
     Kernel Items:
-      statement: CASE case_patterns COLON optional_simple_statement., $
+      statement: CASE case_patterns COLON optional_simple_statement., *
     Reduce:
-      $ -> [statement]
+      * -> [statement]
     Goto:
       (nil)
 
@@ -18143,7 +18143,7 @@ Parser Debug States:
     Kernel Items:
       anonymous_func_expr: FUNC LPAREN parameter_defs RPAREN.return_type statement_block
     Reduce:
-      LBRACE -> [return_type]
+      * -> [return_type]
     Goto:
       IDENTIFIER -> State 116
       UNDERSCORE -> State 122
@@ -18182,9 +18182,9 @@ Parser Debug States:
   State 380:
     Kernel Items:
       proper_parameter_defs: proper_parameter_defs COMMA.parameter_def
-      parameter_defs: proper_parameter_defs COMMA., RPAREN
+      parameter_defs: proper_parameter_defs COMMA., *
     Reduce:
-      RPAREN -> [parameter_defs]
+      * -> [parameter_defs]
     Goto:
       IDENTIFIER -> State 260
       UNDERSCORE -> State 261
@@ -18193,18 +18193,18 @@ Parser Debug States:
 
   State 381:
     Kernel Items:
-      import_statement: IMPORT LPAREN import_clauses RPAREN., $
+      import_statement: IMPORT LPAREN import_clauses RPAREN., *
     Reduce:
-      $ -> [import_statement]
+      * -> [import_statement]
     Goto:
       (nil)
 
   State 382:
     Kernel Items:
       proper_import_clauses: proper_import_clauses COMMA.import_clause
-      import_clauses: proper_import_clauses COMMA., RPAREN
+      import_clauses: proper_import_clauses COMMA., *
     Reduce:
-      RPAREN -> [import_clauses]
+      * -> [import_clauses]
     Goto:
       STRING_LITERAL -> State 164
       IDENTIFIER -> State 162
@@ -18215,9 +18215,9 @@ Parser Debug States:
   State 383:
     Kernel Items:
       proper_import_clauses: proper_import_clauses NEWLINES.import_clause
-      import_clauses: proper_import_clauses NEWLINES., RPAREN
+      import_clauses: proper_import_clauses NEWLINES., *
     Reduce:
-      RPAREN -> [import_clauses]
+      * -> [import_clauses]
     Goto:
       STRING_LITERAL -> State 164
       IDENTIFIER -> State 162
@@ -18289,9 +18289,9 @@ Parser Debug States:
   State 391:
     Kernel Items:
       proper_explicit_field_defs: proper_explicit_field_defs COMMA.field_def
-      explicit_field_defs: proper_explicit_field_defs COMMA., RPAREN
+      explicit_field_defs: proper_explicit_field_defs COMMA., *
     Reduce:
-      RPAREN -> [explicit_field_defs]
+      * -> [explicit_field_defs]
     Goto:
       IDENTIFIER -> State 241
       UNDERSCORE -> State 242
@@ -18335,9 +18335,9 @@ Parser Debug States:
   State 392:
     Kernel Items:
       proper_explicit_field_defs: proper_explicit_field_defs NEWLINES.field_def
-      explicit_field_defs: proper_explicit_field_defs NEWLINES., RPAREN
+      explicit_field_defs: proper_explicit_field_defs NEWLINES., *
     Reduce:
-      RPAREN -> [explicit_field_defs]
+      * -> [explicit_field_defs]
     Goto:
       IDENTIFIER -> State 241
       UNDERSCORE -> State 242
@@ -18389,9 +18389,9 @@ Parser Debug States:
   State 394:
     Kernel Items:
       proper_type_arguments: proper_type_arguments COMMA.type_expr
-      type_arguments: proper_type_arguments COMMA., RBRACKET
+      type_arguments: proper_type_arguments COMMA., *
     Reduce:
-      RBRACKET -> [type_arguments]
+      * -> [type_arguments]
     Goto:
       IDENTIFIER -> State 116
       UNDERSCORE -> State 122
@@ -18464,7 +18464,7 @@ Parser Debug States:
     Kernel Items:
       loop_expr_body: DO statement_block FOR.sequence_expr
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -18529,7 +18529,7 @@ Parser Debug States:
     Kernel Items:
       for_assignment: assign_pattern ASSIGN.sequence_expr
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -18594,7 +18594,7 @@ Parser Debug States:
     Kernel Items:
       loop_expr_body: FOR assign_pattern IN.sequence_expr DO statement_block
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -18659,7 +18659,7 @@ Parser Debug States:
     Kernel Items:
       loop_expr_body: FOR for_assignment SEMICOLON.optional_sequence_expr SEMICOLON optional_sequence_expr DO statement_block
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
       SEMICOLON -> [optional_sequence_expr]
     Goto:
       INTEGER_LITERAL -> State 40
@@ -18753,9 +18753,9 @@ Parser Debug States:
 
   State 406:
     Kernel Items:
-      switch_expr: optional_label_decl SWITCH sequence_expr statement_block., $
+      switch_expr: optional_label_decl SWITCH sequence_expr statement_block., *
     Reduce:
-      $ -> [switch_expr]
+      * -> [switch_expr]
     Goto:
       (nil)
 
@@ -18860,9 +18860,9 @@ Parser Debug States:
   State 410:
     Kernel Items:
       proper_explicit_enum_value_defs: proper_explicit_enum_value_defs NEWLINES.field_def
-      explicit_enum_value_defs: proper_explicit_enum_value_defs NEWLINES., RPAREN
+      explicit_enum_value_defs: proper_explicit_enum_value_defs NEWLINES., *
     Reduce:
-      RPAREN -> [explicit_enum_value_defs]
+      * -> [explicit_enum_value_defs]
     Goto:
       IDENTIFIER -> State 241
       UNDERSCORE -> State 242
@@ -19003,9 +19003,9 @@ Parser Debug States:
   State 414:
     Kernel Items:
       proper_parameter_decls: proper_parameter_decls COMMA.parameter_decl
-      parameter_decls: proper_parameter_decls COMMA., RPAREN
+      parameter_decls: proper_parameter_decls COMMA., *
     Reduce:
-      RPAREN -> [parameter_decls]
+      * -> [parameter_decls]
     Goto:
       IDENTIFIER -> State 335
       UNDERSCORE -> State 336
@@ -19057,7 +19057,7 @@ Parser Debug States:
     Kernel Items:
       method_signature: FUNC IDENTIFIER LPAREN.parameter_decls RPAREN return_type
     Reduce:
-      RPAREN -> [parameter_decls]
+      * -> [parameter_decls]
     Goto:
       IDENTIFIER -> State 335
       UNDERSCORE -> State 336
@@ -19170,9 +19170,9 @@ Parser Debug States:
   State 425:
     Kernel Items:
       proper_generic_parameter_def_list: proper_generic_parameter_def_list COMMA.generic_parameter_def
-      generic_parameter_def_list: proper_generic_parameter_def_list COMMA., RBRACKET
+      generic_parameter_def_list: proper_generic_parameter_def_list COMMA., *
     Reduce:
-      RBRACKET -> [generic_parameter_def_list]
+      * -> [generic_parameter_def_list]
     Goto:
       IDENTIFIER -> State 358
       generic_parameter_def -> State 461
@@ -19357,9 +19357,9 @@ Parser Debug States:
 
   State 443:
     Kernel Items:
-      unsafe_statement: UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL., $
+      unsafe_statement: UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL., *
     Reduce:
-      $ -> [unsafe_statement]
+      * -> [unsafe_statement]
     Goto:
       (nil)
 
@@ -19385,17 +19385,17 @@ Parser Debug States:
 
   State 446:
     Kernel Items:
-      loop_expr_body: DO statement_block FOR sequence_expr., $
+      loop_expr_body: DO statement_block FOR sequence_expr., *
     Reduce:
-      $ -> [loop_expr_body]
+      * -> [loop_expr_body]
     Goto:
       (nil)
 
   State 447:
     Kernel Items:
-      for_assignment: assign_pattern ASSIGN sequence_expr., SEMICOLON
+      for_assignment: assign_pattern ASSIGN sequence_expr., *
     Reduce:
-      SEMICOLON -> [for_assignment]
+      * -> [for_assignment]
     Goto:
       (nil)
 
@@ -19417,17 +19417,17 @@ Parser Debug States:
 
   State 450:
     Kernel Items:
-      optional_sequence_expr: sequence_expr., DO
+      optional_sequence_expr: sequence_expr., *
     Reduce:
-      DO -> [optional_sequence_expr]
+      * -> [optional_sequence_expr]
     Goto:
       (nil)
 
   State 451:
     Kernel Items:
-      loop_expr_body: FOR sequence_expr DO statement_block., $
+      loop_expr_body: FOR sequence_expr DO statement_block., *
     Reduce:
-      $ -> [loop_expr_body]
+      * -> [loop_expr_body]
     Goto:
       (nil)
 
@@ -19435,7 +19435,7 @@ Parser Debug States:
     Kernel Items:
       condition: CASE case_patterns ASSIGN.sequence_expr
     Reduce:
-      LBRACE -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -19501,7 +19501,7 @@ Parser Debug States:
       if_expr_body: IF condition statement_block ELSE.statement_block
       if_expr_body: IF condition statement_block ELSE.if_expr
     Reduce:
-      IF -> [optional_label_decl]
+      * -> [optional_label_decl]
     Goto:
       LABEL_DECL -> State 41
       LBRACE -> State 11
@@ -19577,7 +19577,7 @@ Parser Debug States:
     Kernel Items:
       named_func_def: FUNC IDENTIFIER generic_parameter_defs LPAREN parameter_defs RPAREN.return_type statement_block
     Reduce:
-      LBRACE -> [return_type]
+      * -> [return_type]
     Goto:
       IDENTIFIER -> State 116
       UNDERSCORE -> State 122
@@ -19617,7 +19617,7 @@ Parser Debug States:
     Kernel Items:
       named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER LPAREN.parameter_defs RPAREN return_type statement_block
     Reduce:
-      RPAREN -> [parameter_defs]
+      * -> [parameter_defs]
     Goto:
       IDENTIFIER -> State 260
       UNDERSCORE -> State 261
@@ -19659,8 +19659,8 @@ Parser Debug States:
     Kernel Items:
       loop_expr_body: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON.optional_sequence_expr DO statement_block
     Reduce:
+      * -> [optional_label_decl]
       DO -> [optional_sequence_expr]
-      LBRACE -> [optional_label_decl]
     Goto:
       INTEGER_LITERAL -> State 40
       FLOAT_LITERAL -> State 35
@@ -19724,17 +19724,17 @@ Parser Debug States:
 
   State 468:
     Kernel Items:
-      condition: CASE case_patterns ASSIGN sequence_expr., LBRACE
+      condition: CASE case_patterns ASSIGN sequence_expr., *
     Reduce:
-      LBRACE -> [condition]
+      * -> [condition]
     Goto:
       (nil)
 
   State 469:
     Kernel Items:
-      if_expr_body: IF condition statement_block ELSE if_expr., $
+      if_expr_body: IF condition statement_block ELSE if_expr., *
     Reduce:
-      $ -> [if_expr_body]
+      * -> [if_expr_body]
     Goto:
       (nil)
 
@@ -19749,9 +19749,9 @@ Parser Debug States:
 
   State 471:
     Kernel Items:
-      if_expr_body: IF condition statement_block ELSE statement_block., $
+      if_expr_body: IF condition statement_block ELSE statement_block., *
     Reduce:
-      $ -> [if_expr_body]
+      * -> [if_expr_body]
     Goto:
       (nil)
 
@@ -19814,9 +19814,9 @@ Parser Debug States:
 
   State 475:
     Kernel Items:
-      loop_expr_body: FOR assign_pattern IN sequence_expr DO statement_block., $
+      loop_expr_body: FOR assign_pattern IN sequence_expr DO statement_block., *
     Reduce:
-      $ -> [loop_expr_body]
+      * -> [loop_expr_body]
     Goto:
       (nil)
 
@@ -19848,7 +19848,7 @@ Parser Debug States:
     Kernel Items:
       named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER LPAREN parameter_defs RPAREN.return_type statement_block
     Reduce:
-      LBRACE -> [return_type]
+      * -> [return_type]
     Goto:
       IDENTIFIER -> State 116
       UNDERSCORE -> State 122
@@ -19904,9 +19904,9 @@ Parser Debug States:
 
   State 482:
     Kernel Items:
-      loop_expr_body: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO statement_block., $
+      loop_expr_body: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO statement_block., *
     Reduce:
-      $ -> [loop_expr_body]
+      * -> [loop_expr_body]
     Goto:
       (nil)
 
