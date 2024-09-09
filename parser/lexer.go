@@ -292,7 +292,7 @@ type TerminalNewlinesLexer struct {
 	previousId SymbolId
 }
 
-func NewTerminalNewlinesLexer(
+func NewLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
 	options LexerOptions,

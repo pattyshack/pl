@@ -28,4 +28,77 @@ type ReducerImpl struct {
 	ParameterReducerImpl
 	ParameterListReducerImpl
 	StatementListReducerImpl
+
+	// TODO
+
+	SourceReducer
+	ProperDefinitionsReducer
+	DefinitionsReducer
+	DefinitionReducer
+	StatementBlockReducer
+	StatementReducer
+	OptionalSimpleStatementReducer
+	ExprOrImproperStructStatementReducer
+	ExprsReducer
+	CallbackOpStatementReducer
+	UnsafeStatementReducer
+	JumpStatementReducer
+	FallthroughStatementReducer
+	AssignStatementReducer
+	UnaryOpAssignStatementReducer
+	BinaryOpAssignStatementReducer
+	ImportStatementReducer
+	ImportClauseReducer
+	ProperImportClausesReducer
+	ImportClausesReducer
+	CasePatternsReducer
+	VarDeclPatternReducer
+	VarPatternReducer
+	TuplePatternReducer
+	FieldVarPatternsReducer
+	FieldVarPatternReducer
+	OptionalTypeExprReducer
+	AssignPatternReducer
+	CasePatternReducer
+	OptionalLabelDeclReducer
+	SequenceExprReducer
+	IfExprReducer
+	IfExprBodyReducer
+	ConditionReducer
+	SwitchExprReducer
+	LoopExprReducer
+	LoopExprBodyReducer
+	OptionalSequenceExprReducer
+	ForAssignmentReducer
+	BlockExprReducer
+	TypeDefReducer
+	GenericParameterDefReducer
+	GenericParameterDefsReducer
+	ProperGenericParameterDefListReducer
+	GenericParameterDefListReducer
+	FieldDefReducer
+	OptionalDefaultReducer
+	ProperImplicitFieldDefsReducer
+	ImplicitFieldDefsReducer
+	ImplicitStructTypeExprReducer
+	ProperExplicitFieldDefsReducer
+	ExplicitFieldDefsReducer
+	ExplicitStructTypeExprReducer
+	TraitTypeExprReducer
+	ProperImplicitEnumValueDefsReducer
+	ImplicitEnumValueDefsReducer
+	ImplicitEnumTypeExprReducer
+	ProperExplicitEnumValueDefsReducer
+	ExplicitEnumValueDefsReducer
+	ExplicitEnumTypeExprReducer
+	ReturnTypeReducer
+	FuncTypeExprReducer
+	MethodSignatureReducer
+	NamedFuncDefReducer
+	AnonymousFuncExprReducer
+	PackageDefReducer
+}
+
+func NewReducer() *ReducerImpl{
+  return &ReducerImpl{}
 }

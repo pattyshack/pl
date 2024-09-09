@@ -223,7 +223,7 @@ func (s *TerminalNewlinesLexerSuite) lex(
 	input string,
 	expected ...SymbolId,
 ) []Token {
-	return lex(t, NewTerminalNewlinesLexer, input, expected...)
+	return lex(t, NewLexer, input, expected...)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestEOF(t *testing.T) {

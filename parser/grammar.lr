@@ -333,9 +333,9 @@ case_pattern ->
 //
 
 expr<Expression> ->
-  if_expr: optional_label_decl if_expr |
-  switch_expr: optional_label_decl switch_expr |
-  loop_expr: optional_label_decl loop_expr |
+  = if_expr |
+  = switch_expr |
+  = loop_expr |
   = sequence_expr
 
 optional_label_decl<Value> ->
@@ -362,7 +362,9 @@ sequence_expr<Expression> ->
 
 // NOTE: label is applied to the entire if expression rather than individual
 // branches.
-if_expr<Expression> ->
+if_expr<Expression> -> optional_label_decl if_expr_body
+
+if_expr_body<Expression> ->
   no_else: IF condition statement_block |
   if_else: IF condition statement_block ELSE statement_block |
   multi_if_else: IF condition statement_block ELSE if_expr
@@ -393,7 +395,8 @@ condition ->
 // }
 
 // Switch need to be exhastive.
-switch_expr<Expression> -> SWITCH sequence_expr statement_block
+switch_expr<Expression> ->
+  optional_label_decl SWITCH sequence_expr statement_block
 
 //
 // For control flow expression
@@ -406,7 +409,9 @@ switch_expr<Expression> -> SWITCH sequence_expr statement_block
 // the while loop grammar is "FOR sequence_expr body_expr".  Then the while
 // loop can be interpreted as an infinite loop "FOR sequence_expr", followed by
 // an sequence statement "body_expr".
-loop_expr<Expression> ->
+loop_expr<Expression> -> optional_label_decl loop_expr_body
+
+loop_expr_body<Expression> ->
   infinite: DO statement_block |
   do_while: DO statement_block FOR sequence_expr |
   while: FOR sequence_expr DO statement_block |
@@ -511,7 +516,11 @@ postfixable_expr<Expression> ->
   = accessible_expr |
   = postfix_unary_expr
 
-postfix_unary_expr<Expression> ->  accessible_expr QUESTION
+postfix_unary_op<Value> ->
+  = QUESTION |
+  = EXCLAIM
+
+postfix_unary_expr<Expression> -> accessible_expr postfix_unary_op
 
 prefixable_expr<Expression> ->
   = postfixable_expr |
