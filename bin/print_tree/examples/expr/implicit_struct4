@@ -1,0 +1,9 @@
+(
+key=1,
+2 == 3,
+(a, (b1, b2),c << 5,d,),
+// The following are syntactically valid, but are semantically invalid
+bad:colon:expr,
+vararg...,
+...,
+)

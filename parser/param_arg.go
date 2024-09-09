@@ -503,10 +503,11 @@ func (ArgumentReducerImpl) NamedAssignmentToArgument(
 	error,
 ) {
 	arg := &Argument{
-		StartEndPos: newStartEndPos(name.Loc(), expr.End()),
-		Kind:        NamedAssignmentArgument,
-		Expr:        expr,
-		HasEllipsis: false,
+		StartEndPos:  newStartEndPos(name.Loc(), expr.End()),
+		Kind:         NamedAssignmentArgument,
+		OptionalName: name.Value,
+		Expr:         expr,
+		HasEllipsis:  false,
 	}
 
 	arg.LeadingComment = name.TakeLeading()
