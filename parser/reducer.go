@@ -99,6 +99,6 @@ type ReducerImpl struct {
 	PackageDefReducer
 }
 
-func NewReducer() *ReducerImpl{
-  return &ReducerImpl{}
+func NewReducer() *ReducerImpl {
+	return &ReducerImpl{}
 }

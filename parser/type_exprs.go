@@ -10,6 +10,10 @@ import (
 
 type TypeArgumentList = NodeList[TypeExpression]
 
+func NewTypeArgumentList() *TypeArgumentList {
+	return newNodeList[TypeExpression]("TypeArgumentList")
+}
+
 var _ Node = &TypeArgumentList{}
 
 type TypeArgumentListReducerImpl struct{}
@@ -55,7 +59,9 @@ func (reducer *TypeArgumentListReducerImpl) TypeExprToProperTypeArguments(
 	*TypeArgumentList,
 	error,
 ) {
-	return newNodeList[TypeExpression]("TypeArgumentList", arg), nil
+	list := NewTypeArgumentList()
+	list.add(arg)
+	return list, nil
 }
 
 func (reducer *TypeArgumentListReducerImpl) ImproperToTypeArguments(

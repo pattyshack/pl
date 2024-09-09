@@ -293,22 +293,26 @@ func (list NodeList[T]) TreeString(indent string, label string) string {
 	return result
 }
 
-func newNodeList[T Node](listType string, element T) *NodeList[T] {
+func newNodeList[T Node](listType string) *NodeList[T] {
 	return &NodeList[T]{
-		StartEndPos: newStartEndPos(element.Loc(), element.End()),
-		Elements:    []T{element},
-		ListType:    listType,
+		ListType: listType,
 	}
 }
 
-func (list *NodeList[T]) reduceAdd(separator TokenValue, element T) {
+func (list *NodeList[T]) add(element T) {
+	if len(list.Elements) == 0 {
+		list.StartPos = element.Loc()
+	}
 	list.EndPos = element.End()
+	list.Elements = append(list.Elements, element)
+}
 
+func (list *NodeList[T]) reduceAdd(separator TokenValue, element T) {
 	prev := list.Elements[len(list.Elements)-1]
 	prev.AppendToTrailing(separator.TakeLeading())
 	prev.AppendToTrailing(separator.TakeTrailing())
 
-	list.Elements = append(list.Elements, element)
+	list.add(element)
 }
 
 func (list *NodeList[T]) reduceImproper(separator TokenValue) {

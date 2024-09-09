@@ -6,6 +6,10 @@ package parser
 
 type StatementList = NodeList[Statement]
 
+func NewStatementList() *StatementList {
+	return newNodeList[Statement]("StatementList")
+}
+
 type StatementListReducerImpl struct{}
 
 var _ ProperStatementsReducer = &StatementListReducerImpl{}
@@ -41,7 +45,9 @@ func (StatementListReducerImpl) StatementToProperStatements(
 	*StatementList,
 	error,
 ) {
-	return newNodeList[Statement]("StatementList", statement), nil
+	list := NewStatementList()
+	list.add(statement)
+	return list, nil
 }
 
 func (StatementListReducerImpl) ImproperImplicitToStatements(
@@ -66,5 +72,5 @@ func (StatementListReducerImpl) ImproperExplicitToStatements(
 }
 
 func (StatementListReducerImpl) NilToStatements() (*StatementList, error) {
-	return nil, nil
+	return NewStatementList(), nil
 }

@@ -303,6 +303,10 @@ func (reducer *ParameterReducerImpl) IgnoreInferredArgToParameterDef(
 
 type ParameterList = NodeList[*Parameter]
 
+func NewParameterList() *ParameterList {
+	return newNodeList[*Parameter]("ParameterList")
+}
+
 var _ Node = &ParameterList{}
 
 type ParameterListReducerImpl struct{}
@@ -330,7 +334,9 @@ func (reducer *ParameterListReducerImpl) ParameterDeclToProperParameterDecls(
 	*ParameterList,
 	error,
 ) {
-	return newNodeList[*Parameter]("ParameterList", parameter), nil
+	list := NewParameterList()
+	list.add(parameter)
+	return list, nil
 }
 
 func (reducer *ParameterListReducerImpl) ImproperToParameterDecls(
@@ -348,7 +354,7 @@ func (reducer *ParameterListReducerImpl) NilToParameterDecls() (
 	*ParameterList,
 	error,
 ) {
-	return &ParameterList{ListType: "ParameterList"}, nil
+	return NewParameterList(), nil
 }
 
 func (reducer *ParameterListReducerImpl) AddToProperParameterDefs(
@@ -369,7 +375,9 @@ func (reducer *ParameterListReducerImpl) ParameterDefToProperParameterDefs(
 	*ParameterList,
 	error,
 ) {
-	return newNodeList[*Parameter]("ParameterList", parameter), nil
+	list := NewParameterList()
+	list.add(parameter)
+	return list, nil
 }
 
 func (reducer *ParameterListReducerImpl) ImproperToParameterDefs(
@@ -387,7 +395,7 @@ func (reducer *ParameterListReducerImpl) NilToParameterDefs() (
 	*ParameterList,
 	error,
 ) {
-	return &ParameterList{ListType: "ParameterList"}, nil
+	return NewParameterList(), nil
 }
 
 //
@@ -550,6 +558,10 @@ func (ArgumentReducerImpl) SkipPatternToArgument(
 
 type ArgumentList = NodeList[*Argument]
 
+func NewArgumentList() *ArgumentList {
+	return newNodeList[*Argument]("ArgumentList")
+}
+
 type ArgumentListReducerImpl struct{}
 
 var _ ProperArgumentsReducer = &ArgumentListReducerImpl{}
@@ -573,7 +585,9 @@ func (reducer *ArgumentListReducerImpl) ArgumentToProperArguments(
 	*ArgumentList,
 	error,
 ) {
-	return newNodeList[*Argument]("ArgumentList", arg), nil
+	list := NewArgumentList()
+	list.add(arg)
+	return list, nil
 }
 
 func (reducer *ArgumentListReducerImpl) ImproperToArguments(
@@ -591,5 +605,5 @@ func (reducer *ArgumentListReducerImpl) NilToArguments() (
 	*ArgumentList,
 	error,
 ) {
-	return &ArgumentList{}, nil
+	return NewArgumentList(), nil
 }

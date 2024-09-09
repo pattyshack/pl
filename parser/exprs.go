@@ -432,7 +432,6 @@ func (reducer *ImplicitStructExprReducerImpl) ToImplicitStructExpr(
 	error,
 ) {
 	args.reduceMarkers(lparen, rparen)
-	args.ListType = "ImplicitStructExpr"
 
 	expr := &ImplicitStructExpr{
 		ArgumentList: *args,
@@ -473,7 +472,8 @@ func (ColonExprReducerImpl) UnitUnitPairToColonExpr(
 	}
 	rightArg.LeadingComment = colon.TakeTrailing()
 
-	args := newNodeList[*Argument]("ColonExpr", leftArg)
+	args := newNodeList[*Argument]("ColonExpr")
+	args.add(leftArg)
 	args.reduceAdd(colon, rightArg)
 
 	return &ColonExpr{
@@ -502,7 +502,8 @@ func (ColonExprReducerImpl) ExprUnitPairToColonExpr(
 	}
 	rightArg.LeadingComment = colon.TakeTrailing()
 
-	args := newNodeList[*Argument]("ColonExpr", leftArg)
+	args := newNodeList[*Argument]("ColonExpr")
+	args.add(leftArg)
 	args.reduceAdd(colon, rightArg)
 
 	return &ColonExpr{
@@ -531,7 +532,8 @@ func (reducer *ColonExprReducerImpl) UnitExprPairToColonExpr(
 	rightArg.TrailingComment = rightExpr.TakeTrailing()
 	rightArg.PrependToLeading(colon.TakeTrailing())
 
-	args := newNodeList[*Argument]("ColonExpr", leftArg)
+	args := newNodeList[*Argument]("ColonExpr")
+	args.add(leftArg)
 	args.reduceAdd(colon, rightArg)
 
 	return &ColonExpr{
@@ -564,7 +566,8 @@ func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
 	rightArg.TrailingComment = rightExpr.TakeTrailing()
 	rightArg.PrependToLeading(colon.TakeTrailing())
 
-	args := newNodeList[*Argument]("ColonExpr", leftArg)
+	args := newNodeList[*Argument]("ColonExpr")
+	args.add(leftArg)
 	args.reduceAdd(colon, rightArg)
 
 	return &ColonExpr{
