@@ -440,7 +440,7 @@ func (arg *Argument) TreeString(indent string, label string) string {
 		arg.Kind,
 		arg.OptionalName,
 		arg.HasEllipsis)
-	if arg.Expr == nil {
+	if arg.Expr != nil {
 		result += "\n"
 		result += arg.Expr.TreeString(indent+"  ", "")
 		result += "\n" + indent + "]"
@@ -462,7 +462,7 @@ func (ArgumentReducerImpl) PositionalToArgument(
 	*Argument,
 	error,
 ) {
-	return &Argument{
+	arg := &Argument{
 		StartEndPos: newStartEndPos(expr.Loc(), expr.End()),
 		LeadingTrailingComments: LeadingTrailingComments{
 			LeadingComment:  expr.TakeLeading(),
@@ -471,7 +471,9 @@ func (ArgumentReducerImpl) PositionalToArgument(
 		Kind:        PositionalArgument,
 		Expr:        expr,
 		HasEllipsis: false,
-	}, nil
+	}
+
+  return arg, nil
 }
 
 func (ArgumentReducerImpl) ColonExprToArgument(
