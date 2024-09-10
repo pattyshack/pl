@@ -27,6 +27,8 @@ type ReducerImpl struct {
 	ArgumentReducerImpl
 	FieldDefReducerImpl
 	GenericArgumentListReducerImpl
+	GenericParameterReducerImpl
+	GenericParameterListReducerImpl
 	ParameterReducerImpl
 	ParameterListReducerImpl
 	StatementListReducerImpl
@@ -75,10 +77,6 @@ type ReducerImpl struct {
 	ForAssignmentReducer
 	BlockExprReducer
 	TypeDefReducer
-	GenericParameterReducer
-	GenericParametersReducer
-	ProperGenericParameterListReducer
-	GenericParameterListReducer
 	UnsafeStatementPropertyReducer
 	ReturnTypeReducer
 	FuncTypeExprReducer

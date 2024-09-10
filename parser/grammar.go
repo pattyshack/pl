@@ -673,10 +673,10 @@ type BinaryTypeExprReducer interface {
 
 type TypeDefReducer interface {
 	// 673:2: type_def -> definition: ...
-	DefinitionToTypeDef(Type_ TokenValue, Identifier_ TokenValue, GenericParameters_ GenericSymbol, TypeExpr_ TypeExpression) (SourceDefinition, error)
+	DefinitionToTypeDef(Type_ TokenValue, Identifier_ TokenValue, GenericParameters_ *GenericParameterList, TypeExpr_ TypeExpression) (SourceDefinition, error)
 
 	// 674:2: type_def -> constrained_def: ...
-	ConstrainedDefToTypeDef(Type_ TokenValue, Identifier_ TokenValue, GenericParameters_ GenericSymbol, TypeExpr_ TypeExpression, Implements_ TokenValue, TypeExpr_2 TypeExpression) (SourceDefinition, error)
+	ConstrainedDefToTypeDef(Type_ TokenValue, Identifier_ TokenValue, GenericParameters_ *GenericParameterList, TypeExpr_ TypeExpression, Implements_ TokenValue, TypeExpr_2 TypeExpression) (SourceDefinition, error)
 
 	// 675:2: type_def -> alias: ...
 	AliasToTypeDef(Type_ TokenValue, Identifier_ TokenValue, Assign_ TokenValue, TypeExpr_ TypeExpression) (SourceDefinition, error)
@@ -684,35 +684,35 @@ type TypeDefReducer interface {
 
 type GenericParameterReducer interface {
 	// 683:2: generic_parameter -> unconstrained: ...
-	UnconstrainedToGenericParameter(Identifier_ TokenValue) (GenericSymbol, error)
+	UnconstrainedToGenericParameter(Identifier_ TokenValue) (*GenericParameter, error)
 
 	// 684:2: generic_parameter -> constrained: ...
-	ConstrainedToGenericParameter(Identifier_ TokenValue, TypeExpr_ TypeExpression) (GenericSymbol, error)
+	ConstrainedToGenericParameter(Identifier_ TokenValue, TypeExpr_ TypeExpression) (*GenericParameter, error)
 }
 
 type GenericParametersReducer interface {
 	// 687:2: generic_parameters -> generic: ...
-	GenericToGenericParameters(DollarLbracket_ TokenValue, GenericParameterList_ GenericSymbol, Rbracket_ TokenValue) (GenericSymbol, error)
+	GenericToGenericParameters(DollarLbracket_ TokenValue, GenericParameterList_ *GenericParameterList, Rbracket_ TokenValue) (*GenericParameterList, error)
 
 	// 688:2: generic_parameters -> nil: ...
-	NilToGenericParameters() (GenericSymbol, error)
+	NilToGenericParameters() (*GenericParameterList, error)
 }
 
 type ProperGenericParameterListReducer interface {
 	// 691:2: proper_generic_parameter_list -> add: ...
-	AddToProperGenericParameterList(ProperGenericParameterList_ GenericSymbol, Comma_ TokenValue, GenericParameter_ GenericSymbol) (GenericSymbol, error)
+	AddToProperGenericParameterList(ProperGenericParameterList_ *GenericParameterList, Comma_ TokenValue, GenericParameter_ *GenericParameter) (*GenericParameterList, error)
 
 	// 692:2: proper_generic_parameter_list -> generic_parameter: ...
-	GenericParameterToProperGenericParameterList(GenericParameter_ GenericSymbol) (GenericSymbol, error)
+	GenericParameterToProperGenericParameterList(GenericParameter_ *GenericParameter) (*GenericParameterList, error)
 }
 
 type GenericParameterListReducer interface {
 
 	// 696:2: generic_parameter_list -> improper: ...
-	ImproperToGenericParameterList(ProperGenericParameterList_ GenericSymbol, Comma_ TokenValue) (GenericSymbol, error)
+	ImproperToGenericParameterList(ProperGenericParameterList_ *GenericParameterList, Comma_ TokenValue) (*GenericParameterList, error)
 
 	// 697:2: generic_parameter_list -> nil: ...
-	NilToGenericParameterList() (GenericSymbol, error)
+	NilToGenericParameterList() (*GenericParameterList, error)
 }
 
 type GenericArgumentsReducer interface {
@@ -956,7 +956,7 @@ type MethodSignatureReducer interface {
 
 type NamedFuncDefReducer interface {
 	// 868:2: named_func_def -> func_def: ...
-	FuncDefToNamedFuncDef(Func_ TokenValue, Identifier_ TokenValue, GenericParameters_ GenericSymbol, Lparen_ TokenValue, ParameterDefs_ *ParameterList, Rparen_ TokenValue, ReturnType_ TypeExpression, StatementBlock_ GenericSymbol) (SourceDefinition, error)
+	FuncDefToNamedFuncDef(Func_ TokenValue, Identifier_ TokenValue, GenericParameters_ *GenericParameterList, Lparen_ TokenValue, ParameterDefs_ *ParameterList, Rparen_ TokenValue, ReturnType_ TypeExpression, StatementBlock_ GenericSymbol) (SourceDefinition, error)
 
 	// 869:2: named_func_def -> method_def: ...
 	MethodDefToNamedFuncDef(Func_ TokenValue, Lparen_ TokenValue, ParameterDef_ *Parameter, Rparen_ TokenValue, Identifier_ TokenValue, Lparen_2 TokenValue, ParameterDefs_ *ParameterList, Rparen_2 TokenValue, ReturnType_ TypeExpression, StatementBlock_ GenericSymbol) (SourceDefinition, error)
@@ -3357,24 +3357,26 @@ type Symbol struct {
 
 	Generic_ GenericSymbol
 
-	Argument            *Argument
-	ArgumentList        *ArgumentList
-	ColonExpr           *ColonExpr
-	Count               TokenCount
-	Expression          Expression
-	FieldDef            *FieldDef
-	GenericArgumentList *GenericArgumentList
-	Parameter           *Parameter
-	Parameters          *ParameterList
-	ParseError          ParseErrorSymbol
-	SourceDefinition    SourceDefinition
-	SourceDefinitions   []SourceDefinition
-	Statement           Statement
-	Statements          *StatementList
-	TypeExpression      TypeExpression
-	TypeProperties      *TypePropertyList
-	TypeProperty        TypeProperty
-	Value               TokenValue
+	Argument             *Argument
+	ArgumentList         *ArgumentList
+	ColonExpr            *ColonExpr
+	Count                TokenCount
+	Expression           Expression
+	FieldDef             *FieldDef
+	GenericArgumentList  *GenericArgumentList
+	GenericParameter     *GenericParameter
+	GenericParameterList *GenericParameterList
+	Parameter            *Parameter
+	Parameters           *ParameterList
+	ParseError           ParseErrorSymbol
+	SourceDefinition     SourceDefinition
+	SourceDefinitions    []SourceDefinition
+	Statement            Statement
+	Statements           *StatementList
+	TypeExpression       TypeExpression
+	TypeProperties       *TypePropertyList
+	TypeProperty         TypeProperty
+	Value                TokenValue
 }
 
 func NewSymbol(token Token) (*Symbol, error) {
@@ -3473,6 +3475,16 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
+	case GenericParameterType:
+		loc, ok := interface{}(s.GenericParameter).(locator)
+		if ok {
+			return loc.Loc()
+		}
+	case GenericParametersType, ProperGenericParameterListType, GenericParameterListType:
+		loc, ok := interface{}(s.GenericParameterList).(locator)
+		if ok {
+			return loc.Loc()
+		}
 	case ProperParameterDefType, ParameterDeclType, ParameterDefType:
 		loc, ok := interface{}(s.Parameter).(locator)
 		if ok {
@@ -3567,6 +3579,16 @@ func (s *Symbol) End() Location {
 		}
 	case GenericArgumentsType, ProperGenericArgumentListType, GenericArgumentListType:
 		loc, ok := interface{}(s.GenericArgumentList).(locator)
+		if ok {
+			return loc.End()
+		}
+	case GenericParameterType:
+		loc, ok := interface{}(s.GenericParameter).(locator)
+		if ok {
+			return loc.End()
+		}
+	case GenericParametersType, ProperGenericParameterListType, GenericParameterListType:
+		loc, ok := interface{}(s.GenericParameterList).(locator)
 		if ok {
 			return loc.End()
 		}
@@ -5153,12 +5175,12 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = TypeDefType
-		symbol.SourceDefinition, err = reducer.DefinitionToTypeDef(args[0].Value, args[1].Value, args[2].Generic_, args[3].TypeExpression)
+		symbol.SourceDefinition, err = reducer.DefinitionToTypeDef(args[0].Value, args[1].Value, args[2].GenericParameterList, args[3].TypeExpression)
 	case _ReduceConstrainedDefToTypeDef:
 		args := stack[len(stack)-6:]
 		stack = stack[:len(stack)-6]
 		symbol.SymbolId_ = TypeDefType
-		symbol.SourceDefinition, err = reducer.ConstrainedDefToTypeDef(args[0].Value, args[1].Value, args[2].Generic_, args[3].TypeExpression, args[4].Value, args[5].TypeExpression)
+		symbol.SourceDefinition, err = reducer.ConstrainedDefToTypeDef(args[0].Value, args[1].Value, args[2].GenericParameterList, args[3].TypeExpression, args[4].Value, args[5].TypeExpression)
 	case _ReduceAliasToTypeDef:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
@@ -5168,45 +5190,45 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = GenericParameterType
-		symbol.Generic_, err = reducer.UnconstrainedToGenericParameter(args[0].Value)
+		symbol.GenericParameter, err = reducer.UnconstrainedToGenericParameter(args[0].Value)
 	case _ReduceConstrainedToGenericParameter:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = GenericParameterType
-		symbol.Generic_, err = reducer.ConstrainedToGenericParameter(args[0].Value, args[1].TypeExpression)
+		symbol.GenericParameter, err = reducer.ConstrainedToGenericParameter(args[0].Value, args[1].TypeExpression)
 	case _ReduceGenericToGenericParameters:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = GenericParametersType
-		symbol.Generic_, err = reducer.GenericToGenericParameters(args[0].Value, args[1].Generic_, args[2].Value)
+		symbol.GenericParameterList, err = reducer.GenericToGenericParameters(args[0].Value, args[1].GenericParameterList, args[2].Value)
 	case _ReduceNilToGenericParameters:
 		symbol.SymbolId_ = GenericParametersType
-		symbol.Generic_, err = reducer.NilToGenericParameters()
+		symbol.GenericParameterList, err = reducer.NilToGenericParameters()
 	case _ReduceAddToProperGenericParameterList:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ProperGenericParameterListType
-		symbol.Generic_, err = reducer.AddToProperGenericParameterList(args[0].Generic_, args[1].Value, args[2].Generic_)
+		symbol.GenericParameterList, err = reducer.AddToProperGenericParameterList(args[0].GenericParameterList, args[1].Value, args[2].GenericParameter)
 	case _ReduceGenericParameterToProperGenericParameterList:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ProperGenericParameterListType
-		symbol.Generic_, err = reducer.GenericParameterToProperGenericParameterList(args[0].Generic_)
+		symbol.GenericParameterList, err = reducer.GenericParameterToProperGenericParameterList(args[0].GenericParameter)
 	case _ReduceProperGenericParameterListToGenericParameterList:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = GenericParameterListType
 		//line grammar.lr:695:4
-		symbol.Generic_ = args[0].Generic_
+		symbol.GenericParameterList = args[0].GenericParameterList
 		err = nil
 	case _ReduceImproperToGenericParameterList:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = GenericParameterListType
-		symbol.Generic_, err = reducer.ImproperToGenericParameterList(args[0].Generic_, args[1].Value)
+		symbol.GenericParameterList, err = reducer.ImproperToGenericParameterList(args[0].GenericParameterList, args[1].Value)
 	case _ReduceNilToGenericParameterList:
 		symbol.SymbolId_ = GenericParameterListType
-		symbol.Generic_, err = reducer.NilToGenericParameterList()
+		symbol.GenericParameterList, err = reducer.NilToGenericParameterList()
 	case _ReduceBindingToGenericArguments:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -5566,7 +5588,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-8:]
 		stack = stack[:len(stack)-8]
 		symbol.SymbolId_ = NamedFuncDefType
-		symbol.SourceDefinition, err = reducer.FuncDefToNamedFuncDef(args[0].Value, args[1].Value, args[2].Generic_, args[3].Value, args[4].Parameters, args[5].Value, args[6].TypeExpression, args[7].Generic_)
+		symbol.SourceDefinition, err = reducer.FuncDefToNamedFuncDef(args[0].Value, args[1].Value, args[2].GenericParameterList, args[3].Value, args[4].Parameters, args[5].Value, args[6].TypeExpression, args[7].Generic_)
 	case _ReduceMethodDefToNamedFuncDef:
 		args := stack[len(stack)-10:]
 		stack = stack[:len(stack)-10]

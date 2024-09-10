@@ -471,17 +471,15 @@ func (PropertiesTypeExprReducer) implicit(
 	properties *TypePropertyList,
 	rparen TokenValue,
 ) *PropertiesTypeExpr {
+	properties.reduceMarkers(lparen, rparen)
 	expr := &PropertiesTypeExpr{
 		StartEndPos: newStartEndPos(lparen.Loc(), rparen.End()),
 		Kind:        kind,
 		IsImplicit:  true,
 		Properties:  *properties,
 	}
-	expr.LeadingComment = lparen.TakeLeading()
-	properties.Elements[0].PrependToLeading(lparen.TakeTrailing())
-	properties.Elements[len(properties.Elements)-1].AppendToTrailing(
-		rparen.TakeLeading())
-	expr.TrailingComment = rparen.TakeTrailing()
+	expr.LeadingComment = properties.TakeLeading()
+	expr.TrailingComment = properties.TakeTrailing()
 
 	return expr
 }
@@ -493,6 +491,11 @@ func (PropertiesTypeExprReducer) explicit(
 	properties *TypePropertyList,
 	rparen TokenValue,
 ) *PropertiesTypeExpr {
+	properties.reduceMarkers(lparen, rparen)
+
+	properties.PrependToLeading(kw.TakeTrailing())
+	trailing := properties.TakeTrailing()
+
 	expr := &PropertiesTypeExpr{
 		StartEndPos: newStartEndPos(kw.Loc(), rparen.End()),
 		Kind:        kind,
@@ -500,12 +503,7 @@ func (PropertiesTypeExprReducer) explicit(
 		Properties:  *properties,
 	}
 	expr.LeadingComment = kw.TakeLeading()
-	expr.LeadingComment.Append(kw.TakeTrailing())
-	expr.LeadingComment.Append(lparen.TakeLeading())
-	properties.Elements[0].PrependToLeading(lparen.TakeTrailing())
-	properties.Elements[len(properties.Elements)-1].AppendToTrailing(
-		rparen.TakeLeading())
-	expr.TrailingComment = rparen.TakeTrailing()
+	expr.TrailingComment = trailing
 
 	return expr
 }
