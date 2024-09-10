@@ -19,15 +19,18 @@ type ReducerImpl struct {
 	InferredTypeExprReducerImpl
 	MapTypeExprReducerImpl
 	NamedTypeExprReducerImpl
+	PropertiesTypeExprReducer
 	SliceTypeExprReducerImpl
 	UnaryTypeExprReducerImpl
 
 	ArgumentListReducerImpl
 	ArgumentReducerImpl
-	TypeArgumentListReducerImpl
+	FieldDefReducerImpl
 	ParameterReducerImpl
 	ParameterListReducerImpl
 	StatementListReducerImpl
+	TypeArgumentListReducerImpl
+	TypePropertyListReducerImpl
 
 	// TODO
 
@@ -76,21 +79,7 @@ type ReducerImpl struct {
 	GenericParameterDefsReducer
 	ProperGenericParameterDefListReducer
 	GenericParameterDefListReducer
-	FieldDefReducer
-	OptionalDefaultReducer
-	ProperImplicitFieldDefsReducer
-	ImplicitFieldDefsReducer
-	ImplicitStructTypeExprReducer
-	ProperExplicitFieldDefsReducer
-	ExplicitFieldDefsReducer
-	ExplicitStructTypeExprReducer
-	TraitTypeExprReducer
-	ProperImplicitEnumValueDefsReducer
-	ImplicitEnumValueDefsReducer
-	ImplicitEnumTypeExprReducer
-	ProperExplicitEnumValueDefsReducer
-	ExplicitEnumValueDefsReducer
-	ExplicitEnumTypeExprReducer
+	UnsafeStatementPropertyReducer
 	ReturnTypeReducer
 	FuncTypeExprReducer
 	MethodSignatureReducer

@@ -713,52 +713,54 @@ type_arguments<TypeArgumentList> ->
 // Explicit/Implicit struct/enum/trait definition
 //
 
-// NOTE: optional_default is only usable in enum.  method_signature is only
-// usable in trait.  struct_padding is only usable in struct.
+field_def<FieldDef> ->
+  named: IDENTIFIER type_expr |
+  unnamed: type_expr
+
+unsafe_statement_property<TypeProperty> -> unsafe_statement
+
+// NOTE: default_enum_field_def is only usable in enum.  method_signature is
+// only usable in trait.  struct_padding is only usable in struct.
 // These are checked post parsing.
 //
 // NOTE: In general, type_expr must be concrete (i.e., can't have any inferred
 // type).  Enum value can use "_" as type to indicate no data is associated
 // with the enum value.
-field_def ->
-  named: IDENTIFIER type_expr optional_default |
-  unnamed: type_expr optional_default |
-  struct_padding: UNDERSCORE type_expr |
+type_property<TypeProperty> ->
+  = field_def |
+  default_enum_field_def: DEFAULT field_def |
+  padding_field_def: UNDERSCORE type_expr |
   = method_signature |
-  unsafe_statement
+  = unsafe_statement_property
 
-optional_default ->
-  default: ASSIGN DEFAULT |
-  nil:
+proper_implicit_type_properties<TypeProperties> ->
+  add: proper_implicit_type_properties COMMA type_property |
+  type_property
 
-proper_implicit_field_defs ->
-  add: proper_implicit_field_defs COMMA field_def |
-  field_def
-
-implicit_field_defs ->
-  = proper_implicit_field_defs |
-  improper: proper_implicit_field_defs COMMA |
+implicit_type_properties<TypeProperties> ->
+  = proper_implicit_type_properties |
+  improper: proper_implicit_type_properties COMMA |
   nil:
 
 implicit_struct_type_expr<TypeExpression> ->
-  LPAREN implicit_field_defs RPAREN
+  LPAREN implicit_type_properties RPAREN
 
-proper_explicit_field_defs ->
-  add_implicit: proper_explicit_field_defs NEWLINES field_def |
-  add_explicit: proper_explicit_field_defs COMMA field_def |
-  field_def
+proper_explicit_type_properties<TypeProperties> ->
+  add_implicit: proper_explicit_type_properties NEWLINES type_property |
+  add_explicit: proper_explicit_type_properties COMMA type_property |
+  type_property
 
-explicit_field_defs ->
-  = proper_explicit_field_defs |
-  improper_implicit: proper_explicit_field_defs NEWLINES |
-  improper_explicit: proper_explicit_field_defs COMMA |
+explicit_type_properties<TypeProperties> ->
+  = proper_explicit_type_properties |
+  improper_implicit: proper_explicit_type_properties NEWLINES |
+  improper_explicit: proper_explicit_type_properties COMMA |
   nil:
 
 explicit_struct_type_expr<TypeExpression> ->
-  STRUCT LPAREN explicit_field_defs RPAREN
+  STRUCT LPAREN explicit_type_properties RPAREN
 
 trait_type_expr<TypeExpression> ->
-  TRAIT LPAREN explicit_field_defs RPAREN
+  TRAIT LPAREN explicit_type_properties RPAREN
 
 // NOTE: inferred "<type_expr> OR ()" should be treated as
 // Optional$[<type_expr>]
@@ -768,31 +770,31 @@ trait_type_expr<TypeExpression> ->
 //
 // NOTE: inferred types "<type_expr> OR Error or ()" (in any order) should be
 // treated as Result$[ Optional$[ <type_expr> ] ]
-proper_implicit_enum_value_defs ->
-  pair: field_def OR field_def |
-  add: proper_implicit_enum_value_defs OR field_def
+proper_implicit_enum_type_properties<TypeProperties> ->
+  pair: type_property OR type_property |
+  add: proper_implicit_enum_type_properties OR type_property
 
-implicit_enum_value_defs ->
-  = proper_implicit_enum_value_defs |
+implicit_enum_type_properties<TypeProperties> ->
+  = proper_implicit_enum_type_properties |
   // allow ) on a different line
-  improper: proper_implicit_enum_value_defs NEWLINES
+  improper: proper_implicit_enum_type_properties NEWLINES
 
 implicit_enum_type_expr<TypeExpression> ->
-  LPAREN implicit_enum_value_defs RPAREN
+  LPAREN implicit_enum_type_properties RPAREN
 
-proper_explicit_enum_value_defs ->
-  explicit_pair: field_def OR field_def |
-  implicit_pair: field_def NEWLINES field_def |
-  explicit_add: proper_explicit_enum_value_defs OR field_def |
-  implicit_add: proper_explicit_enum_value_defs NEWLINES field_def
+proper_explicit_enum_type_properties<TypeProperties> ->
+  explicit_pair: type_property OR type_property |
+  implicit_pair: type_property NEWLINES type_property |
+  explicit_add: proper_explicit_enum_type_properties OR type_property |
+  implicit_add: proper_explicit_enum_type_properties NEWLINES type_property
 
-explicit_enum_value_defs ->
-  = proper_explicit_enum_value_defs |
+explicit_enum_type_properties<TypeProperties> ->
+  = proper_explicit_enum_type_properties |
   // allow ) on a different line
-  improper: proper_explicit_enum_value_defs NEWLINES
+  improper: proper_explicit_enum_type_properties NEWLINES
 
 explicit_enum_type_expr<TypeExpression> ->
-  ENUM LPAREN explicit_enum_value_defs RPAREN
+  ENUM LPAREN explicit_enum_type_properties RPAREN
 
 //
 // Function type, definition, trait method signature
@@ -858,7 +860,8 @@ func_type_expr<TypeExpression> ->
 // Ideally yes.  We should allow function overloading as long as the functions
 // all conforms to the same (unconstrainted) generic parameterized signature.
 // Ambiguous usage would need to explicitly specify the generic parameter.
-method_signature -> FUNC IDENTIFIER LPAREN parameter_decls RPAREN return_type
+method_signature<TypeProperty> ->
+  FUNC IDENTIFIER LPAREN parameter_decls RPAREN return_type
 
 // XXX: allow generic parameters in method definition? No, for go transpiler.
 named_func_def<SourceDefinition> ->
@@ -901,5 +904,8 @@ go:
     SourceDefinitions: "[]SourceDefinition"
     Parameter: "*Parameter"
     Parameters: "*ParameterList"
+    TypeProperty: "TypeProperty"
+    TypeProperties: "*TypePropertyList"
+    FieldDef: "*FieldDef"
   generate_end_pos: True
 }%%

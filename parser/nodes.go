@@ -62,6 +62,15 @@ type isTypeExpression struct{}
 
 func (isTypeExpression) IsTypeExpression() {}
 
+type TypeProperty interface {
+	Node
+	IsTypeProperty()
+}
+
+type isTypeProperty struct{}
+
+func (isTypeProperty) IsTypeProperty() {}
+
 type Statement interface {
 	Node
 	IsStatement()
