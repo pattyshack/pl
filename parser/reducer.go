@@ -26,10 +26,10 @@ type ReducerImpl struct {
 	ArgumentListReducerImpl
 	ArgumentReducerImpl
 	FieldDefReducerImpl
+	GenericArgumentListReducerImpl
 	ParameterReducerImpl
 	ParameterListReducerImpl
 	StatementListReducerImpl
-	TypeArgumentListReducerImpl
 	TypePropertyListReducerImpl
 
 	// TODO
@@ -75,10 +75,10 @@ type ReducerImpl struct {
 	ForAssignmentReducer
 	BlockExprReducer
 	TypeDefReducer
-	GenericParameterDefReducer
-	GenericParameterDefsReducer
-	ProperGenericParameterDefListReducer
-	GenericParameterDefListReducer
+	GenericParameterReducer
+	GenericParametersReducer
+	ProperGenericParameterListReducer
+	GenericParameterListReducer
 	UnsafeStatementPropertyReducer
 	ReturnTypeReducer
 	FuncTypeExprReducer

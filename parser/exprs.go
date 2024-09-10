@@ -622,16 +622,16 @@ type CallExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	FuncExpr      Expression
-	TypeArguments TypeArgumentList
-	Arguments     ArgumentList
+	FuncExpr         Expression
+	GenericArguments GenericArgumentList
+	Arguments        ArgumentList
 }
 
 func (expr CallExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[CallExpr\n", indent, label)
 	result += expr.FuncExpr.TreeString(indent+"  ", "FuncExpr=") + "\n"
-	if len(expr.TypeArguments.Elements) > 0 {
-		result += expr.TypeArguments.TreeString(indent+"  ", "TypeArguments=")
+	if len(expr.GenericArguments.Elements) > 0 {
+		result += expr.GenericArguments.TreeString(indent+"  ", "GenericArguments=")
 		result += "\n"
 	}
 	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
@@ -650,7 +650,7 @@ var _ CallExprReducer = &CallExprReducerImpl{}
 
 func (reducer *CallExprReducerImpl) ToCallExpr(
 	funcExpr Expression,
-	typeArguments *TypeArgumentList,
+	genericArguments *GenericArgumentList,
 	lparen TokenValue,
 	arguments *ArgumentList,
 	rparen TokenValue,
@@ -658,8 +658,8 @@ func (reducer *CallExprReducerImpl) ToCallExpr(
 	Expression,
 	error,
 ) {
-	if typeArguments == nil {
-		typeArguments = &TypeArgumentList{}
+	if genericArguments == nil {
+		genericArguments = &GenericArgumentList{}
 	}
 
 	arguments.reduceMarkers(lparen, rparen)
@@ -670,9 +670,9 @@ func (reducer *CallExprReducerImpl) ToCallExpr(
 			LeadingComment:  funcExpr.TakeLeading(),
 			TrailingComment: arguments.TakeTrailing(),
 		},
-		FuncExpr:      funcExpr,
-		TypeArguments: *typeArguments,
-		Arguments:     *arguments,
+		FuncExpr:         funcExpr,
+		GenericArguments: *genericArguments,
+		Arguments:        *arguments,
 	}
 
 	reducer.CallExprs = append(reducer.CallExprs, expr)

@@ -475,7 +475,7 @@ type ForAssignmentReducer interface {
 
 type CallExprReducer interface {
 	// 434:2: call_expr -> ...
-	ToCallExpr(AccessibleExpr_ Expression, GenericTypeArguments_ *TypeArgumentList, Lparen_ TokenValue, Arguments_ *ArgumentList, Rparen_ TokenValue) (Expression, error)
+	ToCallExpr(AccessibleExpr_ Expression, GenericArguments_ *GenericArgumentList, Lparen_ TokenValue, Arguments_ *ArgumentList, Rparen_ TokenValue) (Expression, error)
 }
 
 type ProperArgumentsReducer interface {
@@ -642,10 +642,10 @@ type MapTypeExprReducer interface {
 
 type NamedTypeExprReducer interface {
 	// 627:2: named_type_expr -> local: ...
-	LocalToNamedTypeExpr(Identifier_ TokenValue, GenericTypeArguments_ *TypeArgumentList) (TypeExpression, error)
+	LocalToNamedTypeExpr(Identifier_ TokenValue, GenericArguments_ *GenericArgumentList) (TypeExpression, error)
 
 	// 628:2: named_type_expr -> external: ...
-	ExternalToNamedTypeExpr(Identifier_ TokenValue, Dot_ TokenValue, Identifier_2 TokenValue, GenericTypeArguments_ *TypeArgumentList) (TypeExpression, error)
+	ExternalToNamedTypeExpr(Identifier_ TokenValue, Dot_ TokenValue, Identifier_2 TokenValue, GenericArguments_ *GenericArgumentList) (TypeExpression, error)
 }
 
 type InferredTypeExprReducer interface {
@@ -673,71 +673,71 @@ type BinaryTypeExprReducer interface {
 
 type TypeDefReducer interface {
 	// 673:2: type_def -> definition: ...
-	DefinitionToTypeDef(Type_ TokenValue, Identifier_ TokenValue, GenericParameterDefs_ GenericSymbol, TypeExpr_ TypeExpression) (SourceDefinition, error)
+	DefinitionToTypeDef(Type_ TokenValue, Identifier_ TokenValue, GenericParameters_ GenericSymbol, TypeExpr_ TypeExpression) (SourceDefinition, error)
 
 	// 674:2: type_def -> constrained_def: ...
-	ConstrainedDefToTypeDef(Type_ TokenValue, Identifier_ TokenValue, GenericParameterDefs_ GenericSymbol, TypeExpr_ TypeExpression, Implements_ TokenValue, TypeExpr_2 TypeExpression) (SourceDefinition, error)
+	ConstrainedDefToTypeDef(Type_ TokenValue, Identifier_ TokenValue, GenericParameters_ GenericSymbol, TypeExpr_ TypeExpression, Implements_ TokenValue, TypeExpr_2 TypeExpression) (SourceDefinition, error)
 
 	// 675:2: type_def -> alias: ...
 	AliasToTypeDef(Type_ TokenValue, Identifier_ TokenValue, Assign_ TokenValue, TypeExpr_ TypeExpression) (SourceDefinition, error)
 }
 
-type GenericParameterDefReducer interface {
-	// 683:2: generic_parameter_def -> unconstrained: ...
-	UnconstrainedToGenericParameterDef(Identifier_ TokenValue) (GenericSymbol, error)
+type GenericParameterReducer interface {
+	// 683:2: generic_parameter -> unconstrained: ...
+	UnconstrainedToGenericParameter(Identifier_ TokenValue) (GenericSymbol, error)
 
-	// 684:2: generic_parameter_def -> constrained: ...
-	ConstrainedToGenericParameterDef(Identifier_ TokenValue, TypeExpr_ TypeExpression) (GenericSymbol, error)
+	// 684:2: generic_parameter -> constrained: ...
+	ConstrainedToGenericParameter(Identifier_ TokenValue, TypeExpr_ TypeExpression) (GenericSymbol, error)
 }
 
-type GenericParameterDefsReducer interface {
-	// 687:2: generic_parameter_defs -> generic: ...
-	GenericToGenericParameterDefs(DollarLbracket_ TokenValue, GenericParameterDefList_ GenericSymbol, Rbracket_ TokenValue) (GenericSymbol, error)
+type GenericParametersReducer interface {
+	// 687:2: generic_parameters -> generic: ...
+	GenericToGenericParameters(DollarLbracket_ TokenValue, GenericParameterList_ GenericSymbol, Rbracket_ TokenValue) (GenericSymbol, error)
 
-	// 688:2: generic_parameter_defs -> nil: ...
-	NilToGenericParameterDefs() (GenericSymbol, error)
+	// 688:2: generic_parameters -> nil: ...
+	NilToGenericParameters() (GenericSymbol, error)
 }
 
-type ProperGenericParameterDefListReducer interface {
-	// 691:2: proper_generic_parameter_def_list -> add: ...
-	AddToProperGenericParameterDefList(ProperGenericParameterDefList_ GenericSymbol, Comma_ TokenValue, GenericParameterDef_ GenericSymbol) (GenericSymbol, error)
+type ProperGenericParameterListReducer interface {
+	// 691:2: proper_generic_parameter_list -> add: ...
+	AddToProperGenericParameterList(ProperGenericParameterList_ GenericSymbol, Comma_ TokenValue, GenericParameter_ GenericSymbol) (GenericSymbol, error)
 
-	// 692:2: proper_generic_parameter_def_list -> generic_parameter_def: ...
-	GenericParameterDefToProperGenericParameterDefList(GenericParameterDef_ GenericSymbol) (GenericSymbol, error)
+	// 692:2: proper_generic_parameter_list -> generic_parameter: ...
+	GenericParameterToProperGenericParameterList(GenericParameter_ GenericSymbol) (GenericSymbol, error)
 }
 
-type GenericParameterDefListReducer interface {
+type GenericParameterListReducer interface {
 
-	// 696:2: generic_parameter_def_list -> improper: ...
-	ImproperToGenericParameterDefList(ProperGenericParameterDefList_ GenericSymbol, Comma_ TokenValue) (GenericSymbol, error)
+	// 696:2: generic_parameter_list -> improper: ...
+	ImproperToGenericParameterList(ProperGenericParameterList_ GenericSymbol, Comma_ TokenValue) (GenericSymbol, error)
 
-	// 697:2: generic_parameter_def_list -> nil: ...
-	NilToGenericParameterDefList() (GenericSymbol, error)
+	// 697:2: generic_parameter_list -> nil: ...
+	NilToGenericParameterList() (GenericSymbol, error)
 }
 
-type GenericTypeArgumentsReducer interface {
-	// 700:2: generic_type_arguments -> binding: ...
-	BindingToGenericTypeArguments(DollarLbracket_ TokenValue, TypeArguments_ *TypeArgumentList, Rbracket_ TokenValue) (*TypeArgumentList, error)
+type GenericArgumentsReducer interface {
+	// 700:2: generic_arguments -> binding: ...
+	BindingToGenericArguments(DollarLbracket_ TokenValue, GenericArgumentList_ *GenericArgumentList, Rbracket_ TokenValue) (*GenericArgumentList, error)
 
-	// 701:2: generic_type_arguments -> nil: ...
-	NilToGenericTypeArguments() (*TypeArgumentList, error)
+	// 701:2: generic_arguments -> nil: ...
+	NilToGenericArguments() (*GenericArgumentList, error)
 }
 
-type ProperTypeArgumentsReducer interface {
-	// 704:2: proper_type_arguments -> add: ...
-	AddToProperTypeArguments(ProperTypeArguments_ *TypeArgumentList, Comma_ TokenValue, TypeExpr_ TypeExpression) (*TypeArgumentList, error)
+type ProperGenericArgumentListReducer interface {
+	// 704:2: proper_generic_argument_list -> add: ...
+	AddToProperGenericArgumentList(ProperGenericArgumentList_ *GenericArgumentList, Comma_ TokenValue, TypeExpr_ TypeExpression) (*GenericArgumentList, error)
 
-	// 705:2: proper_type_arguments -> type_expr: ...
-	TypeExprToProperTypeArguments(TypeExpr_ TypeExpression) (*TypeArgumentList, error)
+	// 705:2: proper_generic_argument_list -> type_expr: ...
+	TypeExprToProperGenericArgumentList(TypeExpr_ TypeExpression) (*GenericArgumentList, error)
 }
 
-type TypeArgumentsReducer interface {
+type GenericArgumentListReducer interface {
 
-	// 709:2: type_arguments -> improper: ...
-	ImproperToTypeArguments(ProperTypeArguments_ *TypeArgumentList, Comma_ TokenValue) (*TypeArgumentList, error)
+	// 709:2: generic_argument_list -> improper: ...
+	ImproperToGenericArgumentList(ProperGenericArgumentList_ *GenericArgumentList, Comma_ TokenValue) (*GenericArgumentList, error)
 
-	// 710:2: type_arguments -> nil: ...
-	NilToTypeArguments() (*TypeArgumentList, error)
+	// 710:2: generic_argument_list -> nil: ...
+	NilToGenericArgumentList() (*GenericArgumentList, error)
 }
 
 type FieldDefReducer interface {
@@ -956,7 +956,7 @@ type MethodSignatureReducer interface {
 
 type NamedFuncDefReducer interface {
 	// 868:2: named_func_def -> func_def: ...
-	FuncDefToNamedFuncDef(Func_ TokenValue, Identifier_ TokenValue, GenericParameterDefs_ GenericSymbol, Lparen_ TokenValue, ParameterDefs_ *ParameterList, Rparen_ TokenValue, ReturnType_ TypeExpression, StatementBlock_ GenericSymbol) (SourceDefinition, error)
+	FuncDefToNamedFuncDef(Func_ TokenValue, Identifier_ TokenValue, GenericParameters_ GenericSymbol, Lparen_ TokenValue, ParameterDefs_ *ParameterList, Rparen_ TokenValue, ReturnType_ TypeExpression, StatementBlock_ GenericSymbol) (SourceDefinition, error)
 
 	// 869:2: named_func_def -> method_def: ...
 	MethodDefToNamedFuncDef(Func_ TokenValue, Lparen_ TokenValue, ParameterDef_ *Parameter, Rparen_ TokenValue, Identifier_ TokenValue, Lparen_2 TokenValue, ParameterDefs_ *ParameterList, Rparen_2 TokenValue, ReturnType_ TypeExpression, StatementBlock_ GenericSymbol) (SourceDefinition, error)
@@ -1049,13 +1049,13 @@ type Reducer interface {
 	PrefixUnaryTypeExprReducer
 	BinaryTypeExprReducer
 	TypeDefReducer
-	GenericParameterDefReducer
-	GenericParameterDefsReducer
-	ProperGenericParameterDefListReducer
-	GenericParameterDefListReducer
-	GenericTypeArgumentsReducer
-	ProperTypeArgumentsReducer
-	TypeArgumentsReducer
+	GenericParameterReducer
+	GenericParametersReducer
+	ProperGenericParameterListReducer
+	GenericParameterListReducer
+	GenericArgumentsReducer
+	ProperGenericArgumentListReducer
+	GenericArgumentListReducer
 	FieldDefReducer
 	UnsafeStatementPropertyReducer
 	TypePropertyReducer
@@ -1215,7 +1215,7 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 		return []SymbolId{RparenToken}
 	case _State139:
 		return []SymbolId{GreaterToken}
-	case _State141:
+	case _State140:
 		return []SymbolId{RbracketToken}
 	case _State143:
 		return []SymbolId{RbracketToken}
@@ -1849,20 +1849,20 @@ func (i SymbolId) String() string {
 		return "binary_type_op"
 	case TypeDefType:
 		return "type_def"
-	case GenericParameterDefType:
-		return "generic_parameter_def"
-	case GenericParameterDefsType:
-		return "generic_parameter_defs"
-	case ProperGenericParameterDefListType:
-		return "proper_generic_parameter_def_list"
-	case GenericParameterDefListType:
-		return "generic_parameter_def_list"
-	case GenericTypeArgumentsType:
-		return "generic_type_arguments"
-	case ProperTypeArgumentsType:
-		return "proper_type_arguments"
-	case TypeArgumentsType:
-		return "type_arguments"
+	case GenericParameterType:
+		return "generic_parameter"
+	case GenericParametersType:
+		return "generic_parameters"
+	case ProperGenericParameterListType:
+		return "proper_generic_parameter_list"
+	case GenericParameterListType:
+		return "generic_parameter_list"
+	case GenericArgumentsType:
+		return "generic_arguments"
+	case ProperGenericArgumentListType:
+		return "proper_generic_argument_list"
+	case GenericArgumentListType:
+		return "generic_argument_list"
 	case FieldDefType:
 		return "field_def"
 	case UnsafeStatementPropertyType:
@@ -2027,13 +2027,13 @@ const (
 	BinaryTypeExprType                   = SymbolId(437)
 	BinaryTypeOpType                     = SymbolId(438)
 	TypeDefType                          = SymbolId(439)
-	GenericParameterDefType              = SymbolId(440)
-	GenericParameterDefsType             = SymbolId(441)
-	ProperGenericParameterDefListType    = SymbolId(442)
-	GenericParameterDefListType          = SymbolId(443)
-	GenericTypeArgumentsType             = SymbolId(444)
-	ProperTypeArgumentsType              = SymbolId(445)
-	TypeArgumentsType                    = SymbolId(446)
+	GenericParameterType                 = SymbolId(440)
+	GenericParametersType                = SymbolId(441)
+	ProperGenericParameterListType       = SymbolId(442)
+	GenericParameterListType             = SymbolId(443)
+	GenericArgumentsType                 = SymbolId(444)
+	ProperGenericArgumentListType        = SymbolId(445)
+	GenericArgumentListType              = SymbolId(446)
 	FieldDefType                         = SymbolId(447)
 	UnsafeStatementPropertyType          = SymbolId(448)
 	TypePropertyType                     = SymbolId(449)
@@ -2342,22 +2342,22 @@ const (
 	_ReduceDefinitionToTypeDef                                          = _ReduceType(247)
 	_ReduceConstrainedDefToTypeDef                                      = _ReduceType(248)
 	_ReduceAliasToTypeDef                                               = _ReduceType(249)
-	_ReduceUnconstrainedToGenericParameterDef                           = _ReduceType(250)
-	_ReduceConstrainedToGenericParameterDef                             = _ReduceType(251)
-	_ReduceGenericToGenericParameterDefs                                = _ReduceType(252)
-	_ReduceNilToGenericParameterDefs                                    = _ReduceType(253)
-	_ReduceAddToProperGenericParameterDefList                           = _ReduceType(254)
-	_ReduceGenericParameterDefToProperGenericParameterDefList           = _ReduceType(255)
-	_ReduceProperGenericParameterDefListToGenericParameterDefList       = _ReduceType(256)
-	_ReduceImproperToGenericParameterDefList                            = _ReduceType(257)
-	_ReduceNilToGenericParameterDefList                                 = _ReduceType(258)
-	_ReduceBindingToGenericTypeArguments                                = _ReduceType(259)
-	_ReduceNilToGenericTypeArguments                                    = _ReduceType(260)
-	_ReduceAddToProperTypeArguments                                     = _ReduceType(261)
-	_ReduceTypeExprToProperTypeArguments                                = _ReduceType(262)
-	_ReduceProperTypeArgumentsToTypeArguments                           = _ReduceType(263)
-	_ReduceImproperToTypeArguments                                      = _ReduceType(264)
-	_ReduceNilToTypeArguments                                           = _ReduceType(265)
+	_ReduceUnconstrainedToGenericParameter                              = _ReduceType(250)
+	_ReduceConstrainedToGenericParameter                                = _ReduceType(251)
+	_ReduceGenericToGenericParameters                                   = _ReduceType(252)
+	_ReduceNilToGenericParameters                                       = _ReduceType(253)
+	_ReduceAddToProperGenericParameterList                              = _ReduceType(254)
+	_ReduceGenericParameterToProperGenericParameterList                 = _ReduceType(255)
+	_ReduceProperGenericParameterListToGenericParameterList             = _ReduceType(256)
+	_ReduceImproperToGenericParameterList                               = _ReduceType(257)
+	_ReduceNilToGenericParameterList                                    = _ReduceType(258)
+	_ReduceBindingToGenericArguments                                    = _ReduceType(259)
+	_ReduceNilToGenericArguments                                        = _ReduceType(260)
+	_ReduceAddToProperGenericArgumentList                               = _ReduceType(261)
+	_ReduceTypeExprToProperGenericArgumentList                          = _ReduceType(262)
+	_ReduceProperGenericArgumentListToGenericArgumentList               = _ReduceType(263)
+	_ReduceImproperToGenericArgumentList                                = _ReduceType(264)
+	_ReduceNilToGenericArgumentList                                     = _ReduceType(265)
 	_ReduceNamedToFieldDef                                              = _ReduceType(266)
 	_ReduceUnnamedToFieldDef                                            = _ReduceType(267)
 	_ReduceToUnsafeStatementProperty                                    = _ReduceType(268)
@@ -2928,38 +2928,38 @@ func (i _ReduceType) String() string {
 		return "ConstrainedDefToTypeDef"
 	case _ReduceAliasToTypeDef:
 		return "AliasToTypeDef"
-	case _ReduceUnconstrainedToGenericParameterDef:
-		return "UnconstrainedToGenericParameterDef"
-	case _ReduceConstrainedToGenericParameterDef:
-		return "ConstrainedToGenericParameterDef"
-	case _ReduceGenericToGenericParameterDefs:
-		return "GenericToGenericParameterDefs"
-	case _ReduceNilToGenericParameterDefs:
-		return "NilToGenericParameterDefs"
-	case _ReduceAddToProperGenericParameterDefList:
-		return "AddToProperGenericParameterDefList"
-	case _ReduceGenericParameterDefToProperGenericParameterDefList:
-		return "GenericParameterDefToProperGenericParameterDefList"
-	case _ReduceProperGenericParameterDefListToGenericParameterDefList:
-		return "ProperGenericParameterDefListToGenericParameterDefList"
-	case _ReduceImproperToGenericParameterDefList:
-		return "ImproperToGenericParameterDefList"
-	case _ReduceNilToGenericParameterDefList:
-		return "NilToGenericParameterDefList"
-	case _ReduceBindingToGenericTypeArguments:
-		return "BindingToGenericTypeArguments"
-	case _ReduceNilToGenericTypeArguments:
-		return "NilToGenericTypeArguments"
-	case _ReduceAddToProperTypeArguments:
-		return "AddToProperTypeArguments"
-	case _ReduceTypeExprToProperTypeArguments:
-		return "TypeExprToProperTypeArguments"
-	case _ReduceProperTypeArgumentsToTypeArguments:
-		return "ProperTypeArgumentsToTypeArguments"
-	case _ReduceImproperToTypeArguments:
-		return "ImproperToTypeArguments"
-	case _ReduceNilToTypeArguments:
-		return "NilToTypeArguments"
+	case _ReduceUnconstrainedToGenericParameter:
+		return "UnconstrainedToGenericParameter"
+	case _ReduceConstrainedToGenericParameter:
+		return "ConstrainedToGenericParameter"
+	case _ReduceGenericToGenericParameters:
+		return "GenericToGenericParameters"
+	case _ReduceNilToGenericParameters:
+		return "NilToGenericParameters"
+	case _ReduceAddToProperGenericParameterList:
+		return "AddToProperGenericParameterList"
+	case _ReduceGenericParameterToProperGenericParameterList:
+		return "GenericParameterToProperGenericParameterList"
+	case _ReduceProperGenericParameterListToGenericParameterList:
+		return "ProperGenericParameterListToGenericParameterList"
+	case _ReduceImproperToGenericParameterList:
+		return "ImproperToGenericParameterList"
+	case _ReduceNilToGenericParameterList:
+		return "NilToGenericParameterList"
+	case _ReduceBindingToGenericArguments:
+		return "BindingToGenericArguments"
+	case _ReduceNilToGenericArguments:
+		return "NilToGenericArguments"
+	case _ReduceAddToProperGenericArgumentList:
+		return "AddToProperGenericArgumentList"
+	case _ReduceTypeExprToProperGenericArgumentList:
+		return "TypeExprToProperGenericArgumentList"
+	case _ReduceProperGenericArgumentListToGenericArgumentList:
+		return "ProperGenericArgumentListToGenericArgumentList"
+	case _ReduceImproperToGenericArgumentList:
+		return "ImproperToGenericArgumentList"
+	case _ReduceNilToGenericArgumentList:
+		return "NilToGenericArgumentList"
 	case _ReduceNamedToFieldDef:
 		return "NamedToFieldDef"
 	case _ReduceUnnamedToFieldDef:
@@ -3357,24 +3357,24 @@ type Symbol struct {
 
 	Generic_ GenericSymbol
 
-	Argument          *Argument
-	ArgumentList      *ArgumentList
-	ColonExpr         *ColonExpr
-	Count             TokenCount
-	Expression        Expression
-	FieldDef          *FieldDef
-	Parameter         *Parameter
-	Parameters        *ParameterList
-	ParseError        ParseErrorSymbol
-	SourceDefinition  SourceDefinition
-	SourceDefinitions []SourceDefinition
-	Statement         Statement
-	Statements        *StatementList
-	TypeArgumentList  *TypeArgumentList
-	TypeExpression    TypeExpression
-	TypeProperties    *TypePropertyList
-	TypeProperty      TypeProperty
-	Value             TokenValue
+	Argument            *Argument
+	ArgumentList        *ArgumentList
+	ColonExpr           *ColonExpr
+	Count               TokenCount
+	Expression          Expression
+	FieldDef            *FieldDef
+	GenericArgumentList *GenericArgumentList
+	Parameter           *Parameter
+	Parameters          *ParameterList
+	ParseError          ParseErrorSymbol
+	SourceDefinition    SourceDefinition
+	SourceDefinitions   []SourceDefinition
+	Statement           Statement
+	Statements          *StatementList
+	TypeExpression      TypeExpression
+	TypeProperties      *TypePropertyList
+	TypeProperty        TypeProperty
+	Value               TokenValue
 }
 
 func NewSymbol(token Token) (*Symbol, error) {
@@ -3468,6 +3468,11 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
+	case GenericArgumentsType, ProperGenericArgumentListType, GenericArgumentListType:
+		loc, ok := interface{}(s.GenericArgumentList).(locator)
+		if ok {
+			return loc.Loc()
+		}
 	case ProperParameterDefType, ParameterDeclType, ParameterDefType:
 		loc, ok := interface{}(s.Parameter).(locator)
 		if ok {
@@ -3500,11 +3505,6 @@ func (s *Symbol) Loc() Location {
 		}
 	case ProperStatementsType, StatementsType:
 		loc, ok := interface{}(s.Statements).(locator)
-		if ok {
-			return loc.Loc()
-		}
-	case GenericTypeArgumentsType, ProperTypeArgumentsType, TypeArgumentsType:
-		loc, ok := interface{}(s.TypeArgumentList).(locator)
 		if ok {
 			return loc.Loc()
 		}
@@ -3565,6 +3565,11 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
+	case GenericArgumentsType, ProperGenericArgumentListType, GenericArgumentListType:
+		loc, ok := interface{}(s.GenericArgumentList).(locator)
+		if ok {
+			return loc.End()
+		}
 	case ProperParameterDefType, ParameterDeclType, ParameterDefType:
 		loc, ok := interface{}(s.Parameter).(locator)
 		if ok {
@@ -3597,11 +3602,6 @@ func (s *Symbol) End() Location {
 		}
 	case ProperStatementsType, StatementsType:
 		loc, ok := interface{}(s.Statements).(locator)
-		if ok {
-			return loc.End()
-		}
-	case GenericTypeArgumentsType, ProperTypeArgumentsType, TypeArgumentsType:
-		loc, ok := interface{}(s.TypeArgumentList).(locator)
 		if ok {
 			return loc.End()
 		}
@@ -4402,7 +4402,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-5:]
 		stack = stack[:len(stack)-5]
 		symbol.SymbolId_ = CallExprType
-		symbol.Expression, err = reducer.ToCallExpr(args[0].Expression, args[1].TypeArgumentList, args[2].Value, args[3].ArgumentList, args[4].Value)
+		symbol.Expression, err = reducer.ToCallExpr(args[0].Expression, args[1].GenericArgumentList, args[2].Value, args[3].ArgumentList, args[4].Value)
 	case _ReduceAddToProperArguments:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -5034,12 +5034,12 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = NamedTypeExprType
-		symbol.TypeExpression, err = reducer.LocalToNamedTypeExpr(args[0].Value, args[1].TypeArgumentList)
+		symbol.TypeExpression, err = reducer.LocalToNamedTypeExpr(args[0].Value, args[1].GenericArgumentList)
 	case _ReduceExternalToNamedTypeExpr:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = NamedTypeExprType
-		symbol.TypeExpression, err = reducer.ExternalToNamedTypeExpr(args[0].Value, args[1].Value, args[2].Value, args[3].TypeArgumentList)
+		symbol.TypeExpression, err = reducer.ExternalToNamedTypeExpr(args[0].Value, args[1].Value, args[2].Value, args[3].GenericArgumentList)
 	case _ReduceDotToInferredTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -5164,82 +5164,82 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = TypeDefType
 		symbol.SourceDefinition, err = reducer.AliasToTypeDef(args[0].Value, args[1].Value, args[2].Value, args[3].TypeExpression)
-	case _ReduceUnconstrainedToGenericParameterDef:
+	case _ReduceUnconstrainedToGenericParameter:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = GenericParameterDefType
-		symbol.Generic_, err = reducer.UnconstrainedToGenericParameterDef(args[0].Value)
-	case _ReduceConstrainedToGenericParameterDef:
+		symbol.SymbolId_ = GenericParameterType
+		symbol.Generic_, err = reducer.UnconstrainedToGenericParameter(args[0].Value)
+	case _ReduceConstrainedToGenericParameter:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
-		symbol.SymbolId_ = GenericParameterDefType
-		symbol.Generic_, err = reducer.ConstrainedToGenericParameterDef(args[0].Value, args[1].TypeExpression)
-	case _ReduceGenericToGenericParameterDefs:
+		symbol.SymbolId_ = GenericParameterType
+		symbol.Generic_, err = reducer.ConstrainedToGenericParameter(args[0].Value, args[1].TypeExpression)
+	case _ReduceGenericToGenericParameters:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
-		symbol.SymbolId_ = GenericParameterDefsType
-		symbol.Generic_, err = reducer.GenericToGenericParameterDefs(args[0].Value, args[1].Generic_, args[2].Value)
-	case _ReduceNilToGenericParameterDefs:
-		symbol.SymbolId_ = GenericParameterDefsType
-		symbol.Generic_, err = reducer.NilToGenericParameterDefs()
-	case _ReduceAddToProperGenericParameterDefList:
+		symbol.SymbolId_ = GenericParametersType
+		symbol.Generic_, err = reducer.GenericToGenericParameters(args[0].Value, args[1].Generic_, args[2].Value)
+	case _ReduceNilToGenericParameters:
+		symbol.SymbolId_ = GenericParametersType
+		symbol.Generic_, err = reducer.NilToGenericParameters()
+	case _ReduceAddToProperGenericParameterList:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
-		symbol.SymbolId_ = ProperGenericParameterDefListType
-		symbol.Generic_, err = reducer.AddToProperGenericParameterDefList(args[0].Generic_, args[1].Value, args[2].Generic_)
-	case _ReduceGenericParameterDefToProperGenericParameterDefList:
+		symbol.SymbolId_ = ProperGenericParameterListType
+		symbol.Generic_, err = reducer.AddToProperGenericParameterList(args[0].Generic_, args[1].Value, args[2].Generic_)
+	case _ReduceGenericParameterToProperGenericParameterList:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = ProperGenericParameterDefListType
-		symbol.Generic_, err = reducer.GenericParameterDefToProperGenericParameterDefList(args[0].Generic_)
-	case _ReduceProperGenericParameterDefListToGenericParameterDefList:
+		symbol.SymbolId_ = ProperGenericParameterListType
+		symbol.Generic_, err = reducer.GenericParameterToProperGenericParameterList(args[0].Generic_)
+	case _ReduceProperGenericParameterListToGenericParameterList:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = GenericParameterDefListType
+		symbol.SymbolId_ = GenericParameterListType
 		//line grammar.lr:695:4
 		symbol.Generic_ = args[0].Generic_
 		err = nil
-	case _ReduceImproperToGenericParameterDefList:
+	case _ReduceImproperToGenericParameterList:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
-		symbol.SymbolId_ = GenericParameterDefListType
-		symbol.Generic_, err = reducer.ImproperToGenericParameterDefList(args[0].Generic_, args[1].Value)
-	case _ReduceNilToGenericParameterDefList:
-		symbol.SymbolId_ = GenericParameterDefListType
-		symbol.Generic_, err = reducer.NilToGenericParameterDefList()
-	case _ReduceBindingToGenericTypeArguments:
+		symbol.SymbolId_ = GenericParameterListType
+		symbol.Generic_, err = reducer.ImproperToGenericParameterList(args[0].Generic_, args[1].Value)
+	case _ReduceNilToGenericParameterList:
+		symbol.SymbolId_ = GenericParameterListType
+		symbol.Generic_, err = reducer.NilToGenericParameterList()
+	case _ReduceBindingToGenericArguments:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
-		symbol.SymbolId_ = GenericTypeArgumentsType
-		symbol.TypeArgumentList, err = reducer.BindingToGenericTypeArguments(args[0].Value, args[1].TypeArgumentList, args[2].Value)
-	case _ReduceNilToGenericTypeArguments:
-		symbol.SymbolId_ = GenericTypeArgumentsType
-		symbol.TypeArgumentList, err = reducer.NilToGenericTypeArguments()
-	case _ReduceAddToProperTypeArguments:
+		symbol.SymbolId_ = GenericArgumentsType
+		symbol.GenericArgumentList, err = reducer.BindingToGenericArguments(args[0].Value, args[1].GenericArgumentList, args[2].Value)
+	case _ReduceNilToGenericArguments:
+		symbol.SymbolId_ = GenericArgumentsType
+		symbol.GenericArgumentList, err = reducer.NilToGenericArguments()
+	case _ReduceAddToProperGenericArgumentList:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
-		symbol.SymbolId_ = ProperTypeArgumentsType
-		symbol.TypeArgumentList, err = reducer.AddToProperTypeArguments(args[0].TypeArgumentList, args[1].Value, args[2].TypeExpression)
-	case _ReduceTypeExprToProperTypeArguments:
+		symbol.SymbolId_ = ProperGenericArgumentListType
+		symbol.GenericArgumentList, err = reducer.AddToProperGenericArgumentList(args[0].GenericArgumentList, args[1].Value, args[2].TypeExpression)
+	case _ReduceTypeExprToProperGenericArgumentList:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = ProperTypeArgumentsType
-		symbol.TypeArgumentList, err = reducer.TypeExprToProperTypeArguments(args[0].TypeExpression)
-	case _ReduceProperTypeArgumentsToTypeArguments:
+		symbol.SymbolId_ = ProperGenericArgumentListType
+		symbol.GenericArgumentList, err = reducer.TypeExprToProperGenericArgumentList(args[0].TypeExpression)
+	case _ReduceProperGenericArgumentListToGenericArgumentList:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = TypeArgumentsType
+		symbol.SymbolId_ = GenericArgumentListType
 		//line grammar.lr:708:4
-		symbol.TypeArgumentList = args[0].TypeArgumentList
+		symbol.GenericArgumentList = args[0].GenericArgumentList
 		err = nil
-	case _ReduceImproperToTypeArguments:
+	case _ReduceImproperToGenericArgumentList:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
-		symbol.SymbolId_ = TypeArgumentsType
-		symbol.TypeArgumentList, err = reducer.ImproperToTypeArguments(args[0].TypeArgumentList, args[1].Value)
-	case _ReduceNilToTypeArguments:
-		symbol.SymbolId_ = TypeArgumentsType
-		symbol.TypeArgumentList, err = reducer.NilToTypeArguments()
+		symbol.SymbolId_ = GenericArgumentListType
+		symbol.GenericArgumentList, err = reducer.ImproperToGenericArgumentList(args[0].GenericArgumentList, args[1].Value)
+	case _ReduceNilToGenericArgumentList:
+		symbol.SymbolId_ = GenericArgumentListType
+		symbol.GenericArgumentList, err = reducer.NilToGenericArgumentList()
 	case _ReduceNamedToFieldDef:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
@@ -6816,7 +6816,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State74, 0}, true
 		case BinaryOpAssignType:
 			return _Action{_ShiftAction, _State77, 0}, true
-		case GenericTypeArgumentsType:
+		case GenericArgumentsType:
 			return _Action{_ShiftAction, _State78, 0}, true
 		case QuestionToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPostfixUnaryOp}, true
@@ -6853,7 +6853,7 @@ func (_ActionTableType) Get(
 		case PostfixUnaryOpType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToPostfixUnaryExpr}, true
 		case LparenToken:
-			return _Action{_ReduceAction, 0, _ReduceNilToGenericTypeArguments}, true
+			return _Action{_ReduceAction, 0, _ReduceNilToGenericArguments}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceAccessibleExprToPostfixableExpr}, true
@@ -7285,7 +7285,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State75, 0}, true
 		case DollarLbracketToken:
 			return _Action{_ShiftAction, _State74, 0}, true
-		case GenericTypeArgumentsType:
+		case GenericArgumentsType:
 			return _Action{_ShiftAction, _State78, 0}, true
 		case QuestionToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPostfixUnaryOp}, true
@@ -7294,7 +7294,7 @@ func (_ActionTableType) Get(
 		case PostfixUnaryOpType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToPostfixUnaryExpr}, true
 		case LparenToken:
-			return _Action{_ReduceAction, 0, _ReduceNilToGenericTypeArguments}, true
+			return _Action{_ReduceAction, 0, _ReduceNilToGenericArguments}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceAccessibleExprToPostfixableExpr}, true
@@ -7315,11 +7315,11 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State97, 0}, true
 		case DollarLbracketToken:
 			return _Action{_ShiftAction, _State74, 0}, true
-		case GenericTypeArgumentsType:
+		case GenericArgumentsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLocalToNamedTypeExpr}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceNilToGenericTypeArguments}, true
+			return _Action{_ReduceAction, 0, _ReduceNilToGenericArguments}, true
 		}
 	case _State43:
 		switch symbolId {
@@ -7495,11 +7495,11 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State111, 0}, true
 		case AssignToken:
 			return _Action{_ShiftAction, _State110, 0}, true
-		case GenericParameterDefsType:
+		case GenericParametersType:
 			return _Action{_ShiftAction, _State112, 0}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceNilToGenericParameterDefs}, true
+			return _Action{_ReduceAction, 0, _ReduceNilToGenericParameters}, true
 		}
 	case _State47:
 		switch symbolId {
@@ -7533,11 +7533,11 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State111, 0}, true
 		case AssignToken:
 			return _Action{_ShiftAction, _State118, 0}, true
-		case GenericParameterDefsType:
+		case GenericParametersType:
 			return _Action{_ShiftAction, _State119, 0}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceNilToGenericParameterDefs}, true
+			return _Action{_ReduceAction, 0, _ReduceNilToGenericParameters}, true
 		}
 	case _State51:
 		switch symbolId {
@@ -8366,10 +8366,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State45, 0}, true
 		case TypeExprType:
 			return _Action{_ShiftAction, _State142, 0}, true
-		case ProperTypeArgumentsType:
-			return _Action{_ShiftAction, _State140, 0}, true
-		case TypeArgumentsType:
+		case ProperGenericArgumentListType:
 			return _Action{_ShiftAction, _State141, 0}, true
+		case GenericArgumentListType:
+			return _Action{_ShiftAction, _State140, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -8422,7 +8422,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFuncTypeExprToAtomTypeExpr}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceNilToTypeArguments}, true
+			return _Action{_ReduceAction, 0, _ReduceNilToGenericArgumentList}, true
 		}
 	case _State75:
 		switch symbolId {
@@ -9036,11 +9036,11 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State75, 0}, true
 		case DollarLbracketToken:
 			return _Action{_ShiftAction, _State74, 0}, true
-		case GenericTypeArgumentsType:
+		case GenericArgumentsType:
 			return _Action{_ShiftAction, _State78, 0}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceNilToGenericTypeArguments}, true
+			return _Action{_ReduceAction, 0, _ReduceNilToGenericArguments}, true
 		}
 	case _State83:
 		switch symbolId {
@@ -10471,7 +10471,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixUnaryTypeExprToReturnableTypeExpr}, true
 		case BinaryTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryTypeExprToTypeExpr}, true
-		case GenericTypeArgumentsType:
+		case GenericArgumentsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLocalToNamedTypeExpr}, true
 		case ImplicitStructTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceImplicitStructTypeExprToAtomTypeExpr}, true
@@ -10487,7 +10487,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFuncTypeExprToAtomTypeExpr}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceNilToGenericTypeArguments}, true
+			return _Action{_ReduceAction, 0, _ReduceNilToGenericArguments}, true
 		}
 	case _State101:
 		switch symbolId {
@@ -10906,15 +10906,15 @@ func (_ActionTableType) Get(
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State176, 0}, true
-		case ProperGenericParameterDefListType:
+		case ProperGenericParameterListType:
 			return _Action{_ShiftAction, _State178, 0}, true
-		case GenericParameterDefListType:
+		case GenericParameterListType:
 			return _Action{_ShiftAction, _State177, 0}, true
-		case GenericParameterDefType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceGenericParameterDefToProperGenericParameterDefList}, true
+		case GenericParameterType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceGenericParameterToProperGenericParameterList}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceNilToGenericParameterDefList}, true
+			return _Action{_ReduceAction, 0, _ReduceNilToGenericParameterList}, true
 		}
 	case _State112:
 		switch symbolId {
@@ -12608,16 +12608,16 @@ func (_ActionTableType) Get(
 		}
 	case _State140:
 		switch symbolId {
+		case RbracketToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBindingToGenericArguments}, true
+		}
+	case _State141:
+		switch symbolId {
 		case CommaToken:
 			return _Action{_ShiftAction, _State199, 0}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceProperTypeArgumentsToTypeArguments}, true
-		}
-	case _State141:
-		switch symbolId {
-		case RbracketToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBindingToGenericTypeArguments}, true
+			return _Action{_ReduceAction, 0, _ReduceProperGenericArgumentListToGenericArgumentList}, true
 		}
 	case _State142:
 		switch symbolId {
@@ -12631,7 +12631,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToBinaryTypeOp}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceTypeExprToProperTypeArguments}, true
+			return _Action{_ReduceAction, 0, _ReduceTypeExprToProperGenericArgumentList}, true
 		}
 	case _State143:
 		switch symbolId {
@@ -13191,7 +13191,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixUnaryTypeExprToReturnableTypeExpr}, true
 		case BinaryTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryTypeExprToTypeExpr}, true
-		case GenericTypeArgumentsType:
+		case GenericArgumentsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLocalToNamedTypeExpr}, true
 		case ImplicitStructTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceImplicitStructTypeExprToAtomTypeExpr}, true
@@ -13207,7 +13207,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFuncTypeExprToAtomTypeExpr}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceNilToGenericTypeArguments}, true
+			return _Action{_ReduceAction, 0, _ReduceNilToGenericArguments}, true
 		}
 	case _State163:
 		switch symbolId {
@@ -13316,11 +13316,11 @@ func (_ActionTableType) Get(
 		switch symbolId {
 		case DollarLbracketToken:
 			return _Action{_ShiftAction, _State74, 0}, true
-		case GenericTypeArgumentsType:
+		case GenericArgumentsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExternalToNamedTypeExpr}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceNilToGenericTypeArguments}, true
+			return _Action{_ReduceAction, 0, _ReduceNilToGenericArguments}, true
 		}
 	case _State168:
 		switch symbolId {
@@ -13698,12 +13698,12 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFuncTypeExprToAtomTypeExpr}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceUnconstrainedToGenericParameterDef}, true
+			return _Action{_ReduceAction, 0, _ReduceUnconstrainedToGenericParameter}, true
 		}
 	case _State177:
 		switch symbolId {
 		case RbracketToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceGenericToGenericParameterDefs}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceGenericToGenericParameters}, true
 		}
 	case _State178:
 		switch symbolId {
@@ -13711,7 +13711,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State217, 0}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceProperGenericParameterDefListToGenericParameterDefList}, true
+			return _Action{_ReduceAction, 0, _ReduceProperGenericParameterListToGenericParameterList}, true
 		}
 	case _State179:
 		switch symbolId {
@@ -14368,7 +14368,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFuncTypeExprToAtomTypeExpr}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceImproperToTypeArguments}, true
+			return _Action{_ReduceAction, 0, _ReduceImproperToGenericArgumentList}, true
 		}
 	case _State200:
 		switch symbolId {
@@ -15494,17 +15494,17 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToBinaryTypeOp}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceConstrainedToGenericParameterDef}, true
+			return _Action{_ReduceAction, 0, _ReduceConstrainedToGenericParameter}, true
 		}
 	case _State217:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State176, 0}, true
-		case GenericParameterDefType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToProperGenericParameterDefList}, true
+		case GenericParameterType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToProperGenericParameterList}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceImproperToGenericParameterDefList}, true
+			return _Action{_ReduceAction, 0, _ReduceImproperToGenericParameterList}, true
 		}
 	case _State218:
 		switch symbolId {
@@ -15634,7 +15634,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToBinaryTypeOp}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceAddToProperTypeArguments}, true
+			return _Action{_ReduceAction, 0, _ReduceAddToProperGenericArgumentList}, true
 		}
 	case _State225:
 		switch symbolId {
@@ -16494,7 +16494,7 @@ Parser Debug States:
 
   State 9:
     Kernel Items:
-      named_func_def: FUNC.IDENTIFIER generic_parameter_defs LPAREN parameter_defs RPAREN return_type statement_block
+      named_func_def: FUNC.IDENTIFIER generic_parameters LPAREN parameter_defs RPAREN return_type statement_block
       named_func_def: FUNC.LPAREN parameter_def RPAREN IDENTIFIER LPAREN parameter_defs RPAREN return_type statement_block
       named_func_def: FUNC.IDENTIFIER ASSIGN expr
     Reduce:
@@ -16616,8 +16616,8 @@ Parser Debug States:
 
   State 12:
     Kernel Items:
-      type_def: TYPE.IDENTIFIER generic_parameter_defs type_expr
-      type_def: TYPE.IDENTIFIER generic_parameter_defs type_expr IMPLEMENTS type_expr
+      type_def: TYPE.IDENTIFIER generic_parameters type_expr
+      type_def: TYPE.IDENTIFIER generic_parameters type_expr IMPLEMENTS type_expr
       type_def: TYPE.IDENTIFIER ASSIGN type_expr
     Reduce:
       (nil)
@@ -16978,14 +16978,14 @@ Parser Debug States:
     Kernel Items:
       unary_op_assign_statement: accessible_expr.unary_op_assign
       binary_op_assign_statement: accessible_expr.binary_op_assign expr
-      call_expr: accessible_expr.generic_type_arguments LPAREN arguments RPAREN
+      call_expr: accessible_expr.generic_arguments LPAREN arguments RPAREN
       access_expr: accessible_expr.DOT IDENTIFIER
       index_expr: accessible_expr.LBRACKET argument RBRACKET
       postfixable_expr: accessible_expr., *
       postfix_unary_expr: accessible_expr.postfix_unary_op
     Reduce:
       * -> [postfixable_expr]
-      LPAREN -> [generic_type_arguments]
+      LPAREN -> [generic_arguments]
     ShiftAndReduce:
       QUESTION -> [postfix_unary_op]
       EXCLAIM -> [postfix_unary_op]
@@ -17009,7 +17009,7 @@ Parser Debug States:
       DOT -> State 75
       DOLLAR_LBRACKET -> State 74
       binary_op_assign -> State 77
-      generic_type_arguments -> State 78
+      generic_arguments -> State 78
 
   State 26:
     Kernel Items:
@@ -17315,14 +17315,14 @@ Parser Debug States:
 
   State 39:
     Kernel Items:
-      call_expr: accessible_expr.generic_type_arguments LPAREN arguments RPAREN
+      call_expr: accessible_expr.generic_arguments LPAREN arguments RPAREN
       access_expr: accessible_expr.DOT IDENTIFIER
       index_expr: accessible_expr.LBRACKET argument RBRACKET
       postfixable_expr: accessible_expr., *
       postfix_unary_expr: accessible_expr.postfix_unary_op
     Reduce:
       * -> [postfixable_expr]
-      LPAREN -> [generic_type_arguments]
+      LPAREN -> [generic_arguments]
     ShiftAndReduce:
       QUESTION -> [postfix_unary_op]
       EXCLAIM -> [postfix_unary_op]
@@ -17331,7 +17331,7 @@ Parser Debug States:
       LBRACKET -> State 76
       DOT -> State 75
       DOLLAR_LBRACKET -> State 74
-      generic_type_arguments -> State 78
+      generic_arguments -> State 78
 
   State 40:
     Kernel Items:
@@ -17355,12 +17355,12 @@ Parser Debug States:
 
   State 42:
     Kernel Items:
-      named_type_expr: IDENTIFIER.generic_type_arguments
-      named_type_expr: IDENTIFIER.DOT IDENTIFIER generic_type_arguments
+      named_type_expr: IDENTIFIER.generic_arguments
+      named_type_expr: IDENTIFIER.DOT IDENTIFIER generic_arguments
     Reduce:
-      * -> [generic_type_arguments]
+      * -> [generic_arguments]
     ShiftAndReduce:
-      generic_type_arguments -> [named_type_expr]
+      generic_arguments -> [named_type_expr]
     Goto:
       DOT -> State 97
       DOLLAR_LBRACKET -> State 74
@@ -17471,16 +17471,16 @@ Parser Debug States:
 
   State 46:
     Kernel Items:
-      named_func_def: FUNC IDENTIFIER.generic_parameter_defs LPAREN parameter_defs RPAREN return_type statement_block
+      named_func_def: FUNC IDENTIFIER.generic_parameters LPAREN parameter_defs RPAREN return_type statement_block
       named_func_def: FUNC IDENTIFIER.ASSIGN expr
     Reduce:
-      * -> [generic_parameter_defs]
+      * -> [generic_parameters]
     ShiftAndReduce:
       (nil)
     Goto:
       DOLLAR_LBRACKET -> State 111
       ASSIGN -> State 110
-      generic_parameter_defs -> State 112
+      generic_parameters -> State 112
 
   State 47:
     Kernel Items:
@@ -17521,17 +17521,17 @@ Parser Debug States:
 
   State 50:
     Kernel Items:
-      type_def: TYPE IDENTIFIER.generic_parameter_defs type_expr
-      type_def: TYPE IDENTIFIER.generic_parameter_defs type_expr IMPLEMENTS type_expr
+      type_def: TYPE IDENTIFIER.generic_parameters type_expr
+      type_def: TYPE IDENTIFIER.generic_parameters type_expr IMPLEMENTS type_expr
       type_def: TYPE IDENTIFIER.ASSIGN type_expr
     Reduce:
-      * -> [generic_parameter_defs]
+      * -> [generic_parameters]
     ShiftAndReduce:
       (nil)
     Goto:
       DOLLAR_LBRACKET -> State 111
       ASSIGN -> State 118
-      generic_parameter_defs -> State 119
+      generic_parameters -> State 119
 
   State 51:
     Kernel Items:
@@ -18100,9 +18100,9 @@ Parser Debug States:
 
   State 74:
     Kernel Items:
-      generic_type_arguments: DOLLAR_LBRACKET.type_arguments RBRACKET
+      generic_arguments: DOLLAR_LBRACKET.generic_argument_list RBRACKET
     Reduce:
-      * -> [type_arguments]
+      * -> [generic_argument_list]
     ShiftAndReduce:
       UNDERSCORE -> [inferred_type_expr]
       DOT -> [inferred_type_expr]
@@ -18139,8 +18139,8 @@ Parser Debug States:
       LBRACKET -> State 21
       prefix_unary_type_op -> State 45
       type_expr -> State 142
-      proper_type_arguments -> State 140
-      type_arguments -> State 141
+      proper_generic_argument_list -> State 141
+      generic_argument_list -> State 140
 
   State 75:
     Kernel Items:
@@ -18298,7 +18298,7 @@ Parser Debug States:
 
   State 78:
     Kernel Items:
-      call_expr: accessible_expr generic_type_arguments.LPAREN arguments RPAREN
+      call_expr: accessible_expr generic_arguments.LPAREN arguments RPAREN
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -18486,18 +18486,18 @@ Parser Debug States:
 
   State 82:
     Kernel Items:
-      call_expr: accessible_expr.generic_type_arguments LPAREN arguments RPAREN
+      call_expr: accessible_expr.generic_arguments LPAREN arguments RPAREN
       access_expr: accessible_expr.DOT IDENTIFIER
       index_expr: accessible_expr.LBRACKET argument RBRACKET
     Reduce:
-      * -> [generic_type_arguments]
+      * -> [generic_arguments]
     ShiftAndReduce:
       (nil)
     Goto:
       LBRACKET -> State 76
       DOT -> State 75
       DOLLAR_LBRACKET -> State 74
-      generic_type_arguments -> State 78
+      generic_arguments -> State 78
 
   State 83:
     Kernel Items:
@@ -19234,7 +19234,7 @@ Parser Debug States:
 
   State 97:
     Kernel Items:
-      named_type_expr: IDENTIFIER DOT.IDENTIFIER generic_type_arguments
+      named_type_expr: IDENTIFIER DOT.IDENTIFIER generic_arguments
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -19299,11 +19299,11 @@ Parser Debug States:
 
   State 100:
     Kernel Items:
-      named_type_expr: IDENTIFIER.generic_type_arguments
-      named_type_expr: IDENTIFIER.DOT IDENTIFIER generic_type_arguments
+      named_type_expr: IDENTIFIER.generic_arguments
+      named_type_expr: IDENTIFIER.DOT IDENTIFIER generic_arguments
       field_def: IDENTIFIER.type_expr
     Reduce:
-      * -> [generic_type_arguments]
+      * -> [generic_arguments]
     ShiftAndReduce:
       UNDERSCORE -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
@@ -19323,7 +19323,7 @@ Parser Debug States:
       returnable_type_expr -> [type_expr]
       prefix_unary_type_expr -> [returnable_type_expr]
       binary_type_expr -> [type_expr]
-      generic_type_arguments -> [named_type_expr]
+      generic_arguments -> [named_type_expr]
       implicit_struct_type_expr -> [atom_type_expr]
       explicit_struct_type_expr -> [initializable_type_expr]
       trait_type_expr -> [atom_type_expr]
@@ -19617,19 +19617,19 @@ Parser Debug States:
 
   State 111:
     Kernel Items:
-      generic_parameter_defs: DOLLAR_LBRACKET.generic_parameter_def_list RBRACKET
+      generic_parameters: DOLLAR_LBRACKET.generic_parameter_list RBRACKET
     Reduce:
-      * -> [generic_parameter_def_list]
+      * -> [generic_parameter_list]
     ShiftAndReduce:
-      generic_parameter_def -> [proper_generic_parameter_def_list]
+      generic_parameter -> [proper_generic_parameter_list]
     Goto:
       IDENTIFIER -> State 176
-      proper_generic_parameter_def_list -> State 178
-      generic_parameter_def_list -> State 177
+      proper_generic_parameter_list -> State 178
+      generic_parameter_list -> State 177
 
   State 112:
     Kernel Items:
-      named_func_def: FUNC IDENTIFIER generic_parameter_defs.LPAREN parameter_defs RPAREN return_type statement_block
+      named_func_def: FUNC IDENTIFIER generic_parameters.LPAREN parameter_defs RPAREN return_type statement_block
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -19977,8 +19977,8 @@ Parser Debug States:
 
   State 119:
     Kernel Items:
-      type_def: TYPE IDENTIFIER generic_parameter_defs.type_expr
-      type_def: TYPE IDENTIFIER generic_parameter_defs.type_expr IMPLEMENTS type_expr
+      type_def: TYPE IDENTIFIER generic_parameters.type_expr
+      type_def: TYPE IDENTIFIER generic_parameters.type_expr IMPLEMENTS type_expr
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -20676,32 +20676,32 @@ Parser Debug States:
 
   State 140:
     Kernel Items:
-      proper_type_arguments: proper_type_arguments.COMMA type_expr
-      type_arguments: proper_type_arguments., *
-      type_arguments: proper_type_arguments.COMMA
+      generic_arguments: DOLLAR_LBRACKET generic_argument_list.RBRACKET
     Reduce:
-      * -> [type_arguments]
+      (nil)
+    ShiftAndReduce:
+      RBRACKET -> [generic_arguments]
+    Goto:
+      (nil)
+
+  State 141:
+    Kernel Items:
+      proper_generic_argument_list: proper_generic_argument_list.COMMA type_expr
+      generic_argument_list: proper_generic_argument_list., *
+      generic_argument_list: proper_generic_argument_list.COMMA
+    Reduce:
+      * -> [generic_argument_list]
     ShiftAndReduce:
       (nil)
     Goto:
       COMMA -> State 199
 
-  State 141:
-    Kernel Items:
-      generic_type_arguments: DOLLAR_LBRACKET type_arguments.RBRACKET
-    Reduce:
-      (nil)
-    ShiftAndReduce:
-      RBRACKET -> [generic_type_arguments]
-    Goto:
-      (nil)
-
   State 142:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
-      proper_type_arguments: type_expr., *
+      proper_generic_argument_list: type_expr., *
     Reduce:
-      * -> [proper_type_arguments]
+      * -> [proper_generic_argument_list]
     ShiftAndReduce:
       ADD -> [binary_type_op]
       SUB -> [binary_type_op]
@@ -20721,7 +20721,7 @@ Parser Debug States:
 
   State 144:
     Kernel Items:
-      call_expr: accessible_expr generic_type_arguments LPAREN.arguments RPAREN
+      call_expr: accessible_expr generic_arguments LPAREN.arguments RPAREN
     Reduce:
       * -> [optional_label_decl]
       RPAREN -> [arguments]
@@ -21094,13 +21094,13 @@ Parser Debug States:
 
   State 162:
     Kernel Items:
-      named_type_expr: IDENTIFIER.generic_type_arguments
-      named_type_expr: IDENTIFIER.DOT IDENTIFIER generic_type_arguments
+      named_type_expr: IDENTIFIER.generic_arguments
+      named_type_expr: IDENTIFIER.DOT IDENTIFIER generic_arguments
       proper_parameter_def: IDENTIFIER.type_expr
       proper_parameter_def: IDENTIFIER.ELLIPSIS type_expr
       proper_parameter_def: IDENTIFIER.ELLIPSIS
     Reduce:
-      * -> [generic_type_arguments]
+      * -> [generic_arguments]
     ShiftAndReduce:
       UNDERSCORE -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
@@ -21120,7 +21120,7 @@ Parser Debug States:
       returnable_type_expr -> [type_expr]
       prefix_unary_type_expr -> [returnable_type_expr]
       binary_type_expr -> [type_expr]
-      generic_type_arguments -> [named_type_expr]
+      generic_arguments -> [named_type_expr]
       implicit_struct_type_expr -> [atom_type_expr]
       explicit_struct_type_expr -> [initializable_type_expr]
       trait_type_expr -> [atom_type_expr]
@@ -21224,11 +21224,11 @@ Parser Debug States:
 
   State 167:
     Kernel Items:
-      named_type_expr: IDENTIFIER DOT IDENTIFIER.generic_type_arguments
+      named_type_expr: IDENTIFIER DOT IDENTIFIER.generic_arguments
     Reduce:
-      * -> [generic_type_arguments]
+      * -> [generic_arguments]
     ShiftAndReduce:
-      generic_type_arguments -> [named_type_expr]
+      generic_arguments -> [named_type_expr]
     Goto:
       DOLLAR_LBRACKET -> State 74
 
@@ -21244,7 +21244,7 @@ Parser Debug States:
 
   State 169:
     Kernel Items:
-      named_type_expr: IDENTIFIER DOT.IDENTIFIER generic_type_arguments
+      named_type_expr: IDENTIFIER DOT.IDENTIFIER generic_arguments
       inferred_type_expr: DOT., *
     Reduce:
       * -> [inferred_type_expr]
@@ -21439,10 +21439,10 @@ Parser Debug States:
 
   State 176:
     Kernel Items:
-      generic_parameter_def: IDENTIFIER., *
-      generic_parameter_def: IDENTIFIER.type_expr
+      generic_parameter: IDENTIFIER., *
+      generic_parameter: IDENTIFIER.type_expr
     Reduce:
-      * -> [generic_parameter_def]
+      * -> [generic_parameter]
     ShiftAndReduce:
       UNDERSCORE -> [inferred_type_expr]
       DOT -> [inferred_type_expr]
@@ -21482,21 +21482,21 @@ Parser Debug States:
 
   State 177:
     Kernel Items:
-      generic_parameter_defs: DOLLAR_LBRACKET generic_parameter_def_list.RBRACKET
+      generic_parameters: DOLLAR_LBRACKET generic_parameter_list.RBRACKET
     Reduce:
       (nil)
     ShiftAndReduce:
-      RBRACKET -> [generic_parameter_defs]
+      RBRACKET -> [generic_parameters]
     Goto:
       (nil)
 
   State 178:
     Kernel Items:
-      proper_generic_parameter_def_list: proper_generic_parameter_def_list.COMMA generic_parameter_def
-      generic_parameter_def_list: proper_generic_parameter_def_list., *
-      generic_parameter_def_list: proper_generic_parameter_def_list.COMMA
+      proper_generic_parameter_list: proper_generic_parameter_list.COMMA generic_parameter
+      generic_parameter_list: proper_generic_parameter_list., *
+      generic_parameter_list: proper_generic_parameter_list.COMMA
     Reduce:
-      * -> [generic_parameter_def_list]
+      * -> [generic_parameter_list]
     ShiftAndReduce:
       (nil)
     Goto:
@@ -21504,7 +21504,7 @@ Parser Debug States:
 
   State 179:
     Kernel Items:
-      named_func_def: FUNC IDENTIFIER generic_parameter_defs LPAREN.parameter_defs RPAREN return_type statement_block
+      named_func_def: FUNC IDENTIFIER generic_parameters LPAREN.parameter_defs RPAREN return_type statement_block
     Reduce:
       * -> [parameter_defs]
     ShiftAndReduce:
@@ -21654,8 +21654,8 @@ Parser Debug States:
   State 186:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
-      type_def: TYPE IDENTIFIER generic_parameter_defs type_expr., *
-      type_def: TYPE IDENTIFIER generic_parameter_defs type_expr.IMPLEMENTS type_expr
+      type_def: TYPE IDENTIFIER generic_parameters type_expr., *
+      type_def: TYPE IDENTIFIER generic_parameters type_expr.IMPLEMENTS type_expr
     Reduce:
       * -> [type_def]
     ShiftAndReduce:
@@ -21922,10 +21922,10 @@ Parser Debug States:
 
   State 199:
     Kernel Items:
-      proper_type_arguments: proper_type_arguments COMMA.type_expr
-      type_arguments: proper_type_arguments COMMA., *
+      proper_generic_argument_list: proper_generic_argument_list COMMA.type_expr
+      generic_argument_list: proper_generic_argument_list COMMA., *
     Reduce:
-      * -> [type_arguments]
+      * -> [generic_argument_list]
     ShiftAndReduce:
       UNDERSCORE -> [inferred_type_expr]
       DOT -> [inferred_type_expr]
@@ -21965,7 +21965,7 @@ Parser Debug States:
 
   State 200:
     Kernel Items:
-      call_expr: accessible_expr generic_type_arguments LPAREN arguments.RPAREN
+      call_expr: accessible_expr generic_arguments LPAREN arguments.RPAREN
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -22620,9 +22620,9 @@ Parser Debug States:
   State 216:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
-      generic_parameter_def: IDENTIFIER type_expr., *
+      generic_parameter: IDENTIFIER type_expr., *
     Reduce:
-      * -> [generic_parameter_def]
+      * -> [generic_parameter]
     ShiftAndReduce:
       ADD -> [binary_type_op]
       SUB -> [binary_type_op]
@@ -22632,18 +22632,18 @@ Parser Debug States:
 
   State 217:
     Kernel Items:
-      proper_generic_parameter_def_list: proper_generic_parameter_def_list COMMA.generic_parameter_def
-      generic_parameter_def_list: proper_generic_parameter_def_list COMMA., *
+      proper_generic_parameter_list: proper_generic_parameter_list COMMA.generic_parameter
+      generic_parameter_list: proper_generic_parameter_list COMMA., *
     Reduce:
-      * -> [generic_parameter_def_list]
+      * -> [generic_parameter_list]
     ShiftAndReduce:
-      generic_parameter_def -> [proper_generic_parameter_def_list]
+      generic_parameter -> [proper_generic_parameter_list]
     Goto:
       IDENTIFIER -> State 176
 
   State 218:
     Kernel Items:
-      named_func_def: FUNC IDENTIFIER generic_parameter_defs LPAREN parameter_defs.RPAREN return_type statement_block
+      named_func_def: FUNC IDENTIFIER generic_parameters LPAREN parameter_defs.RPAREN return_type statement_block
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -22689,7 +22689,7 @@ Parser Debug States:
 
   State 222:
     Kernel Items:
-      type_def: TYPE IDENTIFIER generic_parameter_defs type_expr IMPLEMENTS.type_expr
+      type_def: TYPE IDENTIFIER generic_parameters type_expr IMPLEMENTS.type_expr
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -22742,9 +22742,9 @@ Parser Debug States:
   State 224:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
-      proper_type_arguments: proper_type_arguments COMMA type_expr., *
+      proper_generic_argument_list: proper_generic_argument_list COMMA type_expr., *
     Reduce:
-      * -> [proper_type_arguments]
+      * -> [proper_generic_argument_list]
     ShiftAndReduce:
       ADD -> [binary_type_op]
       SUB -> [binary_type_op]
@@ -22864,7 +22864,7 @@ Parser Debug States:
 
   State 230:
     Kernel Items:
-      named_func_def: FUNC IDENTIFIER generic_parameter_defs LPAREN parameter_defs RPAREN.return_type statement_block
+      named_func_def: FUNC IDENTIFIER generic_parameters LPAREN parameter_defs RPAREN.return_type statement_block
     Reduce:
       * -> [return_type]
     ShiftAndReduce:
@@ -22920,7 +22920,7 @@ Parser Debug States:
   State 232:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
-      type_def: TYPE IDENTIFIER generic_parameter_defs type_expr IMPLEMENTS type_expr., *
+      type_def: TYPE IDENTIFIER generic_parameters type_expr IMPLEMENTS type_expr., *
     Reduce:
       * -> [type_def]
     ShiftAndReduce:
@@ -23061,7 +23061,7 @@ Parser Debug States:
 
   State 237:
     Kernel Items:
-      named_func_def: FUNC IDENTIFIER generic_parameter_defs LPAREN parameter_defs RPAREN return_type.statement_block
+      named_func_def: FUNC IDENTIFIER generic_parameters LPAREN parameter_defs RPAREN return_type.statement_block
     Reduce:
       (nil)
     ShiftAndReduce:

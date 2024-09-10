@@ -431,7 +431,7 @@ for_assignment ->
 //
 
 call_expr<Expression> ->
-  accessible_expr generic_type_arguments LPAREN arguments RPAREN
+  accessible_expr generic_arguments LPAREN arguments RPAREN
 
 proper_arguments<ArgumentList> ->
   add: proper_arguments COMMA argument |
@@ -624,13 +624,13 @@ atom_type_expr<TypeExpression> ->
   = parse_error_type_expr
 
 named_type_expr<TypeExpression> ->
-  local: IDENTIFIER generic_type_arguments |
-  external: IDENTIFIER DOT IDENTIFIER generic_type_arguments
+  local: IDENTIFIER generic_arguments |
+  external: IDENTIFIER DOT IDENTIFIER generic_arguments
 
 // NOTE: "." infers to a copy-on-mutate reference by default, whereas "_"
 // infers to a mutable reference by default (or a non-data enum value).
 //
-// NOTE: Maybe allow "DOT generic_type_arguments", which potentially only infer
+// NOTE: Maybe allow "DOT generic_arguments", which potentially only infer
 // a name rather than a type_expr.
 inferred_type_expr<TypeExpression> ->
   DOT |
@@ -670,8 +670,8 @@ binary_type_op<Value> ->
   = SUB // trait difference
 
 type_def<SourceDefinition> ->
-  definition: TYPE IDENTIFIER generic_parameter_defs type_expr |
-  constrained_def: TYPE IDENTIFIER generic_parameter_defs type_expr IMPLEMENTS type_expr |
+  definition: TYPE IDENTIFIER generic_parameters type_expr |
+  constrained_def: TYPE IDENTIFIER generic_parameters type_expr IMPLEMENTS type_expr |
   alias: TYPE IDENTIFIER ASSIGN type_expr
 
 //
@@ -679,34 +679,34 @@ type_def<SourceDefinition> ->
 //
 
 // XXX: allow default generic parameter value?
-generic_parameter_def ->
+generic_parameter ->
   unconstrained: IDENTIFIER |
   constrained: IDENTIFIER type_expr
 
-generic_parameter_defs ->
-  generic: DOLLAR_LBRACKET generic_parameter_def_list RBRACKET |
+generic_parameters ->
+  generic: DOLLAR_LBRACKET generic_parameter_list RBRACKET |
   nil:
 
-proper_generic_parameter_def_list ->
-  add: proper_generic_parameter_def_list COMMA generic_parameter_def |
-  generic_parameter_def
+proper_generic_parameter_list ->
+  add: proper_generic_parameter_list COMMA generic_parameter |
+  generic_parameter
 
-generic_parameter_def_list ->
-  = proper_generic_parameter_def_list |
-  improper: proper_generic_parameter_def_list COMMA |
+generic_parameter_list ->
+  = proper_generic_parameter_list |
+  improper: proper_generic_parameter_list COMMA |
   nil:
 
-generic_type_arguments<TypeArgumentList> ->
-  binding: DOLLAR_LBRACKET type_arguments RBRACKET |
+generic_arguments<GenericArgumentList> ->
+  binding: DOLLAR_LBRACKET generic_argument_list RBRACKET |
   nil:
 
-proper_type_arguments<TypeArgumentList> ->
-  add: proper_type_arguments COMMA type_expr |
+proper_generic_argument_list<GenericArgumentList> ->
+  add: proper_generic_argument_list COMMA type_expr |
   type_expr
 
-type_arguments<TypeArgumentList> ->
-  = proper_type_arguments |
-  improper: proper_type_arguments COMMA |
+generic_argument_list<GenericArgumentList> ->
+  = proper_generic_argument_list |
+  improper: proper_generic_argument_list COMMA |
   nil:
 
 //
@@ -865,7 +865,7 @@ method_signature<TypeProperty> ->
 
 // XXX: allow generic parameters in method definition? No, for go transpiler.
 named_func_def<SourceDefinition> ->
-  func_def: FUNC IDENTIFIER generic_parameter_defs LPAREN parameter_defs RPAREN return_type statement_block |
+  func_def: FUNC IDENTIFIER generic_parameters LPAREN parameter_defs RPAREN return_type statement_block |
   method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER LPAREN parameter_defs RPAREN return_type statement_block |
   alias: FUNC IDENTIFIER ASSIGN expr
 
@@ -897,7 +897,7 @@ go:
     Argument: "*Argument"
     ArgumentList: "*ArgumentList"
     TypeExpression: "TypeExpression"
-    TypeArgumentList: "*TypeArgumentList"
+    GenericArgumentList: "*GenericArgumentList"
     Statement: "Statement"
     Statements: "*StatementList"
     SourceDefinition: "SourceDefinition"
