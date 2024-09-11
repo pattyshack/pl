@@ -803,7 +803,7 @@ explicit_enum_type_expr<TypeExpression> ->
 //
 
 return_type<TypeExpression> ->
-  returnable_type_expr |
+  = returnable_type_expr |
   nil:
 
 proper_parameter_def<Parameter> ->
@@ -867,10 +867,13 @@ func_type_expr<TypeExpression> -> FUNC parameter_decls return_type
 method_signature<TypeProperty> -> FUNC IDENTIFIER parameter_decls return_type
 
 // XXX: allow generic parameters in method definition? No, for go transpiler.
+//
+// Note: there's no syntactic sugar for func alias.  use
+//  let <alias> = <original_func>
+// instead.
 named_func_def<SourceDefinition> ->
   func_def: FUNC IDENTIFIER generic_parameters parameter_defs return_type statement_block |
-  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER parameter_defs return_type statement_block |
-  alias: FUNC IDENTIFIER ASSIGN expr
+  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER parameter_defs return_type statement_block
 
 anonymous_func_expr<Expression> ->
   FUNC parameter_defs return_type statement_block

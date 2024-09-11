@@ -3,6 +3,8 @@ package parser
 type ReducerImpl struct {
 	ParseErrorReducerImpl
 
+	FuncReducerImpl
+
 	AccessExprReducerImpl
 	BinaryExprReducerImpl
 	CallExprReducerImpl
@@ -76,11 +78,6 @@ type ReducerImpl struct {
 	BlockExprReducer
 	TypeDefReducer
 	UnsafeStatementPropertyReducer
-	ReturnTypeReducer
-	FuncTypeExprReducer
-	MethodSignatureReducer
-	NamedFuncDefReducer
-	AnonymousFuncExprReducer
 	PackageDefReducer
 }
 
