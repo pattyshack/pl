@@ -119,9 +119,6 @@ simple_statement<Statement> ->
   = expr_or_improper_struct_statement |
 
   // NOTE: Only applicable in expression blocks
-  = callback_op_statement |
-
-  // NOTE: Only applicable in expression blocks
   = jump_statement |
 
   // NOTE: variable declaration without assignment is parsed as an expression.
@@ -165,32 +162,6 @@ expr_or_improper_struct_statement<Statement> -> exprs
 exprs ->
   expr |
   add: exprs COMMA expr
-
-//
-// Async / defer statements
-//
-
-callback_op<Value> ->
-  = ASYNC |
-  = DEFER
-
-// async returns an await handler, whereas defer returns unit.
-//
-// XXX: maybe make defer's call_expr run on the nearest scope exit rather
-// than on function scope exit.  Transpiling this semantic to golang would
-// be annoying since golang's defer operate on function rather than scope
-// exit.  Maybe just code gen the defer call on every exit point instead of
-// relying on golang's defer?
-//
-// Need to ensure this an actual function call, not a struct initialization.
-// XXX: maybe allow async to use pseudo-call such as struct initialization?
-//
-// NOTE: compiler should optimize away the async await handler if it's not
-// used.
-//
-// NOTE: call_expr's accessible_expr and its arguments are evaluated immediately
-// Only the call itself is applicable to the callback_op.
-callback_op_statement<Statement> -> callback_op call_expr
 
 //
 // Unsafe statement
@@ -537,7 +508,26 @@ prefix_unary_op<Value> ->
   = MUL |
   // "ref" returns a mutable reference to the lvalue object.  ref-ing can be
   // applied on either mutable or immutable referenced location.
-  = BIT_AND
+  = BIT_AND |
+  // async eval to an await handler, whereas eval to returns unit.  The
+  // prefixable_expr must be a callable expr.
+  //
+  // XXX: make defer's call_expr run on the nearest scope exit rather
+  // than on function scope exit.  Transpiling this semantic using golang's
+  // defer be annoying since golang's defer operate on function rather than
+  // scope exit.  Maybe just code gen the defer call on every exit point
+  // instead of relying on golang's defer?
+  //
+  // Need to ensure this an actual function call, not a struct initialization.
+  // XXX: maybe allow async to use pseudo-call such as struct initialization?
+  //
+  // NOTE: compiler should optimize away the async await handler if it's not
+  // used.
+  //
+  // NOTE: call_expr's accessible_expr and its arguments are evaluated
+  // immediately. Only the call itself is applicable to the callback_op.
+  = ASYNC |
+  = DEFER
 
 mul_expr<Expression> ->
   = prefixable_expr |

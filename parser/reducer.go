@@ -45,7 +45,6 @@ type ReducerImpl struct {
 	OptionalSimpleStatementReducer
 	ExprOrImproperStructStatementReducer
 	ExprsReducer
-	CallbackOpStatementReducer
 	UnsafeStatementReducer
 	JumpStatementReducer
 	FallthroughStatementReducer
