@@ -311,12 +311,14 @@ var _ Node = &ParameterList{}
 
 type ParameterListReducerImpl struct{}
 
-var _ ProperParameterDeclsReducer = &ParameterListReducerImpl{}
+var _ ProperParameterDeclListReducer = &ParameterListReducerImpl{}
+var _ ParameterDeclListReducer = &ParameterListReducerImpl{}
 var _ ParameterDeclsReducer = &ParameterListReducerImpl{}
-var _ ProperParameterDefsReducer = &ParameterListReducerImpl{}
+var _ ProperParameterDefListReducer = &ParameterListReducerImpl{}
+var _ ParameterDefListReducer = &ParameterListReducerImpl{}
 var _ ParameterDefsReducer = &ParameterListReducerImpl{}
 
-func (reducer *ParameterListReducerImpl) AddToProperParameterDecls(
+func (reducer *ParameterListReducerImpl) AddToProperParameterDeclList(
 	list *ParameterList,
 	comma TokenValue,
 	parameter *Parameter,
@@ -328,7 +330,7 @@ func (reducer *ParameterListReducerImpl) AddToProperParameterDecls(
 	return list, nil
 }
 
-func (reducer *ParameterListReducerImpl) ParameterDeclToProperParameterDecls(
+func (reducer *ParameterListReducerImpl) ParameterDeclToProperParameterDeclList(
 	parameter *Parameter,
 ) (
 	*ParameterList,
@@ -339,7 +341,7 @@ func (reducer *ParameterListReducerImpl) ParameterDeclToProperParameterDecls(
 	return list, nil
 }
 
-func (reducer *ParameterListReducerImpl) ImproperToParameterDecls(
+func (reducer *ParameterListReducerImpl) ImproperToParameterDeclList(
 	list *ParameterList,
 	comma TokenValue,
 ) (
@@ -350,14 +352,26 @@ func (reducer *ParameterListReducerImpl) ImproperToParameterDecls(
 	return list, nil
 }
 
-func (reducer *ParameterListReducerImpl) NilToParameterDecls() (
+func (reducer *ParameterListReducerImpl) NilToParameterDeclList() (
 	*ParameterList,
 	error,
 ) {
 	return NewParameterList(), nil
 }
 
-func (reducer *ParameterListReducerImpl) AddToProperParameterDefs(
+func (reducer *ParameterListReducerImpl) ToParameterDecls(
+	lparen TokenValue,
+	list *ParameterList,
+	rparen TokenValue,
+) (
+	*ParameterList,
+	error,
+) {
+	list.reduceMarkers(lparen, rparen)
+	return list, nil
+}
+
+func (reducer *ParameterListReducerImpl) AddToProperParameterDefList(
 	list *ParameterList,
 	comma TokenValue,
 	parameter *Parameter,
@@ -369,7 +383,7 @@ func (reducer *ParameterListReducerImpl) AddToProperParameterDefs(
 	return list, nil
 }
 
-func (reducer *ParameterListReducerImpl) ParameterDefToProperParameterDefs(
+func (reducer *ParameterListReducerImpl) ParameterDefToProperParameterDefList(
 	parameter *Parameter,
 ) (
 	*ParameterList,
@@ -380,7 +394,7 @@ func (reducer *ParameterListReducerImpl) ParameterDefToProperParameterDefs(
 	return list, nil
 }
 
-func (reducer *ParameterListReducerImpl) ImproperToParameterDefs(
+func (reducer *ParameterListReducerImpl) ImproperToParameterDefList(
 	list *ParameterList,
 	comma TokenValue,
 ) (
@@ -391,11 +405,23 @@ func (reducer *ParameterListReducerImpl) ImproperToParameterDefs(
 	return list, nil
 }
 
-func (reducer *ParameterListReducerImpl) NilToParameterDefs() (
+func (reducer *ParameterListReducerImpl) NilToParameterDefList() (
 	*ParameterList,
 	error,
 ) {
 	return NewParameterList(), nil
+}
+
+func (reducer *ParameterListReducerImpl) ToParameterDefs(
+	lparen TokenValue,
+	list *ParameterList,
+	rparen TokenValue,
+) (
+	*ParameterList,
+	error,
+) {
+	list.reduceMarkers(lparen, rparen)
+	return list, nil
 }
 
 //

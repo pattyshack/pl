@@ -831,26 +831,29 @@ parameter_def<Parameter> ->
   named_inferred_arg: IDENTIFIER |
   ignore_inferred_arg: UNDERSCORE
 
-proper_parameter_decls<Parameters> ->
-  add: proper_parameter_decls COMMA parameter_decl |
+proper_parameter_decl_list<Parameters> ->
+  add: proper_parameter_decl_list COMMA parameter_decl |
   parameter_decl
 
-parameter_decls<Parameters> ->
-  = proper_parameter_decls |
-  improper: proper_parameter_decls COMMA |
+parameter_decl_list<Parameters> ->
+  = proper_parameter_decl_list |
+  improper: proper_parameter_decl_list COMMA |
   nil:
 
-proper_parameter_defs<Parameters> ->
-  add: proper_parameter_defs COMMA parameter_def |
+parameter_decls<Parameters> -> LPAREN parameter_decl_list RPAREN
+
+proper_parameter_def_list<Parameters> ->
+  add: proper_parameter_def_list COMMA parameter_def |
   parameter_def
 
-parameter_defs<Parameters> ->
-  = proper_parameter_defs |
-  improper: proper_parameter_defs COMMA |
+parameter_def_list<Parameters> ->
+  = proper_parameter_def_list |
+  improper: proper_parameter_def_list COMMA |
   nil:
 
-func_type_expr<TypeExpression> ->
-  FUNC LPAREN parameter_decls RPAREN return_type
+parameter_defs<Parameters> -> LPAREN parameter_def_list RPAREN
+
+func_type_expr<TypeExpression> -> FUNC parameter_decls return_type
 
 // NOTE: FUNC is needed to disambiguate method signature from field def.
 // e.g., Foo (int, int) could mean a field named Foo with type
@@ -861,17 +864,16 @@ func_type_expr<TypeExpression> ->
 // Ideally yes.  We should allow function overloading as long as the functions
 // all conforms to the same (unconstrainted) generic parameterized signature.
 // Ambiguous usage would need to explicitly specify the generic parameter.
-method_signature<TypeProperty> ->
-  FUNC IDENTIFIER LPAREN parameter_decls RPAREN return_type
+method_signature<TypeProperty> -> FUNC IDENTIFIER parameter_decls return_type
 
 // XXX: allow generic parameters in method definition? No, for go transpiler.
 named_func_def<SourceDefinition> ->
-  func_def: FUNC IDENTIFIER generic_parameters LPAREN parameter_defs RPAREN return_type statement_block |
-  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER LPAREN parameter_defs RPAREN return_type statement_block |
+  func_def: FUNC IDENTIFIER generic_parameters parameter_defs return_type statement_block |
+  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER parameter_defs return_type statement_block |
   alias: FUNC IDENTIFIER ASSIGN expr
 
 anonymous_func_expr<Expression> ->
-  FUNC LPAREN parameter_defs RPAREN return_type statement_block
+  FUNC parameter_defs return_type statement_block
 
 //
 // Package definition =========================================================
