@@ -1,0 +1,9 @@
+jump_label@ if c1 {
+  b1
+} else if c2 {
+  b2
+} else if c3 {
+  b3
+} else if c4 {
+  b4
+}

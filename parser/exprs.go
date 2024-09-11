@@ -782,3 +782,156 @@ func (reducer *InitializeExprReducerImpl) ToInitializeExpr(
 	reducer.InitializeExprs = append(reducer.InitializeExprs, expr)
 	return expr, nil
 }
+
+//
+// IfExpr
+//
+
+type ConditionBranch struct {
+	Condition Expression
+	Branch    Expression
+}
+
+func (cb ConditionBranch) TreeString(indent string, label string) string {
+	result := fmt.Sprintf("%s%s[ConditionBranch:\n", indent, label)
+	result += cb.Condition.TreeString(indent+"  ", "Condition=") + "\n"
+	result += cb.Branch.TreeString(indent+"  ", "Branch=")
+	result += "\n" + indent + "]"
+	return result
+}
+
+type IfExpr struct {
+	isExpression
+	StartEndPos
+	LeadingTrailingComments
+
+	JumpLabel         string // optional
+	ConditionBranches []ConditionBranch
+	ElseBranch        Expression // optional
+}
+
+var _ Expression = &IfExpr{}
+
+func (expr IfExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[IfExpr: Label=%s\n",
+		indent,
+		label,
+		expr.JumpLabel)
+	for idx, condBranch := range expr.ConditionBranches {
+		branchLabel := fmt.Sprintf("Branch%d=", idx)
+		result += condBranch.TreeString(indent+"  ", branchLabel) + "\n"
+	}
+
+	if expr.ElseBranch != nil {
+		result += expr.ElseBranch.TreeString(indent+"  ", "ElseBranch=") + "\n"
+	}
+
+	result += indent + "]"
+	return result
+}
+
+type IfExprReducerImpl struct {
+	IfExprs []*IfExpr
+}
+
+var _ IfExprReducer = &IfExprReducerImpl{}
+var _ IfElseExprReducer = &IfExprReducerImpl{}
+var _ IfElifExprReducer = &IfExprReducerImpl{}
+var _ IfOnlyExprReducer = &IfExprReducerImpl{}
+
+func (reducer *IfExprReducerImpl) UnlabelledToIfExpr(
+	ifExpr *IfExpr,
+) (
+	Expression,
+	error,
+) {
+	if ifExpr.ElseBranch != nil {
+		ifExpr.TrailingComment = ifExpr.ElseBranch.TakeTrailing()
+	} else {
+		last := ifExpr.ConditionBranches[len(ifExpr.ConditionBranches)-1].Branch
+		ifExpr.TrailingComment = last.TakeTrailing()
+	}
+
+	return ifExpr, nil
+}
+
+func (reducer *IfExprReducerImpl) LabelledToIfExpr(
+	jumpLabel TokenValue,
+	ifExpr *IfExpr,
+) (
+	Expression,
+	error,
+) {
+	reducer.UnlabelledToIfExpr(ifExpr)
+
+	ifExpr.PrependToLeading(jumpLabel.TakeTrailing())
+	ifExpr.PrependToLeading(jumpLabel.TakeLeading())
+
+	ifExpr.JumpLabel = jumpLabel.Value
+	return ifExpr, nil
+}
+
+func (reducer *IfExprReducerImpl) ElseToIfElseExpr(
+	ifExpr *IfExpr,
+	elseKW TokenValue,
+	branch Expression,
+) (
+	*IfExpr,
+	error,
+) {
+	last := ifExpr.ConditionBranches[len(ifExpr.ConditionBranches)-1].Branch
+	last.AppendToTrailing(elseKW.TakeLeading())
+
+	branch.PrependToLeading(elseKW.TakeTrailing())
+
+	ifExpr.EndPos = branch.End()
+	ifExpr.ElseBranch = branch
+
+	return ifExpr, nil
+}
+
+func (reducer *IfExprReducerImpl) ElifToIfElifExpr(
+	ifExpr *IfExpr,
+	elseKW TokenValue,
+	ifKW TokenValue,
+	condition Expression,
+	branch Expression,
+) (
+	*IfExpr,
+	error,
+) {
+	last := ifExpr.ConditionBranches[len(ifExpr.ConditionBranches)-1].Branch
+	last.AppendToTrailing(elseKW.TakeLeading())
+	last.AppendToTrailing(elseKW.TakeTrailing())
+	last.AppendToTrailing(ifKW.TakeLeading())
+
+	condition.PrependToLeading(ifKW.TakeTrailing())
+
+	ifExpr.EndPos = branch.End()
+
+	ifExpr.ConditionBranches = append(
+		ifExpr.ConditionBranches,
+		ConditionBranch{condition, branch})
+
+	return ifExpr, nil
+}
+
+func (reducer *IfExprReducerImpl) ToIfOnlyExpr(
+	ifKW TokenValue,
+	condition Expression,
+	branch Expression,
+) (
+	*IfExpr,
+	error,
+) {
+	condition.PrependToLeading(ifKW.TakeTrailing())
+	expr := &IfExpr{
+		StartEndPos:       newStartEndPos(ifKW.Loc(), branch.End()),
+		ConditionBranches: []ConditionBranch{{condition, branch}},
+	}
+	expr.LeadingComment = ifKW.TakeLeading()
+
+	reducer.IfExprs = append(reducer.IfExprs, expr)
+	return expr, nil
+}

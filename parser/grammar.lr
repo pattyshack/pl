@@ -100,7 +100,7 @@ definition<SourceDefinition> ->
 //
 // Note: statement_block's value type can be either the statement_block's
 // real value type, or PARSE_ERROR's value type
-statement_block -> LBRACE statements RBRACE
+statement_block<Expression> -> LBRACE statements RBRACE
 
 proper_statements<Statements> ->
   add_implicit: proper_statements NEWLINES statement |
@@ -309,10 +309,6 @@ expr<Expression> ->
   = loop_expr |
   = sequence_expr
 
-optional_label_decl<Value> ->
-  LABEL_DECL |
-  unlabelled:
-
 //
 // Sequence control flow expression
 //
@@ -333,14 +329,22 @@ sequence_expr<Expression> ->
 
 // NOTE: label is applied to the entire if expression rather than individual
 // branches.
-if_expr<Expression> -> optional_label_decl if_expr_body
+if_expr<Expression> ->
+  unlabelled: if_else_expr |
+  labelled: LABEL_DECL if_else_expr
 
-if_expr_body<Expression> ->
-  no_else: IF condition statement_block |
-  if_else: IF condition statement_block ELSE statement_block |
-  multi_if_else: IF condition statement_block ELSE if_expr
+if_else_expr<IfExpr> ->
+  = if_elif_expr |
+  else: if_elif_expr ELSE statement_block
 
-condition ->
+if_elif_expr<IfExpr> ->
+  = if_only_expr |
+  elif: if_elif_expr ELSE IF condition statement_block
+
+if_only_expr<IfExpr> ->
+  IF condition statement_block
+
+condition<Expression> ->
   sequence_expr |
   case: CASE case_patterns ASSIGN sequence_expr
 
@@ -367,7 +371,10 @@ condition ->
 
 // Switch need to be exhastive.
 switch_expr<Expression> ->
-  optional_label_decl SWITCH sequence_expr statement_block
+  = switch_expr_body |
+  labelled: LABEL_DECL switch_expr_body
+
+switch_expr_body<Expression> -> SWITCH sequence_expr statement_block
 
 //
 // For control flow expression
@@ -380,7 +387,9 @@ switch_expr<Expression> ->
 // the while loop grammar is "FOR sequence_expr body_expr".  Then the while
 // loop can be interpreted as an infinite loop "FOR sequence_expr", followed by
 // an sequence statement "body_expr".
-loop_expr<Expression> -> optional_label_decl loop_expr_body
+loop_expr<Expression> ->
+  = loop_expr_body |
+  labelled: LABEL_DECL loop_expr_body
 
 loop_expr_body<Expression> ->
   infinite: DO statement_block |
@@ -465,7 +474,9 @@ named_expr<Expression> ->
   IDENTIFIER |
   UNDERSCORE
 
-block_expr<Expression> ->  optional_label_decl statement_block
+block_expr<Expression> ->
+  = statement_block |
+  labelled: LABEL_DECL statement_block
 
 initialize_expr<Expression> -> initializable_type_expr LPAREN arguments RPAREN
 
@@ -883,6 +894,7 @@ go:
     Count: "TokenCount"
     Value: "TokenValue"
     Expression: "Expression"
+    IfExpr: "*IfExpr"
     ColonExpr: "*ColonExpr"
     Parameter: "*Parameter"
     Parameters: "*ParameterList"

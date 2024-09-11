@@ -1,0 +1,7 @@
+if c1.IsTrue() {
+  b1
+} else if c2 {
+  b2
+} else if c3 == "c3" {
+  b3
+}

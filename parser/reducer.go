@@ -7,6 +7,7 @@ type ReducerImpl struct {
 	BinaryExprReducerImpl
 	CallExprReducerImpl
 	ColonExprReducerImpl
+	IfExprReducerImpl
 	InitializeExprReducerImpl
 	ImplicitStructExprReducerImpl
 	IndexExprReducerImpl
@@ -64,12 +65,10 @@ type ReducerImpl struct {
 	OptionalTypeExprReducer
 	AssignPatternReducer
 	CasePatternReducer
-	OptionalLabelDeclReducer
 	SequenceExprReducer
-	IfExprReducer
-	IfExprBodyReducer
 	ConditionReducer
 	SwitchExprReducer
+	SwitchExprBodyReducer
 	LoopExprReducer
 	LoopExprBodyReducer
 	OptionalSequenceExprReducer
