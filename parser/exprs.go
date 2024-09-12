@@ -233,14 +233,12 @@ type UnaryExprReducerImpl struct {
 
 var _ PostfixUnaryExprReducer = &UnaryExprReducerImpl{}
 var _ PrefixUnaryExprReducer = &UnaryExprReducerImpl{}
+var _ UnaryOpAssignStatementReducer = &UnaryExprReducerImpl{}
 
-func (reducer *UnaryExprReducerImpl) ToPostfixUnaryExpr(
+func (reducer *UnaryExprReducerImpl) toPostfixUnaryExpr(
 	operand Expression,
 	op TokenValue,
-) (
-	Expression,
-	error,
-) {
+) *UnaryExpr {
 	expr := &UnaryExpr{
 		StartEndPos: newStartEndPos(operand.Loc(), op.End()),
 		IsPrefix:    false,
@@ -253,7 +251,17 @@ func (reducer *UnaryExprReducerImpl) ToPostfixUnaryExpr(
 	expr.TrailingComment = op.TakeTrailing()
 
 	reducer.UnaryExprs = append(reducer.UnaryExprs, expr)
-	return expr, nil
+	return expr
+}
+
+func (reducer *UnaryExprReducerImpl) ToPostfixUnaryExpr(
+	operand Expression,
+	op TokenValue,
+) (
+	Expression,
+	error,
+) {
+	return reducer.toPostfixUnaryExpr(operand, op), nil
 }
 
 func (reducer *UnaryExprReducerImpl) ToPrefixUnaryExpr(
@@ -276,6 +284,16 @@ func (reducer *UnaryExprReducerImpl) ToPrefixUnaryExpr(
 
 	reducer.UnaryExprs = append(reducer.UnaryExprs, expr)
 	return expr, nil
+}
+
+func (reducer *UnaryExprReducerImpl) ToUnaryOpAssignStatement(
+	operand Expression,
+	op TokenValue,
+) (
+	Statement,
+	error,
+) {
+	return reducer.toPostfixUnaryExpr(operand, op), nil
 }
 
 //
@@ -313,6 +331,7 @@ var _ BinaryAndExprReducer = &BinaryExprReducerImpl{}
 var _ BinaryCmpExprReducer = &BinaryExprReducerImpl{}
 var _ BinaryAndExprReducer = &BinaryExprReducerImpl{}
 var _ BinaryOrExprReducer = &BinaryExprReducerImpl{}
+var _ BinaryOpAssignStatementReducer = &BinaryExprReducerImpl{}
 
 func (reducer *BinaryExprReducerImpl) toBinaryExpr(
 	left Expression,
@@ -391,6 +410,17 @@ func (reducer *BinaryExprReducerImpl) ToBinaryOrExpr(
 	error,
 ) {
 	return reducer.toBinaryExpr(left, op, right)
+}
+
+func (reducer *BinaryExprReducerImpl) ToBinaryOpAssignStatement(
+	address Expression,
+	op TokenValue,
+	value Expression,
+) (
+	Statement,
+	error,
+) {
+	return reducer.toBinaryExpr(address, op, value)
 }
 
 //

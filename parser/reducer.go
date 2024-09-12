@@ -49,8 +49,6 @@ type ReducerImpl struct {
 	UnsafeStatementReducer
 	UnsafeStatementPropertyReducer
 	AssignStatementReducer
-	UnaryOpAssignStatementReducer
-	BinaryOpAssignStatementReducer
 	CasePatternsReducer
 	VarDeclPatternReducer
 	VarPatternReducer
