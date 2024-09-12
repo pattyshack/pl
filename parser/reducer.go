@@ -15,6 +15,7 @@ type ReducerImpl struct {
 	IndexExprReducerImpl
 	LiteralExprReducerImpl
 	NamedExprReducerImpl
+	StatementsExprReducerImpl
 	UnaryExprReducerImpl
 
 	ArrayTypeExprReducerImpl
@@ -35,13 +36,11 @@ type ReducerImpl struct {
 	GenericParameterListReducerImpl
 	ParameterReducerImpl
 	ParameterListReducerImpl
-	StatementListReducerImpl
 	TypePropertyListReducerImpl
 
 	// TODO
 
 	DefinitionReducer
-	StatementBlockReducer
 	StatementReducer
 	OptionalSimpleStatementReducer
 	ExprOrImproperStructStatementReducer
@@ -74,7 +73,6 @@ type ReducerImpl struct {
 	LoopExprBodyReducer
 	OptionalSequenceExprReducer
 	ForAssignmentReducer
-	BlockExprReducer
 	TypeDefReducer
 	PackageDefReducer
 }

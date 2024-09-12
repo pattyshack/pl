@@ -1,48 +1,79 @@
 package parser
 
+import (
+	"fmt"
+)
+
 //
-// Statements
+// StatementsExpr
 //
 
-type StatementList = NodeList[Statement]
+type StatementsExpr struct {
+	isExpression
 
-func NewStatementList() *StatementList {
-	return newNodeList[Statement]("StatementList")
+	LabelDecl string // optional
+	NodeList[Statement]
 }
 
-type StatementListReducerImpl struct{}
+func NewStatementList() *StatementsExpr {
+	return &StatementsExpr{}
+}
 
-var _ ProperStatementsReducer = &StatementListReducerImpl{}
-var _ StatementsReducer = &StatementListReducerImpl{}
+func (expr StatementsExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[StatementExpr: LabelDecl=%s",
+		indent,
+		label,
+		expr.LabelDecl)
+	if len(expr.Elements) == 0 {
+		return result + "]"
+	}
 
-func (StatementListReducerImpl) AddImplicitToProperStatements(
-	statements *StatementList,
+	for idx, element := range expr.Elements {
+		result += "\n" + element.TreeString(
+			indent+"  ",
+			fmt.Sprintf("Statement%d=", idx))
+	}
+
+	result += "\n" + indent + "]"
+	return result
+}
+
+type StatementsExprReducerImpl struct{}
+
+var _ ProperStatementListReducer = &StatementsExprReducerImpl{}
+var _ StatementListReducer = &StatementsExprReducerImpl{}
+var _ StatementsReducer = &StatementsExprReducerImpl{}
+var _ StatementsExprReducer = &StatementsExprReducerImpl{}
+
+func (StatementsExprReducerImpl) AddImplicitToProperStatementList(
+	statements *StatementsExpr,
 	newlines TokenCount,
 	statement Statement,
 ) (
-	*StatementList,
+	*StatementsExpr,
 	error,
 ) {
 	statements.reduceAdd(TokenValue{}, statement)
 	return statements, nil
 }
 
-func (StatementListReducerImpl) AddExplicitToProperStatements(
-	statements *StatementList,
+func (StatementsExprReducerImpl) AddExplicitToProperStatementList(
+	statements *StatementsExpr,
 	semicolon TokenValue,
 	statement Statement,
 ) (
-	*StatementList,
+	*StatementsExpr,
 	error,
 ) {
 	statements.reduceAdd(semicolon, statement)
 	return statements, nil
 }
 
-func (StatementListReducerImpl) StatementToProperStatements(
+func (StatementsExprReducerImpl) StatementToProperStatementList(
 	statement Statement,
 ) (
-	*StatementList,
+	*StatementsExpr,
 	error,
 ) {
 	list := NewStatementList()
@@ -50,27 +81,60 @@ func (StatementListReducerImpl) StatementToProperStatements(
 	return list, nil
 }
 
-func (StatementListReducerImpl) ImproperImplicitToStatements(
-	statements *StatementList,
+func (StatementsExprReducerImpl) ImproperImplicitToStatementList(
+	statements *StatementsExpr,
 	newlines TokenCount,
 ) (
-	*StatementList,
+	*StatementsExpr,
 	error,
 ) {
 	return statements, nil
 }
 
-func (StatementListReducerImpl) ImproperExplicitToStatements(
-	statements *StatementList,
+func (StatementsExprReducerImpl) ImproperExplicitToStatementList(
+	statements *StatementsExpr,
 	semicolon TokenValue,
 ) (
-	*StatementList,
+	*StatementsExpr,
 	error,
 ) {
 	statements.reduceImproper(semicolon)
 	return statements, nil
 }
 
-func (StatementListReducerImpl) NilToStatements() (*StatementList, error) {
+func (StatementsExprReducerImpl) NilToStatementList() (*StatementsExpr, error) {
 	return NewStatementList(), nil
+}
+
+func (StatementsExprReducerImpl) ToStatements(
+	lbrace TokenValue,
+	list *StatementsExpr,
+	rbrace TokenValue,
+) (
+	Expression,
+	error,
+) {
+	list.reduceMarkers(lbrace, rbrace)
+	return list, nil
+}
+
+func (StatementsExprReducerImpl) LabelledToStatementsExpr(
+	labelDecl TokenValue,
+	statementsExprOrParseError Expression,
+) (
+	Expression,
+	error,
+) {
+	switch expr := statementsExprOrParseError.(type) {
+	case *ParseErrorSymbol:
+		return expr, nil
+	case *StatementsExpr:
+		expr.StartPos = labelDecl.Loc()
+		expr.LabelDecl = labelDecl.Value
+		expr.PrependToLeading(labelDecl.TakeTrailing())
+		expr.PrependToLeading(labelDecl.TakeLeading())
+		return expr, nil
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", statementsExprOrParseError))
 }

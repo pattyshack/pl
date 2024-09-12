@@ -54,7 +54,7 @@
 
 %token<ParseError> PARSE_ERROR
 
-%start source statement expr type_expr
+%start source definition statement expr type_expr statements
 
 source<Definitions> ->
   = definitions
@@ -75,9 +75,9 @@ definition<Definition> ->
   = named_func_def |
   global_var_def: var_decl_pattern |
   global_var_assignment: var_decl_pattern ASSIGN expr |
-  // There can only be at most one statement_block per package, which act as
+  // There can only be at most one statements per package, which act as
   // the package's init function
-  statement_block |
+  statements |
   // Free floating comment groups that are not part of any other symbol.
   // This can happen if the source file only has comments, or if there are
   // comments at the end of the source.
@@ -89,9 +89,9 @@ definition<Definition> ->
 
 // IMPORTANT NOTE!!!
 //
-// The grammar is specified in such a way that only the statement_block rule
+// The grammar is specified in such a way that only the statements rule
 // uses LBRACE and RBRACE.  Hence, we can unconditionally parse a
-// statement_block when we encounters a LBRACE.
+// statements when we encounters a LBRACE.
 //
 // This enables the parser to parse the source in piecemeal manner, which
 // enables the parser to collect more parse errors on a single run.
@@ -99,19 +99,20 @@ definition<Definition> ->
 // Post analysis is needed to ensure statements are valid for the specific
 // context.
 //
-// Note: statement_block's value type can be either the statement_block's
-// real value type, or PARSE_ERROR's value type
-statement_block<Expression> -> LBRACE statements RBRACE
+// Note: statements's value type can be either the statements's
+// real value type, i.e., *StatementsExpr, or PARSE_ERROR's value type,
+// i.e., *ParseErrorSymbol
+statements<Expression> -> LBRACE statement_list RBRACE
 
-proper_statements<Statements> ->
-  add_implicit: proper_statements NEWLINES statement |
-  add_explicit: proper_statements SEMICOLON statement |
+proper_statement_list<StatementsExpr> ->
+  add_implicit: proper_statement_list NEWLINES statement |
+  add_explicit: proper_statement_list SEMICOLON statement |
   statement
 
-statements<Statements> ->
-  = proper_statements |
-  improper_implicit: proper_statements NEWLINES |
-  improper_explicit: proper_statements SEMICOLON |
+statement_list<StatementsExpr> ->
+  = proper_statement_list |
+  improper_implicit: proper_statement_list NEWLINES |
+  improper_explicit: proper_statement_list SEMICOLON |
   nil:
 
 simple_statement<Statement> ->
@@ -338,14 +339,14 @@ if_expr<Expression> ->
 
 if_else_expr<IfExpr> ->
   = if_elif_expr |
-  else: if_elif_expr ELSE statement_block
+  else: if_elif_expr ELSE statements
 
 if_elif_expr<IfExpr> ->
   = if_only_expr |
-  elif: if_elif_expr ELSE IF condition statement_block
+  elif: if_elif_expr ELSE IF condition statements
 
 if_only_expr<IfExpr> ->
-  IF condition statement_block
+  IF condition statements
 
 condition<Expression> ->
   sequence_expr |
@@ -377,7 +378,7 @@ switch_expr<Expression> ->
   = switch_expr_body |
   labelled: LABEL_DECL switch_expr_body
 
-switch_expr_body<Expression> -> SWITCH sequence_expr statement_block
+switch_expr_body<Expression> -> SWITCH sequence_expr statements
 
 //
 // For control flow expression
@@ -395,11 +396,11 @@ loop_expr<Expression> ->
   labelled: LABEL_DECL loop_expr_body
 
 loop_expr_body<Expression> ->
-  infinite: DO statement_block |
-  do_while: DO statement_block FOR sequence_expr |
-  while: FOR sequence_expr DO statement_block |
-  iterator: FOR assign_pattern IN sequence_expr DO statement_block |
-  for: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO statement_block
+  infinite: DO statements |
+  do_while: DO statements FOR sequence_expr |
+  while: FOR sequence_expr DO statements |
+  iterator: FOR assign_pattern IN sequence_expr DO statements |
+  for: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO statements
 
 optional_sequence_expr<Expression> ->
   sequence_expr |
@@ -458,7 +459,7 @@ atom_expr<Expression> ->
   = parse_error_expr |
   = literal_expr |
   = named_expr |
-  = block_expr |
+  = statements_expr |
   = anonymous_func_expr |
   = initialize_expr |
   = implicit_struct_expr
@@ -477,9 +478,9 @@ named_expr<Expression> ->
   IDENTIFIER |
   UNDERSCORE
 
-block_expr<Expression> ->
-  = statement_block |
-  labelled: LABEL_DECL statement_block
+statements_expr<Expression> ->
+  = statements |
+  labelled: LABEL_DECL statements
 
 initialize_expr<Expression> -> initializable_type_expr LPAREN arguments RPAREN
 
@@ -873,11 +874,11 @@ method_signature<TypeProperty> -> FUNC IDENTIFIER parameter_decls return_type
 //  let <alias> = <original_func>
 // instead.
 named_func_def<Definition> ->
-  func_def: FUNC IDENTIFIER generic_parameters parameter_defs return_type statement_block |
-  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER parameter_defs return_type statement_block
+  func_def: FUNC IDENTIFIER generic_parameters parameter_defs return_type statements |
+  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER parameter_defs return_type statements
 
 anonymous_func_expr<Expression> ->
-  FUNC parameter_defs return_type statement_block
+  FUNC parameter_defs return_type statements
 
 //
 // Package definition =========================================================
@@ -890,7 +891,7 @@ anonymous_func_expr<Expression> ->
 // parent directory package.
 package_def<Definition> ->
   no_spec: PACKAGE |
-  with_spec: PACKAGE statement_block
+  with_spec: PACKAGE statements
 
 %%lang_specs{
 go:
@@ -911,7 +912,7 @@ go:
     GenericParameterList: "*GenericParameterList"
     GenericArgumentList: "*GenericArgumentList"
     Statement: "Statement"
-    Statements: "*StatementList"
+    StatementsExpr: "*StatementsExpr"
     Definition: "Definition"
     Definitions: "*DefinitionList"
     TypeProperty: "TypeProperty"

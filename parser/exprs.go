@@ -805,7 +805,7 @@ type IfExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	JumpLabel         string // optional
+	LabelDecl         string // optional
 	ConditionBranches []ConditionBranch
 	ElseBranch        Expression // optional
 }
@@ -814,10 +814,10 @@ var _ Expression = &IfExpr{}
 
 func (expr IfExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
-		"%s%s[IfExpr: Label=%s\n",
+		"%s%s[IfExpr: LabelDecl=%s\n",
 		indent,
 		label,
-		expr.JumpLabel)
+		expr.LabelDecl)
 	for idx, condBranch := range expr.ConditionBranches {
 		branchLabel := fmt.Sprintf("Branch%d=", idx)
 		result += condBranch.TreeString(indent+"  ", branchLabel) + "\n"
@@ -857,7 +857,7 @@ func (reducer *IfExprReducerImpl) UnlabelledToIfExpr(
 }
 
 func (reducer *IfExprReducerImpl) LabelledToIfExpr(
-	jumpLabel TokenValue,
+	labelDecl TokenValue,
 	ifExpr *IfExpr,
 ) (
 	Expression,
@@ -865,10 +865,10 @@ func (reducer *IfExprReducerImpl) LabelledToIfExpr(
 ) {
 	reducer.UnlabelledToIfExpr(ifExpr)
 
-	ifExpr.PrependToLeading(jumpLabel.TakeTrailing())
-	ifExpr.PrependToLeading(jumpLabel.TakeLeading())
+	ifExpr.PrependToLeading(labelDecl.TakeTrailing())
+	ifExpr.PrependToLeading(labelDecl.TakeLeading())
 
-	ifExpr.JumpLabel = jumpLabel.Value
+	ifExpr.LabelDecl = labelDecl.Value
 	return ifExpr, nil
 }
 
