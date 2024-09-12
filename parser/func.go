@@ -55,7 +55,7 @@ func (sig FuncSignature) TreeString(indent string, label string) string {
 
 type FuncDefinition struct {
 	isExpression
-	isSourceDefinition
+	isDefinition
 	StartEndPos
 	LeadingTrailingComments
 
@@ -64,7 +64,7 @@ type FuncDefinition struct {
 }
 
 var _ Expression = &FuncDefinition{}
-var _ SourceDefinition = &FuncDefinition{}
+var _ Definition = &FuncDefinition{}
 
 func (def FuncDefinition) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[FuncDefinition:\n", indent, label)
@@ -225,7 +225,7 @@ func (reducer *FuncReducerImpl) FuncDefToNamedFuncDef(
 	returnType TypeExpression,
 	body Expression,
 ) (
-	SourceDefinition,
+	Definition,
 	error,
 ) {
 	def := reducer.toFuncDefinition(
@@ -251,7 +251,7 @@ func (reducer *FuncReducerImpl) MethodDefToNamedFuncDef(
 	returnType TypeExpression,
 	body Expression,
 ) (
-	SourceDefinition,
+	Definition,
 	error,
 ) {
 	funcKW.AppendToTrailing(lparen.TakeLeading())

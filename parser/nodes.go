@@ -80,14 +80,14 @@ type isStatement struct{}
 
 func (isStatement) IsStatement() {}
 
-type SourceDefinition interface {
+type Definition interface {
 	Node
-	IsSourceDefinition()
+	IsDefinition()
 }
 
-type isSourceDefinition struct{}
+type isDefinition struct{}
 
-func (isSourceDefinition) IsSourceDefinition() {}
+func (isDefinition) IsDefinition() {}
 
 // A comment group is a single block comment, or a group of line comments
 // separated by single newlines (ignoring spaces).
@@ -353,4 +353,52 @@ func (list *NodeList[T]) reduceMarkers(start TokenValue, end TokenValue) {
 		list.MiddleComment.Append(end.TakeLeading())
 	}
 	list.TrailingComment = end.TakeTrailing()
+}
+
+type DefinitionList = NodeList[Definition]
+
+func NewDefinitionList() *DefinitionList {
+	return newNodeList[Definition]("DefinitionList")
+}
+
+type DefinitionListReducerImpl struct{}
+
+var _ ProperDefinitionsReducer = &DefinitionListReducerImpl{}
+var _ DefinitionsReducer = &DefinitionListReducerImpl{}
+
+func (DefinitionListReducerImpl) AddToProperDefinitions(
+	list *DefinitionList,
+	newlines TokenCount,
+	def Definition,
+) (
+	*DefinitionList,
+	error,
+) {
+	list.reduceAdd(TokenValue{}, def)
+	return list, nil
+}
+
+func (DefinitionListReducerImpl) DefinitionToProperDefinitions(
+	def Definition,
+) (
+	*DefinitionList,
+	error,
+) {
+	list := NewDefinitionList()
+	list.add(def)
+	return list, nil
+}
+
+func (DefinitionListReducerImpl) ImproperToDefinitions(
+	list *DefinitionList,
+	newlines TokenCount,
+) (
+	*DefinitionList,
+	error,
+) {
+	return list, nil
+}
+
+func (DefinitionListReducerImpl) NilToDefinitions() (*DefinitionList, error) {
+	return NewDefinitionList(), nil
 }

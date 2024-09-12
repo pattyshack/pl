@@ -28,6 +28,7 @@ type ReducerImpl struct {
 
 	ArgumentListReducerImpl
 	ArgumentReducerImpl
+	DefinitionListReducerImpl
 	FieldDefReducerImpl
 	GenericArgumentListReducerImpl
 	GenericParameterReducerImpl
@@ -39,9 +40,6 @@ type ReducerImpl struct {
 
 	// TODO
 
-	SourceReducer
-	ProperDefinitionsReducer
-	DefinitionsReducer
 	DefinitionReducer
 	StatementBlockReducer
 	StatementReducer
@@ -49,6 +47,7 @@ type ReducerImpl struct {
 	ExprOrImproperStructStatementReducer
 	ExprsReducer
 	UnsafeStatementReducer
+	UnsafeStatementPropertyReducer
 	JumpStatementReducer
 	FallthroughStatementReducer
 	AssignStatementReducer
@@ -77,7 +76,6 @@ type ReducerImpl struct {
 	ForAssignmentReducer
 	BlockExprReducer
 	TypeDefReducer
-	UnsafeStatementPropertyReducer
 	PackageDefReducer
 }
 

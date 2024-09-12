@@ -56,18 +56,19 @@
 
 %start source statement expr type_expr
 
-source<SourceDefinitions> -> definitions
+source<Definitions> ->
+  = definitions
 
-proper_definitions<SourceDefinitions> ->
+proper_definitions<Definitions> ->
   add: proper_definitions NEWLINES definition |
   definition
 
-definitions<SourceDefinitions> ->
+definitions<Definitions> ->
   = proper_definitions |
   improper: proper_definitions NEWLINES |
   nil:
 
-definition<SourceDefinition> ->
+definition<Definition> ->
   // There can only be one package_def per package
   = package_def |
   = type_def |
@@ -170,6 +171,8 @@ exprs ->
 // escape hatch to get a basic compiler/transpiler running.
 // unsafe<go> "emit verbatim go source"
 unsafe_statement<Statement> -> UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
+
+unsafe_statement_property<TypeProperty> -> unsafe_statement
 
 //
 // Jump / fallthrough statements
@@ -670,7 +673,7 @@ binary_type_op<Value> ->
   = ADD | // trait union
   = SUB // trait difference
 
-type_def<SourceDefinition> ->
+type_def<Definition> ->
   definition: TYPE IDENTIFIER generic_parameters type_expr |
   constrained_def: TYPE IDENTIFIER generic_parameters type_expr IMPLEMENTS type_expr |
   alias: TYPE IDENTIFIER ASSIGN type_expr
@@ -717,8 +720,6 @@ generic_argument_list<GenericArgumentList> ->
 field_def<FieldDef> ->
   named: IDENTIFIER type_expr |
   unnamed: type_expr
-
-unsafe_statement_property<TypeProperty> -> unsafe_statement
 
 // NOTE: default_enum_field_def is only usable in enum.  method_signature is
 // only usable in trait.  struct_padding is only usable in struct.
@@ -871,7 +872,7 @@ method_signature<TypeProperty> -> FUNC IDENTIFIER parameter_decls return_type
 // Note: there's no syntactic sugar for func alias.  use
 //  let <alias> = <original_func>
 // instead.
-named_func_def<SourceDefinition> ->
+named_func_def<Definition> ->
   func_def: FUNC IDENTIFIER generic_parameters parameter_defs return_type statement_block |
   method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER parameter_defs return_type statement_block
 
@@ -887,7 +888,7 @@ anonymous_func_expr<Expression> ->
 // "internal" since that's special cased by go.  As an alternative to go's
 // internal, if the package name is a private, it can only be accessed by its
 // parent directory package.
-package_def<SourceDefinition> ->
+package_def<Definition> ->
   no_spec: PACKAGE |
   with_spec: PACKAGE statement_block
 
@@ -911,8 +912,8 @@ go:
     GenericArgumentList: "*GenericArgumentList"
     Statement: "Statement"
     Statements: "*StatementList"
-    SourceDefinition: "SourceDefinition"
-    SourceDefinitions: "[]SourceDefinition"
+    Definition: "Definition"
+    Definitions: "*DefinitionList"
     TypeProperty: "TypeProperty"
     TypeProperties: "*TypePropertyList"
     FieldDef: "*FieldDef"
