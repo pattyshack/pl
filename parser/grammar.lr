@@ -135,24 +135,20 @@ simple_statement<Statement> ->
   = unary_op_assign_statement |
   = binary_op_assign_statement |
 
-  // Only applicable to switch case block (must be the last statement in the
-  // case branch)
-  = fallthrough_statement
+  // NOTE: Only applicable to package_def
+  = import_statement
 
 statement<Statement> ->
   = simple_statement |
 
-  // NOTE: Only applicable to package_def
-  = import_statement |
-
   // NOTE: Only applicable to switch case block.
   // Post analysis is needed to associate statements to cases (move trailing
   // non-case statements into case's data structure).
-  case_branch_statement: CASE case_patterns COLON optional_simple_statement |
-  default_branch_statement: DEFAULT COLON optional_simple_statement
+  case_branch_statement: CASE case_patterns COLON trailing_simple_statement |
+  default_branch_statement: DEFAULT COLON trailing_simple_statement
 
-optional_simple_statement<Statement> ->
-  = simple_statement |
+trailing_simple_statement<StatementsExpr> ->
+  simple_statement |
   nil:
 
 //
@@ -186,14 +182,15 @@ jump_statement<Statement> ->
   unlabeled_no_value: jump_type |
   unlabeled_valued: jump_type expr_or_improper_struct |
   labeled_no_value: jump_type JUMP_LABEL |
-  labeled_valued: jump_type JUMP_LABEL expr_or_improper_struct
+  labeled_valued: jump_type JUMP_LABEL expr_or_improper_struct |
+  // Only applicable to switch case block (must be the last statement in the
+  // case branch)
+  FALLTHROUGH
 
 jump_type<Value> ->
   = RETURN |
   = BREAK |
   = CONTINUE
-
-fallthrough_statement<Statement> -> FALLTHROUGH
 
 //
 // Assignment statements

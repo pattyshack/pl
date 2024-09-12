@@ -45,11 +45,9 @@ type ReducerImpl struct {
 
 	DefinitionReducer
 	StatementReducer
-	OptionalSimpleStatementReducer
 	UnsafeStatementReducer
 	UnsafeStatementPropertyReducer
 	JumpStatementReducer
-	FallthroughStatementReducer
 	AssignStatementReducer
 	UnaryOpAssignStatementReducer
 	BinaryOpAssignStatementReducer

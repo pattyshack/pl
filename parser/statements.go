@@ -15,7 +15,7 @@ type StatementsExpr struct {
 	NodeList[Statement]
 }
 
-func NewStatementList() *StatementsExpr {
+func NewStatementsExpr() *StatementsExpr {
 	return &StatementsExpr{}
 }
 
@@ -40,6 +40,7 @@ var _ ProperStatementListReducer = &StatementsExprReducerImpl{}
 var _ StatementListReducer = &StatementsExprReducerImpl{}
 var _ StatementsReducer = &StatementsExprReducerImpl{}
 var _ StatementsExprReducer = &StatementsExprReducerImpl{}
+var _ TrailingSimpleStatementReducer = &StatementsExprReducerImpl{}
 
 func (StatementsExprReducerImpl) AddImplicitToProperStatementList(
 	statements *StatementsExpr,
@@ -71,7 +72,7 @@ func (StatementsExprReducerImpl) StatementToProperStatementList(
 	*StatementsExpr,
 	error,
 ) {
-	list := NewStatementList()
+	list := NewStatementsExpr()
 	list.add(statement)
 	return list, nil
 }
@@ -98,7 +99,7 @@ func (StatementsExprReducerImpl) ImproperExplicitToStatementList(
 }
 
 func (StatementsExprReducerImpl) NilToStatementList() (*StatementsExpr, error) {
-	return NewStatementList(), nil
+	return NewStatementsExpr(), nil
 }
 
 func (StatementsExprReducerImpl) ToStatements(
@@ -132,6 +133,24 @@ func (StatementsExprReducerImpl) LabelledToStatementsExpr(
 	}
 
 	panic(fmt.Sprintf("Unexpected expression: %v", statementsExprOrParseError))
+}
+
+func (StatementsExprReducerImpl) SimpleStatementToTrailingSimpleStatement(
+	stmt Statement,
+) (
+	*StatementsExpr,
+	error,
+) {
+	expr := NewStatementsExpr()
+	expr.add(stmt)
+	return expr, nil
+}
+
+func (StatementsExprReducerImpl) NilToTrailingSimpleStatement() (
+	*StatementsExpr,
+	error,
+) {
+	return NewStatementsExpr(), nil
 }
 
 //
