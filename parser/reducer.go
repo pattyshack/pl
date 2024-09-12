@@ -46,8 +46,6 @@ type ReducerImpl struct {
 	DefinitionReducer
 	StatementReducer
 	OptionalSimpleStatementReducer
-	ExprOrImproperStructStatementReducer
-	ExprsReducer
 	UnsafeStatementReducer
 	UnsafeStatementPropertyReducer
 	JumpStatementReducer

@@ -441,6 +441,42 @@ func (reducer *ImplicitStructExprReducerImpl) ToImplicitStructExpr(
 	return expr, nil
 }
 
+func (reducer *ImplicitStructExprReducerImpl) PairToImproperImplicitStruct(
+	expr1 Expression,
+	comma TokenValue,
+	expr2 Expression,
+) (
+	*ImplicitStructExpr,
+	error,
+) {
+	arg1 := NewPositionalArgument(expr1)
+	arg2 := NewPositionalArgument(expr2)
+
+	list := NewArgumentList()
+	list.add(arg1)
+	list.reduceAdd(comma, arg2)
+
+	expr := &ImplicitStructExpr{
+		ArgumentList: *list,
+	}
+
+	reducer.ImplicitStructExprs = append(reducer.ImplicitStructExprs, expr)
+	return expr, nil
+}
+
+func (reducer *ImplicitStructExprReducerImpl) AddToImproperImplicitStruct(
+	structExpr *ImplicitStructExpr,
+	comma TokenValue,
+	expr Expression,
+) (
+	*ImplicitStructExpr,
+	error,
+) {
+	arg := NewPositionalArgument(expr)
+	structExpr.reduceAdd(comma, arg)
+	return structExpr, nil
+}
+
 //
 // ColonExpr
 //

@@ -458,6 +458,19 @@ type Argument struct {
 
 var _ Node = &Argument{}
 
+func NewPositionalArgument(expr Expression) *Argument {
+	return &Argument{
+		StartEndPos: newStartEndPos(expr.Loc(), expr.End()),
+		LeadingTrailingComments: LeadingTrailingComments{
+			LeadingComment:  expr.TakeLeading(),
+			TrailingComment: expr.TakeTrailing(),
+		},
+		Kind:        PositionalArgument,
+		Expr:        expr,
+		HasEllipsis: false,
+	}
+}
+
 func (arg *Argument) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
 		"%s%s[Argument: Kind=%v OptionalName=%s HasEllipsis=%v",
@@ -488,18 +501,7 @@ func (ArgumentReducerImpl) PositionalToArgument(
 	*Argument,
 	error,
 ) {
-	arg := &Argument{
-		StartEndPos: newStartEndPos(expr.Loc(), expr.End()),
-		LeadingTrailingComments: LeadingTrailingComments{
-			LeadingComment:  expr.TakeLeading(),
-			TrailingComment: expr.TakeTrailing(),
-		},
-		Kind:        PositionalArgument,
-		Expr:        expr,
-		HasEllipsis: false,
-	}
-
-	return arg, nil
+	return NewPositionalArgument(expr), nil
 }
 
 func (ArgumentReducerImpl) ColonExprToArgument(

@@ -118,7 +118,7 @@ statement_list<StatementsExpr> ->
 simple_statement<Statement> ->
   = unsafe_statement |
 
-  = expr_or_improper_struct_statement |
+  = expr_or_improper_struct |
 
   // NOTE: Only applicable in expression blocks
   = jump_statement |
@@ -159,11 +159,14 @@ optional_simple_statement<Statement> ->
 // expression / improper struct statement
 //
 
-expr_or_improper_struct_statement<Statement> -> exprs
+expr_or_improper_struct<Expression> ->
+  = expr |
+  = improper_implicit_struct
 
-exprs ->
-  expr |
-  add: exprs COMMA expr
+// improper in the sense that the expression list is not bounded by '(' and ')'
+improper_implicit_struct<ImplicitStruct> ->
+  pair: expr COMMA expr |
+  add: improper_implicit_struct COMMA expr
 
 //
 // Unsafe statement
@@ -181,9 +184,9 @@ unsafe_statement_property<TypeProperty> -> unsafe_statement
 
 jump_statement<Statement> ->
   unlabeled_no_value: jump_type |
-  unlabeled_valued: jump_type exprs |
+  unlabeled_valued: jump_type expr_or_improper_struct |
   labeled_no_value: jump_type JUMP_LABEL |
-  labeled_valued: jump_type JUMP_LABEL exprs
+  labeled_valued: jump_type JUMP_LABEL expr_or_improper_struct
 
 jump_type<Value> ->
   = RETURN |
@@ -920,5 +923,6 @@ go:
     FieldDef: "*FieldDef"
     ImportClause: "*ImportClause"
     ImportStatement: "*ImportStatement"
+    ImplicitStruct: "*ImplicitStructExpr"
   generate_end_pos: True
 }%%
