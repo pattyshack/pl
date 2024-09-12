@@ -41,7 +41,7 @@
 %token<Value> ELLIPSIS // ...
 %token<Value> TILDE_TILDE
 
-%token<Value> ASSIGN
+%token<Value> ASSIGN ARROW
 
 %token<Value> ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %token<Value> ADD_ONE_ASSIGN SUB_ONE_ASSIGN
@@ -318,7 +318,7 @@ expr<Expression> ->
 //
 
 sequence_expr<Expression> ->
-  = or_expr |
+  = send_recv_expr |
   // NOTE: var_decl_pattern is not a real expression.  Unexpected usage in real
   // expressions are rejected during type checking.
   var_decl_pattern |
@@ -595,6 +595,15 @@ or_expr<Expression> ->
   = binary_or_expr
 
 binary_or_expr<Expression> -> or_expr OR and_expr
+
+send_recv_expr<Expression> ->
+  = or_expr |
+  = send_expr |
+  = recv_expr
+
+send_expr<Expression> -> send_recv_expr ARROW or_expr
+
+recv_expr<Expression> -> ARROW or_expr
 
 //
 // Types ======================================================================

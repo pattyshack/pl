@@ -241,7 +241,7 @@ func (s *RawLexerSuite) TestGreaterTokens(t *testing.T) {
 
 func (s *RawLexerSuite) TestLessTokens(t *testing.T) {
 	s.lex(t, "<", LessToken)
-	s.lex(t, "+<-", AddToken, LessToken, SubToken)
+	s.lex(t, "+</", AddToken, LessToken, DivToken)
 
 	s.lex(t, "<=", LessOrEqualToken)
 	s.lex(t, "+<=-", AddToken, LessOrEqualToken, SubToken)
@@ -251,6 +251,9 @@ func (s *RawLexerSuite) TestLessTokens(t *testing.T) {
 
 	s.lex(t, "<<=", BitLshiftAssignToken)
 	s.lex(t, "+<<=-", AddToken, BitLshiftAssignToken, SubToken)
+
+	s.lex(t, "<-", ArrowToken)
+	s.lex(t, "+<--", AddToken, ArrowToken, SubToken)
 }
 
 func (s *RawLexerSuite) TestIdentifier(t *testing.T) {

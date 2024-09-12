@@ -312,6 +312,8 @@ func (lexer *RawLexer) peekNextToken() (SymbolId, int, error) {
 				}
 
 				return BitLshiftToken, 2, nil
+			} else if peeked[1] == '-' {
+				return ArrowToken, 2, nil
 			}
 		}
 

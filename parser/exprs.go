@@ -234,6 +234,7 @@ type UnaryExprReducerImpl struct {
 var _ PostfixUnaryExprReducer = &UnaryExprReducerImpl{}
 var _ PrefixUnaryExprReducer = &UnaryExprReducerImpl{}
 var _ UnaryOpAssignStatementReducer = &UnaryExprReducerImpl{}
+var _ RecvExprReducer = &UnaryExprReducerImpl{}
 
 func (reducer *UnaryExprReducerImpl) toPostfixUnaryExpr(
 	operand Expression,
@@ -264,13 +265,10 @@ func (reducer *UnaryExprReducerImpl) ToPostfixUnaryExpr(
 	return reducer.toPostfixUnaryExpr(operand, op), nil
 }
 
-func (reducer *UnaryExprReducerImpl) ToPrefixUnaryExpr(
+func (reducer *UnaryExprReducerImpl) toPrefixUnaryExpr(
 	op TokenValue,
 	operand Expression,
-) (
-	Expression,
-	error,
-) {
+) Expression {
 	expr := &UnaryExpr{
 		StartEndPos: newStartEndPos(op.Loc(), operand.End()),
 		IsPrefix:    true,
@@ -283,7 +281,27 @@ func (reducer *UnaryExprReducerImpl) ToPrefixUnaryExpr(
 	expr.TrailingComment = operand.TakeTrailing()
 
 	reducer.UnaryExprs = append(reducer.UnaryExprs, expr)
-	return expr, nil
+	return expr
+}
+
+func (reducer *UnaryExprReducerImpl) ToPrefixUnaryExpr(
+	op TokenValue,
+	operand Expression,
+) (
+	Expression,
+	error,
+) {
+	return reducer.toPrefixUnaryExpr(op, operand), nil
+}
+
+func (reducer *UnaryExprReducerImpl) ToRecvExpr(
+	arrow TokenValue,
+	expr Expression,
+) (
+	Expression,
+	error,
+) {
+	return reducer.toPrefixUnaryExpr(arrow, expr), nil
 }
 
 func (reducer *UnaryExprReducerImpl) ToUnaryOpAssignStatement(
@@ -332,6 +350,7 @@ var _ BinaryCmpExprReducer = &BinaryExprReducerImpl{}
 var _ BinaryAndExprReducer = &BinaryExprReducerImpl{}
 var _ BinaryOrExprReducer = &BinaryExprReducerImpl{}
 var _ BinaryOpAssignStatementReducer = &BinaryExprReducerImpl{}
+var _ SendExprReducer = &BinaryExprReducerImpl{}
 
 func (reducer *BinaryExprReducerImpl) toBinaryExpr(
 	left Expression,
@@ -410,6 +429,17 @@ func (reducer *BinaryExprReducerImpl) ToBinaryOrExpr(
 	error,
 ) {
 	return reducer.toBinaryExpr(left, op, right)
+}
+
+func (reducer *BinaryExprReducerImpl) ToSendExpr(
+	receiver Expression,
+	arrow TokenValue,
+	expr Expression,
+) (
+	Expression,
+	error,
+) {
+	return reducer.toBinaryExpr(receiver, arrow, expr)
 }
 
 func (reducer *BinaryExprReducerImpl) ToBinaryOpAssignStatement(
