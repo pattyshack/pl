@@ -227,21 +227,21 @@ import_statement<Statement> ->
   single: IMPORT import_clause |
   multiple: IMPORT LPAREN import_clauses RPAREN
 
-import_clause ->
-  STRING_LITERAL |
-  alias: IDENTIFIER STRING_LITERAL |
-  unusable_import: UNDERSCORE STRING_LITERAL |
-  import_to_local: DOT STRING_LITERAL
-
-proper_import_clauses ->
+proper_import_clauses<ImportStatement> ->
   add_implicit: proper_import_clauses NEWLINES import_clause |
   add_explicit: proper_import_clauses COMMA import_clause |
   import_clause
 
-import_clauses ->
+import_clauses<ImportStatement> ->
   = proper_import_clauses |
   implicit: proper_import_clauses NEWLINES |
   explicit: proper_import_clauses COMMA
+
+import_clause<ImportClause> ->
+  STRING_LITERAL |
+  alias: IDENTIFIER STRING_LITERAL |
+  unusable_import: UNDERSCORE STRING_LITERAL |
+  import_to_local: DOT STRING_LITERAL
 
 //
 // Case statement
@@ -918,5 +918,7 @@ go:
     TypeProperty: "TypeProperty"
     TypeProperties: "*TypePropertyList"
     FieldDef: "*FieldDef"
+    ImportClause: "*ImportClause"
+    ImportStatement: "*ImportStatement"
   generate_end_pos: True
 }%%

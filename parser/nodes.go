@@ -294,18 +294,23 @@ type NodeList[T Node] struct {
 	ListType string
 }
 
+func (list NodeList[T]) elementsString(indent string) string {
+	result := ""
+	for idx, element := range list.Elements {
+		result += "\n" + element.TreeString(
+			indent,
+			fmt.Sprintf("Element%d=", idx))
+	}
+	return result
+}
+
 func (list NodeList[T]) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[%s:", indent, label, list.ListType)
 	if len(list.Elements) == 0 {
 		return result + "]"
 	}
 
-	for idx, element := range list.Elements {
-		result += "\n" + element.TreeString(
-			indent+"  ",
-			fmt.Sprintf("Element%d=", idx))
-	}
-
+	result += list.elementsString(indent + "  ")
 	result += "\n" + indent + "]"
 	return result
 }

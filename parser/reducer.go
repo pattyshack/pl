@@ -27,6 +27,9 @@ type ReducerImpl struct {
 	SliceTypeExprReducerImpl
 	UnaryTypeExprReducerImpl
 
+	ImportClauseReducerImpl
+	ImportStatementReducerImpl
+
 	ArgumentListReducerImpl
 	ArgumentReducerImpl
 	DefinitionListReducerImpl
@@ -52,10 +55,6 @@ type ReducerImpl struct {
 	AssignStatementReducer
 	UnaryOpAssignStatementReducer
 	BinaryOpAssignStatementReducer
-	ImportStatementReducer
-	ImportClauseReducer
-	ProperImportClausesReducer
-	ImportClausesReducer
 	CasePatternsReducer
 	VarDeclPatternReducer
 	VarPatternReducer

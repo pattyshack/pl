@@ -273,44 +273,44 @@ type BinaryOpAssignStatementReducer interface {
 
 type ImportStatementReducer interface {
 	// 227:2: import_statement -> single: ...
-	SingleToImportStatement(Import_ TokenValue, ImportClause_ GenericSymbol) (Statement, error)
+	SingleToImportStatement(Import_ TokenValue, ImportClause_ *ImportClause) (Statement, error)
 
 	// 228:2: import_statement -> multiple: ...
-	MultipleToImportStatement(Import_ TokenValue, Lparen_ TokenValue, ImportClauses_ GenericSymbol, Rparen_ TokenValue) (Statement, error)
-}
-
-type ImportClauseReducer interface {
-	// 231:2: import_clause -> STRING_LITERAL: ...
-	StringLiteralToImportClause(StringLiteral_ TokenValue) (GenericSymbol, error)
-
-	// 232:2: import_clause -> alias: ...
-	AliasToImportClause(Identifier_ TokenValue, StringLiteral_ TokenValue) (GenericSymbol, error)
-
-	// 233:2: import_clause -> unusable_import: ...
-	UnusableImportToImportClause(Underscore_ TokenValue, StringLiteral_ TokenValue) (GenericSymbol, error)
-
-	// 234:2: import_clause -> import_to_local: ...
-	ImportToLocalToImportClause(Dot_ TokenValue, StringLiteral_ TokenValue) (GenericSymbol, error)
+	MultipleToImportStatement(Import_ TokenValue, Lparen_ TokenValue, ImportClauses_ *ImportStatement, Rparen_ TokenValue) (Statement, error)
 }
 
 type ProperImportClausesReducer interface {
-	// 237:2: proper_import_clauses -> add_implicit: ...
-	AddImplicitToProperImportClauses(ProperImportClauses_ GenericSymbol, Newlines_ TokenCount, ImportClause_ GenericSymbol) (GenericSymbol, error)
+	// 231:2: proper_import_clauses -> add_implicit: ...
+	AddImplicitToProperImportClauses(ProperImportClauses_ *ImportStatement, Newlines_ TokenCount, ImportClause_ *ImportClause) (*ImportStatement, error)
 
-	// 238:2: proper_import_clauses -> add_explicit: ...
-	AddExplicitToProperImportClauses(ProperImportClauses_ GenericSymbol, Comma_ TokenValue, ImportClause_ GenericSymbol) (GenericSymbol, error)
+	// 232:2: proper_import_clauses -> add_explicit: ...
+	AddExplicitToProperImportClauses(ProperImportClauses_ *ImportStatement, Comma_ TokenValue, ImportClause_ *ImportClause) (*ImportStatement, error)
 
-	// 239:2: proper_import_clauses -> import_clause: ...
-	ImportClauseToProperImportClauses(ImportClause_ GenericSymbol) (GenericSymbol, error)
+	// 233:2: proper_import_clauses -> import_clause: ...
+	ImportClauseToProperImportClauses(ImportClause_ *ImportClause) (*ImportStatement, error)
 }
 
 type ImportClausesReducer interface {
 
-	// 243:2: import_clauses -> implicit: ...
-	ImplicitToImportClauses(ProperImportClauses_ GenericSymbol, Newlines_ TokenCount) (GenericSymbol, error)
+	// 237:2: import_clauses -> implicit: ...
+	ImplicitToImportClauses(ProperImportClauses_ *ImportStatement, Newlines_ TokenCount) (*ImportStatement, error)
 
-	// 244:2: import_clauses -> explicit: ...
-	ExplicitToImportClauses(ProperImportClauses_ GenericSymbol, Comma_ TokenValue) (GenericSymbol, error)
+	// 238:2: import_clauses -> explicit: ...
+	ExplicitToImportClauses(ProperImportClauses_ *ImportStatement, Comma_ TokenValue) (*ImportStatement, error)
+}
+
+type ImportClauseReducer interface {
+	// 241:2: import_clause -> STRING_LITERAL: ...
+	StringLiteralToImportClause(StringLiteral_ TokenValue) (*ImportClause, error)
+
+	// 242:2: import_clause -> alias: ...
+	AliasToImportClause(Identifier_ TokenValue, StringLiteral_ TokenValue) (*ImportClause, error)
+
+	// 243:2: import_clause -> unusable_import: ...
+	UnusableImportToImportClause(Underscore_ TokenValue, StringLiteral_ TokenValue) (*ImportClause, error)
+
+	// 244:2: import_clause -> import_to_local: ...
+	ImportToLocalToImportClause(Dot_ TokenValue, StringLiteral_ TokenValue) (*ImportClause, error)
 }
 
 type CasePatternsReducer interface {
@@ -1001,9 +1001,9 @@ type Reducer interface {
 	UnaryOpAssignStatementReducer
 	BinaryOpAssignStatementReducer
 	ImportStatementReducer
-	ImportClauseReducer
 	ProperImportClausesReducer
 	ImportClausesReducer
+	ImportClauseReducer
 	CasePatternsReducer
 	VarDeclPatternReducer
 	VarPatternReducer
@@ -1809,12 +1809,12 @@ func (i SymbolId) String() string {
 		return "binary_op_assign"
 	case ImportStatementType:
 		return "import_statement"
-	case ImportClauseType:
-		return "import_clause"
 	case ProperImportClausesType:
 		return "proper_import_clauses"
 	case ImportClausesType:
 		return "import_clauses"
+	case ImportClauseType:
+		return "import_clause"
 	case CasePatternsType:
 		return "case_patterns"
 	case VarDeclPatternType:
@@ -2065,9 +2065,9 @@ const (
 	BinaryOpAssignStatementType          = SymbolId(363)
 	BinaryOpAssignType                   = SymbolId(364)
 	ImportStatementType                  = SymbolId(365)
-	ImportClauseType                     = SymbolId(366)
-	ProperImportClausesType              = SymbolId(367)
-	ImportClausesType                    = SymbolId(368)
+	ProperImportClausesType              = SymbolId(366)
+	ImportClausesType                    = SymbolId(367)
+	ImportClauseType                     = SymbolId(368)
 	CasePatternsType                     = SymbolId(369)
 	VarDeclPatternType                   = SymbolId(370)
 	VarOrLetType                         = SymbolId(371)
@@ -2272,16 +2272,16 @@ const (
 	_ReduceBitRshiftAssignToBinaryOpAssign                              = _ReduceType(63)
 	_ReduceSingleToImportStatement                                      = _ReduceType(64)
 	_ReduceMultipleToImportStatement                                    = _ReduceType(65)
-	_ReduceStringLiteralToImportClause                                  = _ReduceType(66)
-	_ReduceAliasToImportClause                                          = _ReduceType(67)
-	_ReduceUnusableImportToImportClause                                 = _ReduceType(68)
-	_ReduceImportToLocalToImportClause                                  = _ReduceType(69)
-	_ReduceAddImplicitToProperImportClauses                             = _ReduceType(70)
-	_ReduceAddExplicitToProperImportClauses                             = _ReduceType(71)
-	_ReduceImportClauseToProperImportClauses                            = _ReduceType(72)
-	_ReduceProperImportClausesToImportClauses                           = _ReduceType(73)
-	_ReduceImplicitToImportClauses                                      = _ReduceType(74)
-	_ReduceExplicitToImportClauses                                      = _ReduceType(75)
+	_ReduceAddImplicitToProperImportClauses                             = _ReduceType(66)
+	_ReduceAddExplicitToProperImportClauses                             = _ReduceType(67)
+	_ReduceImportClauseToProperImportClauses                            = _ReduceType(68)
+	_ReduceProperImportClausesToImportClauses                           = _ReduceType(69)
+	_ReduceImplicitToImportClauses                                      = _ReduceType(70)
+	_ReduceExplicitToImportClauses                                      = _ReduceType(71)
+	_ReduceStringLiteralToImportClause                                  = _ReduceType(72)
+	_ReduceAliasToImportClause                                          = _ReduceType(73)
+	_ReduceUnusableImportToImportClause                                 = _ReduceType(74)
+	_ReduceImportToLocalToImportClause                                  = _ReduceType(75)
 	_ReduceCasePatternToCasePatterns                                    = _ReduceType(76)
 	_ReduceMultipleToCasePatterns                                       = _ReduceType(77)
 	_ReduceToVarDeclPattern                                             = _ReduceType(78)
@@ -2678,14 +2678,6 @@ func (i _ReduceType) String() string {
 		return "SingleToImportStatement"
 	case _ReduceMultipleToImportStatement:
 		return "MultipleToImportStatement"
-	case _ReduceStringLiteralToImportClause:
-		return "StringLiteralToImportClause"
-	case _ReduceAliasToImportClause:
-		return "AliasToImportClause"
-	case _ReduceUnusableImportToImportClause:
-		return "UnusableImportToImportClause"
-	case _ReduceImportToLocalToImportClause:
-		return "ImportToLocalToImportClause"
 	case _ReduceAddImplicitToProperImportClauses:
 		return "AddImplicitToProperImportClauses"
 	case _ReduceAddExplicitToProperImportClauses:
@@ -2698,6 +2690,14 @@ func (i _ReduceType) String() string {
 		return "ImplicitToImportClauses"
 	case _ReduceExplicitToImportClauses:
 		return "ExplicitToImportClauses"
+	case _ReduceStringLiteralToImportClause:
+		return "StringLiteralToImportClause"
+	case _ReduceAliasToImportClause:
+		return "AliasToImportClause"
+	case _ReduceUnusableImportToImportClause:
+		return "UnusableImportToImportClause"
+	case _ReduceImportToLocalToImportClause:
+		return "ImportToLocalToImportClause"
 	case _ReduceCasePatternToCasePatterns:
 		return "CasePatternToCasePatterns"
 	case _ReduceMultipleToCasePatterns:
@@ -3490,6 +3490,8 @@ type Symbol struct {
 	GenericParameter     *GenericParameter
 	GenericParameterList *GenericParameterList
 	IfExpr               *IfExpr
+	ImportClause         *ImportClause
+	ImportStatement      *ImportStatement
 	Parameter            *Parameter
 	Parameters           *ParameterList
 	ParseError           ParseErrorSymbol
@@ -3622,6 +3624,16 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
+	case ImportClauseType:
+		loc, ok := interface{}(s.ImportClause).(locator)
+		if ok {
+			return loc.Loc()
+		}
+	case ProperImportClausesType, ImportClausesType:
+		loc, ok := interface{}(s.ImportStatement).(locator)
+		if ok {
+			return loc.Loc()
+		}
 	case ProperParameterDefType, ParameterDeclType, ParameterDefType:
 		loc, ok := interface{}(s.Parameter).(locator)
 		if ok {
@@ -3731,6 +3743,16 @@ func (s *Symbol) End() Location {
 		}
 	case IfElseExprType, IfElifExprType, IfOnlyExprType:
 		loc, ok := interface{}(s.IfExpr).(locator)
+		if ok {
+			return loc.End()
+		}
+	case ImportClauseType:
+		loc, ok := interface{}(s.ImportClause).(locator)
+		if ok {
+			return loc.End()
+		}
+	case ProperImportClausesType, ImportClausesType:
+		loc, ok := interface{}(s.ImportStatement).(locator)
 		if ok {
 			return loc.End()
 		}
@@ -4228,64 +4250,64 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ImportStatementType
-		symbol.Statement, err = reducer.SingleToImportStatement(args[0].Value, args[1].Generic_)
+		symbol.Statement, err = reducer.SingleToImportStatement(args[0].Value, args[1].ImportClause)
 	case _ReduceMultipleToImportStatement:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = ImportStatementType
-		symbol.Statement, err = reducer.MultipleToImportStatement(args[0].Value, args[1].Value, args[2].Generic_, args[3].Value)
-	case _ReduceStringLiteralToImportClause:
-		args := stack[len(stack)-1:]
-		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = ImportClauseType
-		symbol.Generic_, err = reducer.StringLiteralToImportClause(args[0].Value)
-	case _ReduceAliasToImportClause:
-		args := stack[len(stack)-2:]
-		stack = stack[:len(stack)-2]
-		symbol.SymbolId_ = ImportClauseType
-		symbol.Generic_, err = reducer.AliasToImportClause(args[0].Value, args[1].Value)
-	case _ReduceUnusableImportToImportClause:
-		args := stack[len(stack)-2:]
-		stack = stack[:len(stack)-2]
-		symbol.SymbolId_ = ImportClauseType
-		symbol.Generic_, err = reducer.UnusableImportToImportClause(args[0].Value, args[1].Value)
-	case _ReduceImportToLocalToImportClause:
-		args := stack[len(stack)-2:]
-		stack = stack[:len(stack)-2]
-		symbol.SymbolId_ = ImportClauseType
-		symbol.Generic_, err = reducer.ImportToLocalToImportClause(args[0].Value, args[1].Value)
+		symbol.Statement, err = reducer.MultipleToImportStatement(args[0].Value, args[1].Value, args[2].ImportStatement, args[3].Value)
 	case _ReduceAddImplicitToProperImportClauses:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ProperImportClausesType
-		symbol.Generic_, err = reducer.AddImplicitToProperImportClauses(args[0].Generic_, args[1].Count, args[2].Generic_)
+		symbol.ImportStatement, err = reducer.AddImplicitToProperImportClauses(args[0].ImportStatement, args[1].Count, args[2].ImportClause)
 	case _ReduceAddExplicitToProperImportClauses:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ProperImportClausesType
-		symbol.Generic_, err = reducer.AddExplicitToProperImportClauses(args[0].Generic_, args[1].Value, args[2].Generic_)
+		symbol.ImportStatement, err = reducer.AddExplicitToProperImportClauses(args[0].ImportStatement, args[1].Value, args[2].ImportClause)
 	case _ReduceImportClauseToProperImportClauses:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ProperImportClausesType
-		symbol.Generic_, err = reducer.ImportClauseToProperImportClauses(args[0].Generic_)
+		symbol.ImportStatement, err = reducer.ImportClauseToProperImportClauses(args[0].ImportClause)
 	case _ReduceProperImportClausesToImportClauses:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ImportClausesType
-		//line grammar.lr:242:4
-		symbol.Generic_ = args[0].Generic_
+		//line grammar.lr:236:4
+		symbol.ImportStatement = args[0].ImportStatement
 		err = nil
 	case _ReduceImplicitToImportClauses:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ImportClausesType
-		symbol.Generic_, err = reducer.ImplicitToImportClauses(args[0].Generic_, args[1].Count)
+		symbol.ImportStatement, err = reducer.ImplicitToImportClauses(args[0].ImportStatement, args[1].Count)
 	case _ReduceExplicitToImportClauses:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ImportClausesType
-		symbol.Generic_, err = reducer.ExplicitToImportClauses(args[0].Generic_, args[1].Value)
+		symbol.ImportStatement, err = reducer.ExplicitToImportClauses(args[0].ImportStatement, args[1].Value)
+	case _ReduceStringLiteralToImportClause:
+		args := stack[len(stack)-1:]
+		stack = stack[:len(stack)-1]
+		symbol.SymbolId_ = ImportClauseType
+		symbol.ImportClause, err = reducer.StringLiteralToImportClause(args[0].Value)
+	case _ReduceAliasToImportClause:
+		args := stack[len(stack)-2:]
+		stack = stack[:len(stack)-2]
+		symbol.SymbolId_ = ImportClauseType
+		symbol.ImportClause, err = reducer.AliasToImportClause(args[0].Value, args[1].Value)
+	case _ReduceUnusableImportToImportClause:
+		args := stack[len(stack)-2:]
+		stack = stack[:len(stack)-2]
+		symbol.SymbolId_ = ImportClauseType
+		symbol.ImportClause, err = reducer.UnusableImportToImportClause(args[0].Value, args[1].Value)
+	case _ReduceImportToLocalToImportClause:
+		args := stack[len(stack)-2:]
+		stack = stack[:len(stack)-2]
+		symbol.SymbolId_ = ImportClauseType
+		symbol.ImportClause, err = reducer.ImportToLocalToImportClause(args[0].Value, args[1].Value)
 	case _ReduceCasePatternToCasePatterns:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
