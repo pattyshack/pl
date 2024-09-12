@@ -236,16 +236,16 @@ type UnsafeStatementPropertyReducer interface {
 
 type JumpStatementReducer interface {
 	// 182:2: jump_statement -> unlabeled_no_value: ...
-	UnlabeledNoValueToJumpStatement(JumpType_ TokenValue) (Statement, error)
+	UnlabeledNoValueToJumpStatement(JumpOp_ TokenValue) (Statement, error)
 
 	// 183:2: jump_statement -> unlabeled_valued: ...
-	UnlabeledValuedToJumpStatement(JumpType_ TokenValue, ExprOrImproperStruct_ Expression) (Statement, error)
+	UnlabeledValuedToJumpStatement(JumpOp_ TokenValue, ExprOrImproperStruct_ Expression) (Statement, error)
 
 	// 184:2: jump_statement -> labeled_no_value: ...
-	LabeledNoValueToJumpStatement(JumpType_ TokenValue, JumpLabel_ TokenValue) (Statement, error)
+	LabeledNoValueToJumpStatement(JumpOp_ TokenValue, JumpLabel_ TokenValue) (Statement, error)
 
 	// 185:2: jump_statement -> labeled_valued: ...
-	LabeledValuedToJumpStatement(JumpType_ TokenValue, JumpLabel_ TokenValue, ExprOrImproperStruct_ Expression) (Statement, error)
+	LabeledValuedToJumpStatement(JumpOp_ TokenValue, JumpLabel_ TokenValue, ExprOrImproperStruct_ Expression) (Statement, error)
 
 	// 188:2: jump_statement -> FALLTHROUGH: ...
 	FallthroughToJumpStatement(Fallthrough_ TokenValue) (Statement, error)
@@ -1788,8 +1788,8 @@ func (i SymbolId) String() string {
 		return "unsafe_statement_property"
 	case JumpStatementType:
 		return "jump_statement"
-	case JumpTypeType:
-		return "jump_type"
+	case JumpOpType:
+		return "jump_op"
 	case AssignStatementType:
 		return "assign_statement"
 	case UnaryOpAssignStatementType:
@@ -2050,7 +2050,7 @@ const (
 	UnsafeStatementType                  = SymbolId(355)
 	UnsafeStatementPropertyType          = SymbolId(356)
 	JumpStatementType                    = SymbolId(357)
-	JumpTypeType                         = SymbolId(358)
+	JumpOpType                           = SymbolId(358)
 	AssignStatementType                  = SymbolId(359)
 	UnaryOpAssignStatementType           = SymbolId(360)
 	UnaryOpAssignType                    = SymbolId(361)
@@ -2243,9 +2243,9 @@ const (
 	_ReduceLabeledNoValueToJumpStatement                                = _ReduceType(42)
 	_ReduceLabeledValuedToJumpStatement                                 = _ReduceType(43)
 	_ReduceFallthroughToJumpStatement                                   = _ReduceType(44)
-	_ReduceReturnToJumpType                                             = _ReduceType(45)
-	_ReduceBreakToJumpType                                              = _ReduceType(46)
-	_ReduceContinueToJumpType                                           = _ReduceType(47)
+	_ReduceReturnToJumpOp                                               = _ReduceType(45)
+	_ReduceBreakToJumpOp                                                = _ReduceType(46)
+	_ReduceContinueToJumpOp                                             = _ReduceType(47)
 	_ReduceToAssignStatement                                            = _ReduceType(48)
 	_ReduceToUnaryOpAssignStatement                                     = _ReduceType(49)
 	_ReduceAddOneAssignToUnaryOpAssign                                  = _ReduceType(50)
@@ -2628,12 +2628,12 @@ func (i _ReduceType) String() string {
 		return "LabeledValuedToJumpStatement"
 	case _ReduceFallthroughToJumpStatement:
 		return "FallthroughToJumpStatement"
-	case _ReduceReturnToJumpType:
-		return "ReturnToJumpType"
-	case _ReduceBreakToJumpType:
-		return "BreakToJumpType"
-	case _ReduceContinueToJumpType:
-		return "ContinueToJumpType"
+	case _ReduceReturnToJumpOp:
+		return "ReturnToJumpOp"
+	case _ReduceBreakToJumpOp:
+		return "BreakToJumpOp"
+	case _ReduceContinueToJumpOp:
+		return "ContinueToJumpOp"
 	case _ReduceToAssignStatement:
 		return "ToAssignStatement"
 	case _ReduceToUnaryOpAssignStatement:
@@ -3672,7 +3672,7 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case CommentGroupsToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, JumpTypeType, UnaryOpAssignType, BinaryOpAssignType, VarOrLetType, PostfixUnaryOpType, PrefixUnaryOpType, MulOpType, AddOpType, CmpOpType, PrefixUnaryTypeOpType, BinaryTypeOpType:
+	case CommentGroupsToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, JumpOpType, UnaryOpAssignType, BinaryOpAssignType, VarOrLetType, PostfixUnaryOpType, PrefixUnaryOpType, MulOpType, AddOpType, CmpOpType, PrefixUnaryTypeOpType, BinaryTypeOpType:
 		loc, ok := interface{}(s.Value).(locator)
 		if ok {
 			return loc.Loc()
@@ -3799,7 +3799,7 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case CommentGroupsToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, JumpTypeType, UnaryOpAssignType, BinaryOpAssignType, VarOrLetType, PostfixUnaryOpType, PrefixUnaryOpType, MulOpType, AddOpType, CmpOpType, PrefixUnaryTypeOpType, BinaryTypeOpType:
+	case CommentGroupsToken, IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeTildeToken, AssignToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, JumpOpType, UnaryOpAssignType, BinaryOpAssignType, VarOrLetType, PostfixUnaryOpType, PrefixUnaryOpType, MulOpType, AddOpType, CmpOpType, PrefixUnaryTypeOpType, BinaryTypeOpType:
 		loc, ok := interface{}(s.Value).(locator)
 		if ok {
 			return loc.End()
@@ -4122,24 +4122,24 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = JumpStatementType
 		symbol.Statement, err = reducer.FallthroughToJumpStatement(args[0].Value)
-	case _ReduceReturnToJumpType:
+	case _ReduceReturnToJumpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = JumpTypeType
+		symbol.SymbolId_ = JumpOpType
 		//line grammar.lr:191:4
 		symbol.Value = args[0].Value
 		err = nil
-	case _ReduceBreakToJumpType:
+	case _ReduceBreakToJumpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = JumpTypeType
+		symbol.SymbolId_ = JumpOpType
 		//line grammar.lr:192:4
 		symbol.Value = args[0].Value
 		err = nil
-	case _ReduceContinueToJumpType:
+	case _ReduceContinueToJumpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = JumpTypeType
+		symbol.SymbolId_ = JumpOpType
 		//line grammar.lr:193:4
 		symbol.Value = args[0].Value
 		err = nil
@@ -5938,7 +5938,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State9, 0}, true
 		case ImproperImplicitStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
-		case JumpTypeType:
+		case JumpOpType:
 			return _Action{_ShiftAction, _State43, 0}, true
 		case VarOrLetType:
 			return _Action{_ShiftAction, _State19, 0}, true
@@ -5983,11 +5983,11 @@ func (_ActionTableType) Get(
 		case FalseToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFalseToLiteralExpr}, true
 		case ReturnToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnToJumpOp}, true
 		case BreakToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBreakToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBreakToJumpOp}, true
 		case ContinueToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
 		case AsyncToken:
@@ -6405,7 +6405,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State58, 0}, true
 		case ImproperImplicitStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
-		case JumpTypeType:
+		case JumpOpType:
 			return _Action{_ShiftAction, _State43, 0}, true
 		case VarOrLetType:
 			return _Action{_ShiftAction, _State19, 0}, true
@@ -6450,11 +6450,11 @@ func (_ActionTableType) Get(
 		case FalseToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFalseToLiteralExpr}, true
 		case ReturnToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnToJumpOp}, true
 		case BreakToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBreakToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBreakToJumpOp}, true
 		case ContinueToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
 		case AsyncToken:
@@ -8574,7 +8574,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State25, 0}, true
 		case ImproperImplicitStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
-		case JumpTypeType:
+		case JumpOpType:
 			return _Action{_ShiftAction, _State43, 0}, true
 		case VarOrLetType:
 			return _Action{_ShiftAction, _State19, 0}, true
@@ -8619,11 +8619,11 @@ func (_ActionTableType) Get(
 		case FalseToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFalseToLiteralExpr}, true
 		case ReturnToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnToJumpOp}, true
 		case BreakToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBreakToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBreakToJumpOp}, true
 		case ContinueToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
 		case AsyncToken:
@@ -11934,7 +11934,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State25, 0}, true
 		case ImproperImplicitStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
-		case JumpTypeType:
+		case JumpOpType:
 			return _Action{_ShiftAction, _State43, 0}, true
 		case VarOrLetType:
 			return _Action{_ShiftAction, _State19, 0}, true
@@ -11979,11 +11979,11 @@ func (_ActionTableType) Get(
 		case FalseToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFalseToLiteralExpr}, true
 		case ReturnToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnToJumpOp}, true
 		case BreakToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBreakToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBreakToJumpOp}, true
 		case ContinueToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
 		case AsyncToken:
@@ -12128,7 +12128,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State25, 0}, true
 		case ImproperImplicitStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
-		case JumpTypeType:
+		case JumpOpType:
 			return _Action{_ShiftAction, _State43, 0}, true
 		case VarOrLetType:
 			return _Action{_ShiftAction, _State19, 0}, true
@@ -12173,11 +12173,11 @@ func (_ActionTableType) Get(
 		case FalseToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFalseToLiteralExpr}, true
 		case ReturnToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnToJumpOp}, true
 		case BreakToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBreakToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBreakToJumpOp}, true
 		case ContinueToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
 		case AsyncToken:
@@ -12504,7 +12504,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State25, 0}, true
 		case ImproperImplicitStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
-		case JumpTypeType:
+		case JumpOpType:
 			return _Action{_ShiftAction, _State43, 0}, true
 		case VarOrLetType:
 			return _Action{_ShiftAction, _State19, 0}, true
@@ -12549,11 +12549,11 @@ func (_ActionTableType) Get(
 		case FalseToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFalseToLiteralExpr}, true
 		case ReturnToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnToJumpOp}, true
 		case BreakToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBreakToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBreakToJumpOp}, true
 		case ContinueToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpType}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
 		case AsyncToken:
@@ -16902,9 +16902,9 @@ Parser Debug States:
       UNDERSCORE -> [named_expr]
       TRUE -> [literal_expr]
       FALSE -> [literal_expr]
-      RETURN -> [jump_type]
-      BREAK -> [jump_type]
-      CONTINUE -> [jump_type]
+      RETURN -> [jump_op]
+      BREAK -> [jump_op]
+      CONTINUE -> [jump_op]
       FALLTHROUGH -> [jump_statement]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
@@ -16975,7 +16975,7 @@ Parser Debug States:
       GREATER -> State 25
       statement -> State 9
       improper_implicit_struct -> State 41
-      jump_type -> State 43
+      jump_op -> State 43
       var_or_let -> State 19
       assign_pattern -> State 37
       expr -> State 39
@@ -17214,9 +17214,9 @@ Parser Debug States:
       UNDERSCORE -> [named_expr]
       TRUE -> [literal_expr]
       FALSE -> [literal_expr]
-      RETURN -> [jump_type]
-      BREAK -> [jump_type]
-      CONTINUE -> [jump_type]
+      RETURN -> [jump_op]
+      BREAK -> [jump_op]
+      CONTINUE -> [jump_op]
       FALLTHROUGH -> [jump_statement]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
@@ -17289,7 +17289,7 @@ Parser Debug States:
       proper_statement_list -> State 57
       statement_list -> State 58
       improper_implicit_struct -> State 41
-      jump_type -> State 43
+      jump_op -> State 43
       var_or_let -> State 19
       assign_pattern -> State 37
       expr -> State 39
@@ -18074,10 +18074,10 @@ Parser Debug States:
 
   State 43:
     Kernel Items:
-      jump_statement: jump_type., *
-      jump_statement: jump_type.expr_or_improper_struct
-      jump_statement: jump_type.JUMP_LABEL
-      jump_statement: jump_type.JUMP_LABEL expr_or_improper_struct
+      jump_statement: jump_op., *
+      jump_statement: jump_op.expr_or_improper_struct
+      jump_statement: jump_op.JUMP_LABEL
+      jump_statement: jump_op.JUMP_LABEL expr_or_improper_struct
     Reduce:
       * -> [jump_statement]
     ShiftAndReduce:
@@ -18693,9 +18693,9 @@ Parser Debug States:
       UNDERSCORE -> [named_expr]
       TRUE -> [literal_expr]
       FALSE -> [literal_expr]
-      RETURN -> [jump_type]
-      BREAK -> [jump_type]
-      CONTINUE -> [jump_type]
+      RETURN -> [jump_op]
+      BREAK -> [jump_op]
+      CONTINUE -> [jump_op]
       FALLTHROUGH -> [jump_statement]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
@@ -18764,7 +18764,7 @@ Parser Debug States:
       LBRACKET -> State 29
       GREATER -> State 25
       improper_implicit_struct -> State 41
-      jump_type -> State 43
+      jump_op -> State 43
       var_or_let -> State 19
       assign_pattern -> State 37
       expr -> State 39
@@ -19989,8 +19989,8 @@ Parser Debug States:
 
   State 104:
     Kernel Items:
-      jump_statement: jump_type JUMP_LABEL., *
-      jump_statement: jump_type JUMP_LABEL.expr_or_improper_struct
+      jump_statement: jump_op JUMP_LABEL., *
+      jump_statement: jump_op JUMP_LABEL.expr_or_improper_struct
     Reduce:
       * -> [jump_statement]
     ShiftAndReduce:
@@ -20779,9 +20779,9 @@ Parser Debug States:
       UNDERSCORE -> [named_expr]
       TRUE -> [literal_expr]
       FALSE -> [literal_expr]
-      RETURN -> [jump_type]
-      BREAK -> [jump_type]
-      CONTINUE -> [jump_type]
+      RETURN -> [jump_op]
+      BREAK -> [jump_op]
+      CONTINUE -> [jump_op]
       FALLTHROUGH -> [jump_statement]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
@@ -20852,7 +20852,7 @@ Parser Debug States:
       LBRACKET -> State 29
       GREATER -> State 25
       improper_implicit_struct -> State 41
-      jump_type -> State 43
+      jump_op -> State 43
       var_or_let -> State 19
       assign_pattern -> State 37
       expr -> State 39
@@ -20882,9 +20882,9 @@ Parser Debug States:
       UNDERSCORE -> [named_expr]
       TRUE -> [literal_expr]
       FALSE -> [literal_expr]
-      RETURN -> [jump_type]
-      BREAK -> [jump_type]
-      CONTINUE -> [jump_type]
+      RETURN -> [jump_op]
+      BREAK -> [jump_op]
+      CONTINUE -> [jump_op]
       FALLTHROUGH -> [jump_statement]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
@@ -20955,7 +20955,7 @@ Parser Debug States:
       LBRACKET -> State 29
       GREATER -> State 25
       improper_implicit_struct -> State 41
-      jump_type -> State 43
+      jump_op -> State 43
       var_or_let -> State 19
       assign_pattern -> State 37
       expr -> State 39
@@ -21125,9 +21125,9 @@ Parser Debug States:
       UNDERSCORE -> [named_expr]
       TRUE -> [literal_expr]
       FALSE -> [literal_expr]
-      RETURN -> [jump_type]
-      BREAK -> [jump_type]
-      CONTINUE -> [jump_type]
+      RETURN -> [jump_op]
+      BREAK -> [jump_op]
+      CONTINUE -> [jump_op]
       FALLTHROUGH -> [jump_statement]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
@@ -21196,7 +21196,7 @@ Parser Debug States:
       LBRACKET -> State 29
       GREATER -> State 25
       improper_implicit_struct -> State 41
-      jump_type -> State 43
+      jump_op -> State 43
       var_or_let -> State 19
       assign_pattern -> State 37
       expr -> State 39

@@ -359,3 +359,126 @@ func (ImportStatementReducerImpl) ExplicitToImportClauses(
 	stmt.reduceImproper(comma)
 	return stmt, nil
 }
+
+//
+// JumpStatement
+//
+
+type JumpOp SymbolId
+
+type JumpStatement struct {
+	isStatement
+	StartEndPos
+	LeadingTrailingComments
+
+	Op    JumpOp
+	Label string     // optional
+	Value Expression // optional
+}
+
+var _ Statement = &JumpStatement{}
+
+func NewJumpStatement(
+	op TokenValue,
+	labelToken *TokenValue,
+	value Expression,
+) *JumpStatement {
+	start := op.Loc()
+	end := op.End()
+	leading := op.TakeLeading()
+	trailing := op.TakeTrailing()
+
+	label := ""
+	if labelToken != nil {
+		label = labelToken.Value
+		end = labelToken.End()
+		trailing.Append(labelToken.TakeLeading())
+		trailing.Append(labelToken.TakeTrailing())
+	}
+
+	if value != nil {
+		value.PrependToLeading(trailing)
+		end = value.End()
+		trailing = value.TakeTrailing()
+	}
+
+	stmt := &JumpStatement{
+		StartEndPos: newStartEndPos(start, end),
+		Op:          JumpOp(op.SymbolId),
+		Label:       label,
+		Value:       value,
+	}
+	stmt.LeadingComment = leading
+	stmt.TrailingComment = trailing
+
+	return stmt
+}
+
+func (jump JumpStatement) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[JumpStatement: Op=%s Label=%s",
+		indent,
+		label,
+		SymbolId(jump.Op),
+		jump.Label)
+	if jump.Value == nil {
+		return result + " Value=(nil)]"
+	}
+
+	result += "\n" + jump.Value.TreeString(indent+"  ", "Value=")
+	result += "\n" + indent + "]"
+	return result
+}
+
+type JumpStatementReducerImpl struct{}
+
+var _ JumpStatementReducer = &JumpStatementReducerImpl{}
+
+func (JumpStatementReducerImpl) UnlabeledNoValueToJumpStatement(
+	op TokenValue,
+) (
+	Statement,
+	error,
+) {
+	return NewJumpStatement(op, nil, nil), nil
+}
+
+func (JumpStatementReducerImpl) UnlabeledValuedToJumpStatement(
+	op TokenValue,
+	value Expression,
+) (
+	Statement,
+	error,
+) {
+	return NewJumpStatement(op, nil, value), nil
+}
+
+func (JumpStatementReducerImpl) LabeledNoValueToJumpStatement(
+	op TokenValue,
+	label TokenValue,
+) (
+	Statement,
+	error,
+) {
+	return NewJumpStatement(op, &label, nil), nil
+}
+
+func (JumpStatementReducerImpl) LabeledValuedToJumpStatement(
+	op TokenValue,
+	label TokenValue,
+	value Expression,
+) (
+	Statement,
+	error,
+) {
+	return NewJumpStatement(op, &label, value), nil
+}
+
+func (JumpStatementReducerImpl) FallthroughToJumpStatement(
+	op TokenValue,
+) (
+	Statement,
+	error,
+) {
+	return NewJumpStatement(op, nil, nil), nil
+}

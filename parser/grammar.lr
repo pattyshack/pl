@@ -179,15 +179,15 @@ unsafe_statement_property<TypeProperty> -> unsafe_statement
 //
 
 jump_statement<Statement> ->
-  unlabeled_no_value: jump_type |
-  unlabeled_valued: jump_type expr_or_improper_struct |
-  labeled_no_value: jump_type JUMP_LABEL |
-  labeled_valued: jump_type JUMP_LABEL expr_or_improper_struct |
+  unlabeled_no_value: jump_op |
+  unlabeled_valued: jump_op expr_or_improper_struct |
+  labeled_no_value: jump_op JUMP_LABEL |
+  labeled_valued: jump_op JUMP_LABEL expr_or_improper_struct |
   // Only applicable to switch case block (must be the last statement in the
   // case branch)
   FALLTHROUGH
 
-jump_type<Value> ->
+jump_op<Value> ->
   = RETURN |
   = BREAK |
   = CONTINUE
