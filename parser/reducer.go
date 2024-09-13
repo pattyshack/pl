@@ -49,15 +49,14 @@ type ReducerImpl struct {
 	StatementReducer
 	AssignStatementReducer
 	CasePatternsReducer
-	VarDeclPatternReducer
-	VarPatternReducer
+	DeclVarPatternReducer
+	AssignVarPatternReducer
 	TuplePatternReducer
+	ProperFieldVarPatternsReducer
 	FieldVarPatternsReducer
 	FieldVarPatternReducer
-	OptionalTypeExprReducer
 	AssignPatternReducer
 	CasePatternReducer
-	SequenceExprReducer
 	ConditionReducer
 	SwitchExprReducer
 	SwitchExprBodyReducer

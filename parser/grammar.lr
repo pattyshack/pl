@@ -73,8 +73,8 @@ definition<Definition> ->
   = package_def |
   = type_def |
   = named_func_def |
-  global_var_def: var_decl_pattern |
-  global_var_assignment: var_decl_pattern ASSIGN expr |
+  global_var_def: decl_var_pattern |
+  global_var_assignment: decl_var_pattern ASSIGN expr |
   // There can only be at most one statements per package, which act as
   // the package's init function
   statements |
@@ -257,50 +257,55 @@ case_patterns ->
 // VAR declares a reassignable variable. LET declares a non-reassignable
 // variable.  A "constant" is a LET variable associated with a type with no
 // public access to fields, and no mutation methods.
-var_decl_pattern -> var_or_let var_pattern optional_type_expr
+decl_var_pattern<Expression> ->
+  inferred: var_type var_pattern |
+  typed: var_type var_pattern type_expr
 
-var_or_let<Value> ->
+// Case pattern need to disambiguate between using a variable for pattern
+// matching vs assigning values to variables (This is optional in assign
+// statement since it's unambiguous)
+assign_var_pattern<Expression> -> GREATER var_pattern
+
+var_type<Value> ->
   = VAR |
   = LET
 
-var_pattern ->
-  IDENTIFIER |
-  UNDERSCORE |
-  tuple_pattern
+var_pattern<Expression> ->
+  = named_expr |
+  = tuple_pattern
 
-tuple_pattern -> LPAREN field_var_patterns RPAREN
+tuple_pattern<Expression> -> LPAREN field_var_patterns RPAREN
 
-field_var_patterns ->
+proper_field_var_patterns<ArgumentList> ->
   field_var_pattern |
-  add: field_var_patterns COMMA field_var_pattern
+  add: proper_field_var_patterns COMMA field_var_pattern
 
-field_var_pattern ->
+field_var_patterns<ArgumentList> ->
+  = proper_field_var_patterns |
+  improper: proper_field_var_patterns COMMA
+
+field_var_pattern<Argument> ->
   positional: var_pattern |
   named: IDENTIFIER ASSIGN var_pattern |
   ELLIPSIS
-
-optional_type_expr<TypeExpression> ->
-  = type_expr |
-  nil:
 
 // NOTE: expression captures identifier and tuple vars, as well as fully
 // evaluated expressions.  Additional post analysis checks are needed to
 // reject invalid usage, depending on the context (e.g., assignment should
 // only allow identifier expressions)
-assign_pattern ->
-  sequence_expr
+assign_pattern -> expr_or_improper_struct
 
 case_pattern ->
-  = assign_pattern |
+  sequence_expr |
 
   // Note: parsing VAR <pkg>.<enum type>.<enum value>(...) is painful using
   // context free grammar (e.g, need to make VAR a prefix op expression instead
-  // of var_decl_pattern), hence we won't support this form. (the expression
+  // of decl_var_pattern), hence we won't support this form. (the expression
   // actually parses explicit enum match pattern, where VARs are inside the
   // data list, but we should reject this form for consistency)
   enum_match_pattern: DOT IDENTIFIER implicit_struct_expr |
   enum_nondata_match_patten: DOT IDENTIFIER |
-  enum_var_decl_pattern: VAR DOT IDENTIFIER tuple_pattern
+  enum_decl_var_pattern: var_type DOT IDENTIFIER tuple_pattern
 
 //
 // Expressions ================================================================
@@ -318,13 +323,10 @@ expr<Expression> ->
 
 sequence_expr<Expression> ->
   = send_recv_expr |
-  // NOTE: var_decl_pattern is not a real expression.  Unexpected usage in real
+  // NOTE: *_pattern are not a real expression.  Unexpected usage in real
   // expressions are rejected during type checking.
-  var_decl_pattern |
-  // Case pattern need to disambiguate between using a variable for pattern
-  // matching vs assigning a value to the variable (This is optional in
-  // assign_pattern since it's unambiguous)
-  assign_var_pattern: GREATER sequence_expr
+  = decl_var_pattern |
+  = assign_var_pattern
 
 //
 // If control flow expression
