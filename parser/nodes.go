@@ -236,6 +236,7 @@ func (s TokenValue) String() string {
 type ParseErrorSymbol struct {
 	isExpression
 	isTypeExpression
+	isDefinition
 
 	StartEndPos
 	LeadingTrailingComments

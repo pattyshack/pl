@@ -30,6 +30,7 @@ type ReducerImpl struct {
 	ImportClauseReducerImpl
 	ImportStatementReducerImpl
 	JumpStatementReducerImpl
+	UnsafeStatementReducerImpl
 
 	ArgumentListReducerImpl
 	ArgumentReducerImpl
@@ -46,8 +47,6 @@ type ReducerImpl struct {
 
 	DefinitionReducer
 	StatementReducer
-	UnsafeStatementReducer
-	UnsafeStatementPropertyReducer
 	AssignStatementReducer
 	CasePatternsReducer
 	VarDeclPatternReducer

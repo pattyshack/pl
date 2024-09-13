@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"strings"
 )
 
 //
@@ -9,6 +10,7 @@ import (
 //
 
 type StatementsExpr struct {
+	isDefinition
 	isExpression
 
 	LabelDecl string // optional
@@ -481,4 +483,67 @@ func (JumpStatementReducerImpl) FallthroughToJumpStatement(
 	error,
 ) {
 	return NewJumpStatement(op, nil, nil), nil
+}
+
+//
+// UnsafeStatement
+//
+
+type UnsafeStatement struct {
+	isStatement
+	isTypeProperty
+	StartEndPos
+	LeadingTrailingComments
+
+	Language       string
+	VerbatimSource string
+}
+
+var _ Statement = &UnsafeStatement{}
+var _ TypeProperty = &UnsafeStatement{}
+
+func (stmt UnsafeStatement) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[UnsafeStatement: Language=%s VerbatimSource=\n",
+		indent,
+		label,
+		stmt.Language)
+	for _, line := range strings.Split(stmt.VerbatimSource, "\n") {
+		result += indent + "  |" + line + "\n"
+	}
+	result += indent + "]"
+	return result
+}
+
+type UnsafeStatementReducerImpl struct{}
+
+var _ UnsafeStatementReducer = &UnsafeStatementReducerImpl{}
+
+func (UnsafeStatementReducerImpl) ToUnsafeStatement(
+	unsafe TokenValue,
+	less TokenValue,
+	language TokenValue,
+	greater TokenValue,
+	verbatimSource TokenValue,
+) (
+	*UnsafeStatement,
+	error,
+) {
+	leading := unsafe.TakeLeading()
+	leading.Append(unsafe.TakeTrailing())
+	leading.Append(less.TakeLeading())
+	leading.Append(less.TakeTrailing())
+	leading.Append(language.TakeLeading())
+	leading.Append(language.TakeTrailing())
+	leading.Append(greater.TakeLeading())
+	leading.Append(greater.TakeTrailing())
+	leading.Append(verbatimSource.TakeLeading())
+	stmt := &UnsafeStatement{
+		StartEndPos:    newStartEndPos(unsafe.Loc(), verbatimSource.End()),
+		Language:       language.Value,
+		VerbatimSource: verbatimSource.Value,
+	}
+	stmt.LeadingComment = leading
+	stmt.TrailingComment = verbatimSource.TakeTrailing()
+	return stmt, nil
 }

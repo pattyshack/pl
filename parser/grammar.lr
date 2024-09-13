@@ -144,8 +144,8 @@ statement<Statement> ->
   // NOTE: Only applicable to switch case block.
   // Post analysis is needed to associate statements to cases (move trailing
   // non-case statements into case's data structure).
-  case_branch_statement: CASE case_patterns COLON trailing_simple_statement |
-  default_branch_statement: DEFAULT COLON trailing_simple_statement
+  switch_case_branch: CASE case_patterns COLON trailing_simple_statement |
+  switch_default_branch: DEFAULT COLON trailing_simple_statement
 
 trailing_simple_statement<StatementsExpr> ->
   simple_statement |
@@ -170,9 +170,8 @@ improper_implicit_struct<ImplicitStruct> ->
 
 // escape hatch to get a basic compiler/transpiler running.
 // unsafe<go> "emit verbatim go source"
-unsafe_statement<Statement> -> UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
-
-unsafe_statement_property<TypeProperty> -> unsafe_statement
+unsafe_statement<UnsafeStatement> ->
+  UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
 
 //
 // Jump / fallthrough statements
@@ -743,7 +742,7 @@ type_property<TypeProperty> ->
   default_enum_field_def: DEFAULT field_def |
   padding_field_def: UNDERSCORE type_expr |
   = method_signature |
-  = unsafe_statement_property
+  = unsafe_statement
 
 proper_implicit_type_properties<TypeProperties> ->
   add: proper_implicit_type_properties COMMA type_property |
@@ -930,5 +929,6 @@ go:
     ImportClause: "*ImportClause"
     ImportStatement: "*ImportStatement"
     ImplicitStruct: "*ImplicitStructExpr"
+    UnsafeStatement: "*UnsafeStatement"
   generate_end_pos: True
 }%%
