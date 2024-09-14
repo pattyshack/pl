@@ -26,7 +26,7 @@ type ReducerImpl struct {
 	PropertiesTypeExprReducer
 	SliceTypeExprReducerImpl
 	UnaryTypeExprReducerImpl
-  VarPatternReducerImpl
+	VarPatternReducerImpl
 
 	ImportClauseReducerImpl
 	ImportStatementReducerImpl
@@ -35,6 +35,9 @@ type ReducerImpl struct {
 
 	ArgumentListReducerImpl
 	ArgumentReducerImpl
+	CasePatternsReducerImpl
+	CaseAssignPatternReducerImpl
+	CaseEnumPatternReducerImpl
 	DefinitionListReducerImpl
 	FieldDefReducerImpl
 	GenericArgumentListReducerImpl
@@ -47,12 +50,11 @@ type ReducerImpl struct {
 	// TODO
 
 	DefinitionReducer
-	StatementReducer
-	CasePatternsReducer
-	CasePatternReducer
-	ConditionReducer
+	BranchStatementReducer
 	SwitchExprReducer
 	SwitchExprBodyReducer
+	SelectExprReducer
+	SelectExprBodyReducer
 	LoopExprReducer
 	LoopExprBodyReducer
 	OptionalSequenceExprReducer

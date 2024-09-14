@@ -42,13 +42,15 @@ type Node interface {
 }
 
 type Expression interface {
-	Statement
 	Node
+	Statement
+	CasePattern
 	IsExpression()
 }
 
 type isExpression struct {
 	isStatement
+	isCasePattern
 }
 
 func (isExpression) IsExpression() {}
@@ -79,6 +81,17 @@ type Statement interface {
 type isStatement struct{}
 
 func (isStatement) IsStatement() {}
+
+type CasePattern interface {
+	Node
+	IsCasePattern()
+}
+
+type isCasePattern struct {
+	isStatement
+}
+
+func (isCasePattern) IsCasePattern() {}
 
 type Definition interface {
 	Node

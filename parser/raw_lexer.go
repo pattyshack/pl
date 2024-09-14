@@ -38,6 +38,7 @@ var (
 		"if":          IfToken,
 		"else":        ElseToken,
 		"switch":      SwitchToken,
+		"select":      SelectToken,
 		"case":        CaseToken,
 		"default":     DefaultToken,
 		"for":         ForToken,

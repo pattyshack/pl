@@ -19,7 +19,7 @@
 
 %token<Value> TRUE FALSE
 
-%token<Value> IF ELSE SWITCH CASE DEFAULT FOR DO IN
+%token<Value> IF ELSE SWITCH CASE DEFAULT FOR DO IN SELECT
 %token<Value> RETURN BREAK CONTINUE FALLTHROUGH
 
 %token<Value> PACKAGE IMPORT
@@ -140,12 +140,16 @@ simple_statement<Statement> ->
 
 statement<Statement> ->
   = simple_statement |
+  = branch_statement
 
-  // NOTE: Only applicable to switch case block.
+branch_statement<Statement> ->
+  // NOTE: case_branch and default_branch are applicable only to switch and
+  // select expression blocks. select_assign_recv_branch and
+  // select_assign_send_bracnh are only applicable to select expression.
   // Post analysis is needed to associate statements to cases (move trailing
   // non-case statements into case's data structure).
-  switch_case_branch: CASE case_patterns COLON trailing_simple_statement |
-  switch_default_branch: DEFAULT COLON trailing_simple_statement
+  case_branch: CASE case_patterns COLON trailing_simple_statement |
+  default_branch: DEFAULT COLON trailing_simple_statement
 
 trailing_simple_statement<StatementsExpr> ->
   simple_statement |
@@ -243,14 +247,6 @@ import_clause<ImportClause> ->
   import_to_local: DOT STRING_LITERAL
 
 //
-// Case statement
-//
-
-case_patterns ->
-  case_pattern |
-  multiple: case_patterns COMMA case_pattern
-
-//
 // Variable declaration pattern (Pseudo expression) ===========================
 //
 
@@ -296,9 +292,52 @@ field_var_pattern<Argument> ->
 assign_pattern<Expression> ->
   = expr_or_improper_struct
 
-case_pattern ->
-  sequence_expr |
+case_patterns<CasePatternList> ->
+  // In select expr, must verify the list has exactly one recv or send
+  // expression.
+  = switchable_case_patterns |
+  case_assign_pattern
 
+// case_assign_pattern has two distinct semantic usage
+//
+// When used in a select statement, switchable_case_patterns must be an
+// valid assign_pattern and sequence_expr must be either a send_expr or an
+// recv_expr.
+//
+// When used in a if case condition, the sequence_expr is matched against
+// the switchable_case_patterns.
+case_assign_pattern<CaseAssignPattern> ->
+  switchable_case_patterns ASSIGN sequence_expr
+
+switchable_case_patterns<CasePatternList> ->
+  switchable_case_pattern |
+  add: switchable_case_patterns COMMA switchable_case_pattern
+
+// REMINDER TO SELF: allow top level decl_var_pattern to conditionally
+// type match rather than type check error. e.g.,
+//
+// type Expression trait {...}
+//
+// var expr Expression = ...
+//
+// select expr {
+// case var unary UnaryExpr:
+//   // expr is a UnaryExpr.  Since the specified type is UnaryExpr instead of
+//   // &UnaryExpr, make a copy of the expr and assign the copy to variable
+//   // unary
+// case var (Left=leftExpr, Right=rightExpr, ...) BinaryExpr:
+//   // expr is a BinaryExpr.  Since the specified type is BinaryExpr instead
+//   // of &BinaryExpr, make a copy of the expr and assign the copy's Left and
+//   // Right fields to variables leftExpr and rightExpr.
+// case var ifExprRef &IfExpr:
+//   // expr is an IfExpr.  Since the specified type is &IfExpr, expr and
+//   // ifExprRef refers to the same object.
+// }
+switchable_case_pattern<CasePattern> ->
+  = expr |
+  = case_enum_pattern
+
+case_enum_pattern<CasePattern> ->
   // Note: parsing VAR <pkg>.<enum type>.<enum value>(...) is painful using
   // context free grammar (e.g, need to make VAR a prefix op expression instead
   // of decl_var_pattern), hence we won't support this form. (the expression
@@ -316,7 +355,8 @@ expr<Expression> ->
   = if_expr |
   = switch_expr |
   = loop_expr |
-  = sequence_expr
+  = sequence_expr |
+  = select_expr
 
 //
 // Sequence control flow expression
@@ -351,8 +391,10 @@ if_only_expr<IfExpr> ->
   IF condition statements
 
 condition<Expression> ->
-  sequence_expr |
-  case: CASE case_patterns ASSIGN sequence_expr
+  = sequence_expr |
+  = case_assign_expr
+
+case_assign_expr<Expression> -> CASE case_assign_pattern
 
 //
 // Switch control flow expression
@@ -375,12 +417,21 @@ condition<Expression> ->
 // case (_, var z): // do something
 // }
 
-// Switch need to be exhastive.
 switch_expr<Expression> ->
   = switch_expr_body |
   labelled: LABEL_DECL switch_expr_body
 
 switch_expr_body<Expression> -> SWITCH sequence_expr statements
+
+//
+// Select control flow expression
+//
+
+select_expr<Expression> ->
+  = select_expr_body |
+  labelled: LABEL_DECL select_expr_body
+
+select_expr_body<Expression> -> SELECT statements
 
 //
 // For control flow expression
@@ -456,7 +507,6 @@ colon_expr<ColonExpr> ->
 // TODO cast
 // TODO type isa check
 // TODO is check
-// TODO select (via trait instead of channel)
 atom_expr<Expression> ->
   = parse_error_expr |
   = literal_expr |
@@ -933,5 +983,8 @@ go:
     ImportStatement: "*ImportStatement"
     ImplicitStruct: "*ImplicitStructExpr"
     UnsafeStatement: "*UnsafeStatement"
+    CasePattern: "CasePattern"
+    CaseAssignPattern: "*CaseAssignPattern"
+    CasePatternList: "*CasePatternList"
   generate_end_pos: True
 }%%
