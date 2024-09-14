@@ -351,6 +351,7 @@ var _ BinaryAndExprReducer = &BinaryExprReducerImpl{}
 var _ BinaryOrExprReducer = &BinaryExprReducerImpl{}
 var _ BinaryOpAssignStatementReducer = &BinaryExprReducerImpl{}
 var _ SendExprReducer = &BinaryExprReducerImpl{}
+var _ AssignStatementReducer = &BinaryExprReducerImpl{}
 
 func (reducer *BinaryExprReducerImpl) toBinaryExpr(
 	left Expression,
@@ -453,6 +454,17 @@ func (reducer *BinaryExprReducerImpl) ToBinaryOpAssignStatement(
 	return reducer.toBinaryExpr(address, op, value)
 }
 
+func (reducer *BinaryExprReducerImpl) ToAssignStatement(
+	pattern Expression,
+	assign TokenValue,
+	value Expression,
+) (
+	Statement,
+	error,
+) {
+	return reducer.toBinaryExpr(pattern, assign, value)
+}
+
 //
 // ImplicitStructExpr
 //
@@ -482,6 +494,19 @@ type ImplicitStructExprReducerImpl struct {
 }
 
 var _ ImplicitStructExprReducer = &ImplicitStructExprReducerImpl{}
+var _ ImproperImplicitStructReducer = &ImplicitStructExprReducerImpl{}
+var _ TuplePatternReducer = &ImplicitStructExprReducerImpl{}
+
+func (reducer *ImplicitStructExprReducerImpl) toImplicitStructExpr(
+	lparen TokenValue,
+	args *ArgumentList,
+	rparen TokenValue,
+) *ImplicitStructExpr {
+	args.reduceMarkers(lparen, rparen)
+	return &ImplicitStructExpr{
+		ArgumentList: *args,
+	}
+}
 
 func (reducer *ImplicitStructExprReducerImpl) ToImplicitStructExpr(
 	lparen TokenValue,
@@ -491,12 +516,7 @@ func (reducer *ImplicitStructExprReducerImpl) ToImplicitStructExpr(
 	Expression,
 	error,
 ) {
-	args.reduceMarkers(lparen, rparen)
-
-	expr := &ImplicitStructExpr{
-		ArgumentList: *args,
-	}
-
+	expr := reducer.toImplicitStructExpr(lparen, args, rparen)
 	reducer.ImplicitStructExprs = append(reducer.ImplicitStructExprs, expr)
 	return expr, nil
 }
@@ -535,6 +555,17 @@ func (reducer *ImplicitStructExprReducerImpl) AddToImproperImplicitStruct(
 	arg := NewPositionalArgument(expr)
 	structExpr.reduceAdd(comma, arg)
 	return structExpr, nil
+}
+
+func (reducer *ImplicitStructExprReducerImpl) ToTuplePattern(
+	lparen TokenValue,
+	list *ArgumentList,
+	rparen TokenValue,
+) (
+	Expression,
+	error,
+) {
+	return reducer.toImplicitStructExpr(lparen, list, rparen), nil
 }
 
 //
@@ -1030,4 +1061,99 @@ func (reducer *IfExprReducerImpl) ToIfOnlyExpr(
 
 	reducer.IfExprs = append(reducer.IfExprs, expr)
 	return expr, nil
+}
+
+//
+// VarPatternExpr
+//
+
+type VarPatternKind SymbolId
+
+type VarPatternExpr struct {
+	isExpression
+	StartEndPos
+	LeadingTrailingComments
+
+	Kind       VarPatternKind // either VAR, LET, or GREATER (aka assign to existing)
+	VarPattern Expression
+	Type       TypeExpression // optional
+}
+
+var _ Expression = &VarPatternExpr{}
+
+func NewVarPatternExpr(
+	varType TokenValue,
+	pattern Expression,
+	typeExpr TypeExpression,
+) *VarPatternExpr {
+	var end Node = pattern
+	if typeExpr != nil {
+		end = typeExpr
+	}
+
+	expr := &VarPatternExpr{
+		StartEndPos: newStartEndPos(varType.Loc(), end.End()),
+		Kind:        VarPatternKind(varType.SymbolId),
+		VarPattern:  pattern,
+		Type:        typeExpr,
+	}
+
+	expr.LeadingComment = varType.TakeLeading()
+	expr.TrailingComment = end.TakeTrailing()
+
+	return expr
+}
+
+func (expr VarPatternExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[VarPatternExpr: Kind=%s\n",
+		indent,
+		label,
+		SymbolId(expr.Kind))
+	result += expr.VarPattern.TreeString(indent+"  ", "VarPattern=") + "\n"
+
+	if expr.Type == nil {
+		result += indent + "  TypeExpr=(nil)\n"
+	} else {
+		result += expr.Type.TreeString(indent+"  ", "TypeExpr=") + "\n"
+	}
+
+	result += indent + "]"
+	return result
+}
+
+type VarPatternReducerImpl struct{}
+
+var _ DeclVarPatternReducer = VarPatternReducerImpl{}
+var _ AssignVarPatternReducer = VarPatternReducerImpl{}
+
+func (VarPatternReducerImpl) InferredToDeclVarPattern(
+	varType TokenValue,
+	pattern Expression,
+) (
+	Expression,
+	error,
+) {
+	return NewVarPatternExpr(varType, pattern, nil), nil
+}
+
+func (VarPatternReducerImpl) TypedToDeclVarPattern(
+	varType TokenValue,
+	pattern Expression,
+	typeExpr TypeExpression,
+) (
+	Expression,
+	error,
+) {
+	return NewVarPatternExpr(varType, pattern, typeExpr), nil
+}
+
+func (VarPatternReducerImpl) ToAssignVarPattern(
+	varType TokenValue,
+	pattern Expression,
+) (
+	Expression,
+	error,
+) {
+	return NewVarPatternExpr(varType, pattern, nil), nil
 }

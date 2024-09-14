@@ -471,6 +471,41 @@ func NewPositionalArgument(expr Expression) *Argument {
 	}
 }
 
+func NewNamedArgument(
+	name TokenValue,
+	assign TokenValue,
+	expr Expression,
+) *Argument {
+	arg := &Argument{
+		StartEndPos:  newStartEndPos(name.Loc(), expr.End()),
+		Kind:         NamedAssignmentArgument,
+		OptionalName: name.Value,
+		Expr:         expr,
+		HasEllipsis:  false,
+	}
+
+	arg.LeadingComment = name.TakeLeading()
+	// prepend in reverse order
+	expr.PrependToLeading(assign.TakeTrailing())
+	expr.PrependToLeading(assign.TakeLeading())
+	expr.PrependToLeading(name.TakeTrailing())
+	arg.TrailingComment = expr.TakeTrailing()
+
+	return arg
+}
+
+func NewSkipPatternArgument(
+	ellipsis TokenValue,
+) *Argument {
+	return &Argument{
+		StartEndPos:             newStartEndPos(ellipsis.Loc(), ellipsis.End()),
+		LeadingTrailingComments: ellipsis.LeadingTrailingComments,
+		Kind:                    SkipPatternArgument,
+		Expr:                    nil,
+		HasEllipsis:             true,
+	}
+}
+
 func (arg *Argument) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
 		"%s%s[Argument: Kind=%v OptionalName=%s HasEllipsis=%v",
@@ -494,6 +529,7 @@ type ArgumentReducerImpl struct {
 }
 
 var _ ArgumentReducer = ArgumentReducerImpl{}
+var _ FieldVarPatternReducer = ArgumentReducerImpl{}
 
 func (ArgumentReducerImpl) PositionalToArgument(
 	expr Expression,
@@ -530,22 +566,7 @@ func (ArgumentReducerImpl) NamedAssignmentToArgument(
 	*Argument,
 	error,
 ) {
-	arg := &Argument{
-		StartEndPos:  newStartEndPos(name.Loc(), expr.End()),
-		Kind:         NamedAssignmentArgument,
-		OptionalName: name.Value,
-		Expr:         expr,
-		HasEllipsis:  false,
-	}
-
-	arg.LeadingComment = name.TakeLeading()
-	// prepend in reverse order
-	expr.PrependToLeading(assign.TakeTrailing())
-	expr.PrependToLeading(assign.TakeLeading())
-	expr.PrependToLeading(name.TakeTrailing())
-	arg.TrailingComment = expr.TakeTrailing()
-
-	return arg, nil
+	return NewNamedArgument(name, assign, expr), nil
 }
 
 func (ArgumentReducerImpl) VarargAssignmentToArgument(
@@ -574,13 +595,36 @@ func (ArgumentReducerImpl) SkipPatternToArgument(
 	*Argument,
 	error,
 ) {
-	return &Argument{
-		StartEndPos:             newStartEndPos(ellipsis.Loc(), ellipsis.End()),
-		LeadingTrailingComments: ellipsis.LeadingTrailingComments,
-		Kind:                    SkipPatternArgument,
-		Expr:                    nil,
-		HasEllipsis:             true,
-	}, nil
+	return NewSkipPatternArgument(ellipsis), nil
+}
+
+func (ArgumentReducerImpl) PositionalToFieldVarPattern(
+	expr Expression,
+) (
+	*Argument,
+	error,
+) {
+	return NewPositionalArgument(expr), nil
+}
+
+func (ArgumentReducerImpl) NamedAssignmentToFieldVarPattern(
+	name TokenValue,
+	assign TokenValue,
+	expr Expression,
+) (
+	*Argument,
+	error,
+) {
+	return NewNamedArgument(name, assign, expr), nil
+}
+
+func (ArgumentReducerImpl) SkipPatternToFieldVarPattern(
+	ellipsis TokenValue,
+) (
+	*Argument,
+	error,
+) {
+	return NewSkipPatternArgument(ellipsis), nil
 }
 
 //
@@ -597,6 +641,8 @@ type ArgumentListReducerImpl struct{}
 
 var _ ProperArgumentsReducer = &ArgumentListReducerImpl{}
 var _ ArgumentsReducer = &ArgumentListReducerImpl{}
+var _ ProperFieldVarPatternsReducer = &ArgumentListReducerImpl{}
+var _ FieldVarPatternsReducer = &ArgumentListReducerImpl{}
 
 func (reducer *ArgumentListReducerImpl) AddToProperArguments(
 	list *ArgumentList,
@@ -637,4 +683,38 @@ func (reducer *ArgumentListReducerImpl) NilToArguments() (
 	error,
 ) {
 	return NewArgumentList(), nil
+}
+
+func (reducer *ArgumentListReducerImpl) FieldVarPatternToProperFieldVarPatterns(
+	pattern *Argument,
+) (
+	*ArgumentList,
+	error,
+) {
+	list := NewArgumentList()
+	list.add(pattern)
+	return list, nil
+}
+
+func (reducer *ArgumentListReducerImpl) AddToProperFieldVarPatterns(
+	list *ArgumentList,
+	comma TokenValue,
+	pattern *Argument,
+) (
+	*ArgumentList,
+	error,
+) {
+	list.reduceAdd(comma, pattern)
+	return list, nil
+}
+
+func (reducer *ArgumentListReducerImpl) ImproperToFieldVarPatterns(
+	list *ArgumentList,
+	comma TokenValue,
+) (
+	*ArgumentList,
+	error,
+) {
+	list.reduceImproper(comma)
+	return list, nil
 }

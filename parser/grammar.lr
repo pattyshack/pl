@@ -286,14 +286,15 @@ field_var_patterns<ArgumentList> ->
 
 field_var_pattern<Argument> ->
   positional: var_pattern |
-  named: IDENTIFIER ASSIGN var_pattern |
-  ELLIPSIS
+  named_assignment: IDENTIFIER ASSIGN var_pattern |
+  skip_pattern: ELLIPSIS
 
 // NOTE: expression captures identifier and tuple vars, as well as fully
 // evaluated expressions.  Additional post analysis checks are needed to
 // reject invalid usage, depending on the context (e.g., assignment should
 // only allow identifier expressions)
-assign_pattern -> expr_or_improper_struct
+assign_pattern<Expression> ->
+  = expr_or_improper_struct
 
 case_pattern ->
   sequence_expr |

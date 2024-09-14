@@ -26,6 +26,7 @@ type ReducerImpl struct {
 	PropertiesTypeExprReducer
 	SliceTypeExprReducerImpl
 	UnaryTypeExprReducerImpl
+  VarPatternReducerImpl
 
 	ImportClauseReducerImpl
 	ImportStatementReducerImpl
@@ -47,15 +48,7 @@ type ReducerImpl struct {
 
 	DefinitionReducer
 	StatementReducer
-	AssignStatementReducer
 	CasePatternsReducer
-	DeclVarPatternReducer
-	AssignVarPatternReducer
-	TuplePatternReducer
-	ProperFieldVarPatternsReducer
-	FieldVarPatternsReducer
-	FieldVarPatternReducer
-	AssignPatternReducer
 	CasePatternReducer
 	ConditionReducer
 	SwitchExprReducer
