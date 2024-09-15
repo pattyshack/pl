@@ -5,12 +5,12 @@ import (
 )
 
 //
-// VarPatternExpr
+// VarPattern
 //
 
 type VarPatternKind SymbolId
 
-type VarPatternExpr struct {
+type VarPattern struct {
 	isExpression
 	StartEndPos
 	LeadingTrailingComments
@@ -20,19 +20,19 @@ type VarPatternExpr struct {
 	Type       TypeExpression // optional
 }
 
-var _ Expression = &VarPatternExpr{}
+var _ Expression = &VarPattern{}
 
-func NewVarPatternExpr(
+func NewVarPattern(
 	varType TokenValue,
 	pattern Expression,
 	typeExpr TypeExpression,
-) *VarPatternExpr {
+) *VarPattern {
 	var end Node = pattern
 	if typeExpr != nil {
 		end = typeExpr
 	}
 
-	expr := &VarPatternExpr{
+	expr := &VarPattern{
 		StartEndPos: newStartEndPos(varType.Loc(), end.End()),
 		Kind:        VarPatternKind(varType.SymbolId),
 		VarPattern:  pattern,
@@ -45,9 +45,9 @@ func NewVarPatternExpr(
 	return expr
 }
 
-func (expr VarPatternExpr) TreeString(indent string, label string) string {
+func (expr VarPattern) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
-		"%s%s[VarPatternExpr: Kind=%s\n",
+		"%s%s[VarPattern: Kind=%s\n",
 		indent,
 		label,
 		SymbolId(expr.Kind))
@@ -75,7 +75,7 @@ func (VarPatternReducerImpl) InferredToDeclVarPattern(
 	Expression,
 	error,
 ) {
-	return NewVarPatternExpr(varType, pattern, nil), nil
+	return NewVarPattern(varType, pattern, nil), nil
 }
 
 func (VarPatternReducerImpl) TypedToDeclVarPattern(
@@ -86,7 +86,7 @@ func (VarPatternReducerImpl) TypedToDeclVarPattern(
 	Expression,
 	error,
 ) {
-	return NewVarPatternExpr(varType, pattern, typeExpr), nil
+	return NewVarPattern(varType, pattern, typeExpr), nil
 }
 
 func (VarPatternReducerImpl) ToAssignVarPattern(
@@ -96,7 +96,7 @@ func (VarPatternReducerImpl) ToAssignVarPattern(
 	Expression,
 	error,
 ) {
-	return NewVarPatternExpr(varType, pattern, nil), nil
+	return NewVarPattern(varType, pattern, nil), nil
 }
 
 //
@@ -231,7 +231,7 @@ type CaseEnumPattern struct {
 	LeadingTrailingComments
 
 	EnumValue  string
-	VarPattern Expression // optional.  either implicit struct or VarPatternExpr
+	VarPattern Expression // optional.  either implicit struct or VarPattern
 }
 
 var _ CasePattern = &CaseEnumPattern{}
@@ -315,7 +315,7 @@ func (CaseEnumPatternReducerImpl) EnumDeclVarPatternToCaseEnumPattern(
 	leading.Append(dot.TakeTrailing())
 	leading.Append(enumValue.TakeTrailing())
 
-	varPattern := NewVarPatternExpr(varType, tuplePattern, nil)
+	varPattern := NewVarPattern(varType, tuplePattern, nil)
 	varPattern.PrependToLeading(enumValue.TakeTrailing())
 
 	trailing := tuplePattern.TakeTrailing()
