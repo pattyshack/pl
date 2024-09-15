@@ -15,7 +15,9 @@ type ReducerImpl struct {
 	IndexExprReducerImpl
 	LiteralExprReducerImpl
 	NamedExprReducerImpl
+	SelectExprReducerImpl
 	StatementsExprReducerImpl
+	SwitchExprReducerImpl
 	UnaryExprReducerImpl
 
 	ArrayTypeExprReducerImpl
@@ -51,10 +53,6 @@ type ReducerImpl struct {
 
 	DefinitionReducer
 	BranchStatementReducer
-	SwitchExprReducer
-	SwitchExprBodyReducer
-	SelectExprReducer
-	SelectExprBodyReducer
 	LoopExprReducer
 	LoopExprBodyReducer
 	OptionalSequenceExprReducer

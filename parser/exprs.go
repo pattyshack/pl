@@ -1062,3 +1062,165 @@ func (reducer *IfExprReducerImpl) ToIfOnlyExpr(
 	reducer.IfExprs = append(reducer.IfExprs, expr)
 	return expr, nil
 }
+
+//
+// SwitchExpr
+//
+
+type SwitchExpr struct {
+	isExpression
+	StartEndPos
+	LeadingTrailingComments
+
+	LabelDecl string // optional
+	Operand   Expression
+	Branches  StatementsExpr
+}
+
+var _ Expression = &SwitchExpr{}
+
+func (expr SwitchExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf("%s%s[SwitchExpr:\n", indent, label)
+	result += expr.Operand.TreeString(indent+"  ", "Operand=") + "\n"
+	result += expr.Branches.TreeString(indent+"  ", "Branches=")
+	result += "\n" + indent + "]"
+	return result
+}
+
+type SwitchExprReducerImpl struct {
+	SwitchExprs []*SwitchExpr
+}
+
+var _ SwitchExprReducer = &SwitchExprReducerImpl{}
+var _ SwitchExprBodyReducer = &SwitchExprReducerImpl{}
+
+func (reducer *SwitchExprReducerImpl) LabelledToSwitchExpr(
+	labelDecl TokenValue,
+	expr Expression,
+) (
+	Expression,
+	error,
+) {
+	switch switchExpr := expr.(type) {
+	case *SwitchExpr:
+		switchExpr.StartPos = labelDecl.Loc()
+		switchExpr.PrependToLeading(labelDecl.TakeTrailing())
+		switchExpr.PrependToLeading(labelDecl.TakeLeading())
+		switchExpr.LabelDecl = labelDecl.Value
+		return switchExpr, nil
+	case *ParseErrorSymbol:
+		return expr, nil
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+}
+
+func (reducer *SwitchExprReducerImpl) ToSwitchExprBody(
+	switchKW TokenValue,
+	operand Expression,
+	expr Expression,
+) (
+	Expression,
+	error,
+) {
+	switch branches := expr.(type) {
+	case *StatementsExpr:
+		trailing := branches.TakeTrailing()
+
+		switchExpr := &SwitchExpr{
+			StartEndPos: newStartEndPos(switchKW.Loc(), branches.End()),
+			Operand:     operand,
+			Branches:    *branches,
+		}
+
+		switchExpr.LeadingComment = switchKW.TakeLeading()
+		operand.PrependToLeading(switchKW.TakeTrailing())
+		switchExpr.TrailingComment = trailing
+
+		reducer.SwitchExprs = append(reducer.SwitchExprs, switchExpr)
+		return switchExpr, nil
+	case *ParseErrorSymbol:
+		return expr, nil
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+}
+
+//
+// SelectExpr
+//
+
+type SelectExpr struct {
+	isExpression
+	StartEndPos
+	LeadingTrailingComments
+
+	LabelDecl string // optional
+	Branches  StatementsExpr
+}
+
+var _ Expression = &SelectExpr{}
+
+func (expr SelectExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf("%s%s[SelectExpr:\n", indent, label)
+	result += expr.Branches.TreeString(indent+"  ", "Branches=")
+	result += "\n" + indent + "]"
+	return result
+}
+
+type SelectExprReducerImpl struct {
+	SelectExprs []*SelectExpr
+}
+
+var _ SelectExprReducer = &SelectExprReducerImpl{}
+var _ SelectExprBodyReducer = &SelectExprReducerImpl{}
+
+func (reducer *SelectExprReducerImpl) LabelledToSelectExpr(
+	labelDecl TokenValue,
+	expr Expression,
+) (
+	Expression,
+	error,
+) {
+	switch selectExpr := expr.(type) {
+	case *SelectExpr:
+		selectExpr.StartPos = labelDecl.Loc()
+		selectExpr.PrependToLeading(labelDecl.TakeTrailing())
+		selectExpr.PrependToLeading(labelDecl.TakeLeading())
+		selectExpr.LabelDecl = labelDecl.Value
+		return selectExpr, nil
+	case *ParseErrorSymbol:
+		return expr, nil
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+}
+
+func (reducer *SelectExprReducerImpl) ToSelectExprBody(
+	switchKW TokenValue,
+	expr Expression,
+) (
+	Expression,
+	error,
+) {
+	switch branches := expr.(type) {
+	case *StatementsExpr:
+		branches.PrependToLeading(switchKW.TakeTrailing())
+		trailing := branches.TakeTrailing()
+
+		selectExpr := &SelectExpr{
+			StartEndPos: newStartEndPos(switchKW.Loc(), branches.End()),
+			Branches:    *branches,
+		}
+
+		selectExpr.LeadingComment = switchKW.TakeLeading()
+		selectExpr.TrailingComment = trailing
+
+		reducer.SelectExprs = append(reducer.SelectExprs, selectExpr)
+		return selectExpr, nil
+	case *ParseErrorSymbol:
+		return expr, nil
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+}
