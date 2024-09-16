@@ -547,3 +547,104 @@ func (UnsafeStatementReducerImpl) ToUnsafeStatement(
 	stmt.TrailingComment = verbatimSource.TakeTrailing()
 	return stmt, nil
 }
+
+//
+// BranchStatement
+//
+
+type BranchStatement struct {
+	isStatement
+	StartEndPos
+	LeadingTrailingComments
+
+	IsDefault    bool
+	CasePatterns CasePatternList
+	Body         StatementsExpr
+}
+
+var _ Statement = &BranchStatement{}
+
+func (stmt BranchStatement) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[BranchStatement: IsDefault=%v\n",
+		indent,
+		label,
+		stmt.IsDefault)
+
+	if !stmt.IsDefault {
+		result += stmt.CasePatterns.TreeString(indent+"  ", "CasePatterns=") + "\n"
+	}
+
+	result += stmt.Body.TreeString(indent+"  ", "Body=")
+
+	result += "\n" + indent + "]"
+	return result
+}
+
+type BranchStatementReducerImpl struct{}
+
+var _ BranchStatementReducer = &BranchStatementReducerImpl{}
+
+func (BranchStatementReducerImpl) CaseBranchToBranchStatement(
+	caseKW TokenValue,
+	casePatterns *CasePatternList,
+	colon TokenValue,
+	body *StatementsExpr,
+) (
+	Statement,
+	error,
+) {
+	end := colon.End()
+	if body == nil {
+		body = NewStatementsExpr()
+	} else {
+		end = body.End()
+	}
+
+	leading := caseKW.TakeLeading()
+	casePatterns.PrependToLeading(caseKW.TakeTrailing())
+	casePatterns.AppendToTrailing(colon.TakeLeading())
+	body.PrependToLeading(colon.TakeTrailing())
+
+	stmt := &BranchStatement{
+		StartEndPos:  newStartEndPos(caseKW.Loc(), end),
+		CasePatterns: *casePatterns,
+		Body:         *body,
+	}
+	stmt.LeadingComment = leading
+
+	return stmt, nil
+}
+
+func (BranchStatementReducerImpl) DefaultBranchToBranchStatement(
+	defaultKW TokenValue,
+	colon TokenValue,
+	body *StatementsExpr,
+) (
+	Statement,
+	error,
+) {
+	casePatterns := NewCasePatternList()
+
+	end := colon.End()
+	if body == nil {
+		body = NewStatementsExpr()
+	} else {
+		end = body.End()
+	}
+
+	leading := defaultKW.TakeLeading()
+	casePatterns.PrependToLeading(defaultKW.TakeTrailing())
+	casePatterns.AppendToTrailing(colon.TakeLeading())
+	body.PrependToLeading(colon.TakeTrailing())
+
+	stmt := &BranchStatement{
+		StartEndPos:  newStartEndPos(defaultKW.Loc(), end),
+		IsDefault:    true,
+		CasePatterns: *casePatterns,
+		Body:         *body,
+	}
+	stmt.LeadingComment = leading
+
+	return stmt, nil
+}

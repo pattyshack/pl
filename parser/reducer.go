@@ -31,6 +31,7 @@ type ReducerImpl struct {
 	UnaryTypeExprReducerImpl
 	VarPatternReducerImpl
 
+	BranchStatementReducerImpl
 	ImportClauseReducerImpl
 	ImportStatementReducerImpl
 	JumpStatementReducerImpl
@@ -53,7 +54,6 @@ type ReducerImpl struct {
 	// TODO
 
 	DefinitionReducer
-	BranchStatementReducer
 	TypeDefReducer
 	PackageDefReducer
 }
