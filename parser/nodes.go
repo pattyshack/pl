@@ -45,12 +45,14 @@ type Expression interface {
 	Node
 	Statement
 	CasePattern
+  Definition
 	IsExpression()
 }
 
 type isExpression struct {
 	isStatement
 	isCasePattern
+  isDefinition
 }
 
 func (isExpression) IsExpression() {}

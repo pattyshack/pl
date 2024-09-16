@@ -73,15 +73,21 @@ definition<Definition> ->
   = package_def |
   = type_def |
   = named_func_def |
-  global_var_def: decl_var_pattern |
-  global_var_assignment: decl_var_pattern ASSIGN expr |
+  = global_var_def |
   // There can only be at most one statements per package, which act as
   // the package's init function
-  statements |
-  // Free floating comment groups that are not part of any other symbol.
-  // This can happen if the source file only has comments, or if there are
-  // comments at the end of the source.
-  COMMENT_GROUPS
+  = statements |
+  = floating_comment
+
+// Global variable dependencies must be topologically sortable.
+global_var_def<Definition> ->
+  = decl_var_pattern |
+  def: decl_var_pattern ASSIGN expr
+
+// Free floating comment is not part of any other symbol. This can happen if
+// the source file only has comments, or if there are comments at the end of
+// the source.
+floating_comment<Definition> -> COMMENT_GROUPS
 
 //
 // Statement block

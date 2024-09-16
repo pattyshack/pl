@@ -353,6 +353,7 @@ var _ BinaryOpAssignStatementReducer = &BinaryExprReducerImpl{}
 var _ SendExprReducer = &BinaryExprReducerImpl{}
 var _ ExprAssignStatementReducer = &BinaryExprReducerImpl{}
 var _ SequenceExprAssignStatementReducer = &BinaryExprReducerImpl{}
+var _ GlobalVarDefReducer = &BinaryExprReducerImpl{}
 
 func (reducer *BinaryExprReducerImpl) toBinaryExpr(
 	left Expression,
@@ -472,6 +473,18 @@ func (reducer *BinaryExprReducerImpl) ToSequenceExprAssignStatement(
 	value Expression,
 ) (
 	Statement,
+	error,
+) {
+	return reducer.toBinaryExpr(pattern, assign, value)
+}
+
+
+func (reducer *BinaryExprReducerImpl) DefToGlobalVarDef(
+	pattern Expression,
+	assign TokenValue,
+	value Expression,
+) (
+	Definition,
 	error,
 ) {
 	return reducer.toBinaryExpr(pattern, assign, value)

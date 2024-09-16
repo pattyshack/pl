@@ -53,7 +53,7 @@ type ReducerImpl struct {
 
 	// TODO
 
-	DefinitionReducer
+	FloatingCommentReducer
 	TypeDefReducer
 	PackageDefReducer
 }
