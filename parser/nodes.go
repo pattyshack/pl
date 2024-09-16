@@ -45,14 +45,14 @@ type Expression interface {
 	Node
 	Statement
 	CasePattern
-  Definition
+	Definition
 	IsExpression()
 }
 
 type isExpression struct {
 	isStatement
 	isCasePattern
-  isDefinition
+	isDefinition
 }
 
 func (isExpression) IsExpression() {}
@@ -374,52 +374,4 @@ func (list *NodeList[T]) reduceMarkers(start TokenValue, end TokenValue) {
 		list.MiddleComment.Append(end.TakeLeading())
 	}
 	list.TrailingComment = end.TakeTrailing()
-}
-
-type DefinitionList = NodeList[Definition]
-
-func NewDefinitionList() *DefinitionList {
-	return newNodeList[Definition]("DefinitionList")
-}
-
-type DefinitionListReducerImpl struct{}
-
-var _ ProperDefinitionsReducer = &DefinitionListReducerImpl{}
-var _ DefinitionsReducer = &DefinitionListReducerImpl{}
-
-func (DefinitionListReducerImpl) AddToProperDefinitions(
-	list *DefinitionList,
-	newlines TokenCount,
-	def Definition,
-) (
-	*DefinitionList,
-	error,
-) {
-	list.reduceAdd(TokenValue{}, def)
-	return list, nil
-}
-
-func (DefinitionListReducerImpl) DefinitionToProperDefinitions(
-	def Definition,
-) (
-	*DefinitionList,
-	error,
-) {
-	list := NewDefinitionList()
-	list.add(def)
-	return list, nil
-}
-
-func (DefinitionListReducerImpl) ImproperToDefinitions(
-	list *DefinitionList,
-	newlines TokenCount,
-) (
-	*DefinitionList,
-	error,
-) {
-	return list, nil
-}
-
-func (DefinitionListReducerImpl) NilToDefinitions() (*DefinitionList, error) {
-	return NewDefinitionList(), nil
 }

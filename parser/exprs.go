@@ -478,7 +478,6 @@ func (reducer *BinaryExprReducerImpl) ToSequenceExprAssignStatement(
 	return reducer.toBinaryExpr(pattern, assign, value)
 }
 
-
 func (reducer *BinaryExprReducerImpl) DefToGlobalVarDef(
 	pattern Expression,
 	assign TokenValue,

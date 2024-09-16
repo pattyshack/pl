@@ -37,6 +37,8 @@ type ReducerImpl struct {
 	JumpStatementReducerImpl
 	UnsafeStatementReducerImpl
 
+	FloatingCommentReducerImpl
+
 	ArgumentListReducerImpl
 	ArgumentReducerImpl
 	CasePatternsReducerImpl
@@ -53,7 +55,6 @@ type ReducerImpl struct {
 
 	// TODO
 
-	FloatingCommentReducer
 	TypeDefReducer
 	PackageDefReducer
 }

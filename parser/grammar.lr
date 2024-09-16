@@ -1,6 +1,6 @@
 %token<Count> NEWLINES // (\n|\r\n)+
 
-%token<Value> COMMENT_GROUPS
+%token<CommentGroups> COMMENT_GROUPS
 
 %token<Value> INTEGER_LITERAL FLOAT_LITERAL RUNE_LITERAL STRING_LITERAL
 
@@ -1022,5 +1022,6 @@ go:
     CasePattern: "CasePattern"
     CaseAssignPattern: "*CaseAssignPattern"
     CasePatternList: "*CasePatternList"
+    CommentGroups: "CommentGroups"
   generate_end_pos: True
 }%%
