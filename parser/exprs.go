@@ -1273,3 +1273,314 @@ func (reducer *SelectExprReducerImpl) ToSelectExprBody(
 
 	panic(fmt.Sprintf("Unexpected expression: %v", expr))
 }
+
+//
+// LoopExpr
+//
+
+type LoopKind string
+
+const (
+	InfiniteLoop = LoopKind("infinite")
+	DoWhileLoop  = LoopKind("do-while")
+	WhileLoop    = LoopKind("while")
+	IteratorLoop = LoopKind("iterator")
+	ForLoop      = LoopKind("for")
+)
+
+type LoopExpr struct {
+	isExpression
+	StartEndPos
+	LeadingTrailingComments
+
+	LoopKind
+
+	LabelDecl string
+
+	Init          Statement  // optional. only applicable to traditional-for loop
+	AssignPattern Expression // optional. only applicable to iterator loop
+	Condition     Expression // optional. not applicable to infinite loop
+	Post          Statement  // optional. only applicable to traditional-for loop
+
+	Body StatementsExpr
+}
+
+var _ Expression = &LoopExpr{}
+
+func (expr LoopExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[LoopExpr: LoopKind=%s LabelDecl=%s",
+		indent,
+		label,
+		expr.LoopKind,
+		expr.LabelDecl)
+
+	if expr.Init != nil {
+		result += "\n" + expr.Init.TreeString(indent+"  ", "Init=")
+	}
+
+	if expr.AssignPattern != nil {
+		result += "\n" + expr.AssignPattern.TreeString(
+			indent+"  ",
+			"AssignPattern=")
+	}
+
+	result += "\n" + expr.Condition.TreeString(indent+"  ", "Condition=")
+
+	if expr.Post != nil {
+		result += "\n" + expr.Post.TreeString(indent+"  ", "Post=")
+	}
+
+	result += "\n" + expr.Body.TreeString(indent+"  ", "Body=")
+	result += "\n" + indent + "]"
+	return result
+}
+
+type LoopExprReducerImpl struct {
+	LoopExprs []*LoopExpr
+}
+
+var _ LoopExprReducer = &LoopExprReducerImpl{}
+var _ LoopExprBodyReducer = &LoopExprReducerImpl{}
+var _ OptionalSequenceStatementReducer = &LoopExprReducerImpl{}
+var _ OptionalSequenceExprReducer = &LoopExprReducerImpl{}
+var _ LoopBodyReducer = &LoopExprReducerImpl{}
+
+func (reducer *LoopExprReducerImpl) LabelledToLoopExpr(
+	labelDecl TokenValue,
+	expr Expression,
+) (
+	Expression,
+	error,
+) {
+	switch loop := expr.(type) {
+	case *LoopExpr:
+		loop.StartPos = labelDecl.Loc()
+		loop.PrependToLeading(labelDecl.TakeTrailing())
+		loop.PrependToLeading(labelDecl.TakeLeading())
+		loop.LabelDecl = labelDecl.Value
+		return loop, nil
+	case *ParseErrorSymbol:
+		return expr, nil
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+}
+
+func (reducer *LoopExprReducerImpl) InfiniteToLoopExprBody(
+	bodyExpr Expression,
+) (
+	Expression,
+	error,
+) {
+	switch body := bodyExpr.(type) {
+	case *StatementsExpr:
+		leading := body.TakeLeading()
+		trailing := body.TakeTrailing()
+
+		loop := &LoopExpr{
+			StartEndPos: newStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			LoopKind:    InfiniteLoop,
+			Body:        *body,
+		}
+		loop.LeadingComment = leading
+		loop.TrailingComment = trailing
+
+		return loop, nil
+	case *ParseErrorSymbol:
+		return bodyExpr, nil
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
+}
+
+func (reducer *LoopExprReducerImpl) DoWhileToLoopExprBody(
+	bodyExpr Expression,
+	forKW TokenValue,
+	condition Expression,
+) (
+	Expression,
+	error,
+) {
+	switch body := bodyExpr.(type) {
+	case *StatementsExpr:
+		leading := body.TakeLeading()
+		body.AppendToTrailing(forKW.TakeLeading())
+		condition.PrependToLeading(forKW.TakeTrailing())
+		trailing := condition.TakeTrailing()
+
+		loop := &LoopExpr{
+			StartEndPos: newStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			LoopKind:    DoWhileLoop,
+			Condition:   condition,
+			Body:        *body,
+		}
+		loop.LeadingComment = leading
+		loop.TrailingComment = trailing
+
+		return loop, nil
+	case *ParseErrorSymbol:
+		return bodyExpr, nil
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
+}
+
+func (reducer *LoopExprReducerImpl) WhileToLoopExprBody(
+	forKW TokenValue,
+	condition Expression,
+	bodyExpr Expression,
+) (
+	Expression,
+	error,
+) {
+	switch body := bodyExpr.(type) {
+	case *StatementsExpr:
+		leading := forKW.TakeLeading()
+		condition.PrependToLeading(forKW.TakeTrailing())
+		trailing := bodyExpr.TakeTrailing()
+
+		loop := &LoopExpr{
+			StartEndPos: newStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			LoopKind:    WhileLoop,
+			Condition:   condition,
+			Body:        *body,
+		}
+		loop.LeadingComment = leading
+		loop.TrailingComment = trailing
+
+		return loop, nil
+	case *ParseErrorSymbol:
+		return bodyExpr, nil
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
+}
+
+func (reducer *LoopExprReducerImpl) IteratorToLoopExprBody(
+	forKW TokenValue,
+	assignPattern Expression,
+	in TokenValue,
+	iterator Expression,
+	bodyExpr Expression,
+) (
+	Expression,
+	error,
+) {
+	switch body := bodyExpr.(type) {
+	case *StatementsExpr:
+		leading := forKW.TakeLeading()
+		assignPattern.PrependToLeading(forKW.TakeTrailing())
+		assignPattern.AppendToTrailing(in.TakeLeading())
+		iterator.PrependToLeading(in.TakeTrailing())
+		trailing := bodyExpr.TakeTrailing()
+
+		loop := &LoopExpr{
+			StartEndPos:   newStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			LoopKind:      IteratorLoop,
+			AssignPattern: assignPattern,
+			Condition:     iterator,
+			Body:          *body,
+		}
+		loop.LeadingComment = leading
+		loop.TrailingComment = trailing
+
+		return loop, nil
+	case *ParseErrorSymbol:
+		return bodyExpr, nil
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
+}
+
+func (reducer *LoopExprReducerImpl) ForToLoopExprBody(
+	forKW TokenValue,
+	init Statement,
+	semicolon1 TokenValue,
+	condition Expression,
+	semicolon2 TokenValue,
+	post Statement,
+	bodyExpr Expression,
+) (
+	Expression,
+	error,
+) {
+	switch body := bodyExpr.(type) {
+	case *StatementsExpr:
+		var last Node = body
+		if post != nil {
+			last = post
+		}
+
+		last.PrependToLeading(semicolon2.TakeTrailing())
+		if condition == nil {
+			last.PrependToLeading(semicolon2.TakeLeading())
+		} else {
+			condition.AppendToTrailing(semicolon2.TakeLeading())
+			last = condition
+		}
+
+		last.PrependToLeading(semicolon1.TakeTrailing())
+		if init == nil {
+			last.PrependToLeading(semicolon1.TakeLeading())
+		} else {
+			init.AppendToTrailing(semicolon1.TakeLeading())
+			last = init
+		}
+
+		leading := forKW.TakeLeading()
+		last.PrependToLeading(forKW.TakeTrailing())
+		trailing := body.TakeTrailing()
+
+		loop := &LoopExpr{
+			StartEndPos: newStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			LoopKind:    ForLoop,
+			Init:        init,
+			Condition:   condition,
+			Post:        post,
+			Body:        *body,
+		}
+		loop.LeadingComment = leading
+		loop.TrailingComment = trailing
+
+		return loop, nil
+	case *ParseErrorSymbol:
+		return bodyExpr, nil
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
+}
+
+func (reducer *LoopExprReducerImpl) NilToOptionalSequenceStatement() (
+	Statement,
+	error,
+) {
+	return nil, nil
+}
+
+func (reducer *LoopExprReducerImpl) NilToOptionalSequenceExpr() (
+	Expression,
+	error,
+) {
+	return nil, nil
+}
+
+func (reducer *LoopExprReducerImpl) ToLoopBody(
+	do TokenValue,
+	expr Expression,
+) (
+	Expression,
+	error,
+) {
+	switch body := expr.(type) {
+	case *StatementsExpr:
+		body.StartPos = do.Loc()
+		body.PrependToLeading(do.TakeTrailing())
+		body.PrependToLeading(do.TakeLeading())
+		return body, nil
+	case *ParseErrorSymbol:
+		return expr, nil
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+}

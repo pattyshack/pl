@@ -14,6 +14,7 @@ type ReducerImpl struct {
 	ImplicitStructExprReducerImpl
 	IndexExprReducerImpl
 	LiteralExprReducerImpl
+	LoopExprReducerImpl
 	NamedExprReducerImpl
 	SelectExprReducerImpl
 	StatementsExprReducerImpl
@@ -53,10 +54,6 @@ type ReducerImpl struct {
 
 	DefinitionReducer
 	BranchStatementReducer
-	LoopExprReducer
-	LoopExprBodyReducer
-	OptionalSequenceExprReducer
-	OptionalSequenceStatementReducer
 	TypeDefReducer
 	PackageDefReducer
 }
