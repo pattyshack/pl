@@ -351,7 +351,8 @@ var _ BinaryAndExprReducer = &BinaryExprReducerImpl{}
 var _ BinaryOrExprReducer = &BinaryExprReducerImpl{}
 var _ BinaryOpAssignStatementReducer = &BinaryExprReducerImpl{}
 var _ SendExprReducer = &BinaryExprReducerImpl{}
-var _ AssignStatementReducer = &BinaryExprReducerImpl{}
+var _ ExprAssignStatementReducer = &BinaryExprReducerImpl{}
+var _ SequenceExprAssignStatementReducer = &BinaryExprReducerImpl{}
 
 func (reducer *BinaryExprReducerImpl) toBinaryExpr(
 	left Expression,
@@ -454,7 +455,18 @@ func (reducer *BinaryExprReducerImpl) ToBinaryOpAssignStatement(
 	return reducer.toBinaryExpr(address, op, value)
 }
 
-func (reducer *BinaryExprReducerImpl) ToAssignStatement(
+func (reducer *BinaryExprReducerImpl) ToExprAssignStatement(
+	pattern Expression,
+	assign TokenValue,
+	value Expression,
+) (
+	Statement,
+	error,
+) {
+	return reducer.toBinaryExpr(pattern, assign, value)
+}
+
+func (reducer *BinaryExprReducerImpl) ToSequenceExprAssignStatement(
 	pattern Expression,
 	assign TokenValue,
 	value Expression,
@@ -494,7 +506,8 @@ type ImplicitStructExprReducerImpl struct {
 }
 
 var _ ImplicitStructExprReducer = &ImplicitStructExprReducerImpl{}
-var _ ImproperImplicitStructReducer = &ImplicitStructExprReducerImpl{}
+var _ ImproperExprStructReducer = &ImplicitStructExprReducerImpl{}
+var _ ImproperSequenceExprStructReducer = &ImplicitStructExprReducerImpl{}
 var _ TuplePatternReducer = &ImplicitStructExprReducerImpl{}
 
 func (reducer *ImplicitStructExprReducerImpl) toImplicitStructExpr(
@@ -521,7 +534,7 @@ func (reducer *ImplicitStructExprReducerImpl) ToImplicitStructExpr(
 	return expr, nil
 }
 
-func (reducer *ImplicitStructExprReducerImpl) PairToImproperImplicitStruct(
+func (reducer *ImplicitStructExprReducerImpl) PairToImproperExprStruct(
 	expr1 Expression,
 	comma TokenValue,
 	expr2 Expression,
@@ -544,7 +557,43 @@ func (reducer *ImplicitStructExprReducerImpl) PairToImproperImplicitStruct(
 	return expr, nil
 }
 
-func (reducer *ImplicitStructExprReducerImpl) AddToImproperImplicitStruct(
+func (reducer *ImplicitStructExprReducerImpl) AddToImproperExprStruct(
+	structExpr *ImplicitStructExpr,
+	comma TokenValue,
+	expr Expression,
+) (
+	*ImplicitStructExpr,
+	error,
+) {
+	arg := NewPositionalArgument(expr)
+	structExpr.reduceAdd(comma, arg)
+	return structExpr, nil
+}
+
+func (reducer *ImplicitStructExprReducerImpl) PairToImproperSequenceExprStruct(
+	expr1 Expression,
+	comma TokenValue,
+	expr2 Expression,
+) (
+	*ImplicitStructExpr,
+	error,
+) {
+	arg1 := NewPositionalArgument(expr1)
+	arg2 := NewPositionalArgument(expr2)
+
+	list := NewArgumentList()
+	list.add(arg1)
+	list.reduceAdd(comma, arg2)
+
+	expr := &ImplicitStructExpr{
+		ArgumentList: *list,
+	}
+
+	reducer.ImplicitStructExprs = append(reducer.ImplicitStructExprs, expr)
+	return expr, nil
+}
+
+func (reducer *ImplicitStructExprReducerImpl) AddToImproperSequenceExprStruct(
 	structExpr *ImplicitStructExpr,
 	comma TokenValue,
 	expr Expression,

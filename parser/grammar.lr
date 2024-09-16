@@ -115,10 +115,20 @@ statement_list<StatementsExpr> ->
   improper_explicit: proper_statement_list SEMICOLON |
   nil:
 
+// The subset of simple statement that is usable within a traditional style
+// for loop (plus the option to not have any statement).  In particular, the
+// subset does not include any branching expressions.
+sequence_statement<Statement> ->
+  = unsafe_statement |
+  = sequence_expr |
+  = sequence_expr_assign_statement |
+  = unary_op_assign_statement |
+  = binary_op_assign_statement
+
 simple_statement<Statement> ->
   = unsafe_statement |
 
-  = expr_or_improper_struct |
+  = expr_or_improper_expr_struct |
 
   // NOTE: Only applicable in expression blocks
   = jump_statement |
@@ -126,7 +136,7 @@ simple_statement<Statement> ->
   // NOTE: variable declaration without assignment is parsed as an expression.
   //
   // NOTE: package level assign pattern must be a var/let declaration
-  = assign_statement |
+  = expr_assign_statement |
 
   // NOTE: assignment can only operate on proper address values.  Additional
   // checks are applied during post analysis.
@@ -159,14 +169,23 @@ trailing_simple_statement<StatementsExpr> ->
 // expression / improper struct statement
 //
 
-expr_or_improper_struct<Expression> ->
+// Sadly, we need two sets of rules to parse identical things.  Statement
+// must use the expr variant whereas expression must use the sequence_expr
+// variant.
+
+expr_or_improper_expr_struct<Expression> ->
   = expr |
-  = improper_implicit_struct
+  = improper_expr_struct
 
 // improper in the sense that the expression list is not bounded by '(' and ')'
-improper_implicit_struct<ImplicitStruct> ->
+
+improper_sequence_expr_struct<ImplicitStruct> ->
+  pair: sequence_expr COMMA sequence_expr |
+  add: improper_sequence_expr_struct COMMA sequence_expr
+
+improper_expr_struct<ImplicitStruct> ->
   pair: expr COMMA expr |
-  add: improper_implicit_struct COMMA expr
+  add: improper_expr_struct COMMA expr
 
 //
 // Unsafe statement
@@ -183,9 +202,9 @@ unsafe_statement<UnsafeStatement> ->
 
 jump_statement<Statement> ->
   unlabeled_no_value: jump_op |
-  unlabeled_valued: jump_op expr_or_improper_struct |
+  unlabeled_valued: jump_op expr_or_improper_expr_struct |
   labeled_no_value: jump_op JUMP_LABEL |
-  labeled_valued: jump_op JUMP_LABEL expr_or_improper_struct |
+  labeled_valued: jump_op JUMP_LABEL expr_or_improper_expr_struct |
   // Only applicable to switch case block (must be the last statement in the
   // case branch)
   FALLTHROUGH
@@ -199,7 +218,11 @@ jump_op<Value> ->
 // Assignment statements
 //
 
-assign_statement<Statement> -> assign_pattern ASSIGN expr
+
+sequence_expr_assign_statement<Statement> ->
+  sequence_expr_assign_pattern ASSIGN expr
+
+expr_assign_statement<Statement> -> expr_assign_pattern ASSIGN expr
 
 unary_op_assign_statement<Statement> -> accessible_expr unary_op_assign
 
@@ -285,12 +308,17 @@ field_var_pattern<Argument> ->
   named_assignment: IDENTIFIER ASSIGN var_pattern |
   skip_pattern: ELLIPSIS
 
-// NOTE: expression captures identifier and tuple vars, as well as fully
-// evaluated expressions.  Additional post analysis checks are needed to
+// NOTE: *_expr_assign_pattern captures identifier and tuple vars, as well as
+// fully evaluated expressions.  Additional post analysis checks are needed to
 // reject invalid usage, depending on the context (e.g., assignment should
 // only allow identifier expressions)
-assign_pattern<Expression> ->
-  = expr_or_improper_struct
+
+sequence_expr_assign_pattern<Expression> ->
+  = sequence_expr |
+  = improper_sequence_expr_struct
+
+expr_assign_pattern<Expression> ->
+  = expr_or_improper_expr_struct
 
 case_patterns<CasePatternList> ->
   // In select expr, must verify the list has exactly one recv or send
@@ -452,16 +480,16 @@ loop_expr_body<Expression> ->
   infinite: DO statements |
   do_while: DO statements FOR sequence_expr |
   while: FOR sequence_expr DO statements |
-  iterator: FOR assign_pattern IN sequence_expr DO statements |
-  for: FOR for_assignment SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_expr DO statements
+  iterator: FOR sequence_expr_assign_pattern IN sequence_expr DO statements |
+  for: FOR optional_sequence_statement SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_statement DO statements
 
-optional_sequence_expr<Expression> ->
-  sequence_expr |
+optional_sequence_statement<Statement> ->
+  = sequence_statement |
   nil:
 
-for_assignment ->
-  sequence_expr |
-  assign: assign_pattern ASSIGN sequence_expr
+optional_sequence_expr<Expression> ->
+  = sequence_expr |
+  nil:
 
 //
 // Call expression

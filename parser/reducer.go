@@ -56,7 +56,7 @@ type ReducerImpl struct {
 	LoopExprReducer
 	LoopExprBodyReducer
 	OptionalSequenceExprReducer
-	ForAssignmentReducer
+	OptionalSequenceStatementReducer
 	TypeDefReducer
 	PackageDefReducer
 }
