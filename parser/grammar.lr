@@ -69,7 +69,7 @@ definitions<Definitions> ->
   nil:
 
 definition<Definition> ->
-  // There can only be one package_def per package
+  // There can only be at most one package_def per package
   = package_def |
   = type_def |
   = named_func_def |
@@ -986,9 +986,7 @@ anonymous_func_expr<Expression> ->
 // "internal" since that's special cased by go.  As an alternative to go's
 // internal, if the package name is a private, it can only be accessed by its
 // parent directory package.
-package_def<Definition> ->
-  no_spec: PACKAGE |
-  with_spec: PACKAGE statements
+package_def<Definition> -> PACKAGE statements
 
 %%lang_specs{
 go:

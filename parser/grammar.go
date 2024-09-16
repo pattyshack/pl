@@ -987,11 +987,8 @@ type AnonymousFuncExprReducer interface {
 }
 
 type PackageDefReducer interface {
-	// 990:2: package_def -> no_spec: ...
-	NoSpecToPackageDef(Package_ TokenValue) (Definition, error)
-
-	// 991:2: package_def -> with_spec: ...
-	WithSpecToPackageDef(Package_ TokenValue, Statements_ Expression) (Definition, error)
+	// 989:27: package_def -> ...
+	ToPackageDef(Package_ TokenValue, Statements_ Expression) (Definition, error)
 }
 
 type Reducer interface {
@@ -1150,6 +1147,8 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 		return []SymbolId{}
 	case _State13:
 		return []SymbolId{IdentifierToken, LparenToken}
+	case _State15:
+		return []SymbolId{LbraceToken}
 	case _State16:
 		return []SymbolId{IdentifierToken}
 	case _State19:
@@ -2645,8 +2644,7 @@ const (
 	_ReduceFuncDefToNamedFuncDef                                        = _ReduceType(361)
 	_ReduceMethodDefToNamedFuncDef                                      = _ReduceType(362)
 	_ReduceToAnonymousFuncExpr                                          = _ReduceType(363)
-	_ReduceNoSpecToPackageDef                                           = _ReduceType(364)
-	_ReduceWithSpecToPackageDef                                         = _ReduceType(365)
+	_ReduceToPackageDef                                                 = _ReduceType(364)
 )
 
 func (i _ReduceType) String() string {
@@ -3377,10 +3375,8 @@ func (i _ReduceType) String() string {
 		return "MethodDefToNamedFuncDef"
 	case _ReduceToAnonymousFuncExpr:
 		return "ToAnonymousFuncExpr"
-	case _ReduceNoSpecToPackageDef:
-		return "NoSpecToPackageDef"
-	case _ReduceWithSpecToPackageDef:
-		return "WithSpecToPackageDef"
+	case _ReduceToPackageDef:
+		return "ToPackageDef"
 	default:
 		return fmt.Sprintf("?unknown reduce type %d?", int(i))
 	}
@@ -6233,16 +6229,11 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = AnonymousFuncExprType
 		symbol.Expression, err = reducer.ToAnonymousFuncExpr(args[0].Value, args[1].Parameters, args[2].TypeExpression, args[3].Expression)
-	case _ReduceNoSpecToPackageDef:
-		args := stack[len(stack)-1:]
-		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = PackageDefType
-		symbol.Definition, err = reducer.NoSpecToPackageDef(args[0].Value)
-	case _ReduceWithSpecToPackageDef:
+	case _ReduceToPackageDef:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = PackageDefType
-		symbol.Definition, err = reducer.WithSpecToPackageDef(args[0].Value, args[1].Expression)
+		symbol.Definition, err = reducer.ToPackageDef(args[0].Value, args[1].Expression)
 	default:
 		panic("Unknown reduce type: " + act.ReduceType.String())
 	}
@@ -7074,10 +7065,7 @@ func (_ActionTableType) Get(
 		case LbraceToken:
 			return _Action{_ShiftAction, _State14, 0}, true
 		case StatementsType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceWithSpecToPackageDef}, true
-
-		default:
-			return _Action{_ReduceAction, 0, _ReduceNoSpecToPackageDef}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceToPackageDef}, true
 		}
 	case _State16:
 		switch symbolId {
@@ -18961,10 +18949,9 @@ Parser Debug States:
 
   State 15:
     Kernel Items:
-      package_def: PACKAGE., *
       package_def: PACKAGE.statements
     Reduce:
-      * -> [package_def]
+      (nil)
     ShiftAndReduce:
       statements -> [package_def]
     Goto:
@@ -26251,11 +26238,11 @@ Parser Debug States:
 
 Number of states: 247
 Number of shift actions: 1730
-Number of reduce actions: 129
+Number of reduce actions: 128
 Number of shift-and-reduce actions: 3804
 Number of shift/reduce conflicts: 0
 Number of reduce/reduce conflicts: 0
 Number of unoptimized states: 6589
 Number of unoptimized shift actions: 64471
-Number of unoptimized reduce actions: 45343
+Number of unoptimized reduce actions: 45340
 */

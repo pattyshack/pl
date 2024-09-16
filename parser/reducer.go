@@ -38,6 +38,7 @@ type ReducerImpl struct {
 	UnsafeStatementReducerImpl
 
 	FloatingCommentReducerImpl
+	PackageDefReducerImpl
 
 	ArgumentListReducerImpl
 	ArgumentReducerImpl
@@ -56,7 +57,6 @@ type ReducerImpl struct {
 	// TODO
 
 	TypeDefReducer
-	PackageDefReducer
 }
 
 func NewReducer() *ReducerImpl {

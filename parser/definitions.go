@@ -88,3 +88,52 @@ func (FloatingCommentReducerImpl) ToFloatingComment(
 	floating.LeadingComment = comments
 	return floating, nil
 }
+
+//
+// PackageDef
+//
+
+type PackageDef struct {
+	isDefinition
+	StartEndPos
+	LeadingTrailingComments
+
+	Body StatementsExpr
+}
+
+var _ Definition = &PackageDef{}
+
+func (def PackageDef) TreeString(indent string, label string) string {
+	result := fmt.Sprintf("%s%s[PackageDef:\n", indent, label)
+	result += def.Body.TreeString(indent+"  ", "Body=")
+	result += "\n" + indent + "]"
+	return result
+}
+
+type PackageDefReducerImpl struct{}
+
+var _ PackageDefReducer = &PackageDefReducerImpl{}
+
+func (PackageDefReducerImpl) ToPackageDef(
+	pkg TokenValue,
+	expr Expression,
+) (
+	Definition,
+	error,
+) {
+	switch body := expr.(type) {
+	case *StatementsExpr:
+		body.PrependToLeading(pkg.TakeTrailing())
+		def := &PackageDef{
+			StartEndPos: newStartEndPos(pkg.Loc(), expr.End()),
+			Body:        *body,
+		}
+		def.LeadingComment = pkg.TakeLeading()
+
+		return def, nil
+	case *ParseErrorSymbol:
+		return expr, nil
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+}
