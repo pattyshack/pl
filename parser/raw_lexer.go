@@ -115,13 +115,13 @@ func (lexer *RawLexer) CurrentLocation() Location {
 }
 
 // variable length token will return 0 as length
-func (lexer *RawLexer) peekNextToken() (SymbolId, int, error) {
+func (lexer *RawLexer) peekNextToken() (SymbolId, string, error) {
 	peeked, err := lexer.Peek(7)
 	if len(peeked) > 0 && err == io.EOF {
 		err = nil
 	}
 	if err != nil {
-		return 0, 0, err
+		return 0, "", err
 	}
 
 	if len(peeked) == 0 {
@@ -136,213 +136,213 @@ func (lexer *RawLexer) peekNextToken() (SymbolId, int, error) {
 		('A' <= char && char <= 'Z') ||
 		char == '_' {
 
-		return IdentifierToken, 0, nil
+		return IdentifierToken, "", nil
 	}
 
 	if '0' <= char && char <= '9' {
-		return IntegerLiteralToken, 0, nil // int or float
+		return IntegerLiteralToken, "", nil // int or float
 	}
 
 	switch char {
 	case '`':
 		if len(peeked) >= 3 && peeked[1] == '`' && peeked[2] == '`' {
-			return mibStringToken, 0, nil
+			return mibStringToken, "", nil
 		}
-		return sibStringToken, 0, nil
+		return sibStringToken, "", nil
 	case '"':
 		if len(peeked) >= 3 && peeked[1] == '"' && peeked[2] == '"' {
-			return midStringToken, 0, nil
+			return midStringToken, "", nil
 		}
-		return sidStringToken, 0, nil
+		return sidStringToken, "", nil
 	case 'r':
 		if len(peeked) > 1 {
 			char := peeked[1]
 			if char == '`' {
 				if len(peeked) >= 4 && peeked[2] == '`' && peeked[3] == '`' {
-					return mrbStringToken, 0, nil
+					return mrbStringToken, "", nil
 				}
 
-				return srbStringToken, 0, nil
+				return srbStringToken, "", nil
 			} else if char == '"' {
 				if len(peeked) >= 4 && peeked[2] == '"' && peeked[3] == '"' {
-					return mrdStringToken, 0, nil
+					return mrdStringToken, "", nil
 				}
 
-				return srdStringToken, 0, nil
+				return srdStringToken, "", nil
 			}
 		}
 
-		return IdentifierToken, 0, nil
+		return IdentifierToken, "", nil
 	case '\'':
-		return RuneLiteralToken, 0, nil
+		return RuneLiteralToken, "", nil
 	case '\r', '\n':
-		return NewlinesToken, 0, nil
+		return NewlinesToken, "", nil
 	case ' ', '\t':
-		return spacesToken, 0, nil
+		return spacesToken, "", nil
 	case '@':
-		return JumpLabelToken, 0, nil
+		return JumpLabelToken, "", nil
 
 	case '{':
-		return LbraceToken, 1, nil
+		return LbraceToken, "{", nil
 	case '}':
-		return RbraceToken, 1, nil
+		return RbraceToken, "}", nil
 	case '(':
-		return LparenToken, 1, nil
+		return LparenToken, "(", nil
 	case ')':
-		return RparenToken, 1, nil
+		return RparenToken, ")", nil
 	case '[':
-		return LbracketToken, 1, nil
+		return LbracketToken, "[", nil
 	case ']':
-		return RbracketToken, 1, nil
+		return RbracketToken, "]", nil
 	case '.':
 		if len(peeked) > 2 && peeked[1] == '.' && peeked[2] == '.' {
-			return EllipsisToken, 3, nil
+			return EllipsisToken, "...", nil
 		}
 
 		if len(peeked) > 1 && '0' <= peeked[1] && peeked[1] <= '9' {
-			return FloatLiteralToken, 0, nil
+			return FloatLiteralToken, "", nil
 		}
 
-		return DotToken, 1, nil
+		return DotToken, ".", nil
 	case ',':
-		return CommaToken, 1, nil
+		return CommaToken, ",", nil
 	case '?':
-		return QuestionToken, 1, nil
+		return QuestionToken, "?", nil
 	case ';':
-		return SemicolonToken, 1, nil
+		return SemicolonToken, ";", nil
 	case ':':
-		return ColonToken, 1, nil
+		return ColonToken, ":", nil
 	case '$':
 		if len(peeked) > 1 && peeked[1] == '[' {
-			return DollarLbracketToken, 2, nil
+			return DollarLbracketToken, "$[", nil
 		}
 	case '+':
 		if len(peeked) > 1 {
 			if peeked[1] == '+' {
-				return AddOneAssignToken, 2, nil
+				return AddOneAssignToken, "++", nil
 
 			} else if peeked[1] == '=' {
-				return AddAssignToken, 2, nil
+				return AddAssignToken, "+=", nil
 			}
 		}
 
-		return AddToken, 1, nil
+		return AddToken, "+", nil
 	case '-':
 		if len(peeked) > 1 {
 			if peeked[1] == '-' {
-				return SubOneAssignToken, 2, nil
+				return SubOneAssignToken, "--", nil
 
 			} else if peeked[1] == '=' {
-				return SubAssignToken, 2, nil
+				return SubAssignToken, "-=", nil
 			}
 		}
 
-		return SubToken, 1, nil
+		return SubToken, "-", nil
 	case '*':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return MulAssignToken, 2, nil
+			return MulAssignToken, "*=", nil
 		}
 
-		return MulToken, 1, nil
+		return MulToken, "*", nil
 	case '/':
 		if len(peeked) > 1 {
 			if peeked[1] == '/' {
-				return lineCommentToken, 0, nil
+				return lineCommentToken, "", nil
 			} else if peeked[1] == '*' {
-				return blockCommentToken, 0, nil
+				return blockCommentToken, "", nil
 			} else if peeked[1] == '=' {
-				return DivAssignToken, 2, nil
+				return DivAssignToken, "/=", nil
 			}
 		}
 
-		return DivToken, 1, nil
+		return DivToken, "/", nil
 	case '%':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return ModAssignToken, 2, nil
+			return ModAssignToken, "%=", nil
 		}
 
-		return ModToken, 1, nil
+		return ModToken, "%", nil
 	case '~':
 		if len(peeked) > 1 {
 			if peeked[1] == '=' {
-				return BitNegAssignToken, 2, nil
+				return BitNegAssignToken, "~=", nil
 
 			} else if peeked[1] == '~' {
-				return TildeTildeToken, 2, nil
+				return TildeTildeToken, "~~", nil
 			}
 		}
 
-		return BitNegToken, 1, nil
+		return BitNegToken, "~", nil
 	case '&':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return BitAndAssignToken, 2, nil
+			return BitAndAssignToken, "&=", nil
 		}
 
-		return BitAndToken, 1, nil
+		return BitAndToken, "&", nil
 	case '^':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return BitXorAssignToken, 2, nil
+			return BitXorAssignToken, "^=", nil
 		}
 
-		return BitXorToken, 1, nil
+		return BitXorToken, "^", nil
 	case '|':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return BitOrAssignToken, 2, nil
+			return BitOrAssignToken, "|=", nil
 		}
 
-		return BitOrToken, 1, nil
+		return BitOrToken, "|", nil
 	case '=':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return EqualToken, 2, nil
+			return EqualToken, "==", nil
 		}
 
-		return AssignToken, 1, nil
+		return AssignToken, "=", nil
 	case '!':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return NotEqualToken, 2, nil
+			return NotEqualToken, "!=", nil
 		}
 
-		return ExclaimToken, 1, nil
+		return ExclaimToken, "!", nil
 	case '<':
 		if len(peeked) > 1 {
 			if peeked[1] == '=' {
-				return LessOrEqualToken, 2, nil
+				return LessOrEqualToken, "<=", nil
 
 			} else if peeked[1] == '<' {
 				if len(peeked) > 2 && peeked[2] == '=' {
-					return BitLshiftAssignToken, 3, nil
+					return BitLshiftAssignToken, "<<=", nil
 				}
 
-				return BitLshiftToken, 2, nil
+				return BitLshiftToken, "<<", nil
 			} else if peeked[1] == '-' {
-				return ArrowToken, 2, nil
+				return ArrowToken, "<-", nil
 			}
 		}
 
-		return LessToken, 1, nil
+		return LessToken, "<", nil
 	case '>':
 		if len(peeked) > 1 {
 			if peeked[1] == '=' {
-				return GreaterOrEqualToken, 2, nil
+				return GreaterOrEqualToken, ">=", nil
 
 			} else if peeked[1] == '>' {
 				if len(peeked) > 2 && peeked[2] == '=' {
-					return BitRshiftAssignToken, 3, nil
+					return BitRshiftAssignToken, ">>=", nil
 				}
 
-				return BitRshiftToken, 2, nil
+				return BitRshiftToken, ">>", nil
 			}
 		}
 
-		return GreaterToken, 1, nil
+		return GreaterToken, ">", nil
 	}
 
 	utf8Char, size := utf8.DecodeRune(peeked)
 	if size == 1 || utf8Char == utf8.RuneError { // unexpected token
-		return ParseErrorToken, size, nil
+		return ParseErrorToken, string(peeked[:size]), nil
 	}
 
-	return IdentifierToken, 0, nil
+	return IdentifierToken, "", nil
 }
 
 func (lexer *RawLexer) lexSpacesToken() (Token, error) {
@@ -1216,10 +1216,12 @@ func (lexer *RawLexer) lexIdentifierKeywordsOrLabelDeclToken() (
 }
 
 func (lexer *RawLexer) Next() (Token, error) {
-	symbolId, size, err := lexer.peekNextToken()
+	symbolId, value, err := lexer.peekNextToken()
 	if err != nil {
 		return nil, err
 	}
+
+	size := len(value)
 
 	if symbolId == ParseErrorToken {
 		loc := Location(lexer.Location)
@@ -1246,6 +1248,7 @@ func (lexer *RawLexer) Next() (Token, error) {
 		return &TokenValue{
 			SymbolId:    symbolId,
 			StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
+			Value:       value,
 		}, nil
 	}
 
