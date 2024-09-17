@@ -10,51 +10,6 @@ import (
 // (Bool/Int/Float/Rune/String)LiteralExpr
 //
 
-type BoolLiteralExpr struct {
-	IsExpr
-	TokenValue
-}
-
-func (expr BoolLiteralExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[BoolLiteralExpr: %s]", indent, label, expr.Value)
-}
-
-type IntLiteralExpr struct {
-	IsExpr
-	TokenValue
-}
-
-func (expr IntLiteralExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[IntLiteralExpr: %s]", indent, label, expr.Value)
-}
-
-type FloatLiteralExpr struct {
-	IsExpr
-	TokenValue
-}
-
-func (expr FloatLiteralExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[FloatLiteralExpr: %s]", indent, label, expr.Value)
-}
-
-type RuneLiteralExpr struct {
-	IsExpr
-	TokenValue
-}
-
-func (expr RuneLiteralExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[RuneLiteralExpr: %s]", indent, label, expr.Value)
-}
-
-type StringLiteralExpr struct {
-	IsExpr
-	TokenValue
-}
-
-func (expr StringLiteralExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[StringLiteralExpr: %s]", indent, label, expr.Value)
-}
-
 type LiteralExprReducerImpl struct {
 	BoolLiteralExprs   []*BoolLiteralExpr
 	IntLiteralExprs    []*IntLiteralExpr
@@ -68,7 +23,7 @@ var _ LiteralExprReducer = &LiteralExprReducerImpl{}
 func (reducer *LiteralExprReducerImpl) TrueToLiteralExpr(
 	value *TokenValue,
 ) (Expression, error) {
-	expr := &BoolLiteralExpr{TokenValue: *value}
+	expr := &BoolLiteralExpr{ValueNode: value}
 	reducer.BoolLiteralExprs = append(reducer.BoolLiteralExprs, expr)
 	return expr, nil
 }
@@ -76,7 +31,7 @@ func (reducer *LiteralExprReducerImpl) TrueToLiteralExpr(
 func (reducer *LiteralExprReducerImpl) FalseToLiteralExpr(
 	value *TokenValue,
 ) (Expression, error) {
-	expr := &BoolLiteralExpr{TokenValue: *value}
+	expr := &BoolLiteralExpr{ValueNode: value}
 	reducer.BoolLiteralExprs = append(reducer.BoolLiteralExprs, expr)
 	return expr, nil
 }
@@ -84,7 +39,7 @@ func (reducer *LiteralExprReducerImpl) FalseToLiteralExpr(
 func (reducer *LiteralExprReducerImpl) IntegerLiteralToLiteralExpr(
 	value *TokenValue,
 ) (Expression, error) {
-	expr := &IntLiteralExpr{TokenValue: *value}
+	expr := &IntLiteralExpr{ValueNode: value}
 	reducer.IntLiteralExprs = append(reducer.IntLiteralExprs, expr)
 	return expr, nil
 }
@@ -92,7 +47,7 @@ func (reducer *LiteralExprReducerImpl) IntegerLiteralToLiteralExpr(
 func (reducer *LiteralExprReducerImpl) FloatLiteralToLiteralExpr(
 	value *TokenValue,
 ) (Expression, error) {
-	expr := &FloatLiteralExpr{TokenValue: *value}
+	expr := &FloatLiteralExpr{ValueNode: value}
 	reducer.FloatLiteralExprs = append(reducer.FloatLiteralExprs, expr)
 	return expr, nil
 }
@@ -100,7 +55,7 @@ func (reducer *LiteralExprReducerImpl) FloatLiteralToLiteralExpr(
 func (reducer *LiteralExprReducerImpl) RuneLiteralToLiteralExpr(
 	value *TokenValue,
 ) (Expression, error) {
-	expr := &RuneLiteralExpr{TokenValue: *value}
+	expr := &RuneLiteralExpr{ValueNode: value}
 	reducer.RuneLiteralExprs = append(reducer.RuneLiteralExprs, expr)
 	return expr, nil
 }
@@ -108,7 +63,7 @@ func (reducer *LiteralExprReducerImpl) RuneLiteralToLiteralExpr(
 func (reducer *LiteralExprReducerImpl) StringLiteralToLiteralExpr(
 	value *TokenValue,
 ) (Expression, error) {
-	expr := &StringLiteralExpr{TokenValue: *value}
+	expr := &StringLiteralExpr{ValueNode: value}
 	reducer.StringLiteralExprs = append(reducer.StringLiteralExprs, expr)
 	return expr, nil
 }
@@ -116,15 +71,6 @@ func (reducer *LiteralExprReducerImpl) StringLiteralToLiteralExpr(
 //
 // NamedExpr
 //
-
-type NamedExpr struct {
-	IsExpr
-	TokenValue
-}
-
-func (expr NamedExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[NamedExpr: %s]", indent, label, expr.Value)
-}
 
 type NamedExprReducerImpl struct {
 	NamedExprs []*NamedExpr
@@ -135,7 +81,7 @@ var _ NamedExprReducer = &NamedExprReducerImpl{}
 func (reducer *NamedExprReducerImpl) IdentifierToNamedExpr(
 	value *TokenValue,
 ) (Expression, error) {
-	expr := &NamedExpr{TokenValue: *value}
+	expr := &NamedExpr{ValueNode: value}
 	reducer.NamedExprs = append(reducer.NamedExprs, expr)
 	return expr, nil
 }
@@ -143,7 +89,7 @@ func (reducer *NamedExprReducerImpl) IdentifierToNamedExpr(
 func (reducer *NamedExprReducerImpl) UnderscoreToNamedExpr(
 	value *TokenValue,
 ) (Expression, error) {
-	expr := &NamedExpr{TokenValue: *value}
+	expr := &NamedExpr{ValueNode: value}
 	reducer.NamedExprs = append(reducer.NamedExprs, expr)
 	return expr, nil
 }
@@ -151,23 +97,6 @@ func (reducer *NamedExprReducerImpl) UnderscoreToNamedExpr(
 //
 // AccessExpr
 //
-
-type AccessExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Operand Expression
-	Field   TokenValue
-}
-
-func (expr AccessExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[AccessExpr: Field=%s\n", indent, label, expr.Field.Value)
-	result += expr.Operand.TreeString(indent+"  ", "Operand=")
-	result += "\n" + indent + "]"
-	return result
-}
 
 type AccessExprReducerImpl struct {
 	AccessExprs []*AccessExpr
@@ -186,7 +115,7 @@ func (reducer *AccessExprReducerImpl) ToAccessExpr(
 	expr := &AccessExpr{
 		StartEndPos: NewStartEndPos(operand.Loc(), field.End()),
 		Operand:     operand,
-		Field:       *field,
+		Field:       field,
 	}
 
 	expr.LeadingComment = operand.TakeLeading()
@@ -201,33 +130,6 @@ func (reducer *AccessExprReducerImpl) ToAccessExpr(
 //
 // UnaryExpr
 //
-
-// NOTE: The op's value is the same as the op's token symbol id.
-type UnaryOp SymbolId
-
-type UnaryExpr struct {
-	IsExpr
-
-	StartEndPos
-	LeadingTrailingComments
-
-	IsPrefix bool
-
-	Op      UnaryOp
-	Operand Expression
-}
-
-func (expr UnaryExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[UnaryExpr: IsPrefix=%v Op=%s\n",
-		indent,
-		label,
-		expr.IsPrefix,
-		SymbolId(expr.Op))
-	result += expr.Operand.TreeString(indent+"  ", "Operand=")
-	result += "\n" + indent + "]"
-	return result
-}
 
 type UnaryExprReducerImpl struct {
 	UnaryExprs []*UnaryExpr
@@ -245,7 +147,7 @@ func (reducer *UnaryExprReducerImpl) toPostfixUnaryExpr(
 	expr := &UnaryExpr{
 		StartEndPos: NewStartEndPos(operand.Loc(), op.End()),
 		IsPrefix:    false,
-		Op:          UnaryOp(op.SymbolId),
+		Op:          UnaryOp(op.Value),
 		Operand:     operand,
 	}
 
@@ -274,7 +176,7 @@ func (reducer *UnaryExprReducerImpl) toPrefixUnaryExpr(
 	expr := &UnaryExpr{
 		StartEndPos: NewStartEndPos(op.Loc(), operand.End()),
 		IsPrefix:    true,
-		Op:          UnaryOp(op.SymbolId),
+		Op:          UnaryOp(op.Value),
 		Operand:     operand,
 	}
 
@@ -320,28 +222,6 @@ func (reducer *UnaryExprReducerImpl) ToUnaryOpAssignStatement(
 // BinaryExpr
 //
 
-// NOTE: The op's value is the same as the op's token symbol id.
-type BinaryOp SymbolId
-
-type BinaryExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Left  Expression
-	Op    BinaryOp
-	Right Expression
-}
-
-func (expr BinaryExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[BinaryExpr: Op=%s\n", indent, label, SymbolId(expr.Op))
-	result += expr.Left.TreeString(indent+"  ", "Left=") + "\n"
-	result += expr.Right.TreeString(indent+"  ", "Right=")
-	result += "\n" + indent + "]"
-	return result
-}
-
 type BinaryExprReducerImpl struct {
 	BinaryExprs []*BinaryExpr
 }
@@ -368,7 +248,7 @@ func (reducer *BinaryExprReducerImpl) toBinaryExpr(
 	expr := &BinaryExpr{
 		StartEndPos: NewStartEndPos(left.Loc(), right.End()),
 		Left:        left,
-		Op:          BinaryOp(op.SymbolId),
+		Op:          BinaryOp(op.Value),
 		Right:       right,
 	}
 
@@ -495,26 +375,6 @@ func (reducer *BinaryExprReducerImpl) DefToGlobalVarDef(
 // ImplicitStructExpr
 //
 
-type ImplicitStructExpr struct {
-	IsExpr
-	ArgumentList
-
-	// An improper struct is the a comma separated list of expressions without
-	// left/right paren.  e.g., return 1, 2, 3
-	IsImproper bool
-}
-
-func (expr *ImplicitStructExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[ImplicitStructExpr: IsImproper=%v\n",
-		indent,
-		label,
-		expr.IsImproper)
-	result += expr.ArgumentList.TreeString(indent+"  ", "")
-	result += "\n" + indent + "]\n"
-	return result
-}
-
 type ImplicitStructExprReducerImpl struct {
 	ImplicitStructExprs []*ImplicitStructExpr
 }
@@ -634,11 +494,6 @@ func (reducer *ImplicitStructExprReducerImpl) ToTuplePattern(
 //
 // ColonExpr
 //
-
-type ColonExpr struct {
-	IsExpr
-	ArgumentList
-}
 
 type ColonExprReducerImpl struct {
 }
@@ -807,31 +662,6 @@ func (reducer *ColonExprReducerImpl) ColonExprExprTupleToColonExpr(
 // CallExpr
 //
 
-type CallExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	FuncExpr         Expression
-	GenericArguments GenericArgumentList
-	Arguments        ArgumentList
-}
-
-func (expr CallExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[CallExpr\n", indent, label)
-	result += expr.FuncExpr.TreeString(indent+"  ", "FuncExpr=") + "\n"
-	if len(expr.GenericArguments.Elements) > 0 {
-		result += expr.GenericArguments.TreeString(indent+"  ", "GenericArguments=")
-		result += "\n"
-	}
-	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
-	result += "\n" + indent + "]"
-
-	return result
-}
-
-var _ Expression = &CallExpr{}
-
 type CallExprReducerImpl struct {
 	CallExprs []*CallExpr
 }
@@ -873,23 +703,6 @@ func (reducer *CallExprReducerImpl) ToCallExpr(
 // IndexExpr
 //
 
-type IndexExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Accessible Expression
-	Index      Argument
-}
-
-func (expr IndexExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[IndexExpr\n", indent, label)
-	result += expr.Accessible.TreeString(indent+"  ", "Accessible=")
-	result += "\n" + expr.Index.TreeString(indent+"  ", "Argument=")
-	result += "\n" + indent + "]"
-	return result
-}
-
 type IndexExprReducerImpl struct {
 	IndexExprs []*IndexExpr
 }
@@ -925,25 +738,6 @@ func (reducer *IndexExprReducerImpl) ToIndexExpr(
 //
 // AsExpr
 //
-
-type AsExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Accessible Expression
-	CastType   TypeExpression
-}
-
-var _ Expression = &AsExpr{}
-
-func (expr AsExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[AsExpr:\n", indent, label)
-	result += expr.Accessible.TreeString(indent+"  ", "Accessible=") + "\n"
-	result += expr.CastType.TreeString(indent+"  ", "CastType=") + "\n"
-	result += "\n" + indent + "]"
-	return result
-}
 
 type AsExprReducerImpl struct {
 	AsExprs []*AsExpr
@@ -988,23 +782,6 @@ func (reducer *AsExprReducerImpl) ToAsExpr(
 // InitializeExpr
 //
 
-type InitializeExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Initializable TypeExpression
-	Arguments     ArgumentList
-}
-
-func (expr InitializeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[InitializeExpr:\n", indent, label)
-	result += expr.Initializable.TreeString(indent+"  ", "Initialiable=") + "\n"
-	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
-	result += "\n" + indent + "]"
-	return result
-}
-
 type InitializeExprReducerImpl struct {
 	InitializeExprs []*InitializeExpr
 }
@@ -1038,50 +815,6 @@ func (reducer *InitializeExprReducerImpl) ToInitializeExpr(
 //
 // IfExpr
 //
-
-type ConditionBranch struct {
-	Condition Expression
-	Branch    Expression
-}
-
-func (cb ConditionBranch) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[ConditionBranch:\n", indent, label)
-	result += cb.Condition.TreeString(indent+"  ", "Condition=") + "\n"
-	result += cb.Branch.TreeString(indent+"  ", "Branch=")
-	result += "\n" + indent + "]"
-	return result
-}
-
-type IfExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	LabelDecl         string // optional
-	ConditionBranches []ConditionBranch
-	ElseBranch        Expression // optional
-}
-
-var _ Expression = &IfExpr{}
-
-func (expr IfExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[IfExpr: LabelDecl=%s\n",
-		indent,
-		label,
-		expr.LabelDecl)
-	for idx, condBranch := range expr.ConditionBranches {
-		branchLabel := fmt.Sprintf("Branch%d=", idx)
-		result += condBranch.TreeString(indent+"  ", branchLabel) + "\n"
-	}
-
-	if expr.ElseBranch != nil {
-		result += expr.ElseBranch.TreeString(indent+"  ", "ElseBranch=") + "\n"
-	}
-
-	result += indent + "]"
-	return result
-}
 
 type IfExprReducerImpl struct {
 	IfExprs []*IfExpr
@@ -1192,26 +925,6 @@ func (reducer *IfExprReducerImpl) ToIfOnlyExpr(
 // SwitchExpr
 //
 
-type SwitchExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	LabelDecl string // optional
-	Operand   Expression
-	Branches  StatementsExpr
-}
-
-var _ Expression = &SwitchExpr{}
-
-func (expr SwitchExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[SwitchExpr:\n", indent, label)
-	result += expr.Operand.TreeString(indent+"  ", "Operand=") + "\n"
-	result += expr.Branches.TreeString(indent+"  ", "Branches=")
-	result += "\n" + indent + "]"
-	return result
-}
-
 type SwitchExprReducerImpl struct {
 	SwitchExprs []*SwitchExpr
 }
@@ -1275,24 +988,6 @@ func (reducer *SwitchExprReducerImpl) ToSwitchExprBody(
 // SelectExpr
 //
 
-type SelectExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	LabelDecl string // optional
-	Branches  StatementsExpr
-}
-
-var _ Expression = &SelectExpr{}
-
-func (expr SelectExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[SelectExpr:\n", indent, label)
-	result += expr.Branches.TreeString(indent+"  ", "Branches=")
-	result += "\n" + indent + "]"
-	return result
-}
-
 type SelectExprReducerImpl struct {
 	SelectExprs []*SelectExpr
 }
@@ -1353,64 +1048,6 @@ func (reducer *SelectExprReducerImpl) ToSelectExprBody(
 //
 // LoopExpr
 //
-
-type LoopKind string
-
-const (
-	InfiniteLoop = LoopKind("infinite")
-	DoWhileLoop  = LoopKind("do-while")
-	WhileLoop    = LoopKind("while")
-	IteratorLoop = LoopKind("iterator")
-	ForLoop      = LoopKind("for")
-)
-
-type LoopExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	LoopKind
-
-	LabelDecl string
-
-	Init          Statement  // optional. only applicable to traditional-for loop
-	AssignPattern Expression // optional. only applicable to iterator loop
-	Condition     Expression // optional. not applicable to infinite loop
-	Post          Statement  // optional. only applicable to traditional-for loop
-
-	Body StatementsExpr
-}
-
-var _ Expression = &LoopExpr{}
-
-func (expr LoopExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[LoopExpr: LoopKind=%s LabelDecl=%s",
-		indent,
-		label,
-		expr.LoopKind,
-		expr.LabelDecl)
-
-	if expr.Init != nil {
-		result += "\n" + expr.Init.TreeString(indent+"  ", "Init=")
-	}
-
-	if expr.AssignPattern != nil {
-		result += "\n" + expr.AssignPattern.TreeString(
-			indent+"  ",
-			"AssignPattern=")
-	}
-
-	result += "\n" + expr.Condition.TreeString(indent+"  ", "Condition=")
-
-	if expr.Post != nil {
-		result += "\n" + expr.Post.TreeString(indent+"  ", "Post=")
-	}
-
-	result += "\n" + expr.Body.TreeString(indent+"  ", "Body=")
-	result += "\n" + indent + "]"
-	return result
-}
 
 type LoopExprReducerImpl struct {
 	LoopExprs []*LoopExpr

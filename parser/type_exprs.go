@@ -1,29 +1,12 @@
 package parser
 
 import (
-	"fmt"
-
 	. "github.com/pattyshack/pl/ast"
 )
 
 //
 // SliceTypeExpr
 //
-
-type SliceTypeExpr struct {
-	IsTypeExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Value TypeExpression
-}
-
-func (slice SliceTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[SliceTypeExpr:\n", indent, label)
-	result += slice.Value.TreeString(indent+"  ", "Value=")
-	result += "\n" + indent + "]"
-	return result
-}
 
 type SliceTypeExprReducerImpl struct {
 	SliceTypeExprs []*SliceTypeExpr
@@ -57,26 +40,6 @@ func (reducer *SliceTypeExprReducerImpl) ToSliceTypeExpr(
 // ArrayTypeExpr
 //
 
-type ArrayTypeExpr struct {
-	IsTypeExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Value TypeExpression
-	Size  TokenValue
-}
-
-func (array ArrayTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[ArrayTypeExpr: Size=%s\n",
-		indent,
-		label,
-		array.Size.Value)
-	result += array.Value.TreeString(indent+"  ", "Value=")
-	result += "\n" + indent + "]"
-	return result
-}
-
 type ArrayTypeExprReducerImpl struct {
 	ArrayTypeExprs []*ArrayTypeExpr
 }
@@ -96,7 +59,7 @@ func (reducer *ArrayTypeExprReducerImpl) ToArrayTypeExpr(
 	array := &ArrayTypeExpr{
 		StartEndPos: NewStartEndPos(lbracket.Loc(), rbracket.End()),
 		Value:       value,
-		Size:        *size,
+		Size:        size,
 	}
 
 	array.LeadingComment = lbracket.TakeLeading()
@@ -113,23 +76,6 @@ func (reducer *ArrayTypeExprReducerImpl) ToArrayTypeExpr(
 //
 // MapTypeExpr
 //
-
-type MapTypeExpr struct {
-	IsTypeExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Key   TypeExpression
-	Value TypeExpression
-}
-
-func (dict MapTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[MapTypeExpr:\n", indent, label)
-	result += dict.Key.TreeString(indent+"  ", "Key=") + "\n"
-	result += dict.Value.TreeString(indent+"  ", "Value=")
-	result += "\n" + indent + "]"
-	return result
-}
 
 type MapTypeExprReducerImpl struct {
 	MapTypeExprs []*MapTypeExpr
@@ -168,19 +114,6 @@ func (reducer *MapTypeExprReducerImpl) ToMapTypeExpr(
 // InferredTypeExpr
 //
 
-type InferredTypeExpr struct {
-	IsTypeExpr
-	TokenValue
-}
-
-func (expr InferredTypeExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf(
-		"%s%s[InferredTypeExpr: SymbolId=%s]",
-		indent,
-		label,
-		expr.SymbolId)
-}
-
 type InferredTypeExprReducerImpl struct {
 	InferredTypeExprs []*InferredTypeExpr
 }
@@ -193,7 +126,12 @@ func (reducer *InferredTypeExprReducerImpl) DotToInferredTypeExpr(
 	TypeExpression,
 	error,
 ) {
-	expr := &InferredTypeExpr{TokenValue: *dot}
+	expr := &InferredTypeExpr{
+		StartEndPos:  NewStartEndPos(dot.Loc(), dot.End()),
+		InferMutable: false,
+	}
+	expr.LeadingComment = dot.TakeLeading()
+	expr.TrailingComment = dot.TakeTrailing()
 	reducer.InferredTypeExprs = append(reducer.InferredTypeExprs, expr)
 	return expr, nil
 }
@@ -204,7 +142,12 @@ func (reducer *InferredTypeExprReducerImpl) UnderscoreToInferredTypeExpr(
 	TypeExpression,
 	error,
 ) {
-	expr := &InferredTypeExpr{TokenValue: *underscore}
+	expr := &InferredTypeExpr{
+		StartEndPos:  NewStartEndPos(underscore.Loc(), underscore.End()),
+		InferMutable: true,
+	}
+	expr.LeadingComment = underscore.TakeLeading()
+	expr.TrailingComment = underscore.TakeTrailing()
 	reducer.InferredTypeExprs = append(reducer.InferredTypeExprs, expr)
 	return expr, nil
 }
@@ -212,37 +155,6 @@ func (reducer *InferredTypeExprReducerImpl) UnderscoreToInferredTypeExpr(
 //
 // NamedTypeExpr
 //
-
-type NamedTypeExpr struct {
-	IsTypeExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Pkg string // optional.  "" = local
-
-	Name TokenValue
-
-	GenericArguments GenericArgumentList
-}
-
-func (expr NamedTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[NamedTypeExpr: Pkg=%s Name=%s",
-		indent,
-		label,
-		expr.Pkg,
-		expr.Name.Value)
-
-	if len(expr.GenericArguments.Elements) == 0 {
-		return result + "]"
-	}
-
-	result += "\n" + expr.GenericArguments.TreeString(
-		indent+"  ",
-		"GenericArguments=")
-	result += "\n" + indent + "]"
-	return result
-}
 
 type NamedTypeExprReducerImpl struct {
 	NamedTypeExprs []*NamedTypeExpr
@@ -269,7 +181,7 @@ func (reducer *NamedTypeExprReducerImpl) toNamedTypeExpr(
 		LeadingTrailingComments: LeadingTrailingComments{
 			TrailingComment: trailing,
 		},
-		Name:             *name,
+		Name:             name,
 		GenericArguments: *genericArguments,
 	}
 
@@ -313,28 +225,6 @@ func (reducer *NamedTypeExprReducerImpl) ExternalToNamedTypeExpr(
 // UnaryTypeExpr
 //
 
-type UnaryTypeOp SymbolId
-
-type UnaryTypeExpr struct {
-	IsTypeExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Op      UnaryTypeOp
-	Operand TypeExpression
-}
-
-func (expr UnaryTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[UnaryTypeExpr: Op=%s\n",
-		indent,
-		label,
-		SymbolId(expr.Op))
-	result += expr.Operand.TreeString(indent+"  ", "Operand=")
-	result += "\n" + indent + "]"
-	return result
-}
-
 type UnaryTypeExprReducerImpl struct {
 	UnaryTypeExprs []*UnaryTypeExpr
 }
@@ -350,7 +240,7 @@ func (reducer *UnaryTypeExprReducerImpl) ToPrefixUnaryTypeExpr(
 ) {
 	expr := &UnaryTypeExpr{
 		StartEndPos: NewStartEndPos(op.Loc(), operand.End()),
-		Op:          UnaryTypeOp(op.SymbolId),
+		Op:          UnaryTypeOp(op.Value),
 		Operand:     operand,
 	}
 
@@ -365,27 +255,6 @@ func (reducer *UnaryTypeExprReducerImpl) ToPrefixUnaryTypeExpr(
 //
 // BinaryTypeExpr
 //
-
-type BinaryTypeOp SymbolId
-
-type BinaryTypeExpr struct {
-	IsTypeExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Left  TypeExpression
-	Op    BinaryTypeOp
-	Right TypeExpression
-}
-
-func (expr BinaryTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[BinaryTypeExpr: Op=%s\n", indent, label, SymbolId(expr.Op))
-	result += expr.Left.TreeString(indent+"  ", "Left=") + "\n"
-	result += expr.Right.TreeString(indent+"  ", "Right=")
-	result += "\n" + indent + "]"
-	return result
-}
 
 type BinaryTypeExprReducerImpl struct {
 	BinaryTypeExprs []*BinaryTypeExpr
@@ -404,7 +273,7 @@ func (reducer *BinaryTypeExprReducerImpl) ToBinaryTypeExpr(
 	expr := &BinaryTypeExpr{
 		StartEndPos: NewStartEndPos(left.Loc(), right.End()),
 		Left:        left,
-		Op:          BinaryTypeOp(op.SymbolId),
+		Op:          BinaryTypeOp(op.Value),
 		Right:       right,
 	}
 
@@ -420,40 +289,6 @@ func (reducer *BinaryTypeExprReducerImpl) ToBinaryTypeExpr(
 //
 // Struct / Enum / Trait PropertiesType
 //
-
-type PropertiesKind string
-
-const (
-	StructKind = PropertiesKind("struct")
-	EnumKind   = PropertiesKind("enum")
-	TraitKind  = PropertiesKind("trait")
-)
-
-type PropertiesTypeExpr struct {
-	IsTypeExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Kind PropertiesKind
-
-	IsImplicit bool
-
-	Properties TypePropertyList
-}
-
-var _ TypeExpression = &PropertiesTypeExpr{}
-
-func (expr PropertiesTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[PropertiesTypeExpr: Kind=%s IsImplicit=%v\n",
-		indent,
-		label,
-		expr.Kind,
-		expr.IsImplicit)
-	result += expr.Properties.TreeString(indent+"  ", "Properties=")
-	result += "\n" + indent + "]"
-	return result
-}
 
 type PropertiesTypeExprReducer struct {
 	StructTypeExprs []*PropertiesTypeExpr

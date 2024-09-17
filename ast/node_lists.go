@@ -124,3 +124,33 @@ type GenericArgumentList = NodeList[TypeExpression]
 func NewGenericArgumentList() *GenericArgumentList {
 	return NewNodeList[TypeExpression]("GenericArgumentList")
 }
+
+//
+// ParameterList
+//
+
+type ParameterList = NodeList[*Parameter]
+
+func NewParameterList() *ParameterList {
+	return NewNodeList[*Parameter]("ParameterList")
+}
+
+//
+// Argument list
+//
+
+type ArgumentList = NodeList[*Argument]
+
+func NewArgumentList() *ArgumentList {
+	return NewNodeList[*Argument]("ArgumentList")
+}
+
+//
+// GenericParameterList
+//
+
+type GenericParameterList = NodeList[*GenericParameter]
+
+func NewGenericParameterList() *GenericParameterList {
+	return NewNodeList[*GenericParameter]("GenericParameterList")
+}

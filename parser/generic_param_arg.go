@@ -1,42 +1,12 @@
 package parser
 
 import (
-	"fmt"
-
 	. "github.com/pattyshack/pl/ast"
 )
 
 //
 // GenericParameter
 //
-
-type GenericParameter struct {
-	StartEndPos
-	LeadingTrailingComments
-
-	Name string
-
-	Constraint TypeExpression // optional
-}
-
-var _ Node = &GenericParameter{}
-
-func (param GenericParameter) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[GenericParameter: Name=%s",
-		indent,
-		label,
-		param.Name)
-
-	if param.Constraint == nil {
-		result += "]"
-	} else {
-		result += "\n" + param.Constraint.TreeString(indent+"  ", "Constraint=")
-		result += "\n" + indent + "]"
-	}
-
-	return result
-}
 
 type GenericParameterReducerImpl struct{}
 
@@ -77,14 +47,6 @@ func (GenericParameterReducerImpl) ConstrainedToGenericParameter(
 //
 // GenericParameterList
 //
-
-type GenericParameterList = NodeList[*GenericParameter]
-
-var _ Node = &GenericParameterList{}
-
-func NewGenericParameterList() *GenericParameterList {
-	return NewNodeList[*GenericParameter]("GenericParameterList")
-}
 
 type GenericParameterListReducerImpl struct{}
 

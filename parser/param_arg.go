@@ -1,65 +1,12 @@
 package parser
 
 import (
-	"fmt"
-
 	. "github.com/pattyshack/pl/ast"
 )
 
 //
 // Parameter
 //
-
-type ParameterKind string
-
-const (
-	// NOTE: There is no implicit unnamed inferred arg variant
-	NamedTypedArgParameter         = ParameterKind("named-typed-arg")
-	NamedInferredArgParameter      = ParameterKind("named-inferred-arg")
-	NamedTypedVarargParameter      = ParameterKind("named-typed-vararg")
-	NamedInferredVarargParameter   = ParameterKind("named-inferred-vararg")
-	UnnamedTypedArgParameter       = ParameterKind("unnamed-typed-arg")
-	UnnamedTypedVarargParameter    = ParameterKind("unnamed-typed-vararg")
-	UnnamedInferredVarargParameter = ParameterKind("unnamed-inferred-vararg")
-	IgnoreTypedArgParameter        = ParameterKind("ignore-typed-arg")
-	IgnoreInferredArgParameter     = ParameterKind("ignore-inferred-arg")
-	IgnoreTypedVarargParameter     = ParameterKind("ignore-typed-vararg")
-	IgnoreInferredVarargParameter  = ParameterKind("ignore-inferred-vararg")
-)
-
-type Parameter struct {
-	StartEndPos
-	LeadingTrailingComments
-
-	Kind ParameterKind
-
-	Name        *TokenValue // optional
-	HasEllipsis bool
-	Type        TypeExpression // optional
-}
-
-var _ Node = &Parameter{}
-
-func (param Parameter) TreeString(indent string, label string) string {
-	name := ""
-	if param.Name != nil {
-		name = param.Name.Value
-	}
-	result := fmt.Sprintf(
-		"%s%s[Parameter: Kind=%v Name=%s HasEllipsis=%v\n",
-		indent,
-		label,
-		param.Kind,
-		name,
-		param.HasEllipsis)
-	if param.Type != nil {
-		result += param.Type.TreeString(indent+"  ", "Type=")
-		result += "\n" + indent + "]"
-	} else {
-		result += "]"
-	}
-	return result
-}
 
 type ParameterReducerImpl struct{}
 
@@ -303,14 +250,6 @@ func (reducer *ParameterReducerImpl) IgnoreInferredArgToParameterDef(
 // ParameterList
 //
 
-type ParameterList = NodeList[*Parameter]
-
-func NewParameterList() *ParameterList {
-	return NewNodeList[*Parameter]("ParameterList")
-}
-
-var _ Node = &ParameterList{}
-
 type ParameterListReducerImpl struct{}
 
 var _ ProperParameterDeclListReducer = &ParameterListReducerImpl{}
@@ -430,103 +369,6 @@ func (reducer *ParameterListReducerImpl) ToParameterDefs(
 // Argument
 //
 
-type ArgumentKind string
-
-const (
-	PositionalArgument       = ArgumentKind("positional")
-	NamedAssignmentArgument  = ArgumentKind("named-assigned")
-	VarargAssignmentArgument = ArgumentKind("vararg-assigned")
-	ColonExprArgument        = ArgumentKind("colon-expr")
-	// Only used by patterns
-	SkipPatternArgument = ArgumentKind("skip-pattern")
-	// Only used by ColonExpr
-	IsImplicitUnitArgument = ArgumentKind("implicit-unit")
-)
-
-type Argument struct {
-	StartEndPos
-	LeadingTrailingComments
-
-	Kind ArgumentKind
-
-	// Only set for named assignment
-	OptionalName string
-
-	// NOTE: Expr may be nil for SkipPatternArgument or IsImplicitUnit.
-	Expr Expression
-
-	HasEllipsis bool
-}
-
-var _ Node = &Argument{}
-
-func NewPositionalArgument(expr Expression) *Argument {
-	return &Argument{
-		StartEndPos: NewStartEndPos(expr.Loc(), expr.End()),
-		LeadingTrailingComments: LeadingTrailingComments{
-			LeadingComment:  expr.TakeLeading(),
-			TrailingComment: expr.TakeTrailing(),
-		},
-		Kind:        PositionalArgument,
-		Expr:        expr,
-		HasEllipsis: false,
-	}
-}
-
-func NewNamedArgument(
-	name *TokenValue,
-	assign *TokenValue,
-	expr Expression,
-) *Argument {
-	arg := &Argument{
-		StartEndPos:  NewStartEndPos(name.Loc(), expr.End()),
-		Kind:         NamedAssignmentArgument,
-		OptionalName: name.Value,
-		Expr:         expr,
-		HasEllipsis:  false,
-	}
-
-	arg.LeadingComment = name.TakeLeading()
-	// prepend in reverse order
-	expr.PrependToLeading(assign.TakeTrailing())
-	expr.PrependToLeading(assign.TakeLeading())
-	expr.PrependToLeading(name.TakeTrailing())
-	arg.TrailingComment = expr.TakeTrailing()
-
-	return arg
-}
-
-func NewSkipPatternArgument(
-	ellipsis *TokenValue,
-) *Argument {
-	return &Argument{
-		StartEndPos:             NewStartEndPos(ellipsis.Loc(), ellipsis.End()),
-		LeadingTrailingComments: ellipsis.LeadingTrailingComments,
-		Kind:                    SkipPatternArgument,
-		Expr:                    nil,
-		HasEllipsis:             true,
-	}
-}
-
-func (arg *Argument) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[Argument: Kind=%v OptionalName=%s HasEllipsis=%v",
-		indent,
-		label,
-		arg.Kind,
-		arg.OptionalName,
-		arg.HasEllipsis)
-	if arg.Expr != nil {
-		result += "\n"
-		result += arg.Expr.TreeString(indent+"  ", "")
-		result += "\n" + indent + "]"
-	} else {
-		result += "]"
-	}
-
-	return result
-}
-
 type ArgumentReducerImpl struct {
 }
 
@@ -632,12 +474,6 @@ func (ArgumentReducerImpl) SkipPatternToFieldVarPattern(
 //
 // Argument list
 //
-
-type ArgumentList = NodeList[*Argument]
-
-func NewArgumentList() *ArgumentList {
-	return NewNodeList[*Argument]("ArgumentList")
-}
 
 type ArgumentListReducerImpl struct{}
 

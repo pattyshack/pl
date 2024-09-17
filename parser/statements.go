@@ -2,7 +2,6 @@ package parser
 
 import (
 	"fmt"
-	"strings"
 
 	. "github.com/pattyshack/pl/ast"
 )
@@ -10,32 +9,6 @@ import (
 //
 // StatementsExpr
 //
-
-type StatementsExpr struct {
-	IsExpr
-
-	LabelDecl string // optional
-	NodeList[Statement]
-}
-
-func NewStatementsExpr() *StatementsExpr {
-	return &StatementsExpr{}
-}
-
-func (expr StatementsExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[StatementsExpr: LabelDecl=%s",
-		indent,
-		label,
-		expr.LabelDecl)
-	if len(expr.Elements) == 0 {
-		return result + "]"
-	}
-
-	result += expr.ElementsString(indent + "  ")
-	result += "\n" + indent + "]"
-	return result
-}
 
 type StatementsExprReducerImpl struct{}
 
@@ -160,25 +133,6 @@ func (StatementsExprReducerImpl) NilToTrailingSimpleStatement() (
 // ImportClause
 //
 
-type ImportClause struct {
-	StartEndPos
-	LeadingTrailingComments
-
-	Alias   string // Identifier or underscore or dot or ""
-	Package string
-}
-
-var _ Node = &ImportClause{}
-
-func (clause ImportClause) TreeString(indent string, label string) string {
-	return fmt.Sprintf(
-		"%s%s[ImportClause: Alias=%s Package=%s]",
-		indent,
-		label,
-		clause.Alias,
-		clause.Package)
-}
-
 type ImportClauseReducerImpl struct {
 	ImportClauses []*ImportClause
 }
@@ -255,19 +209,6 @@ func (reducer *ImportClauseReducerImpl) ImportToLocalToImportClause(
 //
 // ImportStatement
 //
-
-type ImportStatement struct {
-	IsStmt
-	NodeList[*ImportClause]
-}
-
-var _ Node = &ImportStatement{}
-
-func NewImportStatement() *ImportStatement {
-	return &ImportStatement{
-		NodeList: *NewNodeList[*ImportClause]("ImportStatement"),
-	}
-}
 
 type ImportStatementReducerImpl struct{}
 
@@ -367,72 +308,6 @@ func (ImportStatementReducerImpl) ExplicitToImportClauses(
 // JumpStatement
 //
 
-type JumpOp SymbolId
-
-type JumpStatement struct {
-	IsStmt
-	StartEndPos
-	LeadingTrailingComments
-
-	Op    JumpOp
-	Label string     // optional
-	Value Expression // optional
-}
-
-var _ Statement = &JumpStatement{}
-
-func NewJumpStatement(
-	op *TokenValue,
-	labelToken *TokenValue,
-	value Expression,
-) *JumpStatement {
-	start := op.Loc()
-	end := op.End()
-	leading := op.TakeLeading()
-	trailing := op.TakeTrailing()
-
-	label := ""
-	if labelToken != nil {
-		label = labelToken.Value
-		end = labelToken.End()
-		trailing.Append(labelToken.TakeLeading())
-		trailing.Append(labelToken.TakeTrailing())
-	}
-
-	if value != nil {
-		value.PrependToLeading(trailing)
-		end = value.End()
-		trailing = value.TakeTrailing()
-	}
-
-	stmt := &JumpStatement{
-		StartEndPos: NewStartEndPos(start, end),
-		Op:          JumpOp(op.SymbolId),
-		Label:       label,
-		Value:       value,
-	}
-	stmt.LeadingComment = leading
-	stmt.TrailingComment = trailing
-
-	return stmt
-}
-
-func (jump JumpStatement) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[JumpStatement: Op=%s Label=%s",
-		indent,
-		label,
-		SymbolId(jump.Op),
-		jump.Label)
-	if jump.Value == nil {
-		return result + " Value=(nil)]"
-	}
-
-	result += "\n" + jump.Value.TreeString(indent+"  ", "Value=")
-	result += "\n" + indent + "]"
-	return result
-}
-
 type JumpStatementReducerImpl struct{}
 
 var _ JumpStatementReducer = &JumpStatementReducerImpl{}
@@ -490,32 +365,6 @@ func (JumpStatementReducerImpl) FallthroughToJumpStatement(
 // UnsafeStatement
 //
 
-type UnsafeStatement struct {
-	IsStmt
-	IsTypeProp
-	StartEndPos
-	LeadingTrailingComments
-
-	Language       string
-	VerbatimSource string
-}
-
-var _ Statement = &UnsafeStatement{}
-var _ TypeProperty = &UnsafeStatement{}
-
-func (stmt UnsafeStatement) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[UnsafeStatement: Language=%s VerbatimSource=\n",
-		indent,
-		label,
-		stmt.Language)
-	for _, line := range strings.Split(stmt.VerbatimSource, "\n") {
-		result += indent + "  |" + line + "\n"
-	}
-	result += indent + "]"
-	return result
-}
-
 type UnsafeStatementReducerImpl struct{}
 
 var _ UnsafeStatementReducer = &UnsafeStatementReducerImpl{}
@@ -552,35 +401,6 @@ func (UnsafeStatementReducerImpl) ToUnsafeStatement(
 //
 // BranchStatement
 //
-
-type BranchStatement struct {
-	IsStmt
-	StartEndPos
-	LeadingTrailingComments
-
-	IsDefault    bool
-	CasePatterns ExpressionList
-	Body         StatementsExpr
-}
-
-var _ Statement = &BranchStatement{}
-
-func (stmt BranchStatement) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[BranchStatement: IsDefault=%v\n",
-		indent,
-		label,
-		stmt.IsDefault)
-
-	if !stmt.IsDefault {
-		result += stmt.CasePatterns.TreeString(indent+"  ", "CasePatterns=") + "\n"
-	}
-
-	result += stmt.Body.TreeString(indent+"  ", "Body=")
-
-	result += "\n" + indent + "]"
-	return result
-}
 
 type BranchStatementReducerImpl struct{}
 
