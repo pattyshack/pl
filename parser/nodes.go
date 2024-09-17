@@ -49,14 +49,12 @@ type ValueNode interface {
 type Expression interface {
 	Node
 	Statement
-	CasePattern
 	Definition
 	IsExpression()
 }
 
 type isExpression struct {
 	isStatement
-	isCasePattern
 	isDefinition
 }
 
@@ -88,17 +86,6 @@ type Statement interface {
 type isStatement struct{}
 
 func (isStatement) IsStatement() {}
-
-type CasePattern interface {
-	Node
-	IsCasePattern()
-}
-
-type isCasePattern struct {
-	isStatement
-}
-
-func (isCasePattern) IsCasePattern() {}
 
 type Definition interface {
 	Node
@@ -345,7 +332,7 @@ func (list NodeList[T]) TreeString(indent string, label string) string {
 	return result
 }
 
-func newNodeList[T Node](listType string) *NodeList[T] {
+func NewNodeList[T Node](listType string) *NodeList[T] {
 	return &NodeList[T]{
 		ListType: listType,
 	}

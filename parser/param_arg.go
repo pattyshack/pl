@@ -304,7 +304,7 @@ func (reducer *ParameterReducerImpl) IgnoreInferredArgToParameterDef(
 type ParameterList = NodeList[*Parameter]
 
 func NewParameterList() *ParameterList {
-	return newNodeList[*Parameter]("ParameterList")
+	return NewNodeList[*Parameter]("ParameterList")
 }
 
 var _ Node = &ParameterList{}
@@ -634,7 +634,7 @@ func (ArgumentReducerImpl) SkipPatternToFieldVarPattern(
 type ArgumentList = NodeList[*Argument]
 
 func NewArgumentList() *ArgumentList {
-	return newNodeList[*Argument]("ArgumentList")
+	return NewNodeList[*Argument]("ArgumentList")
 }
 
 type ArgumentListReducerImpl struct{}

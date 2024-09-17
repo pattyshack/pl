@@ -11,7 +11,7 @@ import (
 type DefinitionList = NodeList[Definition]
 
 func NewDefinitionList() *DefinitionList {
-	return newNodeList[Definition]("DefinitionList")
+	return NewNodeList[Definition]("DefinitionList")
 }
 
 type DefinitionListReducerImpl struct{}

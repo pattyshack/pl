@@ -81,7 +81,7 @@ type GenericParameterList = NodeList[*GenericParameter]
 var _ Node = &GenericParameterList{}
 
 func NewGenericParameterList() *GenericParameterList {
-	return newNodeList[*GenericParameter]("GenericParameterList")
+	return NewNodeList[*GenericParameter]("GenericParameterList")
 }
 
 type GenericParameterListReducerImpl struct{}
@@ -159,7 +159,7 @@ type GenericArgumentList = NodeList[TypeExpression]
 var _ Node = &GenericArgumentList{}
 
 func NewGenericArgumentList() *GenericArgumentList {
-	return newNodeList[TypeExpression]("GenericArgumentList")
+	return NewNodeList[TypeExpression]("GenericArgumentList")
 }
 
 type GenericArgumentListReducerImpl struct{}

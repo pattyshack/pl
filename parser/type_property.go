@@ -125,7 +125,7 @@ func (reducer FieldDefReducerImpl) PaddingFieldDefToTypeProperty(
 type TypePropertyList = NodeList[TypeProperty]
 
 func NewTypePropertyList() *TypePropertyList {
-	return newNodeList[TypeProperty]("TypePropertyList")
+	return NewNodeList[TypeProperty]("TypePropertyList")
 }
 
 var _ Node = &TypePropertyList{}

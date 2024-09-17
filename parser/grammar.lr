@@ -326,7 +326,7 @@ sequence_expr_assign_pattern<Expression> ->
 expr_assign_pattern<Expression> ->
   = expr_or_improper_expr_struct
 
-case_patterns<CasePatternList> ->
+case_patterns<ExpressionList> ->
   // In select expr, must verify the list has exactly one recv or send
   // expression.
   = switchable_case_patterns |
@@ -343,7 +343,7 @@ case_patterns<CasePatternList> ->
 case_assign_pattern<CaseAssignPattern> ->
   switchable_case_patterns ASSIGN sequence_expr
 
-switchable_case_patterns<CasePatternList> ->
+switchable_case_patterns<ExpressionList> ->
   switchable_case_pattern |
   add: switchable_case_patterns COMMA switchable_case_pattern
 
@@ -367,11 +367,11 @@ switchable_case_patterns<CasePatternList> ->
 //   // expr is an IfExpr.  Since the specified type is &IfExpr, expr and
 //   // ifExprRef refers to the same object.
 // }
-switchable_case_pattern<CasePattern> ->
+switchable_case_pattern<Expression> ->
   = expr |
   = case_enum_pattern
 
-case_enum_pattern<CasePattern> ->
+case_enum_pattern<Expression> ->
   // Note: parsing VAR <pkg>.<enum type>.<enum value>(...) is painful using
   // context free grammar (e.g, need to make VAR a prefix op expression instead
   // of decl_var_pattern), hence we won't support this form. (the expression
@@ -997,6 +997,7 @@ go:
     Count: "TokenCount"
     Value: "*TokenValue"
     Expression: "Expression"
+    ExpressionList: "*ExpressionList"
     IfExpr: "*IfExpr"
     ColonExpr: "*ColonExpr"
     Parameter: "*Parameter"
@@ -1018,9 +1019,7 @@ go:
     ImportStatement: "*ImportStatement"
     ImplicitStruct: "*ImplicitStructExpr"
     UnsafeStatement: "*UnsafeStatement"
-    CasePattern: "CasePattern"
     CaseAssignPattern: "*CaseAssignPattern"
-    CasePatternList: "*CasePatternList"
     CommentGroups: "CommentGroups"
   generate_end_pos: True
 }%%

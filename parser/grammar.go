@@ -189,7 +189,7 @@ type StatementListReducer interface {
 
 type BranchStatementReducer interface {
 	// 167:2: branch_statement -> case_branch: ...
-	CaseBranchToBranchStatement(Case_ *TokenValue, CasePatterns_ *CasePatternList, Colon_ *TokenValue, TrailingSimpleStatement_ *StatementsExpr) (Statement, error)
+	CaseBranchToBranchStatement(Case_ *TokenValue, CasePatterns_ *ExpressionList, Colon_ *TokenValue, TrailingSimpleStatement_ *StatementsExpr) (Statement, error)
 
 	// 168:2: branch_statement -> default_branch: ...
 	DefaultBranchToBranchStatement(Default_ *TokenValue, Colon_ *TokenValue, TrailingSimpleStatement_ *StatementsExpr) (Statement, error)
@@ -349,31 +349,31 @@ type FieldVarPatternReducer interface {
 type CasePatternsReducer interface {
 
 	// 333:2: case_patterns -> ...
-	ToCasePatterns(CaseAssignPattern_ *CaseAssignPattern) (*CasePatternList, error)
+	ToCasePatterns(CaseAssignPattern_ *CaseAssignPattern) (*ExpressionList, error)
 }
 
 type CaseAssignPatternReducer interface {
 	// 344:2: case_assign_pattern -> ...
-	ToCaseAssignPattern(SwitchableCasePatterns_ *CasePatternList, Assign_ *TokenValue, SequenceExpr_ Expression) (*CaseAssignPattern, error)
+	ToCaseAssignPattern(SwitchableCasePatterns_ *ExpressionList, Assign_ *TokenValue, SequenceExpr_ Expression) (*CaseAssignPattern, error)
 }
 
 type SwitchableCasePatternsReducer interface {
 	// 347:2: switchable_case_patterns -> switchable_case_pattern: ...
-	SwitchableCasePatternToSwitchableCasePatterns(SwitchableCasePattern_ CasePattern) (*CasePatternList, error)
+	SwitchableCasePatternToSwitchableCasePatterns(SwitchableCasePattern_ Expression) (*ExpressionList, error)
 
 	// 348:2: switchable_case_patterns -> add: ...
-	AddToSwitchableCasePatterns(SwitchableCasePatterns_ *CasePatternList, Comma_ *TokenValue, SwitchableCasePattern_ CasePattern) (*CasePatternList, error)
+	AddToSwitchableCasePatterns(SwitchableCasePatterns_ *ExpressionList, Comma_ *TokenValue, SwitchableCasePattern_ Expression) (*ExpressionList, error)
 }
 
 type CaseEnumPatternReducer interface {
 	// 380:2: case_enum_pattern -> enum_match_pattern: ...
-	EnumMatchPatternToCaseEnumPattern(Dot_ *TokenValue, Identifier_ *TokenValue, ImplicitStructExpr_ Expression) (CasePattern, error)
+	EnumMatchPatternToCaseEnumPattern(Dot_ *TokenValue, Identifier_ *TokenValue, ImplicitStructExpr_ Expression) (Expression, error)
 
 	// 381:2: case_enum_pattern -> enum_nondata_match_patten: ...
-	EnumNondataMatchPattenToCaseEnumPattern(Dot_ *TokenValue, Identifier_ *TokenValue) (CasePattern, error)
+	EnumNondataMatchPattenToCaseEnumPattern(Dot_ *TokenValue, Identifier_ *TokenValue) (Expression, error)
 
 	// 382:2: case_enum_pattern -> enum_decl_var_pattern: ...
-	EnumDeclVarPatternToCaseEnumPattern(VarType_ *TokenValue, Dot_ *TokenValue, Identifier_ *TokenValue, TuplePattern_ Expression) (CasePattern, error)
+	EnumDeclVarPatternToCaseEnumPattern(VarType_ *TokenValue, Dot_ *TokenValue, Identifier_ *TokenValue, TuplePattern_ Expression) (Expression, error)
 }
 
 type IfExprReducer interface {
@@ -3662,14 +3662,13 @@ type Symbol struct {
 	Argument             *Argument
 	ArgumentList         *ArgumentList
 	CaseAssignPattern    *CaseAssignPattern
-	CasePattern          CasePattern
-	CasePatternList      *CasePatternList
 	ColonExpr            *ColonExpr
 	CommentGroups        CommentGroups
 	Count                TokenCount
 	Definition           Definition
 	Definitions          *DefinitionList
 	Expression           Expression
+	ExpressionList       *ExpressionList
 	FieldDef             *FieldDef
 	GenericArgumentList  *GenericArgumentList
 	GenericParameter     *GenericParameter
@@ -3776,16 +3775,6 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case SwitchableCasePatternType, CaseEnumPatternType:
-		loc, ok := interface{}(s.CasePattern).(locator)
-		if ok {
-			return loc.Loc()
-		}
-	case CasePatternsType, SwitchableCasePatternsType:
-		loc, ok := interface{}(s.CasePatternList).(locator)
-		if ok {
-			return loc.Loc()
-		}
 	case ColonExprType:
 		loc, ok := interface{}(s.ColonExpr).(locator)
 		if ok {
@@ -3811,8 +3800,13 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case StatementsType, ExprOrImproperExprStructType, DeclVarPatternType, AssignVarPatternType, VarPatternType, TuplePatternType, SequenceExprAssignPatternType, ExprAssignPatternType, ExprType, SequenceExprType, IfExprType, ConditionType, CaseAssignExprType, SwitchExprType, SwitchExprBodyType, SelectExprType, SelectExprBodyType, LoopExprType, LoopExprBodyType, OptionalSequenceExprType, LoopBodyType, CallExprType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, StatementsExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AnonymousFuncExprType:
+	case StatementsType, ExprOrImproperExprStructType, DeclVarPatternType, AssignVarPatternType, VarPatternType, TuplePatternType, SequenceExprAssignPatternType, ExprAssignPatternType, SwitchableCasePatternType, CaseEnumPatternType, ExprType, SequenceExprType, IfExprType, ConditionType, CaseAssignExprType, SwitchExprType, SwitchExprBodyType, SelectExprType, SelectExprBodyType, LoopExprType, LoopExprBodyType, OptionalSequenceExprType, LoopBodyType, CallExprType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, StatementsExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
+		if ok {
+			return loc.Loc()
+		}
+	case CasePatternsType, SwitchableCasePatternsType:
+		loc, ok := interface{}(s.ExpressionList).(locator)
 		if ok {
 			return loc.Loc()
 		}
@@ -3928,16 +3922,6 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case SwitchableCasePatternType, CaseEnumPatternType:
-		loc, ok := interface{}(s.CasePattern).(locator)
-		if ok {
-			return loc.End()
-		}
-	case CasePatternsType, SwitchableCasePatternsType:
-		loc, ok := interface{}(s.CasePatternList).(locator)
-		if ok {
-			return loc.End()
-		}
 	case ColonExprType:
 		loc, ok := interface{}(s.ColonExpr).(locator)
 		if ok {
@@ -3963,8 +3947,13 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case StatementsType, ExprOrImproperExprStructType, DeclVarPatternType, AssignVarPatternType, VarPatternType, TuplePatternType, SequenceExprAssignPatternType, ExprAssignPatternType, ExprType, SequenceExprType, IfExprType, ConditionType, CaseAssignExprType, SwitchExprType, SwitchExprBodyType, SelectExprType, SelectExprBodyType, LoopExprType, LoopExprBodyType, OptionalSequenceExprType, LoopBodyType, CallExprType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, StatementsExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AnonymousFuncExprType:
+	case StatementsType, ExprOrImproperExprStructType, DeclVarPatternType, AssignVarPatternType, VarPatternType, TuplePatternType, SequenceExprAssignPatternType, ExprAssignPatternType, SwitchableCasePatternType, CaseEnumPatternType, ExprType, SequenceExprType, IfExprType, ConditionType, CaseAssignExprType, SwitchExprType, SwitchExprBodyType, SelectExprType, SelectExprBodyType, LoopExprType, LoopExprBodyType, OptionalSequenceExprType, LoopBodyType, CallExprType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, StatementsExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
+		if ok {
+			return loc.End()
+		}
+	case CasePatternsType, SwitchableCasePatternsType:
+		loc, ok := interface{}(s.ExpressionList).(locator)
 		if ok {
 			return loc.End()
 		}
@@ -4363,7 +4352,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = BranchStatementType
-		symbol.Statement, err = reducer.CaseBranchToBranchStatement(args[0].Value, args[1].CasePatternList, args[2].Value, args[3].StatementsExpr)
+		symbol.Statement, err = reducer.CaseBranchToBranchStatement(args[0].Value, args[1].ExpressionList, args[2].Value, args[3].StatementsExpr)
 	case _ReduceDefaultBranchToBranchStatement:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -4746,57 +4735,57 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CasePatternsType
 		//line grammar.lr:332:4
-		symbol.CasePatternList = args[0].CasePatternList
+		symbol.ExpressionList = args[0].ExpressionList
 		err = nil
 	case _ReduceToCasePatterns:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CasePatternsType
-		symbol.CasePatternList, err = reducer.ToCasePatterns(args[0].CaseAssignPattern)
+		symbol.ExpressionList, err = reducer.ToCasePatterns(args[0].CaseAssignPattern)
 	case _ReduceToCaseAssignPattern:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = CaseAssignPatternType
-		symbol.CaseAssignPattern, err = reducer.ToCaseAssignPattern(args[0].CasePatternList, args[1].Value, args[2].Expression)
+		symbol.CaseAssignPattern, err = reducer.ToCaseAssignPattern(args[0].ExpressionList, args[1].Value, args[2].Expression)
 	case _ReduceSwitchableCasePatternToSwitchableCasePatterns:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SwitchableCasePatternsType
-		symbol.CasePatternList, err = reducer.SwitchableCasePatternToSwitchableCasePatterns(args[0].CasePattern)
+		symbol.ExpressionList, err = reducer.SwitchableCasePatternToSwitchableCasePatterns(args[0].Expression)
 	case _ReduceAddToSwitchableCasePatterns:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = SwitchableCasePatternsType
-		symbol.CasePatternList, err = reducer.AddToSwitchableCasePatterns(args[0].CasePatternList, args[1].Value, args[2].CasePattern)
+		symbol.ExpressionList, err = reducer.AddToSwitchableCasePatterns(args[0].ExpressionList, args[1].Value, args[2].Expression)
 	case _ReduceExprToSwitchableCasePattern:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SwitchableCasePatternType
 		//line grammar.lr:371:4
-		symbol.CasePattern = args[0].Expression
+		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceCaseEnumPatternToSwitchableCasePattern:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SwitchableCasePatternType
 		//line grammar.lr:372:4
-		symbol.CasePattern = args[0].CasePattern
+		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceEnumMatchPatternToCaseEnumPattern:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = CaseEnumPatternType
-		symbol.CasePattern, err = reducer.EnumMatchPatternToCaseEnumPattern(args[0].Value, args[1].Value, args[2].Expression)
+		symbol.Expression, err = reducer.EnumMatchPatternToCaseEnumPattern(args[0].Value, args[1].Value, args[2].Expression)
 	case _ReduceEnumNondataMatchPattenToCaseEnumPattern:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = CaseEnumPatternType
-		symbol.CasePattern, err = reducer.EnumNondataMatchPattenToCaseEnumPattern(args[0].Value, args[1].Value)
+		symbol.Expression, err = reducer.EnumNondataMatchPattenToCaseEnumPattern(args[0].Value, args[1].Value)
 	case _ReduceEnumDeclVarPatternToCaseEnumPattern:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = CaseEnumPatternType
-		symbol.CasePattern, err = reducer.EnumDeclVarPatternToCaseEnumPattern(args[0].Value, args[1].Value, args[2].Value, args[3].Expression)
+		symbol.Expression, err = reducer.EnumDeclVarPatternToCaseEnumPattern(args[0].Value, args[1].Value, args[2].Value, args[3].Expression)
 	case _ReduceIfExprToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]

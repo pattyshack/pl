@@ -264,7 +264,7 @@ var _ Node = &ImportStatement{}
 
 func NewImportStatement() *ImportStatement {
 	return &ImportStatement{
-		NodeList: *newNodeList[*ImportClause]("ImportStatement"),
+		NodeList: *NewNodeList[*ImportClause]("ImportStatement"),
 	}
 }
 
@@ -558,7 +558,7 @@ type BranchStatement struct {
 	LeadingTrailingComments
 
 	IsDefault    bool
-	CasePatterns CasePatternList
+	CasePatterns ExpressionList
 	Body         StatementsExpr
 }
 
@@ -587,7 +587,7 @@ var _ BranchStatementReducer = &BranchStatementReducerImpl{}
 
 func (BranchStatementReducerImpl) CaseBranchToBranchStatement(
 	caseKW *TokenValue,
-	casePatterns *CasePatternList,
+	casePatterns *ExpressionList,
 	colon *TokenValue,
 	body *StatementsExpr,
 ) (
@@ -624,7 +624,7 @@ func (BranchStatementReducerImpl) DefaultBranchToBranchStatement(
 	Statement,
 	error,
 ) {
-	casePatterns := NewCasePatternList()
+	casePatterns := NewExpressionList()
 
 	end := colon.End()
 	if body == nil {

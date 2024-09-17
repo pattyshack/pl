@@ -100,16 +100,16 @@ func (VarPatternReducerImpl) ToAssignVarPattern(
 }
 
 //
-// CasePatternList
+// ExpressionList
 //
 
-type CasePatternList = NodeList[CasePattern]
+type ExpressionList = NodeList[Expression]
 
-func NewCasePatternList() *CasePatternList {
-	return newNodeList[CasePattern]("CasePatternList")
+func NewExpressionList() *ExpressionList {
+	return NewNodeList[Expression]("ExpressionList")
 }
 
-var _ Node = &CasePatternList{}
+var _ Node = &ExpressionList{}
 
 type CasePatternsReducerImpl struct{}
 
@@ -119,31 +119,31 @@ var _ SwitchableCasePatternsReducer = &CasePatternsReducerImpl{}
 func (CasePatternsReducerImpl) ToCasePatterns(
 	pattern *CaseAssignPattern,
 ) (
-	*CasePatternList,
+	*ExpressionList,
 	error,
 ) {
-	list := NewCasePatternList()
+	list := NewExpressionList()
 	list.Add(pattern)
 	return list, nil
 }
 
 func (CasePatternsReducerImpl) SwitchableCasePatternToSwitchableCasePatterns(
-	pattern CasePattern,
+	pattern Expression,
 ) (
-	*CasePatternList,
+	*ExpressionList,
 	error,
 ) {
-	list := NewCasePatternList()
+	list := NewExpressionList()
 	list.Add(pattern)
 	return list, nil
 }
 
 func (CasePatternsReducerImpl) AddToSwitchableCasePatterns(
-	list *CasePatternList,
+	list *ExpressionList,
 	comma *TokenValue,
-	pattern CasePattern,
+	pattern Expression,
 ) (
-	*CasePatternList,
+	*ExpressionList,
 	error,
 ) {
 	list.ReduceAdd(comma, pattern)
@@ -161,11 +161,11 @@ type CaseAssignPattern struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	AssignPattern CasePatternList
+	AssignPattern ExpressionList
 	Value         Expression
 }
 
-var _ CasePattern = &CaseAssignPattern{}
+var _ Expression = &CaseAssignPattern{}
 
 func (pattern CaseAssignPattern) TreeString(
 	indent string,
@@ -187,7 +187,7 @@ var _ CaseAssignPatternReducer = CaseAssignPatternReducerImpl{}
 var _ CaseAssignExprReducer = CaseAssignPatternReducerImpl{}
 
 func (CaseAssignPatternReducerImpl) ToCaseAssignPattern(
-	assignPattern *CasePatternList,
+	assignPattern *ExpressionList,
 	assign *TokenValue,
 	value Expression,
 ) (
@@ -226,7 +226,7 @@ func (CaseAssignPatternReducerImpl) ToCaseAssignExpr(
 //
 
 type CaseEnumPattern struct {
-	isCasePattern
+	isExpression
 	StartEndPos
 	LeadingTrailingComments
 
@@ -234,7 +234,7 @@ type CaseEnumPattern struct {
 	VarPattern Expression // optional.  either implicit struct or VarPattern
 }
 
-var _ CasePattern = &CaseEnumPattern{}
+var _ Expression = &CaseEnumPattern{}
 
 func (pattern CaseEnumPattern) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
@@ -260,7 +260,7 @@ func (CaseEnumPatternReducerImpl) EnumMatchPatternToCaseEnumPattern(
 	enumValue *TokenValue,
 	varPattern Expression,
 ) (
-	CasePattern,
+	Expression,
 	error,
 ) {
 	leading := dot.TakeLeading()
@@ -283,7 +283,7 @@ func (CaseEnumPatternReducerImpl) EnumNondataMatchPattenToCaseEnumPattern(
 	dot *TokenValue,
 	enumValue *TokenValue,
 ) (
-	CasePattern,
+	Expression,
 	error,
 ) {
 	leading := dot.TakeLeading()
@@ -306,7 +306,7 @@ func (CaseEnumPatternReducerImpl) EnumDeclVarPatternToCaseEnumPattern(
 	enumValue *TokenValue,
 	tuplePattern Expression,
 ) (
-	CasePattern,
+	Expression,
 	error,
 ) {
 	leading := varType.TakeLeading()

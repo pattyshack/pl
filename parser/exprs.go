@@ -660,7 +660,7 @@ func (ColonExprReducerImpl) UnitUnitPairToColonExpr(
 	}
 	rightArg.LeadingComment = colon.TakeTrailing()
 
-	args := newNodeList[*Argument]("ColonExpr")
+	args := NewNodeList[*Argument]("ColonExpr")
 	args.Add(leftArg)
 	args.ReduceAdd(colon, rightArg)
 
@@ -690,7 +690,7 @@ func (ColonExprReducerImpl) ExprUnitPairToColonExpr(
 	}
 	rightArg.LeadingComment = colon.TakeTrailing()
 
-	args := newNodeList[*Argument]("ColonExpr")
+	args := NewNodeList[*Argument]("ColonExpr")
 	args.Add(leftArg)
 	args.ReduceAdd(colon, rightArg)
 
@@ -720,7 +720,7 @@ func (reducer *ColonExprReducerImpl) UnitExprPairToColonExpr(
 	rightArg.TrailingComment = rightExpr.TakeTrailing()
 	rightArg.PrependToLeading(colon.TakeTrailing())
 
-	args := newNodeList[*Argument]("ColonExpr")
+	args := NewNodeList[*Argument]("ColonExpr")
 	args.Add(leftArg)
 	args.ReduceAdd(colon, rightArg)
 
@@ -754,7 +754,7 @@ func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
 	rightArg.TrailingComment = rightExpr.TakeTrailing()
 	rightArg.PrependToLeading(colon.TakeTrailing())
 
-	args := newNodeList[*Argument]("ColonExpr")
+	args := NewNodeList[*Argument]("ColonExpr")
 	args.Add(leftArg)
 	args.ReduceAdd(colon, rightArg)
 
