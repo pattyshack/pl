@@ -27,7 +27,7 @@ func (DefinitionListReducerImpl) AddToProperDefinitions(
 	*DefinitionList,
 	error,
 ) {
-	list.ReduceAdd(TokenValue{}, def)
+	list.ReduceAdd(&TokenValue{}, def)
 	return list, nil
 }
 
@@ -115,7 +115,7 @@ type PackageDefReducerImpl struct{}
 var _ PackageDefReducer = &PackageDefReducerImpl{}
 
 func (PackageDefReducerImpl) ToPackageDef(
-	pkg TokenValue,
+	pkg *TokenValue,
 	expr Expression,
 ) (
 	Definition,
@@ -174,8 +174,8 @@ type TypeDefReducerImpl struct {
 var _ TypeDefReducer = &TypeDefReducerImpl{}
 
 func (reducer *TypeDefReducerImpl) DefinitionToTypeDef(
-	typeKW TokenValue,
-	name TokenValue,
+	typeKW *TokenValue,
+	name *TokenValue,
 	genericParameters *GenericParameterList,
 	baseType TypeExpression,
 ) (
@@ -208,11 +208,11 @@ func (reducer *TypeDefReducerImpl) DefinitionToTypeDef(
 }
 
 func (reducer *TypeDefReducerImpl) ConstrainedDefToTypeDef(
-	typeKW TokenValue,
-	name TokenValue,
+	typeKW *TokenValue,
+	name *TokenValue,
 	genericParameters *GenericParameterList,
 	baseType TypeExpression,
-	implements TokenValue,
+	implements *TokenValue,
 	constraint TypeExpression,
 ) (
 	Definition,
@@ -248,9 +248,9 @@ func (reducer *TypeDefReducerImpl) ConstrainedDefToTypeDef(
 }
 
 func (reducer *TypeDefReducerImpl) AliasToTypeDef(
-	typeKW TokenValue,
-	name TokenValue,
-	assign TokenValue,
+	typeKW *TokenValue,
+	name *TokenValue,
+	assign *TokenValue,
 	baseType TypeExpression,
 ) (
 	Definition,

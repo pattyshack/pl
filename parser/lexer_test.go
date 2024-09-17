@@ -17,7 +17,7 @@ func expectCommentGroup(
 
 	comments := []string{}
 	for _, value := range group {
-		comments = append(comments, value.Value)
+		comments = append(comments, value.Val())
 	}
 
 	expect.Equal(t, expectedComments, comments)
@@ -32,7 +32,7 @@ func expectCommentGroups(
 	for _, group := range groups.Groups {
 		comments := []string{}
 		for _, value := range group {
-			comments = append(comments, value.Value)
+			comments = append(comments, value.Val())
 		}
 
 		commentGroups = append(commentGroups, comments)

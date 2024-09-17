@@ -30,9 +30,9 @@ type SliceTypeExprReducerImpl struct {
 var _ SliceTypeExprReducer = &SliceTypeExprReducerImpl{}
 
 func (reducer *SliceTypeExprReducerImpl) ToSliceTypeExpr(
-	lbracket TokenValue,
+	lbracket *TokenValue,
 	value TypeExpression,
-	rbracket TokenValue,
+	rbracket *TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -82,11 +82,11 @@ type ArrayTypeExprReducerImpl struct {
 var _ ArrayTypeExprReducer = &ArrayTypeExprReducerImpl{}
 
 func (reducer *ArrayTypeExprReducerImpl) ToArrayTypeExpr(
-	lbracket TokenValue,
+	lbracket *TokenValue,
 	value TypeExpression,
-	comma TokenValue,
-	size TokenValue,
-	rbracket TokenValue,
+	comma *TokenValue,
+	size *TokenValue,
+	rbracket *TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -94,7 +94,7 @@ func (reducer *ArrayTypeExprReducerImpl) ToArrayTypeExpr(
 	array := &ArrayTypeExpr{
 		StartEndPos: NewStartEndPos(lbracket.Loc(), rbracket.End()),
 		Value:       value,
-		Size:        size,
+		Size:        *size,
 	}
 
 	array.LeadingComment = lbracket.TakeLeading()
@@ -136,11 +136,11 @@ type MapTypeExprReducerImpl struct {
 var _ MapTypeExprReducer = &MapTypeExprReducerImpl{}
 
 func (reducer *MapTypeExprReducerImpl) ToMapTypeExpr(
-	lbracket TokenValue,
+	lbracket *TokenValue,
 	key TypeExpression,
-	semicolon TokenValue,
+	semicolon *TokenValue,
 	value TypeExpression,
-	rbracket TokenValue,
+	rbracket *TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -186,23 +186,23 @@ type InferredTypeExprReducerImpl struct {
 var _ InferredTypeExprReducer = &InferredTypeExprReducerImpl{}
 
 func (reducer *InferredTypeExprReducerImpl) DotToInferredTypeExpr(
-	dot TokenValue,
+	dot *TokenValue,
 ) (
 	TypeExpression,
 	error,
 ) {
-	expr := &InferredTypeExpr{TokenValue: dot}
+	expr := &InferredTypeExpr{TokenValue: *dot}
 	reducer.InferredTypeExprs = append(reducer.InferredTypeExprs, expr)
 	return expr, nil
 }
 
 func (reducer *InferredTypeExprReducerImpl) UnderscoreToInferredTypeExpr(
-	underscore TokenValue,
+	underscore *TokenValue,
 ) (
 	TypeExpression,
 	error,
 ) {
-	expr := &InferredTypeExpr{TokenValue: underscore}
+	expr := &InferredTypeExpr{TokenValue: *underscore}
 	reducer.InferredTypeExprs = append(reducer.InferredTypeExprs, expr)
 	return expr, nil
 }
@@ -249,7 +249,7 @@ type NamedTypeExprReducerImpl struct {
 var _ NamedTypeExprReducer = &NamedTypeExprReducerImpl{}
 
 func (reducer *NamedTypeExprReducerImpl) toNamedTypeExpr(
-	name TokenValue,
+	name *TokenValue,
 	genericArguments *GenericArgumentList,
 ) *NamedTypeExpr {
 	var endPos Location
@@ -267,7 +267,7 @@ func (reducer *NamedTypeExprReducerImpl) toNamedTypeExpr(
 		LeadingTrailingComments: LeadingTrailingComments{
 			TrailingComment: trailing,
 		},
-		Name:             name,
+		Name:             *name,
 		GenericArguments: *genericArguments,
 	}
 
@@ -276,7 +276,7 @@ func (reducer *NamedTypeExprReducerImpl) toNamedTypeExpr(
 }
 
 func (reducer *NamedTypeExprReducerImpl) LocalToNamedTypeExpr(
-	name TokenValue,
+	name *TokenValue,
 	genericArguments *GenericArgumentList,
 ) (
 	TypeExpression,
@@ -288,9 +288,9 @@ func (reducer *NamedTypeExprReducerImpl) LocalToNamedTypeExpr(
 }
 
 func (reducer *NamedTypeExprReducerImpl) ExternalToNamedTypeExpr(
-	pkg TokenValue,
-	dot TokenValue,
-	name TokenValue,
+	pkg *TokenValue,
+	dot *TokenValue,
+	name *TokenValue,
 	genericArguments *GenericArgumentList,
 ) (
 	TypeExpression,
@@ -340,7 +340,7 @@ type UnaryTypeExprReducerImpl struct {
 var _ PrefixUnaryTypeExprReducer = &UnaryTypeExprReducerImpl{}
 
 func (reducer *UnaryTypeExprReducerImpl) ToPrefixUnaryTypeExpr(
-	op TokenValue,
+	op *TokenValue,
 	operand TypeExpression,
 ) (
 	TypeExpression,
@@ -393,7 +393,7 @@ var _ BinaryTypeExprReducer = &BinaryTypeExprReducerImpl{}
 
 func (reducer *BinaryTypeExprReducerImpl) ToBinaryTypeExpr(
 	left TypeExpression,
-	op TokenValue,
+	op *TokenValue,
 	right TypeExpression,
 ) (
 	TypeExpression,
@@ -467,9 +467,9 @@ var _ ExplicitEnumTypeExprReducer = &PropertiesTypeExprReducer{}
 
 func (PropertiesTypeExprReducer) implicit(
 	kind PropertiesKind,
-	lparen TokenValue,
+	lparen *TokenValue,
 	properties *TypePropertyList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) *PropertiesTypeExpr {
 	properties.ReduceMarkers(lparen, rparen)
 	expr := &PropertiesTypeExpr{
@@ -486,10 +486,10 @@ func (PropertiesTypeExprReducer) implicit(
 
 func (PropertiesTypeExprReducer) explicit(
 	kind PropertiesKind,
-	kw TokenValue,
-	lparen TokenValue,
+	kw *TokenValue,
+	lparen *TokenValue,
 	properties *TypePropertyList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) *PropertiesTypeExpr {
 	properties.ReduceMarkers(lparen, rparen)
 
@@ -509,9 +509,9 @@ func (PropertiesTypeExprReducer) explicit(
 }
 
 func (reducer *PropertiesTypeExprReducer) ToImplicitStructTypeExpr(
-	lparen TokenValue,
+	lparen *TokenValue,
 	properties *TypePropertyList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -522,10 +522,10 @@ func (reducer *PropertiesTypeExprReducer) ToImplicitStructTypeExpr(
 }
 
 func (reducer *PropertiesTypeExprReducer) ToExplicitStructTypeExpr(
-	structKW TokenValue,
-	lparen TokenValue,
+	structKW *TokenValue,
+	lparen *TokenValue,
 	properties *TypePropertyList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -536,10 +536,10 @@ func (reducer *PropertiesTypeExprReducer) ToExplicitStructTypeExpr(
 }
 
 func (reducer *PropertiesTypeExprReducer) ToTraitTypeExpr(
-	trait TokenValue,
-	lparen TokenValue,
+	trait *TokenValue,
+	lparen *TokenValue,
 	properties *TypePropertyList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -550,9 +550,9 @@ func (reducer *PropertiesTypeExprReducer) ToTraitTypeExpr(
 }
 
 func (reducer *PropertiesTypeExprReducer) ToImplicitEnumTypeExpr(
-	lparen TokenValue,
+	lparen *TokenValue,
 	properties *TypePropertyList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -563,10 +563,10 @@ func (reducer *PropertiesTypeExprReducer) ToImplicitEnumTypeExpr(
 }
 
 func (reducer *PropertiesTypeExprReducer) ToExplicitEnumTypeExpr(
-	enum TokenValue,
-	lparen TokenValue,
+	enum *TokenValue,
+	lparen *TokenValue,
 	properties *TypePropertyList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) (
 	TypeExpression,
 	error,

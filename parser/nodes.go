@@ -41,6 +41,11 @@ type Node interface {
 	TakeTrailing() CommentGroups
 }
 
+type ValueNode interface {
+	Node
+	Val() string
+}
+
 type Expression interface {
 	Node
 	Statement
@@ -106,7 +111,7 @@ func (isDefinition) IsDefinition() {}
 
 // A comment group is a single block comment, or a group of line comments
 // separated by single newlines (ignoring spaces).
-type CommentGroup []TokenValue
+type CommentGroup []ValueNode
 
 func (CommentGroup) Id() SymbolId {
 	return commentGroupToken
@@ -244,8 +249,17 @@ func (s TokenValue) Id() SymbolId {
 	return s.SymbolId
 }
 
-func (s TokenValue) String() string {
-	return fmt.Sprintf("[Symbol:%s Value=%s]", s.SymbolId, s.Value)
+func (s TokenValue) Val() string {
+	return s.Value
+}
+
+func (s TokenValue) TreeString(indent string, label string) string {
+	return fmt.Sprintf(
+		"%s%s[TokenValue: SymbolId=%s Value=%s]",
+		indent,
+		label,
+		s.SymbolId,
+		s.Value)
 }
 
 type ParseErrorSymbol struct {
@@ -345,7 +359,7 @@ func (list *NodeList[T]) Add(element T) {
 	list.Elements = append(list.Elements, element)
 }
 
-func (list *NodeList[T]) ReduceAdd(separator TokenValue, element T) {
+func (list *NodeList[T]) ReduceAdd(separator ValueNode, element T) {
 	prev := list.Elements[len(list.Elements)-1]
 	prev.AppendToTrailing(separator.TakeLeading())
 	prev.AppendToTrailing(separator.TakeTrailing())
@@ -353,7 +367,7 @@ func (list *NodeList[T]) ReduceAdd(separator TokenValue, element T) {
 	list.Add(element)
 }
 
-func (list *NodeList[T]) ReduceImproper(separator TokenValue) {
+func (list *NodeList[T]) ReduceImproper(separator ValueNode) {
 	list.EndPos = separator.End()
 
 	lastElement := list.Elements[len(list.Elements)-1]
@@ -361,7 +375,7 @@ func (list *NodeList[T]) ReduceImproper(separator TokenValue) {
 	lastElement.AppendToTrailing(separator.TakeTrailing())
 }
 
-func (list *NodeList[T]) ReduceMarkers(start TokenValue, end TokenValue) {
+func (list *NodeList[T]) ReduceMarkers(start ValueNode, end ValueNode) {
 	list.StartPos = start.Loc()
 	list.EndPos = end.End()
 

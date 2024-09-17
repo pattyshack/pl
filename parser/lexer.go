@@ -142,12 +142,12 @@ func (lexer *CommentGroupLexer) Next() (Token, error) {
 	}
 
 	if token.Id() == blockCommentToken {
-		return CommentGroup{token.(TokenValue)}, nil
+		return CommentGroup{token.(*TokenValue)}, nil
 	} else if token.Id() != lineCommentToken {
 		return token, nil
 	}
 
-	group := CommentGroup{token.(TokenValue)}
+	group := CommentGroup{token.(*TokenValue)}
 	for {
 		peeked, err := lexer.Peek(2)
 		if err != nil {
@@ -163,7 +163,7 @@ func (lexer *CommentGroupLexer) Next() (Token, error) {
 				break
 			}
 
-			group = append(group, peeked[1].(TokenValue))
+			group = append(group, peeked[1].(*TokenValue))
 
 			_, err := lexer.Discard(2)
 			if err != nil {
@@ -212,7 +212,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 		return nil, err
 	}
 
-	var value TokenValue
+	var value *TokenValue
 	// Handle Leading comment groups
 	if token.Id() == commentGroupToken {
 		groups := CommentGroups{
@@ -242,14 +242,14 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 			default:
 				// Found a real token
 				found = true
-				value = token.(TokenValue)
+				value = token.(*TokenValue)
 				value.LeadingComment = groups
 			}
 		}
 	} else if token.Id() == NewlinesToken {
 		return token, nil
 	} else {
-		value = token.(TokenValue)
+		value = token.(*TokenValue)
 	}
 
 	// extract trailing comment groups

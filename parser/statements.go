@@ -52,13 +52,13 @@ func (StatementsExprReducerImpl) AddImplicitToProperStatementList(
 	*StatementsExpr,
 	error,
 ) {
-	statements.ReduceAdd(TokenValue{}, statement)
+	statements.ReduceAdd(&TokenValue{}, statement)
 	return statements, nil
 }
 
 func (StatementsExprReducerImpl) AddExplicitToProperStatementList(
 	statements *StatementsExpr,
-	semicolon TokenValue,
+	semicolon *TokenValue,
 	statement Statement,
 ) (
 	*StatementsExpr,
@@ -91,7 +91,7 @@ func (StatementsExprReducerImpl) ImproperImplicitToStatementList(
 
 func (StatementsExprReducerImpl) ImproperExplicitToStatementList(
 	statements *StatementsExpr,
-	semicolon TokenValue,
+	semicolon *TokenValue,
 ) (
 	*StatementsExpr,
 	error,
@@ -105,9 +105,9 @@ func (StatementsExprReducerImpl) NilToStatementList() (*StatementsExpr, error) {
 }
 
 func (StatementsExprReducerImpl) ToStatements(
-	lbrace TokenValue,
+	lbrace *TokenValue,
 	list *StatementsExpr,
-	rbrace TokenValue,
+	rbrace *TokenValue,
 ) (
 	Expression,
 	error,
@@ -117,7 +117,7 @@ func (StatementsExprReducerImpl) ToStatements(
 }
 
 func (StatementsExprReducerImpl) LabelledToStatementsExpr(
-	labelDecl TokenValue,
+	labelDecl *TokenValue,
 	statementsExprOrParseError Expression,
 ) (
 	Expression,
@@ -185,7 +185,7 @@ type ImportClauseReducerImpl struct {
 var _ ImportClauseReducer = &ImportClauseReducerImpl{}
 
 func (reducer *ImportClauseReducerImpl) StringLiteralToImportClause(
-	pkg TokenValue,
+	pkg *TokenValue,
 ) (
 	*ImportClause,
 	error,
@@ -201,8 +201,8 @@ func (reducer *ImportClauseReducerImpl) StringLiteralToImportClause(
 }
 
 func (reducer *ImportClauseReducerImpl) aliasImport(
-	alias TokenValue,
-	pkg TokenValue,
+	alias *TokenValue,
+	pkg *TokenValue,
 ) *ImportClause {
 	clause := &ImportClause{
 		StartEndPos: NewStartEndPos(alias.Loc(), pkg.End()),
@@ -222,8 +222,8 @@ func (reducer *ImportClauseReducerImpl) aliasImport(
 }
 
 func (reducer *ImportClauseReducerImpl) AliasToImportClause(
-	alias TokenValue,
-	pkg TokenValue,
+	alias *TokenValue,
+	pkg *TokenValue,
 ) (
 	*ImportClause,
 	error,
@@ -232,8 +232,8 @@ func (reducer *ImportClauseReducerImpl) AliasToImportClause(
 }
 
 func (reducer *ImportClauseReducerImpl) UnusableImportToImportClause(
-	underscore TokenValue,
-	pkg TokenValue,
+	underscore *TokenValue,
+	pkg *TokenValue,
 ) (
 	*ImportClause,
 	error,
@@ -242,8 +242,8 @@ func (reducer *ImportClauseReducerImpl) UnusableImportToImportClause(
 }
 
 func (reducer *ImportClauseReducerImpl) ImportToLocalToImportClause(
-	dot TokenValue,
-	pkg TokenValue,
+	dot *TokenValue,
+	pkg *TokenValue,
 ) (
 	*ImportClause,
 	error,
@@ -275,7 +275,7 @@ var _ ProperImportClausesReducer = &ImportStatementReducerImpl{}
 var _ ImportClausesReducer = &ImportStatementReducerImpl{}
 
 func (ImportStatementReducerImpl) SingleToImportStatement(
-	importKW TokenValue,
+	importKW *TokenValue,
 	importClause *ImportClause,
 ) (
 	Statement,
@@ -291,10 +291,10 @@ func (ImportStatementReducerImpl) SingleToImportStatement(
 }
 
 func (ImportStatementReducerImpl) MultipleToImportStatement(
-	importKW TokenValue,
-	lparen TokenValue,
+	importKW *TokenValue,
+	lparen *TokenValue,
 	stmt *ImportStatement,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) (
 	Statement,
 	error,
@@ -315,13 +315,13 @@ func (ImportStatementReducerImpl) AddImplicitToProperImportClauses(
 	*ImportStatement,
 	error,
 ) {
-	stmt.ReduceAdd(TokenValue{}, importClause)
+	stmt.ReduceAdd(&TokenValue{}, importClause)
 	return stmt, nil
 }
 
 func (ImportStatementReducerImpl) AddExplicitToProperImportClauses(
 	stmt *ImportStatement,
-	comma TokenValue,
+	comma *TokenValue,
 	importClause *ImportClause,
 ) (
 	*ImportStatement,
@@ -353,7 +353,7 @@ func (ImportStatementReducerImpl) ImplicitToImportClauses(
 
 func (ImportStatementReducerImpl) ExplicitToImportClauses(
 	stmt *ImportStatement,
-	comma TokenValue,
+	comma *TokenValue,
 ) (
 	*ImportStatement,
 	error,
@@ -381,7 +381,7 @@ type JumpStatement struct {
 var _ Statement = &JumpStatement{}
 
 func NewJumpStatement(
-	op TokenValue,
+	op *TokenValue,
 	labelToken *TokenValue,
 	value Expression,
 ) *JumpStatement {
@@ -437,7 +437,7 @@ type JumpStatementReducerImpl struct{}
 var _ JumpStatementReducer = &JumpStatementReducerImpl{}
 
 func (JumpStatementReducerImpl) UnlabeledNoValueToJumpStatement(
-	op TokenValue,
+	op *TokenValue,
 ) (
 	Statement,
 	error,
@@ -446,7 +446,7 @@ func (JumpStatementReducerImpl) UnlabeledNoValueToJumpStatement(
 }
 
 func (JumpStatementReducerImpl) UnlabeledValuedToJumpStatement(
-	op TokenValue,
+	op *TokenValue,
 	value Expression,
 ) (
 	Statement,
@@ -456,28 +456,28 @@ func (JumpStatementReducerImpl) UnlabeledValuedToJumpStatement(
 }
 
 func (JumpStatementReducerImpl) LabeledNoValueToJumpStatement(
-	op TokenValue,
-	label TokenValue,
+	op *TokenValue,
+	label *TokenValue,
 ) (
 	Statement,
 	error,
 ) {
-	return NewJumpStatement(op, &label, nil), nil
+	return NewJumpStatement(op, label, nil), nil
 }
 
 func (JumpStatementReducerImpl) LabeledValuedToJumpStatement(
-	op TokenValue,
-	label TokenValue,
+	op *TokenValue,
+	label *TokenValue,
 	value Expression,
 ) (
 	Statement,
 	error,
 ) {
-	return NewJumpStatement(op, &label, value), nil
+	return NewJumpStatement(op, label, value), nil
 }
 
 func (JumpStatementReducerImpl) FallthroughToJumpStatement(
-	op TokenValue,
+	op *TokenValue,
 ) (
 	Statement,
 	error,
@@ -520,11 +520,11 @@ type UnsafeStatementReducerImpl struct{}
 var _ UnsafeStatementReducer = &UnsafeStatementReducerImpl{}
 
 func (UnsafeStatementReducerImpl) ToUnsafeStatement(
-	unsafe TokenValue,
-	less TokenValue,
-	language TokenValue,
-	greater TokenValue,
-	verbatimSource TokenValue,
+	unsafe *TokenValue,
+	less *TokenValue,
+	language *TokenValue,
+	greater *TokenValue,
+	verbatimSource *TokenValue,
 ) (
 	*UnsafeStatement,
 	error,
@@ -586,9 +586,9 @@ type BranchStatementReducerImpl struct{}
 var _ BranchStatementReducer = &BranchStatementReducerImpl{}
 
 func (BranchStatementReducerImpl) CaseBranchToBranchStatement(
-	caseKW TokenValue,
+	caseKW *TokenValue,
 	casePatterns *CasePatternList,
-	colon TokenValue,
+	colon *TokenValue,
 	body *StatementsExpr,
 ) (
 	Statement,
@@ -617,8 +617,8 @@ func (BranchStatementReducerImpl) CaseBranchToBranchStatement(
 }
 
 func (BranchStatementReducerImpl) DefaultBranchToBranchStatement(
-	defaultKW TokenValue,
-	colon TokenValue,
+	defaultKW *TokenValue,
+	colon *TokenValue,
 	body *StatementsExpr,
 ) (
 	Statement,

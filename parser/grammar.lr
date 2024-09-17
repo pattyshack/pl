@@ -995,7 +995,7 @@ go:
   value_types:
     ParseError: "ParseErrorSymbol"
     Count: "TokenCount"
-    Value: "TokenValue"
+    Value: "*TokenValue"
     Expression: "Expression"
     IfExpr: "*IfExpr"
     ColonExpr: "*ColonExpr"

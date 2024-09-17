@@ -64,49 +64,49 @@ type LiteralExprReducerImpl struct {
 var _ LiteralExprReducer = &LiteralExprReducerImpl{}
 
 func (reducer *LiteralExprReducerImpl) TrueToLiteralExpr(
-	value TokenValue,
+	value *TokenValue,
 ) (Expression, error) {
-	expr := &BoolLiteralExpr{TokenValue: value}
+	expr := &BoolLiteralExpr{TokenValue: *value}
 	reducer.BoolLiteralExprs = append(reducer.BoolLiteralExprs, expr)
 	return expr, nil
 }
 
 func (reducer *LiteralExprReducerImpl) FalseToLiteralExpr(
-	value TokenValue,
+	value *TokenValue,
 ) (Expression, error) {
-	expr := &BoolLiteralExpr{TokenValue: value}
+	expr := &BoolLiteralExpr{TokenValue: *value}
 	reducer.BoolLiteralExprs = append(reducer.BoolLiteralExprs, expr)
 	return expr, nil
 }
 
 func (reducer *LiteralExprReducerImpl) IntegerLiteralToLiteralExpr(
-	value TokenValue,
+	value *TokenValue,
 ) (Expression, error) {
-	expr := &IntLiteralExpr{TokenValue: value}
+	expr := &IntLiteralExpr{TokenValue: *value}
 	reducer.IntLiteralExprs = append(reducer.IntLiteralExprs, expr)
 	return expr, nil
 }
 
 func (reducer *LiteralExprReducerImpl) FloatLiteralToLiteralExpr(
-	value TokenValue,
+	value *TokenValue,
 ) (Expression, error) {
-	expr := &FloatLiteralExpr{TokenValue: value}
+	expr := &FloatLiteralExpr{TokenValue: *value}
 	reducer.FloatLiteralExprs = append(reducer.FloatLiteralExprs, expr)
 	return expr, nil
 }
 
 func (reducer *LiteralExprReducerImpl) RuneLiteralToLiteralExpr(
-	value TokenValue,
+	value *TokenValue,
 ) (Expression, error) {
-	expr := &RuneLiteralExpr{TokenValue: value}
+	expr := &RuneLiteralExpr{TokenValue: *value}
 	reducer.RuneLiteralExprs = append(reducer.RuneLiteralExprs, expr)
 	return expr, nil
 }
 
 func (reducer *LiteralExprReducerImpl) StringLiteralToLiteralExpr(
-	value TokenValue,
+	value *TokenValue,
 ) (Expression, error) {
-	expr := &StringLiteralExpr{TokenValue: value}
+	expr := &StringLiteralExpr{TokenValue: *value}
 	reducer.StringLiteralExprs = append(reducer.StringLiteralExprs, expr)
 	return expr, nil
 }
@@ -131,17 +131,17 @@ type NamedExprReducerImpl struct {
 var _ NamedExprReducer = &NamedExprReducerImpl{}
 
 func (reducer *NamedExprReducerImpl) IdentifierToNamedExpr(
-	value TokenValue,
+	value *TokenValue,
 ) (Expression, error) {
-	expr := &NamedExpr{TokenValue: value}
+	expr := &NamedExpr{TokenValue: *value}
 	reducer.NamedExprs = append(reducer.NamedExprs, expr)
 	return expr, nil
 }
 
 func (reducer *NamedExprReducerImpl) UnderscoreToNamedExpr(
-	value TokenValue,
+	value *TokenValue,
 ) (Expression, error) {
-	expr := &NamedExpr{TokenValue: value}
+	expr := &NamedExpr{TokenValue: *value}
 	reducer.NamedExprs = append(reducer.NamedExprs, expr)
 	return expr, nil
 }
@@ -175,8 +175,8 @@ var _ AccessExprReducer = &AccessExprReducerImpl{}
 
 func (reducer *AccessExprReducerImpl) ToAccessExpr(
 	operand Expression,
-	dot TokenValue,
-	field TokenValue,
+	dot *TokenValue,
+	field *TokenValue,
 ) (
 	Expression,
 	error,
@@ -184,7 +184,7 @@ func (reducer *AccessExprReducerImpl) ToAccessExpr(
 	expr := &AccessExpr{
 		StartEndPos: NewStartEndPos(operand.Loc(), field.End()),
 		Operand:     operand,
-		Field:       field,
+		Field:       *field,
 	}
 
 	expr.LeadingComment = operand.TakeLeading()
@@ -238,7 +238,7 @@ var _ RecvExprReducer = &UnaryExprReducerImpl{}
 
 func (reducer *UnaryExprReducerImpl) toPostfixUnaryExpr(
 	operand Expression,
-	op TokenValue,
+	op *TokenValue,
 ) *UnaryExpr {
 	expr := &UnaryExpr{
 		StartEndPos: NewStartEndPos(operand.Loc(), op.End()),
@@ -257,7 +257,7 @@ func (reducer *UnaryExprReducerImpl) toPostfixUnaryExpr(
 
 func (reducer *UnaryExprReducerImpl) ToPostfixUnaryExpr(
 	operand Expression,
-	op TokenValue,
+	op *TokenValue,
 ) (
 	Expression,
 	error,
@@ -266,7 +266,7 @@ func (reducer *UnaryExprReducerImpl) ToPostfixUnaryExpr(
 }
 
 func (reducer *UnaryExprReducerImpl) toPrefixUnaryExpr(
-	op TokenValue,
+	op *TokenValue,
 	operand Expression,
 ) Expression {
 	expr := &UnaryExpr{
@@ -285,7 +285,7 @@ func (reducer *UnaryExprReducerImpl) toPrefixUnaryExpr(
 }
 
 func (reducer *UnaryExprReducerImpl) ToPrefixUnaryExpr(
-	op TokenValue,
+	op *TokenValue,
 	operand Expression,
 ) (
 	Expression,
@@ -295,7 +295,7 @@ func (reducer *UnaryExprReducerImpl) ToPrefixUnaryExpr(
 }
 
 func (reducer *UnaryExprReducerImpl) ToRecvExpr(
-	arrow TokenValue,
+	arrow *TokenValue,
 	expr Expression,
 ) (
 	Expression,
@@ -306,7 +306,7 @@ func (reducer *UnaryExprReducerImpl) ToRecvExpr(
 
 func (reducer *UnaryExprReducerImpl) ToUnaryOpAssignStatement(
 	operand Expression,
-	op TokenValue,
+	op *TokenValue,
 ) (
 	Statement,
 	error,
@@ -357,7 +357,7 @@ var _ GlobalVarDefReducer = &BinaryExprReducerImpl{}
 
 func (reducer *BinaryExprReducerImpl) toBinaryExpr(
 	left Expression,
-	op TokenValue,
+	op *TokenValue,
 	right Expression,
 ) (
 	Expression,
@@ -381,7 +381,7 @@ func (reducer *BinaryExprReducerImpl) toBinaryExpr(
 
 func (reducer *BinaryExprReducerImpl) ToBinaryMulExpr(
 	left Expression,
-	op TokenValue,
+	op *TokenValue,
 	right Expression,
 ) (
 	Expression,
@@ -392,7 +392,7 @@ func (reducer *BinaryExprReducerImpl) ToBinaryMulExpr(
 
 func (reducer *BinaryExprReducerImpl) ToBinaryAddExpr(
 	left Expression,
-	op TokenValue,
+	op *TokenValue,
 	right Expression,
 ) (
 	Expression,
@@ -403,7 +403,7 @@ func (reducer *BinaryExprReducerImpl) ToBinaryAddExpr(
 
 func (reducer *BinaryExprReducerImpl) ToBinaryCmpExpr(
 	left Expression,
-	op TokenValue,
+	op *TokenValue,
 	right Expression,
 ) (
 	Expression,
@@ -414,7 +414,7 @@ func (reducer *BinaryExprReducerImpl) ToBinaryCmpExpr(
 
 func (reducer *BinaryExprReducerImpl) ToBinaryAndExpr(
 	left Expression,
-	op TokenValue,
+	op *TokenValue,
 	right Expression,
 ) (
 	Expression,
@@ -425,7 +425,7 @@ func (reducer *BinaryExprReducerImpl) ToBinaryAndExpr(
 
 func (reducer *BinaryExprReducerImpl) ToBinaryOrExpr(
 	left Expression,
-	op TokenValue,
+	op *TokenValue,
 	right Expression,
 ) (
 	Expression,
@@ -436,7 +436,7 @@ func (reducer *BinaryExprReducerImpl) ToBinaryOrExpr(
 
 func (reducer *BinaryExprReducerImpl) ToSendExpr(
 	receiver Expression,
-	arrow TokenValue,
+	arrow *TokenValue,
 	expr Expression,
 ) (
 	Expression,
@@ -447,7 +447,7 @@ func (reducer *BinaryExprReducerImpl) ToSendExpr(
 
 func (reducer *BinaryExprReducerImpl) ToBinaryOpAssignStatement(
 	address Expression,
-	op TokenValue,
+	op *TokenValue,
 	value Expression,
 ) (
 	Statement,
@@ -458,7 +458,7 @@ func (reducer *BinaryExprReducerImpl) ToBinaryOpAssignStatement(
 
 func (reducer *BinaryExprReducerImpl) ToExprAssignStatement(
 	pattern Expression,
-	assign TokenValue,
+	assign *TokenValue,
 	value Expression,
 ) (
 	Statement,
@@ -469,7 +469,7 @@ func (reducer *BinaryExprReducerImpl) ToExprAssignStatement(
 
 func (reducer *BinaryExprReducerImpl) ToSequenceExprAssignStatement(
 	pattern Expression,
-	assign TokenValue,
+	assign *TokenValue,
 	value Expression,
 ) (
 	Statement,
@@ -480,7 +480,7 @@ func (reducer *BinaryExprReducerImpl) ToSequenceExprAssignStatement(
 
 func (reducer *BinaryExprReducerImpl) DefToGlobalVarDef(
 	pattern Expression,
-	assign TokenValue,
+	assign *TokenValue,
 	value Expression,
 ) (
 	Definition,
@@ -523,9 +523,9 @@ var _ ImproperSequenceExprStructReducer = &ImplicitStructExprReducerImpl{}
 var _ TuplePatternReducer = &ImplicitStructExprReducerImpl{}
 
 func (reducer *ImplicitStructExprReducerImpl) toImplicitStructExpr(
-	lparen TokenValue,
+	lparen *TokenValue,
 	args *ArgumentList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) *ImplicitStructExpr {
 	args.ReduceMarkers(lparen, rparen)
 	return &ImplicitStructExpr{
@@ -534,9 +534,9 @@ func (reducer *ImplicitStructExprReducerImpl) toImplicitStructExpr(
 }
 
 func (reducer *ImplicitStructExprReducerImpl) ToImplicitStructExpr(
-	lparen TokenValue,
+	lparen *TokenValue,
 	args *ArgumentList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) (
 	Expression,
 	error,
@@ -548,7 +548,7 @@ func (reducer *ImplicitStructExprReducerImpl) ToImplicitStructExpr(
 
 func (reducer *ImplicitStructExprReducerImpl) PairToImproperExprStruct(
 	expr1 Expression,
-	comma TokenValue,
+	comma *TokenValue,
 	expr2 Expression,
 ) (
 	*ImplicitStructExpr,
@@ -571,7 +571,7 @@ func (reducer *ImplicitStructExprReducerImpl) PairToImproperExprStruct(
 
 func (reducer *ImplicitStructExprReducerImpl) AddToImproperExprStruct(
 	structExpr *ImplicitStructExpr,
-	comma TokenValue,
+	comma *TokenValue,
 	expr Expression,
 ) (
 	*ImplicitStructExpr,
@@ -584,7 +584,7 @@ func (reducer *ImplicitStructExprReducerImpl) AddToImproperExprStruct(
 
 func (reducer *ImplicitStructExprReducerImpl) PairToImproperSequenceExprStruct(
 	expr1 Expression,
-	comma TokenValue,
+	comma *TokenValue,
 	expr2 Expression,
 ) (
 	*ImplicitStructExpr,
@@ -607,7 +607,7 @@ func (reducer *ImplicitStructExprReducerImpl) PairToImproperSequenceExprStruct(
 
 func (reducer *ImplicitStructExprReducerImpl) AddToImproperSequenceExprStruct(
 	structExpr *ImplicitStructExpr,
-	comma TokenValue,
+	comma *TokenValue,
 	expr Expression,
 ) (
 	*ImplicitStructExpr,
@@ -619,9 +619,9 @@ func (reducer *ImplicitStructExprReducerImpl) AddToImproperSequenceExprStruct(
 }
 
 func (reducer *ImplicitStructExprReducerImpl) ToTuplePattern(
-	lparen TokenValue,
+	lparen *TokenValue,
 	list *ArgumentList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) (
 	Expression,
 	error,
@@ -644,7 +644,7 @@ type ColonExprReducerImpl struct {
 var _ ColonExprReducer = &ColonExprReducerImpl{}
 
 func (ColonExprReducerImpl) UnitUnitPairToColonExpr(
-	colon TokenValue,
+	colon *TokenValue,
 ) (
 	*ColonExpr,
 	error,
@@ -671,7 +671,7 @@ func (ColonExprReducerImpl) UnitUnitPairToColonExpr(
 
 func (ColonExprReducerImpl) ExprUnitPairToColonExpr(
 	leftExpr Expression,
-	colon TokenValue,
+	colon *TokenValue,
 ) (
 	*ColonExpr,
 	error,
@@ -700,7 +700,7 @@ func (ColonExprReducerImpl) ExprUnitPairToColonExpr(
 }
 
 func (reducer *ColonExprReducerImpl) UnitExprPairToColonExpr(
-	colon TokenValue,
+	colon *TokenValue,
 	rightExpr Expression,
 ) (
 	*ColonExpr,
@@ -731,7 +731,7 @@ func (reducer *ColonExprReducerImpl) UnitExprPairToColonExpr(
 
 func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
 	leftExpr Expression,
-	colon TokenValue,
+	colon *TokenValue,
 	rightExpr Expression,
 ) (
 	*ColonExpr,
@@ -765,7 +765,7 @@ func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
 
 func (reducer *ColonExprReducerImpl) ColonExprUnitTupleToColonExpr(
 	list *ColonExpr,
-	colon TokenValue,
+	colon *TokenValue,
 ) (
 	*ColonExpr,
 	error,
@@ -782,7 +782,7 @@ func (reducer *ColonExprReducerImpl) ColonExprUnitTupleToColonExpr(
 
 func (reducer *ColonExprReducerImpl) ColonExprExprTupleToColonExpr(
 	list *ColonExpr,
-	colon TokenValue,
+	colon *TokenValue,
 	expr Expression,
 ) (
 	*ColonExpr,
@@ -839,9 +839,9 @@ var _ CallExprReducer = &CallExprReducerImpl{}
 func (reducer *CallExprReducerImpl) ToCallExpr(
 	funcExpr Expression,
 	genericArguments *GenericArgumentList,
-	lparen TokenValue,
+	lparen *TokenValue,
 	arguments *ArgumentList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) (
 	Expression,
 	error,
@@ -896,9 +896,9 @@ var _ IndexExprReducer = &IndexExprReducerImpl{}
 
 func (reducer *IndexExprReducerImpl) ToIndexExpr(
 	accessible Expression,
-	lbracket TokenValue,
+	lbracket *TokenValue,
 	index *Argument,
-	rbracket TokenValue,
+	rbracket *TokenValue,
 ) (
 	Expression,
 	error,
@@ -951,11 +951,11 @@ var _ AsExprReducer = &AsExprReducerImpl{}
 
 func (reducer *AsExprReducerImpl) ToAsExpr(
 	accessible Expression,
-	dot TokenValue,
-	as TokenValue,
-	lparen TokenValue,
+	dot *TokenValue,
+	as *TokenValue,
+	lparen *TokenValue,
 	castType TypeExpression,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) (
 	Expression,
 	error,
@@ -1011,9 +1011,9 @@ var _ InitializeExprReducer = &InitializeExprReducerImpl{}
 
 func (reducer *InitializeExprReducerImpl) ToInitializeExpr(
 	initializable TypeExpression,
-	lparen TokenValue,
+	lparen *TokenValue,
 	arguments *ArgumentList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) (
 	Expression,
 	error,
@@ -1107,7 +1107,7 @@ func (reducer *IfExprReducerImpl) UnlabelledToIfExpr(
 }
 
 func (reducer *IfExprReducerImpl) LabelledToIfExpr(
-	labelDecl TokenValue,
+	labelDecl *TokenValue,
 	ifExpr *IfExpr,
 ) (
 	Expression,
@@ -1124,7 +1124,7 @@ func (reducer *IfExprReducerImpl) LabelledToIfExpr(
 
 func (reducer *IfExprReducerImpl) ElseToIfElseExpr(
 	ifExpr *IfExpr,
-	elseKW TokenValue,
+	elseKW *TokenValue,
 	branch Expression,
 ) (
 	*IfExpr,
@@ -1143,8 +1143,8 @@ func (reducer *IfExprReducerImpl) ElseToIfElseExpr(
 
 func (reducer *IfExprReducerImpl) ElifToIfElifExpr(
 	ifExpr *IfExpr,
-	elseKW TokenValue,
-	ifKW TokenValue,
+	elseKW *TokenValue,
+	ifKW *TokenValue,
 	condition Expression,
 	branch Expression,
 ) (
@@ -1168,7 +1168,7 @@ func (reducer *IfExprReducerImpl) ElifToIfElifExpr(
 }
 
 func (reducer *IfExprReducerImpl) ToIfOnlyExpr(
-	ifKW TokenValue,
+	ifKW *TokenValue,
 	condition Expression,
 	branch Expression,
 ) (
@@ -1218,7 +1218,7 @@ var _ SwitchExprReducer = &SwitchExprReducerImpl{}
 var _ SwitchExprBodyReducer = &SwitchExprReducerImpl{}
 
 func (reducer *SwitchExprReducerImpl) LabelledToSwitchExpr(
-	labelDecl TokenValue,
+	labelDecl *TokenValue,
 	expr Expression,
 ) (
 	Expression,
@@ -1239,7 +1239,7 @@ func (reducer *SwitchExprReducerImpl) LabelledToSwitchExpr(
 }
 
 func (reducer *SwitchExprReducerImpl) ToSwitchExprBody(
-	switchKW TokenValue,
+	switchKW *TokenValue,
 	operand Expression,
 	expr Expression,
 ) (
@@ -1299,7 +1299,7 @@ var _ SelectExprReducer = &SelectExprReducerImpl{}
 var _ SelectExprBodyReducer = &SelectExprReducerImpl{}
 
 func (reducer *SelectExprReducerImpl) LabelledToSelectExpr(
-	labelDecl TokenValue,
+	labelDecl *TokenValue,
 	expr Expression,
 ) (
 	Expression,
@@ -1320,7 +1320,7 @@ func (reducer *SelectExprReducerImpl) LabelledToSelectExpr(
 }
 
 func (reducer *SelectExprReducerImpl) ToSelectExprBody(
-	switchKW TokenValue,
+	switchKW *TokenValue,
 	expr Expression,
 ) (
 	Expression,
@@ -1421,7 +1421,7 @@ var _ OptionalSequenceExprReducer = &LoopExprReducerImpl{}
 var _ LoopBodyReducer = &LoopExprReducerImpl{}
 
 func (reducer *LoopExprReducerImpl) LabelledToLoopExpr(
-	labelDecl TokenValue,
+	labelDecl *TokenValue,
 	expr Expression,
 ) (
 	Expression,
@@ -1470,7 +1470,7 @@ func (reducer *LoopExprReducerImpl) InfiniteToLoopExprBody(
 
 func (reducer *LoopExprReducerImpl) DoWhileToLoopExprBody(
 	bodyExpr Expression,
-	forKW TokenValue,
+	forKW *TokenValue,
 	condition Expression,
 ) (
 	Expression,
@@ -1501,7 +1501,7 @@ func (reducer *LoopExprReducerImpl) DoWhileToLoopExprBody(
 }
 
 func (reducer *LoopExprReducerImpl) WhileToLoopExprBody(
-	forKW TokenValue,
+	forKW *TokenValue,
 	condition Expression,
 	bodyExpr Expression,
 ) (
@@ -1532,9 +1532,9 @@ func (reducer *LoopExprReducerImpl) WhileToLoopExprBody(
 }
 
 func (reducer *LoopExprReducerImpl) IteratorToLoopExprBody(
-	forKW TokenValue,
+	forKW *TokenValue,
 	assignPattern Expression,
-	in TokenValue,
+	in *TokenValue,
 	iterator Expression,
 	bodyExpr Expression,
 ) (
@@ -1568,11 +1568,11 @@ func (reducer *LoopExprReducerImpl) IteratorToLoopExprBody(
 }
 
 func (reducer *LoopExprReducerImpl) ForToLoopExprBody(
-	forKW TokenValue,
+	forKW *TokenValue,
 	init Statement,
-	semicolon1 TokenValue,
+	semicolon1 *TokenValue,
 	condition Expression,
-	semicolon2 TokenValue,
+	semicolon2 *TokenValue,
 	post Statement,
 	bodyExpr Expression,
 ) (
@@ -1640,7 +1640,7 @@ func (reducer *LoopExprReducerImpl) NilToOptionalSequenceExpr() (
 }
 
 func (reducer *LoopExprReducerImpl) ToLoopBody(
-	do TokenValue,
+	do *TokenValue,
 	expr Expression,
 ) (
 	Expression,

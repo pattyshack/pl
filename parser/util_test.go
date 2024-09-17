@@ -9,7 +9,7 @@ import (
 )
 
 func expectError(t *testing.T, token Token, errMsg string) {
-	pe, ok := token.(ParseErrorSymbol)
+	pe, ok := token.(*ParseErrorSymbol)
 	expect.True(t, ok)
 	expect.Error(t, pe.Error, errMsg)
 }
@@ -18,8 +18,8 @@ func expectValue(
 	t *testing.T,
 	expectedValue string,
 	token Token,
-) TokenValue {
-	value, ok := token.(TokenValue)
+) *TokenValue {
+	value, ok := token.(*TokenValue)
 	expect.True(t, ok)
 	expect.Equal(t, expectedValue, value.Value)
 	return value

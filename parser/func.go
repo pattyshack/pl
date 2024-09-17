@@ -95,7 +95,7 @@ func (reducer *FuncReducerImpl) NilToReturnType() (
 }
 
 func (reducer *FuncReducerImpl) toFuncSignature(
-	funcKW TokenValue,
+	funcKW *TokenValue,
 	receiver *Parameter, // optional
 	nameToken *TokenValue, // optional
 	genericParameters *GenericParameterList, // optional
@@ -153,7 +153,7 @@ func (reducer *FuncReducerImpl) toFuncSignature(
 }
 
 func (reducer *FuncReducerImpl) toFuncDefinition(
-	funcKW TokenValue,
+	funcKW *TokenValue,
 	receiver *Parameter,
 	nameToken *TokenValue,
 	genericParameters *GenericParameterList,
@@ -181,7 +181,7 @@ func (reducer *FuncReducerImpl) toFuncDefinition(
 }
 
 func (reducer *FuncReducerImpl) ToFuncTypeExpr(
-	funcKW TokenValue,
+	funcKW *TokenValue,
 	parameters *ParameterList,
 	returnType TypeExpression,
 ) (
@@ -200,8 +200,8 @@ func (reducer *FuncReducerImpl) ToFuncTypeExpr(
 }
 
 func (reducer *FuncReducerImpl) ToMethodSignature(
-	funcKW TokenValue,
-	name TokenValue,
+	funcKW *TokenValue,
+	name *TokenValue,
 	parameters *ParameterList,
 	returnType TypeExpression,
 ) (
@@ -211,15 +211,15 @@ func (reducer *FuncReducerImpl) ToMethodSignature(
 	return reducer.toFuncSignature(
 		funcKW,
 		nil, // receiver
-		&name,
+		name,
 		nil, // generic parameters
 		parameters,
 		returnType), nil
 }
 
 func (reducer *FuncReducerImpl) FuncDefToNamedFuncDef(
-	funcKW TokenValue,
-	name TokenValue,
+	funcKW *TokenValue,
+	name *TokenValue,
 	genericParameters *GenericParameterList,
 	parameters *ParameterList,
 	returnType TypeExpression,
@@ -231,7 +231,7 @@ func (reducer *FuncReducerImpl) FuncDefToNamedFuncDef(
 	def := reducer.toFuncDefinition(
 		funcKW,
 		nil, // receiver
-		&name,
+		name,
 		genericParameters,
 		parameters,
 		returnType,
@@ -242,11 +242,11 @@ func (reducer *FuncReducerImpl) FuncDefToNamedFuncDef(
 }
 
 func (reducer *FuncReducerImpl) MethodDefToNamedFuncDef(
-	funcKW TokenValue,
-	lparen TokenValue,
+	funcKW *TokenValue,
+	lparen *TokenValue,
 	receiver *Parameter,
-	rparen TokenValue,
-	name TokenValue,
+	rparen *TokenValue,
+	name *TokenValue,
 	parameters *ParameterList,
 	returnType TypeExpression,
 	body Expression,
@@ -262,7 +262,7 @@ func (reducer *FuncReducerImpl) MethodDefToNamedFuncDef(
 	def := reducer.toFuncDefinition(
 		funcKW,
 		receiver,
-		&name,
+		name,
 		nil, // generic parameters
 		parameters,
 		returnType,
@@ -272,7 +272,7 @@ func (reducer *FuncReducerImpl) MethodDefToNamedFuncDef(
 }
 
 func (reducer *FuncReducerImpl) ToAnonymousFuncExpr(
-	funcKW TokenValue,
+	funcKW *TokenValue,
 	parameters *ParameterList,
 	returnType TypeExpression,
 	body Expression,

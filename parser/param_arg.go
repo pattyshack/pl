@@ -86,29 +86,29 @@ func (reducer *ParameterReducerImpl) namedTypedArg(
 }
 
 func (reducer *ParameterReducerImpl) NamedTypedArgToProperParameterDef(
-	name TokenValue,
+	name *TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
 	error,
 ) {
-	return reducer.namedTypedArg(NamedTypedArgParameter, &name, typeExpr)
+	return reducer.namedTypedArg(NamedTypedArgParameter, name, typeExpr)
 }
 
 func (reducer *ParameterReducerImpl) IgnoreTypedArgToProperParameterDef(
-	underscore TokenValue,
+	underscore *TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
 	error,
 ) {
-	return reducer.namedTypedArg(IgnoreTypedArgParameter, &underscore, typeExpr)
+	return reducer.namedTypedArg(IgnoreTypedArgParameter, underscore, typeExpr)
 }
 
 func (reducer *ParameterReducerImpl) namedTypedVararg(
 	kind ParameterKind,
 	name *TokenValue,
-	ellipsis TokenValue,
+	ellipsis *TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
@@ -129,8 +129,8 @@ func (reducer *ParameterReducerImpl) namedTypedVararg(
 }
 
 func (reducer *ParameterReducerImpl) NamedTypedVarargToProperParameterDef(
-	name TokenValue,
-	ellipsis TokenValue,
+	name *TokenValue,
+	ellipsis *TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
@@ -138,14 +138,14 @@ func (reducer *ParameterReducerImpl) NamedTypedVarargToProperParameterDef(
 ) {
 	return reducer.namedTypedVararg(
 		NamedTypedVarargParameter,
-		&name,
+		name,
 		ellipsis,
 		typeExpr)
 }
 
 func (reducer *ParameterReducerImpl) IgnoreTypedVarargToProperParameterDef(
-	underscore TokenValue,
-	ellipsis TokenValue,
+	underscore *TokenValue,
+	ellipsis *TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
@@ -153,7 +153,7 @@ func (reducer *ParameterReducerImpl) IgnoreTypedVarargToProperParameterDef(
 ) {
 	return reducer.namedTypedVararg(
 		IgnoreTypedVarargParameter,
-		&underscore,
+		underscore,
 		ellipsis,
 		typeExpr)
 }
@@ -161,7 +161,7 @@ func (reducer *ParameterReducerImpl) IgnoreTypedVarargToProperParameterDef(
 func (reducer *ParameterReducerImpl) namedInferredVararg(
 	kind ParameterKind,
 	name *TokenValue,
-	ellipsis TokenValue,
+	ellipsis *TokenValue,
 ) (
 	*Parameter,
 	error,
@@ -180,28 +180,28 @@ func (reducer *ParameterReducerImpl) namedInferredVararg(
 }
 
 func (reducer *ParameterReducerImpl) NamedInferredVarargToProperParameterDef(
-	name TokenValue,
-	ellipsis TokenValue,
+	name *TokenValue,
+	ellipsis *TokenValue,
 ) (
 	*Parameter,
 	error,
 ) {
 	return reducer.namedInferredVararg(
 		NamedInferredVarargParameter,
-		&name,
+		name,
 		ellipsis)
 }
 
 func (reducer *ParameterReducerImpl) IgnoreInferredVarargToProperParameterDef(
-	underscore TokenValue,
-	ellipsis TokenValue,
+	underscore *TokenValue,
+	ellipsis *TokenValue,
 ) (
 	*Parameter,
 	error,
 ) {
 	return reducer.namedInferredVararg(
 		IgnoreInferredVarargParameter,
-		&underscore,
+		underscore,
 		ellipsis)
 }
 
@@ -224,7 +224,7 @@ func (reducer *ParameterReducerImpl) UnnamedTypedArgToParameterDecl(
 }
 
 func (reducer *ParameterReducerImpl) UnnamedInferredVarargToParameterDecl(
-	ellipsis TokenValue,
+	ellipsis *TokenValue,
 ) (
 	*Parameter,
 	error,
@@ -241,7 +241,7 @@ func (reducer *ParameterReducerImpl) UnnamedInferredVarargToParameterDecl(
 }
 
 func (reducer *ParameterReducerImpl) UnnamedTypedVarargToParameterDecl(
-	ellipsis TokenValue,
+	ellipsis *TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
@@ -280,21 +280,21 @@ func (reducer *ParameterReducerImpl) namedInferredArg(
 }
 
 func (reducer *ParameterReducerImpl) NamedInferredArgToParameterDef(
-	name TokenValue,
+	name *TokenValue,
 ) (
 	*Parameter,
 	error,
 ) {
-	return reducer.namedInferredArg(NamedInferredArgParameter, &name)
+	return reducer.namedInferredArg(NamedInferredArgParameter, name)
 }
 
 func (reducer *ParameterReducerImpl) IgnoreInferredArgToParameterDef(
-	underscore TokenValue,
+	underscore *TokenValue,
 ) (
 	*Parameter,
 	error,
 ) {
-	return reducer.namedInferredArg(IgnoreInferredArgParameter, &underscore)
+	return reducer.namedInferredArg(IgnoreInferredArgParameter, underscore)
 }
 
 //
@@ -320,7 +320,7 @@ var _ ParameterDefsReducer = &ParameterListReducerImpl{}
 
 func (reducer *ParameterListReducerImpl) AddToProperParameterDeclList(
 	list *ParameterList,
-	comma TokenValue,
+	comma *TokenValue,
 	parameter *Parameter,
 ) (
 	*ParameterList,
@@ -343,7 +343,7 @@ func (reducer *ParameterListReducerImpl) ParameterDeclToProperParameterDeclList(
 
 func (reducer *ParameterListReducerImpl) ImproperToParameterDeclList(
 	list *ParameterList,
-	comma TokenValue,
+	comma *TokenValue,
 ) (
 	*ParameterList,
 	error,
@@ -360,9 +360,9 @@ func (reducer *ParameterListReducerImpl) NilToParameterDeclList() (
 }
 
 func (reducer *ParameterListReducerImpl) ToParameterDecls(
-	lparen TokenValue,
+	lparen *TokenValue,
 	list *ParameterList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) (
 	*ParameterList,
 	error,
@@ -373,7 +373,7 @@ func (reducer *ParameterListReducerImpl) ToParameterDecls(
 
 func (reducer *ParameterListReducerImpl) AddToProperParameterDefList(
 	list *ParameterList,
-	comma TokenValue,
+	comma *TokenValue,
 	parameter *Parameter,
 ) (
 	*ParameterList,
@@ -396,7 +396,7 @@ func (reducer *ParameterListReducerImpl) ParameterDefToProperParameterDefList(
 
 func (reducer *ParameterListReducerImpl) ImproperToParameterDefList(
 	list *ParameterList,
-	comma TokenValue,
+	comma *TokenValue,
 ) (
 	*ParameterList,
 	error,
@@ -413,9 +413,9 @@ func (reducer *ParameterListReducerImpl) NilToParameterDefList() (
 }
 
 func (reducer *ParameterListReducerImpl) ToParameterDefs(
-	lparen TokenValue,
+	lparen *TokenValue,
 	list *ParameterList,
-	rparen TokenValue,
+	rparen *TokenValue,
 ) (
 	*ParameterList,
 	error,
@@ -472,8 +472,8 @@ func NewPositionalArgument(expr Expression) *Argument {
 }
 
 func NewNamedArgument(
-	name TokenValue,
-	assign TokenValue,
+	name *TokenValue,
+	assign *TokenValue,
 	expr Expression,
 ) *Argument {
 	arg := &Argument{
@@ -495,7 +495,7 @@ func NewNamedArgument(
 }
 
 func NewSkipPatternArgument(
-	ellipsis TokenValue,
+	ellipsis *TokenValue,
 ) *Argument {
 	return &Argument{
 		StartEndPos:             NewStartEndPos(ellipsis.Loc(), ellipsis.End()),
@@ -559,8 +559,8 @@ func (ArgumentReducerImpl) ColonExprToArgument(
 }
 
 func (ArgumentReducerImpl) NamedAssignmentToArgument(
-	name TokenValue,
-	assign TokenValue,
+	name *TokenValue,
+	assign *TokenValue,
 	expr Expression,
 ) (
 	*Argument,
@@ -571,7 +571,7 @@ func (ArgumentReducerImpl) NamedAssignmentToArgument(
 
 func (ArgumentReducerImpl) VarargAssignmentToArgument(
 	expr Expression,
-	ellipsis TokenValue,
+	ellipsis *TokenValue,
 ) (
 	*Argument,
 	error,
@@ -590,7 +590,7 @@ func (ArgumentReducerImpl) VarargAssignmentToArgument(
 }
 
 func (ArgumentReducerImpl) SkipPatternToArgument(
-	ellipsis TokenValue,
+	ellipsis *TokenValue,
 ) (
 	*Argument,
 	error,
@@ -608,8 +608,8 @@ func (ArgumentReducerImpl) PositionalToFieldVarPattern(
 }
 
 func (ArgumentReducerImpl) NamedAssignmentToFieldVarPattern(
-	name TokenValue,
-	assign TokenValue,
+	name *TokenValue,
+	assign *TokenValue,
 	expr Expression,
 ) (
 	*Argument,
@@ -619,7 +619,7 @@ func (ArgumentReducerImpl) NamedAssignmentToFieldVarPattern(
 }
 
 func (ArgumentReducerImpl) SkipPatternToFieldVarPattern(
-	ellipsis TokenValue,
+	ellipsis *TokenValue,
 ) (
 	*Argument,
 	error,
@@ -646,7 +646,7 @@ var _ FieldVarPatternsReducer = &ArgumentListReducerImpl{}
 
 func (reducer *ArgumentListReducerImpl) AddToProperArguments(
 	list *ArgumentList,
-	comma TokenValue,
+	comma *TokenValue,
 	arg *Argument,
 ) (
 	*ArgumentList,
@@ -669,7 +669,7 @@ func (reducer *ArgumentListReducerImpl) ArgumentToProperArguments(
 
 func (reducer *ArgumentListReducerImpl) ImproperToArguments(
 	list *ArgumentList,
-	comma TokenValue,
+	comma *TokenValue,
 ) (
 	*ArgumentList,
 	error,
@@ -698,7 +698,7 @@ func (reducer *ArgumentListReducerImpl) FieldVarPatternToProperFieldVarPatterns(
 
 func (reducer *ArgumentListReducerImpl) AddToProperFieldVarPatterns(
 	list *ArgumentList,
-	comma TokenValue,
+	comma *TokenValue,
 	pattern *Argument,
 ) (
 	*ArgumentList,
@@ -710,7 +710,7 @@ func (reducer *ArgumentListReducerImpl) AddToProperFieldVarPatterns(
 
 func (reducer *ArgumentListReducerImpl) ImproperToFieldVarPatterns(
 	list *ArgumentList,
-	comma TokenValue,
+	comma *TokenValue,
 ) (
 	*ArgumentList,
 	error,

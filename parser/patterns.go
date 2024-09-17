@@ -23,7 +23,7 @@ type VarPattern struct {
 var _ Expression = &VarPattern{}
 
 func NewVarPattern(
-	varType TokenValue,
+	varType *TokenValue,
 	pattern Expression,
 	typeExpr TypeExpression,
 ) *VarPattern {
@@ -69,7 +69,7 @@ var _ DeclVarPatternReducer = VarPatternReducerImpl{}
 var _ AssignVarPatternReducer = VarPatternReducerImpl{}
 
 func (VarPatternReducerImpl) InferredToDeclVarPattern(
-	varType TokenValue,
+	varType *TokenValue,
 	pattern Expression,
 ) (
 	Expression,
@@ -79,7 +79,7 @@ func (VarPatternReducerImpl) InferredToDeclVarPattern(
 }
 
 func (VarPatternReducerImpl) TypedToDeclVarPattern(
-	varType TokenValue,
+	varType *TokenValue,
 	pattern Expression,
 	typeExpr TypeExpression,
 ) (
@@ -90,7 +90,7 @@ func (VarPatternReducerImpl) TypedToDeclVarPattern(
 }
 
 func (VarPatternReducerImpl) ToAssignVarPattern(
-	varType TokenValue,
+	varType *TokenValue,
 	pattern Expression,
 ) (
 	Expression,
@@ -140,7 +140,7 @@ func (CasePatternsReducerImpl) SwitchableCasePatternToSwitchableCasePatterns(
 
 func (CasePatternsReducerImpl) AddToSwitchableCasePatterns(
 	list *CasePatternList,
-	comma TokenValue,
+	comma *TokenValue,
 	pattern CasePattern,
 ) (
 	*CasePatternList,
@@ -188,7 +188,7 @@ var _ CaseAssignExprReducer = CaseAssignPatternReducerImpl{}
 
 func (CaseAssignPatternReducerImpl) ToCaseAssignPattern(
 	assignPattern *CasePatternList,
-	assign TokenValue,
+	assign *TokenValue,
 	value Expression,
 ) (
 	*CaseAssignPattern,
@@ -210,7 +210,7 @@ func (CaseAssignPatternReducerImpl) ToCaseAssignPattern(
 }
 
 func (CaseAssignPatternReducerImpl) ToCaseAssignExpr(
-	caseKW TokenValue,
+	caseKW *TokenValue,
 	pattern *CaseAssignPattern,
 ) (
 	Expression,
@@ -256,8 +256,8 @@ type CaseEnumPatternReducerImpl struct{}
 var _ CaseEnumPatternReducer = &CaseEnumPatternReducerImpl{}
 
 func (CaseEnumPatternReducerImpl) EnumMatchPatternToCaseEnumPattern(
-	dot TokenValue,
-	enumValue TokenValue,
+	dot *TokenValue,
+	enumValue *TokenValue,
 	varPattern Expression,
 ) (
 	CasePattern,
@@ -280,8 +280,8 @@ func (CaseEnumPatternReducerImpl) EnumMatchPatternToCaseEnumPattern(
 }
 
 func (CaseEnumPatternReducerImpl) EnumNondataMatchPattenToCaseEnumPattern(
-	dot TokenValue,
-	enumValue TokenValue,
+	dot *TokenValue,
+	enumValue *TokenValue,
 ) (
 	CasePattern,
 	error,
@@ -301,9 +301,9 @@ func (CaseEnumPatternReducerImpl) EnumNondataMatchPattenToCaseEnumPattern(
 }
 
 func (CaseEnumPatternReducerImpl) EnumDeclVarPatternToCaseEnumPattern(
-	varType TokenValue,
-	dot TokenValue,
-	enumValue TokenValue,
+	varType *TokenValue,
+	dot *TokenValue,
+	enumValue *TokenValue,
 	tuplePattern Expression,
 ) (
 	CasePattern,
