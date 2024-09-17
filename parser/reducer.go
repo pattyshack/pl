@@ -40,6 +40,7 @@ type ReducerImpl struct {
 
 	FloatingCommentReducerImpl
 	PackageDefReducerImpl
+	TypeDefReducerImpl
 
 	ArgumentListReducerImpl
 	ArgumentReducerImpl
@@ -54,10 +55,6 @@ type ReducerImpl struct {
 	ParameterReducerImpl
 	ParameterListReducerImpl
 	TypePropertyListReducerImpl
-
-	// TODO
-
-	TypeDefReducer
 }
 
 func NewReducer() *ReducerImpl {

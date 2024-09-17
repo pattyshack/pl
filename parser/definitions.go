@@ -137,3 +137,143 @@ func (PackageDefReducerImpl) ToPackageDef(
 
 	panic(fmt.Sprintf("Unexpected expression: %v", expr))
 }
+
+//
+// TypeDef
+//
+
+type TypeDef struct {
+	isDefinition
+	StartEndPos
+	LeadingTrailingComments
+
+	Name              string
+	IsAlias           bool
+	GenericParameters GenericParameterList // optional
+	BaseType          TypeExpression
+	Constraint        TypeExpression // optional
+}
+
+var _ Definition = &TypeDef{}
+
+func (def TypeDef) TreeString(indent string, label string) string {
+	result := fmt.Sprintf(
+		"%s%s[TypeDef: Name=%s IsAlias=%v\n",
+		indent,
+		label,
+		def.Name,
+		def.IsAlias)
+	result += "\n" + indent + "]"
+	return result
+}
+
+type TypeDefReducerImpl struct {
+	TypeDefs []*TypeDef
+}
+
+var _ TypeDefReducer = &TypeDefReducerImpl{}
+
+func (reducer *TypeDefReducerImpl) DefinitionToTypeDef(
+	typeKW TokenValue,
+	name TokenValue,
+	genericParameters *GenericParameterList,
+	baseType TypeExpression,
+) (
+	Definition,
+	error,
+) {
+	leading := typeKW.TakeLeading()
+	leading.Append(typeKW.TakeTrailing())
+	leading.Append(name.TakeLeading())
+
+	if genericParameters != nil {
+		genericParameters.PrependToLeading(name.TakeTrailing())
+	} else {
+		genericParameters = NewGenericParameterList()
+		baseType.PrependToLeading(name.TakeTrailing())
+	}
+
+	trailing := baseType.TakeTrailing()
+
+	def := &TypeDef{
+		StartEndPos:       newStartEndPos(typeKW.Loc(), baseType.End()),
+		Name:              name.Value,
+		GenericParameters: *genericParameters,
+		BaseType:          baseType,
+	}
+	def.LeadingComment = leading
+	def.TrailingComment = trailing
+
+	return def, nil
+}
+
+func (reducer *TypeDefReducerImpl) ConstrainedDefToTypeDef(
+	typeKW TokenValue,
+	name TokenValue,
+	genericParameters *GenericParameterList,
+	baseType TypeExpression,
+	implements TokenValue,
+	constraint TypeExpression,
+) (
+	Definition,
+	error,
+) {
+	leading := typeKW.TakeLeading()
+	leading.Append(typeKW.TakeTrailing())
+	leading.Append(name.TakeLeading())
+
+	if genericParameters != nil {
+		genericParameters.PrependToLeading(name.TakeTrailing())
+	} else {
+		genericParameters = NewGenericParameterList()
+		baseType.PrependToLeading(name.TakeTrailing())
+	}
+
+	baseType.AppendToTrailing(implements.TakeLeading())
+	constraint.PrependToLeading(implements.TakeTrailing())
+
+	trailing := constraint.TakeTrailing()
+
+	def := &TypeDef{
+		StartEndPos:       newStartEndPos(typeKW.Loc(), constraint.End()),
+		Name:              name.Value,
+		GenericParameters: *genericParameters,
+		BaseType:          baseType,
+		Constraint:        constraint,
+	}
+	def.LeadingComment = leading
+	def.TrailingComment = trailing
+
+	return def, nil
+}
+
+func (reducer *TypeDefReducerImpl) AliasToTypeDef(
+	typeKW TokenValue,
+	name TokenValue,
+	assign TokenValue,
+	baseType TypeExpression,
+) (
+	Definition,
+	error,
+) {
+	leading := typeKW.TakeLeading()
+	leading.Append(typeKW.TakeTrailing())
+	leading.Append(name.TakeLeading())
+
+	baseType.PrependToLeading(assign.TakeTrailing())
+	baseType.PrependToLeading(assign.TakeLeading())
+	baseType.PrependToLeading(name.TakeTrailing())
+
+	trailing := baseType.TakeTrailing()
+
+	def := &TypeDef{
+		StartEndPos: newStartEndPos(typeKW.Loc(), baseType.End()),
+		Name:        name.Value,
+		IsAlias:     true,
+		BaseType:    baseType,
+	}
+	def.LeadingComment = leading
+	def.TrailingComment = trailing
+
+	return def, nil
+}
