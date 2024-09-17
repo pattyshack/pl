@@ -33,7 +33,7 @@ func NewVarPattern(
 	}
 
 	expr := &VarPattern{
-		StartEndPos: newStartEndPos(varType.Loc(), end.End()),
+		StartEndPos: NewStartEndPos(varType.Loc(), end.End()),
 		Kind:        VarPatternKind(varType.SymbolId),
 		VarPattern:  pattern,
 		Type:        typeExpr,
@@ -123,7 +123,7 @@ func (CasePatternsReducerImpl) ToCasePatterns(
 	error,
 ) {
 	list := NewCasePatternList()
-	list.add(pattern)
+	list.Add(pattern)
 	return list, nil
 }
 
@@ -134,7 +134,7 @@ func (CasePatternsReducerImpl) SwitchableCasePatternToSwitchableCasePatterns(
 	error,
 ) {
 	list := NewCasePatternList()
-	list.add(pattern)
+	list.Add(pattern)
 	return list, nil
 }
 
@@ -146,7 +146,7 @@ func (CasePatternsReducerImpl) AddToSwitchableCasePatterns(
 	*CasePatternList,
 	error,
 ) {
-	list.reduceAdd(comma, pattern)
+	list.ReduceAdd(comma, pattern)
 	return list, nil
 }
 
@@ -199,7 +199,7 @@ func (CaseAssignPatternReducerImpl) ToCaseAssignPattern(
 	value.PrependToLeading(assign.TakeTrailing())
 
 	pattern := &CaseAssignPattern{
-		StartEndPos:   newStartEndPos(assignPattern.Loc(), value.End()),
+		StartEndPos:   NewStartEndPos(assignPattern.Loc(), value.End()),
 		AssignPattern: *assignPattern,
 		Value:         value,
 	}
@@ -270,7 +270,7 @@ func (CaseEnumPatternReducerImpl) EnumMatchPatternToCaseEnumPattern(
 	trailing := varPattern.TakeTrailing()
 
 	pattern := &CaseEnumPattern{
-		StartEndPos: newStartEndPos(dot.Loc(), enumValue.End()),
+		StartEndPos: NewStartEndPos(dot.Loc(), enumValue.End()),
 		EnumValue:   enumValue.Value,
 		VarPattern:  varPattern,
 	}
@@ -292,7 +292,7 @@ func (CaseEnumPatternReducerImpl) EnumNondataMatchPattenToCaseEnumPattern(
 	trailing := enumValue.TakeTrailing()
 
 	pattern := &CaseEnumPattern{
-		StartEndPos: newStartEndPos(dot.Loc(), enumValue.End()),
+		StartEndPos: NewStartEndPos(dot.Loc(), enumValue.End()),
 		EnumValue:   enumValue.Value,
 	}
 	pattern.LeadingComment = leading
@@ -321,7 +321,7 @@ func (CaseEnumPatternReducerImpl) EnumDeclVarPatternToCaseEnumPattern(
 	trailing := tuplePattern.TakeTrailing()
 
 	pattern := &CaseEnumPattern{
-		StartEndPos: newStartEndPos(varType.Loc(), enumValue.End()),
+		StartEndPos: NewStartEndPos(varType.Loc(), enumValue.End()),
 		EnumValue:   enumValue.Value,
 		VarPattern:  varPattern,
 	}

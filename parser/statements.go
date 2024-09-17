@@ -52,7 +52,7 @@ func (StatementsExprReducerImpl) AddImplicitToProperStatementList(
 	*StatementsExpr,
 	error,
 ) {
-	statements.reduceAdd(TokenValue{}, statement)
+	statements.ReduceAdd(TokenValue{}, statement)
 	return statements, nil
 }
 
@@ -64,7 +64,7 @@ func (StatementsExprReducerImpl) AddExplicitToProperStatementList(
 	*StatementsExpr,
 	error,
 ) {
-	statements.reduceAdd(semicolon, statement)
+	statements.ReduceAdd(semicolon, statement)
 	return statements, nil
 }
 
@@ -75,7 +75,7 @@ func (StatementsExprReducerImpl) StatementToProperStatementList(
 	error,
 ) {
 	list := NewStatementsExpr()
-	list.add(statement)
+	list.Add(statement)
 	return list, nil
 }
 
@@ -96,7 +96,7 @@ func (StatementsExprReducerImpl) ImproperExplicitToStatementList(
 	*StatementsExpr,
 	error,
 ) {
-	statements.reduceImproper(semicolon)
+	statements.ReduceImproper(semicolon)
 	return statements, nil
 }
 
@@ -112,7 +112,7 @@ func (StatementsExprReducerImpl) ToStatements(
 	Expression,
 	error,
 ) {
-	list.reduceMarkers(lbrace, rbrace)
+	list.ReduceMarkers(lbrace, rbrace)
 	return list, nil
 }
 
@@ -144,7 +144,7 @@ func (StatementsExprReducerImpl) SimpleStatementToTrailingSimpleStatement(
 	error,
 ) {
 	expr := NewStatementsExpr()
-	expr.add(stmt)
+	expr.Add(stmt)
 	return expr, nil
 }
 
@@ -205,7 +205,7 @@ func (reducer *ImportClauseReducerImpl) aliasImport(
 	pkg TokenValue,
 ) *ImportClause {
 	clause := &ImportClause{
-		StartEndPos: newStartEndPos(alias.Loc(), pkg.End()),
+		StartEndPos: NewStartEndPos(alias.Loc(), pkg.End()),
 		Alias:       alias.Value,
 		Package:     pkg.Value,
 	}
@@ -282,7 +282,7 @@ func (ImportStatementReducerImpl) SingleToImportStatement(
 	error,
 ) {
 	stmt := NewImportStatement()
-	stmt.add(importClause)
+	stmt.Add(importClause)
 
 	stmt.StartPos = importKW.Loc()
 	stmt.PrependToLeading(importKW.TakeTrailing())
@@ -299,7 +299,7 @@ func (ImportStatementReducerImpl) MultipleToImportStatement(
 	Statement,
 	error,
 ) {
-	stmt.reduceMarkers(lparen, rparen)
+	stmt.ReduceMarkers(lparen, rparen)
 
 	stmt.StartPos = importKW.Loc()
 	stmt.PrependToLeading(importKW.TakeTrailing())
@@ -315,7 +315,7 @@ func (ImportStatementReducerImpl) AddImplicitToProperImportClauses(
 	*ImportStatement,
 	error,
 ) {
-	stmt.reduceAdd(TokenValue{}, importClause)
+	stmt.ReduceAdd(TokenValue{}, importClause)
 	return stmt, nil
 }
 
@@ -327,7 +327,7 @@ func (ImportStatementReducerImpl) AddExplicitToProperImportClauses(
 	*ImportStatement,
 	error,
 ) {
-	stmt.reduceAdd(comma, importClause)
+	stmt.ReduceAdd(comma, importClause)
 	return stmt, nil
 }
 
@@ -337,7 +337,7 @@ func (ImportStatementReducerImpl) ImportClauseToProperImportClauses(
 	error,
 ) {
 	stmt := NewImportStatement()
-	stmt.add(importClause)
+	stmt.Add(importClause)
 	return stmt, nil
 }
 
@@ -358,7 +358,7 @@ func (ImportStatementReducerImpl) ExplicitToImportClauses(
 	*ImportStatement,
 	error,
 ) {
-	stmt.reduceImproper(comma)
+	stmt.ReduceImproper(comma)
 	return stmt, nil
 }
 
@@ -405,7 +405,7 @@ func NewJumpStatement(
 	}
 
 	stmt := &JumpStatement{
-		StartEndPos: newStartEndPos(start, end),
+		StartEndPos: NewStartEndPos(start, end),
 		Op:          JumpOp(op.SymbolId),
 		Label:       label,
 		Value:       value,
@@ -539,7 +539,7 @@ func (UnsafeStatementReducerImpl) ToUnsafeStatement(
 	leading.Append(greater.TakeTrailing())
 	leading.Append(verbatimSource.TakeLeading())
 	stmt := &UnsafeStatement{
-		StartEndPos:    newStartEndPos(unsafe.Loc(), verbatimSource.End()),
+		StartEndPos:    NewStartEndPos(unsafe.Loc(), verbatimSource.End()),
 		Language:       language.Value,
 		VerbatimSource: verbatimSource.Value,
 	}
@@ -607,7 +607,7 @@ func (BranchStatementReducerImpl) CaseBranchToBranchStatement(
 	body.PrependToLeading(colon.TakeTrailing())
 
 	stmt := &BranchStatement{
-		StartEndPos:  newStartEndPos(caseKW.Loc(), end),
+		StartEndPos:  NewStartEndPos(caseKW.Loc(), end),
 		CasePatterns: *casePatterns,
 		Body:         *body,
 	}
@@ -639,7 +639,7 @@ func (BranchStatementReducerImpl) DefaultBranchToBranchStatement(
 	body.PrependToLeading(colon.TakeTrailing())
 
 	stmt := &BranchStatement{
-		StartEndPos:  newStartEndPos(defaultKW.Loc(), end),
+		StartEndPos:  NewStartEndPos(defaultKW.Loc(), end),
 		IsDefault:    true,
 		CasePatterns: *casePatterns,
 		Body:         *body,

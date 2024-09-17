@@ -200,7 +200,7 @@ type StartEndPos struct {
 	EndPos   Location
 }
 
-func newStartEndPos(start Location, end Location) StartEndPos {
+func NewStartEndPos(start Location, end Location) StartEndPos {
 	return StartEndPos{
 		StartPos: start,
 		EndPos:   end,
@@ -279,19 +279,19 @@ type ParseErrorReducerImpl struct {
 var _ ParseErrorExprReducer = &ParseErrorReducerImpl{}
 var _ ParseErrorTypeExprReducer = &ParseErrorReducerImpl{}
 
-func (reducer *ParseErrorReducerImpl) ToParseErrorExpr(
+func (Reducer *ParseErrorReducerImpl) ToParseErrorExpr(
 	pe ParseErrorSymbol,
 ) (Expression, error) {
 	ptr := &pe
-	reducer.ParseErrors = append(reducer.ParseErrors, ptr)
+	Reducer.ParseErrors = append(Reducer.ParseErrors, ptr)
 	return ptr, nil
 }
 
-func (reducer *ParseErrorReducerImpl) ToParseErrorTypeExpr(
+func (Reducer *ParseErrorReducerImpl) ToParseErrorTypeExpr(
 	pe ParseErrorSymbol,
 ) (TypeExpression, error) {
 	ptr := &pe
-	reducer.ParseErrors = append(reducer.ParseErrors, ptr)
+	Reducer.ParseErrors = append(Reducer.ParseErrors, ptr)
 	return ptr, nil
 }
 
@@ -337,7 +337,7 @@ func newNodeList[T Node](listType string) *NodeList[T] {
 	}
 }
 
-func (list *NodeList[T]) add(element T) {
+func (list *NodeList[T]) Add(element T) {
 	if len(list.Elements) == 0 {
 		list.StartPos = element.Loc()
 	}
@@ -345,15 +345,15 @@ func (list *NodeList[T]) add(element T) {
 	list.Elements = append(list.Elements, element)
 }
 
-func (list *NodeList[T]) reduceAdd(separator TokenValue, element T) {
+func (list *NodeList[T]) ReduceAdd(separator TokenValue, element T) {
 	prev := list.Elements[len(list.Elements)-1]
 	prev.AppendToTrailing(separator.TakeLeading())
 	prev.AppendToTrailing(separator.TakeTrailing())
 
-	list.add(element)
+	list.Add(element)
 }
 
-func (list *NodeList[T]) reduceImproper(separator TokenValue) {
+func (list *NodeList[T]) ReduceImproper(separator TokenValue) {
 	list.EndPos = separator.End()
 
 	lastElement := list.Elements[len(list.Elements)-1]
@@ -361,7 +361,7 @@ func (list *NodeList[T]) reduceImproper(separator TokenValue) {
 	lastElement.AppendToTrailing(separator.TakeTrailing())
 }
 
-func (list *NodeList[T]) reduceMarkers(start TokenValue, end TokenValue) {
+func (list *NodeList[T]) ReduceMarkers(start TokenValue, end TokenValue) {
 	list.StartPos = start.Loc()
 	list.EndPos = end.End()
 

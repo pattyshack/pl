@@ -38,7 +38,7 @@ func (reducer *SliceTypeExprReducerImpl) ToSliceTypeExpr(
 	error,
 ) {
 	slice := &SliceTypeExpr{
-		StartEndPos: newStartEndPos(lbracket.Loc(), rbracket.End()),
+		StartEndPos: NewStartEndPos(lbracket.Loc(), rbracket.End()),
 		Value:       value,
 	}
 
@@ -92,7 +92,7 @@ func (reducer *ArrayTypeExprReducerImpl) ToArrayTypeExpr(
 	error,
 ) {
 	array := &ArrayTypeExpr{
-		StartEndPos: newStartEndPos(lbracket.Loc(), rbracket.End()),
+		StartEndPos: NewStartEndPos(lbracket.Loc(), rbracket.End()),
 		Value:       value,
 		Size:        size,
 	}
@@ -146,7 +146,7 @@ func (reducer *MapTypeExprReducerImpl) ToMapTypeExpr(
 	error,
 ) {
 	dict := &MapTypeExpr{
-		StartEndPos: newStartEndPos(lbracket.Loc(), rbracket.End()),
+		StartEndPos: NewStartEndPos(lbracket.Loc(), rbracket.End()),
 		Key:         key,
 		Value:       value,
 	}
@@ -263,7 +263,7 @@ func (reducer *NamedTypeExprReducerImpl) toNamedTypeExpr(
 		trailing = genericArguments.TakeTrailing()
 	}
 	named := &NamedTypeExpr{
-		StartEndPos: newStartEndPos(name.Loc(), endPos),
+		StartEndPos: NewStartEndPos(name.Loc(), endPos),
 		LeadingTrailingComments: LeadingTrailingComments{
 			TrailingComment: trailing,
 		},
@@ -347,7 +347,7 @@ func (reducer *UnaryTypeExprReducerImpl) ToPrefixUnaryTypeExpr(
 	error,
 ) {
 	expr := &UnaryTypeExpr{
-		StartEndPos: newStartEndPos(op.Loc(), operand.End()),
+		StartEndPos: NewStartEndPos(op.Loc(), operand.End()),
 		Op:          UnaryTypeOp(op.SymbolId),
 		Operand:     operand,
 	}
@@ -400,7 +400,7 @@ func (reducer *BinaryTypeExprReducerImpl) ToBinaryTypeExpr(
 	error,
 ) {
 	expr := &BinaryTypeExpr{
-		StartEndPos: newStartEndPos(left.Loc(), right.End()),
+		StartEndPos: NewStartEndPos(left.Loc(), right.End()),
 		Left:        left,
 		Op:          BinaryTypeOp(op.SymbolId),
 		Right:       right,
@@ -471,9 +471,9 @@ func (PropertiesTypeExprReducer) implicit(
 	properties *TypePropertyList,
 	rparen TokenValue,
 ) *PropertiesTypeExpr {
-	properties.reduceMarkers(lparen, rparen)
+	properties.ReduceMarkers(lparen, rparen)
 	expr := &PropertiesTypeExpr{
-		StartEndPos: newStartEndPos(lparen.Loc(), rparen.End()),
+		StartEndPos: NewStartEndPos(lparen.Loc(), rparen.End()),
 		Kind:        kind,
 		IsImplicit:  true,
 		Properties:  *properties,
@@ -491,13 +491,13 @@ func (PropertiesTypeExprReducer) explicit(
 	properties *TypePropertyList,
 	rparen TokenValue,
 ) *PropertiesTypeExpr {
-	properties.reduceMarkers(lparen, rparen)
+	properties.ReduceMarkers(lparen, rparen)
 
 	properties.PrependToLeading(kw.TakeTrailing())
 	trailing := properties.TakeTrailing()
 
 	expr := &PropertiesTypeExpr{
-		StartEndPos: newStartEndPos(kw.Loc(), rparen.End()),
+		StartEndPos: NewStartEndPos(kw.Loc(), rparen.End()),
 		Kind:        kind,
 		IsImplicit:  false,
 		Properties:  *properties,

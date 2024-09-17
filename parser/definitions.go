@@ -27,7 +27,7 @@ func (DefinitionListReducerImpl) AddToProperDefinitions(
 	*DefinitionList,
 	error,
 ) {
-	list.reduceAdd(TokenValue{}, def)
+	list.ReduceAdd(TokenValue{}, def)
 	return list, nil
 }
 
@@ -38,7 +38,7 @@ func (DefinitionListReducerImpl) DefinitionToProperDefinitions(
 	error,
 ) {
 	list := NewDefinitionList()
-	list.add(def)
+	list.Add(def)
 	return list, nil
 }
 
@@ -83,7 +83,7 @@ func (FloatingCommentReducerImpl) ToFloatingComment(
 	error,
 ) {
 	floating := &FloatingComment{
-		StartEndPos: newStartEndPos(comments.Loc(), comments.End()),
+		StartEndPos: NewStartEndPos(comments.Loc(), comments.End()),
 	}
 	floating.LeadingComment = comments
 	return floating, nil
@@ -125,7 +125,7 @@ func (PackageDefReducerImpl) ToPackageDef(
 	case *StatementsExpr:
 		body.PrependToLeading(pkg.TakeTrailing())
 		def := &PackageDef{
-			StartEndPos: newStartEndPos(pkg.Loc(), expr.End()),
+			StartEndPos: NewStartEndPos(pkg.Loc(), expr.End()),
 			Body:        *body,
 		}
 		def.LeadingComment = pkg.TakeLeading()
@@ -196,7 +196,7 @@ func (reducer *TypeDefReducerImpl) DefinitionToTypeDef(
 	trailing := baseType.TakeTrailing()
 
 	def := &TypeDef{
-		StartEndPos:       newStartEndPos(typeKW.Loc(), baseType.End()),
+		StartEndPos:       NewStartEndPos(typeKW.Loc(), baseType.End()),
 		Name:              name.Value,
 		GenericParameters: *genericParameters,
 		BaseType:          baseType,
@@ -235,7 +235,7 @@ func (reducer *TypeDefReducerImpl) ConstrainedDefToTypeDef(
 	trailing := constraint.TakeTrailing()
 
 	def := &TypeDef{
-		StartEndPos:       newStartEndPos(typeKW.Loc(), constraint.End()),
+		StartEndPos:       NewStartEndPos(typeKW.Loc(), constraint.End()),
 		Name:              name.Value,
 		GenericParameters: *genericParameters,
 		BaseType:          baseType,
@@ -267,7 +267,7 @@ func (reducer *TypeDefReducerImpl) AliasToTypeDef(
 	trailing := baseType.TakeTrailing()
 
 	def := &TypeDef{
-		StartEndPos: newStartEndPos(typeKW.Loc(), baseType.End()),
+		StartEndPos: NewStartEndPos(typeKW.Loc(), baseType.End()),
 		Name:        name.Value,
 		IsAlias:     true,
 		BaseType:    baseType,

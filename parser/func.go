@@ -139,7 +139,7 @@ func (reducer *FuncReducerImpl) toFuncSignature(
 	}
 
 	sig := &FuncSignature{
-		StartEndPos:       newStartEndPos(funcKW.Loc(), end),
+		StartEndPos:       NewStartEndPos(funcKW.Loc(), end),
 		Receiver:          receiver,
 		Name:              name,
 		GenericParameters: *genericParameters,
@@ -170,7 +170,7 @@ func (reducer *FuncReducerImpl) toFuncDefinition(
 		returnType)
 
 	return &FuncDefinition{
-		StartEndPos: newStartEndPos(sig.Loc(), body.End()),
+		StartEndPos: NewStartEndPos(sig.Loc(), body.End()),
 		LeadingTrailingComments: LeadingTrailingComments{
 			LeadingComment:  sig.TakeLeading(),
 			TrailingComment: body.TakeTrailing(),

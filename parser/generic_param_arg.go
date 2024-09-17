@@ -47,7 +47,7 @@ func (GenericParameterReducerImpl) UnconstrainedToGenericParameter(
 	error,
 ) {
 	return &GenericParameter{
-		StartEndPos:             newStartEndPos(name.Loc(), name.End()),
+		StartEndPos:             NewStartEndPos(name.Loc(), name.End()),
 		LeadingTrailingComments: name.LeadingTrailingComments,
 		Name:                    name.Value,
 	}, nil
@@ -61,7 +61,7 @@ func (GenericParameterReducerImpl) ConstrainedToGenericParameter(
 	error,
 ) {
 	param := &GenericParameter{
-		StartEndPos: newStartEndPos(name.Loc(), constraint.End()),
+		StartEndPos: NewStartEndPos(name.Loc(), constraint.End()),
 		Name:        name.Value,
 		Constraint:  constraint,
 	}
@@ -98,7 +98,7 @@ func (GenericParameterListReducerImpl) GenericToGenericParameters(
 	*GenericParameterList,
 	error,
 ) {
-	list.reduceMarkers(dollarLbracket, rbracket)
+	list.ReduceMarkers(dollarLbracket, rbracket)
 	return list, nil
 }
 
@@ -117,7 +117,7 @@ func (GenericParameterListReducerImpl) AddToProperGenericParameterList(
 	*GenericParameterList,
 	error,
 ) {
-	list.reduceAdd(comma, parameter)
+	list.ReduceAdd(comma, parameter)
 	return list, nil
 }
 
@@ -128,7 +128,7 @@ func (GenericParameterListReducerImpl) GenericParameterToProperGenericParameterL
 	error,
 ) {
 	list := NewGenericParameterList()
-	list.add(parameter)
+	list.Add(parameter)
 	return list, nil
 }
 
@@ -139,7 +139,7 @@ func (GenericParameterListReducerImpl) ImproperToGenericParameterList(
 	*GenericParameterList,
 	error,
 ) {
-	list.reduceImproper(comma)
+	list.ReduceImproper(comma)
 	return list, nil
 }
 
@@ -176,7 +176,7 @@ func (reducer *GenericArgumentListReducerImpl) BindingToGenericArguments(
 	*GenericArgumentList,
 	error,
 ) {
-	list.reduceMarkers(dollarLbracket, rbracket)
+	list.ReduceMarkers(dollarLbracket, rbracket)
 	return list, nil
 }
 
@@ -195,7 +195,7 @@ func (reducer *GenericArgumentListReducerImpl) AddToProperGenericArgumentList(
 	*GenericArgumentList,
 	error,
 ) {
-	list.reduceAdd(comma, arg)
+	list.ReduceAdd(comma, arg)
 	return list, nil
 }
 
@@ -206,7 +206,7 @@ func (reducer *GenericArgumentListReducerImpl) TypeExprToProperGenericArgumentLi
 	error,
 ) {
 	list := NewGenericArgumentList()
-	list.add(arg)
+	list.Add(arg)
 	return list, nil
 }
 
@@ -217,7 +217,7 @@ func (reducer *GenericArgumentListReducerImpl) ImproperToGenericArgumentList(
 	*GenericArgumentList,
 	error,
 ) {
-	list.reduceImproper(comma)
+	list.ReduceImproper(comma)
 	return list, nil
 }
 

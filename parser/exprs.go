@@ -182,7 +182,7 @@ func (reducer *AccessExprReducerImpl) ToAccessExpr(
 	error,
 ) {
 	expr := &AccessExpr{
-		StartEndPos: newStartEndPos(operand.Loc(), field.End()),
+		StartEndPos: NewStartEndPos(operand.Loc(), field.End()),
 		Operand:     operand,
 		Field:       field,
 	}
@@ -241,7 +241,7 @@ func (reducer *UnaryExprReducerImpl) toPostfixUnaryExpr(
 	op TokenValue,
 ) *UnaryExpr {
 	expr := &UnaryExpr{
-		StartEndPos: newStartEndPos(operand.Loc(), op.End()),
+		StartEndPos: NewStartEndPos(operand.Loc(), op.End()),
 		IsPrefix:    false,
 		Op:          UnaryOp(op.SymbolId),
 		Operand:     operand,
@@ -270,7 +270,7 @@ func (reducer *UnaryExprReducerImpl) toPrefixUnaryExpr(
 	operand Expression,
 ) Expression {
 	expr := &UnaryExpr{
-		StartEndPos: newStartEndPos(op.Loc(), operand.End()),
+		StartEndPos: NewStartEndPos(op.Loc(), operand.End()),
 		IsPrefix:    true,
 		Op:          UnaryOp(op.SymbolId),
 		Operand:     operand,
@@ -364,7 +364,7 @@ func (reducer *BinaryExprReducerImpl) toBinaryExpr(
 	error,
 ) {
 	expr := &BinaryExpr{
-		StartEndPos: newStartEndPos(left.Loc(), right.End()),
+		StartEndPos: NewStartEndPos(left.Loc(), right.End()),
 		Left:        left,
 		Op:          BinaryOp(op.SymbolId),
 		Right:       right,
@@ -527,7 +527,7 @@ func (reducer *ImplicitStructExprReducerImpl) toImplicitStructExpr(
 	args *ArgumentList,
 	rparen TokenValue,
 ) *ImplicitStructExpr {
-	args.reduceMarkers(lparen, rparen)
+	args.ReduceMarkers(lparen, rparen)
 	return &ImplicitStructExpr{
 		ArgumentList: *args,
 	}
@@ -558,8 +558,8 @@ func (reducer *ImplicitStructExprReducerImpl) PairToImproperExprStruct(
 	arg2 := NewPositionalArgument(expr2)
 
 	list := NewArgumentList()
-	list.add(arg1)
-	list.reduceAdd(comma, arg2)
+	list.Add(arg1)
+	list.ReduceAdd(comma, arg2)
 
 	expr := &ImplicitStructExpr{
 		ArgumentList: *list,
@@ -578,7 +578,7 @@ func (reducer *ImplicitStructExprReducerImpl) AddToImproperExprStruct(
 	error,
 ) {
 	arg := NewPositionalArgument(expr)
-	structExpr.reduceAdd(comma, arg)
+	structExpr.ReduceAdd(comma, arg)
 	return structExpr, nil
 }
 
@@ -594,8 +594,8 @@ func (reducer *ImplicitStructExprReducerImpl) PairToImproperSequenceExprStruct(
 	arg2 := NewPositionalArgument(expr2)
 
 	list := NewArgumentList()
-	list.add(arg1)
-	list.reduceAdd(comma, arg2)
+	list.Add(arg1)
+	list.ReduceAdd(comma, arg2)
 
 	expr := &ImplicitStructExpr{
 		ArgumentList: *list,
@@ -614,7 +614,7 @@ func (reducer *ImplicitStructExprReducerImpl) AddToImproperSequenceExprStruct(
 	error,
 ) {
 	arg := NewPositionalArgument(expr)
-	structExpr.reduceAdd(comma, arg)
+	structExpr.ReduceAdd(comma, arg)
 	return structExpr, nil
 }
 
@@ -650,19 +650,19 @@ func (ColonExprReducerImpl) UnitUnitPairToColonExpr(
 	error,
 ) {
 	leftArg := &Argument{
-		StartEndPos: newStartEndPos(colon.Loc(), colon.End()),
+		StartEndPos: NewStartEndPos(colon.Loc(), colon.End()),
 		Kind:        IsImplicitUnitArgument,
 	}
 
 	rightArg := &Argument{
-		StartEndPos: newStartEndPos(colon.Loc(), colon.End()),
+		StartEndPos: NewStartEndPos(colon.Loc(), colon.End()),
 		Kind:        IsImplicitUnitArgument,
 	}
 	rightArg.LeadingComment = colon.TakeTrailing()
 
 	args := newNodeList[*Argument]("ColonExpr")
-	args.add(leftArg)
-	args.reduceAdd(colon, rightArg)
+	args.Add(leftArg)
+	args.ReduceAdd(colon, rightArg)
 
 	return &ColonExpr{
 		ArgumentList: *args,
@@ -677,7 +677,7 @@ func (ColonExprReducerImpl) ExprUnitPairToColonExpr(
 	error,
 ) {
 	leftArg := &Argument{
-		StartEndPos: newStartEndPos(leftExpr.Loc(), leftExpr.End()),
+		StartEndPos: NewStartEndPos(leftExpr.Loc(), leftExpr.End()),
 		Kind:        PositionalArgument,
 		Expr:        leftExpr,
 	}
@@ -685,14 +685,14 @@ func (ColonExprReducerImpl) ExprUnitPairToColonExpr(
 	leftArg.TrailingComment = leftExpr.TakeTrailing()
 
 	rightArg := &Argument{
-		StartEndPos: newStartEndPos(colon.Loc(), colon.End()),
+		StartEndPos: NewStartEndPos(colon.Loc(), colon.End()),
 		Kind:        IsImplicitUnitArgument,
 	}
 	rightArg.LeadingComment = colon.TakeTrailing()
 
 	args := newNodeList[*Argument]("ColonExpr")
-	args.add(leftArg)
-	args.reduceAdd(colon, rightArg)
+	args.Add(leftArg)
+	args.ReduceAdd(colon, rightArg)
 
 	return &ColonExpr{
 		ArgumentList: *args,
@@ -707,12 +707,12 @@ func (reducer *ColonExprReducerImpl) UnitExprPairToColonExpr(
 	error,
 ) {
 	leftArg := &Argument{
-		StartEndPos: newStartEndPos(colon.Loc(), colon.End()),
+		StartEndPos: NewStartEndPos(colon.Loc(), colon.End()),
 		Kind:        IsImplicitUnitArgument,
 	}
 
 	rightArg := &Argument{
-		StartEndPos: newStartEndPos(rightExpr.Loc(), rightExpr.End()),
+		StartEndPos: NewStartEndPos(rightExpr.Loc(), rightExpr.End()),
 		Kind:        PositionalArgument,
 		Expr:        rightExpr,
 	}
@@ -721,8 +721,8 @@ func (reducer *ColonExprReducerImpl) UnitExprPairToColonExpr(
 	rightArg.PrependToLeading(colon.TakeTrailing())
 
 	args := newNodeList[*Argument]("ColonExpr")
-	args.add(leftArg)
-	args.reduceAdd(colon, rightArg)
+	args.Add(leftArg)
+	args.ReduceAdd(colon, rightArg)
 
 	return &ColonExpr{
 		ArgumentList: *args,
@@ -738,7 +738,7 @@ func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
 	error,
 ) {
 	leftArg := &Argument{
-		StartEndPos: newStartEndPos(leftExpr.Loc(), leftExpr.End()),
+		StartEndPos: NewStartEndPos(leftExpr.Loc(), leftExpr.End()),
 		Kind:        PositionalArgument,
 		Expr:        leftExpr,
 	}
@@ -746,7 +746,7 @@ func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
 	leftArg.TrailingComment = leftExpr.TakeTrailing()
 
 	rightArg := &Argument{
-		StartEndPos: newStartEndPos(rightExpr.Loc(), rightExpr.End()),
+		StartEndPos: NewStartEndPos(rightExpr.Loc(), rightExpr.End()),
 		Kind:        PositionalArgument,
 		Expr:        rightExpr,
 	}
@@ -755,8 +755,8 @@ func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
 	rightArg.PrependToLeading(colon.TakeTrailing())
 
 	args := newNodeList[*Argument]("ColonExpr")
-	args.add(leftArg)
-	args.reduceAdd(colon, rightArg)
+	args.Add(leftArg)
+	args.ReduceAdd(colon, rightArg)
 
 	return &ColonExpr{
 		ArgumentList: *args,
@@ -771,12 +771,12 @@ func (reducer *ColonExprReducerImpl) ColonExprUnitTupleToColonExpr(
 	error,
 ) {
 	arg := &Argument{
-		StartEndPos: newStartEndPos(colon.Loc(), colon.End()),
+		StartEndPos: NewStartEndPos(colon.Loc(), colon.End()),
 		Kind:        IsImplicitUnitArgument,
 	}
 	arg.LeadingComment = colon.TakeTrailing()
 
-	list.reduceAdd(colon, arg)
+	list.ReduceAdd(colon, arg)
 	return list, nil
 }
 
@@ -789,7 +789,7 @@ func (reducer *ColonExprReducerImpl) ColonExprExprTupleToColonExpr(
 	error,
 ) {
 	arg := &Argument{
-		StartEndPos: newStartEndPos(expr.Loc(), expr.End()),
+		StartEndPos: NewStartEndPos(expr.Loc(), expr.End()),
 		Kind:        PositionalArgument,
 		Expr:        expr,
 	}
@@ -797,7 +797,7 @@ func (reducer *ColonExprReducerImpl) ColonExprExprTupleToColonExpr(
 	arg.TrailingComment = expr.TakeTrailing()
 	arg.PrependToLeading(colon.TakeTrailing())
 
-	list.reduceAdd(colon, arg)
+	list.ReduceAdd(colon, arg)
 	return list, nil
 }
 
@@ -850,10 +850,10 @@ func (reducer *CallExprReducerImpl) ToCallExpr(
 		genericArguments = &GenericArgumentList{}
 	}
 
-	arguments.reduceMarkers(lparen, rparen)
+	arguments.ReduceMarkers(lparen, rparen)
 
 	expr := &CallExpr{
-		StartEndPos: newStartEndPos(funcExpr.Loc(), rparen.End()),
+		StartEndPos: NewStartEndPos(funcExpr.Loc(), rparen.End()),
 		LeadingTrailingComments: LeadingTrailingComments{
 			LeadingComment:  funcExpr.TakeLeading(),
 			TrailingComment: arguments.TakeTrailing(),
@@ -908,7 +908,7 @@ func (reducer *IndexExprReducerImpl) ToIndexExpr(
 	index.AppendToTrailing(rbracket.TakeLeading())
 
 	expr := &IndexExpr{
-		StartEndPos: newStartEndPos(accessible.Loc(), rbracket.End()),
+		StartEndPos: NewStartEndPos(accessible.Loc(), rbracket.End()),
 		Accessible:  accessible,
 		Index:       *index,
 	}
@@ -972,7 +972,7 @@ func (reducer *AsExprReducerImpl) ToAsExpr(
 	trailing := rparen.TakeTrailing()
 
 	expr := &AsExpr{
-		StartEndPos: newStartEndPos(accessible.Loc(), rparen.End()),
+		StartEndPos: NewStartEndPos(accessible.Loc(), rparen.End()),
 		Accessible:  accessible,
 		CastType:    castType,
 	}
@@ -1018,10 +1018,10 @@ func (reducer *InitializeExprReducerImpl) ToInitializeExpr(
 	Expression,
 	error,
 ) {
-	arguments.reduceMarkers(lparen, rparen)
+	arguments.ReduceMarkers(lparen, rparen)
 
 	expr := &InitializeExpr{
-		StartEndPos:   newStartEndPos(initializable.Loc(), rparen.End()),
+		StartEndPos:   NewStartEndPos(initializable.Loc(), rparen.End()),
 		Initializable: initializable,
 		Arguments:     *arguments,
 	}
@@ -1177,7 +1177,7 @@ func (reducer *IfExprReducerImpl) ToIfOnlyExpr(
 ) {
 	condition.PrependToLeading(ifKW.TakeTrailing())
 	expr := &IfExpr{
-		StartEndPos:       newStartEndPos(ifKW.Loc(), branch.End()),
+		StartEndPos:       NewStartEndPos(ifKW.Loc(), branch.End()),
 		ConditionBranches: []ConditionBranch{{condition, branch}},
 	}
 	expr.LeadingComment = ifKW.TakeLeading()
@@ -1251,7 +1251,7 @@ func (reducer *SwitchExprReducerImpl) ToSwitchExprBody(
 		trailing := branches.TakeTrailing()
 
 		switchExpr := &SwitchExpr{
-			StartEndPos: newStartEndPos(switchKW.Loc(), branches.End()),
+			StartEndPos: NewStartEndPos(switchKW.Loc(), branches.End()),
 			Operand:     operand,
 			Branches:    *branches,
 		}
@@ -1332,7 +1332,7 @@ func (reducer *SelectExprReducerImpl) ToSelectExprBody(
 		trailing := branches.TakeTrailing()
 
 		selectExpr := &SelectExpr{
-			StartEndPos: newStartEndPos(switchKW.Loc(), branches.End()),
+			StartEndPos: NewStartEndPos(switchKW.Loc(), branches.End()),
 			Branches:    *branches,
 		}
 
@@ -1453,7 +1453,7 @@ func (reducer *LoopExprReducerImpl) InfiniteToLoopExprBody(
 		trailing := body.TakeTrailing()
 
 		loop := &LoopExpr{
-			StartEndPos: newStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
 			LoopKind:    InfiniteLoop,
 			Body:        *body,
 		}
@@ -1484,7 +1484,7 @@ func (reducer *LoopExprReducerImpl) DoWhileToLoopExprBody(
 		trailing := condition.TakeTrailing()
 
 		loop := &LoopExpr{
-			StartEndPos: newStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
 			LoopKind:    DoWhileLoop,
 			Condition:   condition,
 			Body:        *body,
@@ -1515,7 +1515,7 @@ func (reducer *LoopExprReducerImpl) WhileToLoopExprBody(
 		trailing := bodyExpr.TakeTrailing()
 
 		loop := &LoopExpr{
-			StartEndPos: newStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
 			LoopKind:    WhileLoop,
 			Condition:   condition,
 			Body:        *body,
@@ -1550,7 +1550,7 @@ func (reducer *LoopExprReducerImpl) IteratorToLoopExprBody(
 		trailing := bodyExpr.TakeTrailing()
 
 		loop := &LoopExpr{
-			StartEndPos:   newStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			StartEndPos:   NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
 			LoopKind:      IteratorLoop,
 			AssignPattern: assignPattern,
 			Condition:     iterator,
@@ -1607,7 +1607,7 @@ func (reducer *LoopExprReducerImpl) ForToLoopExprBody(
 		trailing := body.TakeTrailing()
 
 		loop := &LoopExpr{
-			StartEndPos: newStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
 			LoopKind:    ForLoop,
 			Init:        init,
 			Condition:   condition,

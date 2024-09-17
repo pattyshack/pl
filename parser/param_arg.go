@@ -74,7 +74,7 @@ func (reducer *ParameterReducerImpl) namedTypedArg(
 	error,
 ) {
 	param := &Parameter{
-		StartEndPos: newStartEndPos(name.Loc(), typeExpr.End()),
+		StartEndPos: NewStartEndPos(name.Loc(), typeExpr.End()),
 		Kind:        kind,
 		Name:        name,
 		HasEllipsis: false,
@@ -115,7 +115,7 @@ func (reducer *ParameterReducerImpl) namedTypedVararg(
 	error,
 ) {
 	param := &Parameter{
-		StartEndPos: newStartEndPos(name.Loc(), typeExpr.End()),
+		StartEndPos: NewStartEndPos(name.Loc(), typeExpr.End()),
 		Kind:        kind,
 		Name:        name,
 		HasEllipsis: true,
@@ -167,7 +167,7 @@ func (reducer *ParameterReducerImpl) namedInferredVararg(
 	error,
 ) {
 	param := &Parameter{
-		StartEndPos: newStartEndPos(name.Loc(), ellipsis.End()),
+		StartEndPos: NewStartEndPos(name.Loc(), ellipsis.End()),
 		Kind:        kind,
 		Name:        name,
 		HasEllipsis: true,
@@ -212,7 +212,7 @@ func (reducer *ParameterReducerImpl) UnnamedTypedArgToParameterDecl(
 	error,
 ) {
 	param := &Parameter{
-		StartEndPos: newStartEndPos(typeExpr.Loc(), typeExpr.End()),
+		StartEndPos: NewStartEndPos(typeExpr.Loc(), typeExpr.End()),
 		Kind:        UnnamedTypedArgParameter,
 		Name:        nil,
 		HasEllipsis: false,
@@ -230,7 +230,7 @@ func (reducer *ParameterReducerImpl) UnnamedInferredVarargToParameterDecl(
 	error,
 ) {
 	param := &Parameter{
-		StartEndPos: newStartEndPos(ellipsis.Loc(), ellipsis.End()),
+		StartEndPos: NewStartEndPos(ellipsis.Loc(), ellipsis.End()),
 		Kind:        UnnamedInferredVarargParameter,
 		Name:        nil,
 		HasEllipsis: true,
@@ -248,7 +248,7 @@ func (reducer *ParameterReducerImpl) UnnamedTypedVarargToParameterDecl(
 	error,
 ) {
 	param := &Parameter{
-		StartEndPos: newStartEndPos(ellipsis.Loc(), typeExpr.End()),
+		StartEndPos: NewStartEndPos(ellipsis.Loc(), typeExpr.End()),
 		Kind:        UnnamedTypedVarargParameter,
 		Name:        nil,
 		HasEllipsis: true,
@@ -268,7 +268,7 @@ func (reducer *ParameterReducerImpl) namedInferredArg(
 	error,
 ) {
 	param := &Parameter{
-		StartEndPos: newStartEndPos(name.Loc(), name.End()),
+		StartEndPos: NewStartEndPos(name.Loc(), name.End()),
 		Kind:        kind,
 		Name:        name,
 		HasEllipsis: false,
@@ -326,7 +326,7 @@ func (reducer *ParameterListReducerImpl) AddToProperParameterDeclList(
 	*ParameterList,
 	error,
 ) {
-	list.reduceAdd(comma, parameter)
+	list.ReduceAdd(comma, parameter)
 	return list, nil
 }
 
@@ -337,7 +337,7 @@ func (reducer *ParameterListReducerImpl) ParameterDeclToProperParameterDeclList(
 	error,
 ) {
 	list := NewParameterList()
-	list.add(parameter)
+	list.Add(parameter)
 	return list, nil
 }
 
@@ -348,7 +348,7 @@ func (reducer *ParameterListReducerImpl) ImproperToParameterDeclList(
 	*ParameterList,
 	error,
 ) {
-	list.reduceImproper(comma)
+	list.ReduceImproper(comma)
 	return list, nil
 }
 
@@ -367,7 +367,7 @@ func (reducer *ParameterListReducerImpl) ToParameterDecls(
 	*ParameterList,
 	error,
 ) {
-	list.reduceMarkers(lparen, rparen)
+	list.ReduceMarkers(lparen, rparen)
 	return list, nil
 }
 
@@ -379,7 +379,7 @@ func (reducer *ParameterListReducerImpl) AddToProperParameterDefList(
 	*ParameterList,
 	error,
 ) {
-	list.reduceAdd(comma, parameter)
+	list.ReduceAdd(comma, parameter)
 	return list, nil
 }
 
@@ -390,7 +390,7 @@ func (reducer *ParameterListReducerImpl) ParameterDefToProperParameterDefList(
 	error,
 ) {
 	list := NewParameterList()
-	list.add(parameter)
+	list.Add(parameter)
 	return list, nil
 }
 
@@ -401,7 +401,7 @@ func (reducer *ParameterListReducerImpl) ImproperToParameterDefList(
 	*ParameterList,
 	error,
 ) {
-	list.reduceImproper(comma)
+	list.ReduceImproper(comma)
 	return list, nil
 }
 
@@ -420,7 +420,7 @@ func (reducer *ParameterListReducerImpl) ToParameterDefs(
 	*ParameterList,
 	error,
 ) {
-	list.reduceMarkers(lparen, rparen)
+	list.ReduceMarkers(lparen, rparen)
 	return list, nil
 }
 
@@ -460,7 +460,7 @@ var _ Node = &Argument{}
 
 func NewPositionalArgument(expr Expression) *Argument {
 	return &Argument{
-		StartEndPos: newStartEndPos(expr.Loc(), expr.End()),
+		StartEndPos: NewStartEndPos(expr.Loc(), expr.End()),
 		LeadingTrailingComments: LeadingTrailingComments{
 			LeadingComment:  expr.TakeLeading(),
 			TrailingComment: expr.TakeTrailing(),
@@ -477,7 +477,7 @@ func NewNamedArgument(
 	expr Expression,
 ) *Argument {
 	arg := &Argument{
-		StartEndPos:  newStartEndPos(name.Loc(), expr.End()),
+		StartEndPos:  NewStartEndPos(name.Loc(), expr.End()),
 		Kind:         NamedAssignmentArgument,
 		OptionalName: name.Value,
 		Expr:         expr,
@@ -498,7 +498,7 @@ func NewSkipPatternArgument(
 	ellipsis TokenValue,
 ) *Argument {
 	return &Argument{
-		StartEndPos:             newStartEndPos(ellipsis.Loc(), ellipsis.End()),
+		StartEndPos:             NewStartEndPos(ellipsis.Loc(), ellipsis.End()),
 		LeadingTrailingComments: ellipsis.LeadingTrailingComments,
 		Kind:                    SkipPatternArgument,
 		Expr:                    nil,
@@ -547,7 +547,7 @@ func (ArgumentReducerImpl) ColonExprToArgument(
 	error,
 ) {
 	return &Argument{
-		StartEndPos: newStartEndPos(expr.Loc(), expr.End()),
+		StartEndPos: NewStartEndPos(expr.Loc(), expr.End()),
 		LeadingTrailingComments: LeadingTrailingComments{
 			LeadingComment:  expr.TakeLeading(),
 			TrailingComment: expr.TakeTrailing(),
@@ -577,7 +577,7 @@ func (ArgumentReducerImpl) VarargAssignmentToArgument(
 	error,
 ) {
 	arg := &Argument{
-		StartEndPos: newStartEndPos(expr.Loc(), ellipsis.End()),
+		StartEndPos: NewStartEndPos(expr.Loc(), ellipsis.End()),
 		Kind:        VarargAssignmentArgument,
 		Expr:        expr,
 		HasEllipsis: true,
@@ -652,7 +652,7 @@ func (reducer *ArgumentListReducerImpl) AddToProperArguments(
 	*ArgumentList,
 	error,
 ) {
-	list.reduceAdd(comma, arg)
+	list.ReduceAdd(comma, arg)
 	return list, nil
 }
 
@@ -663,7 +663,7 @@ func (reducer *ArgumentListReducerImpl) ArgumentToProperArguments(
 	error,
 ) {
 	list := NewArgumentList()
-	list.add(arg)
+	list.Add(arg)
 	return list, nil
 }
 
@@ -674,7 +674,7 @@ func (reducer *ArgumentListReducerImpl) ImproperToArguments(
 	*ArgumentList,
 	error,
 ) {
-	list.reduceImproper(comma)
+	list.ReduceImproper(comma)
 	return list, nil
 }
 
@@ -692,7 +692,7 @@ func (reducer *ArgumentListReducerImpl) FieldVarPatternToProperFieldVarPatterns(
 	error,
 ) {
 	list := NewArgumentList()
-	list.add(pattern)
+	list.Add(pattern)
 	return list, nil
 }
 
@@ -704,7 +704,7 @@ func (reducer *ArgumentListReducerImpl) AddToProperFieldVarPatterns(
 	*ArgumentList,
 	error,
 ) {
-	list.reduceAdd(comma, pattern)
+	list.ReduceAdd(comma, pattern)
 	return list, nil
 }
 
@@ -715,6 +715,6 @@ func (reducer *ArgumentListReducerImpl) ImproperToFieldVarPatterns(
 	*ArgumentList,
 	error,
 ) {
-	list.reduceImproper(comma)
+	list.ReduceImproper(comma)
 	return list, nil
 }
