@@ -4,6 +4,7 @@ package parser
 
 import (
 	fmt "fmt"
+	lexutil "github.com/pattyshack/gt/lexutil"
 	io "io"
 )
 
@@ -102,19 +103,7 @@ const (
 	ParseErrorToken      = SymbolId(345)
 )
 
-type Location struct {
-	FileName string
-	Line     int
-	Column   int
-}
-
-func (l Location) String() string {
-	return fmt.Sprintf("%v:%v:%v", l.FileName, l.Line, l.Column)
-}
-
-func (l Location) ShortString() string {
-	return fmt.Sprintf("%v:%v", l.Line, l.Column)
-}
+type Location = lexutil.Location
 
 type Token interface {
 	Id() SymbolId
@@ -539,461 +528,461 @@ type ColonExprReducer interface {
 }
 
 type ParseErrorExprReducer interface {
-	// 555:32: parse_error_expr -> ...
+	// 552:32: parse_error_expr -> ...
 	ToParseErrorExpr(ParseError_ ParseErrorSymbol) (Expression, error)
 }
 
 type LiteralExprReducer interface {
-	// 558:2: literal_expr -> TRUE: ...
+	// 555:2: literal_expr -> TRUE: ...
 	TrueToLiteralExpr(True_ TokenValue) (Expression, error)
 
-	// 559:2: literal_expr -> FALSE: ...
+	// 556:2: literal_expr -> FALSE: ...
 	FalseToLiteralExpr(False_ TokenValue) (Expression, error)
 
-	// 560:2: literal_expr -> INTEGER_LITERAL: ...
+	// 557:2: literal_expr -> INTEGER_LITERAL: ...
 	IntegerLiteralToLiteralExpr(IntegerLiteral_ TokenValue) (Expression, error)
 
-	// 561:2: literal_expr -> FLOAT_LITERAL: ...
+	// 558:2: literal_expr -> FLOAT_LITERAL: ...
 	FloatLiteralToLiteralExpr(FloatLiteral_ TokenValue) (Expression, error)
 
-	// 562:2: literal_expr -> RUNE_LITERAL: ...
+	// 559:2: literal_expr -> RUNE_LITERAL: ...
 	RuneLiteralToLiteralExpr(RuneLiteral_ TokenValue) (Expression, error)
 
-	// 563:2: literal_expr -> STRING_LITERAL: ...
+	// 560:2: literal_expr -> STRING_LITERAL: ...
 	StringLiteralToLiteralExpr(StringLiteral_ TokenValue) (Expression, error)
 }
 
 type NamedExprReducer interface {
-	// 566:2: named_expr -> IDENTIFIER: ...
+	// 563:2: named_expr -> IDENTIFIER: ...
 	IdentifierToNamedExpr(Identifier_ TokenValue) (Expression, error)
 
-	// 567:2: named_expr -> UNDERSCORE: ...
+	// 564:2: named_expr -> UNDERSCORE: ...
 	UnderscoreToNamedExpr(Underscore_ TokenValue) (Expression, error)
 }
 
 type StatementsExprReducer interface {
 
-	// 571:2: statements_expr -> labelled: ...
+	// 568:2: statements_expr -> labelled: ...
 	LabelledToStatementsExpr(LabelDecl_ TokenValue, Statements_ Expression) (Expression, error)
 }
 
 type InitializeExprReducer interface {
-	// 573:31: initialize_expr -> ...
+	// 570:31: initialize_expr -> ...
 	ToInitializeExpr(InitializableTypeExpr_ TypeExpression, Lparen_ TokenValue, Arguments_ *ArgumentList, Rparen_ TokenValue) (Expression, error)
 }
 
 type ImplicitStructExprReducer interface {
-	// 575:36: implicit_struct_expr -> ...
+	// 572:36: implicit_struct_expr -> ...
 	ToImplicitStructExpr(Lparen_ TokenValue, Arguments_ *ArgumentList, Rparen_ TokenValue) (Expression, error)
 }
 
 type AccessExprReducer interface {
-	// 584:27: access_expr -> ...
+	// 581:27: access_expr -> ...
 	ToAccessExpr(AccessibleExpr_ Expression, Dot_ TokenValue, Identifier_ TokenValue) (Expression, error)
 }
 
 type IndexExprReducer interface {
-	// 588:26: index_expr -> ...
+	// 585:26: index_expr -> ...
 	ToIndexExpr(AccessibleExpr_ Expression, Lbracket_ TokenValue, Argument_ *Argument, Rbracket_ TokenValue) (Expression, error)
 }
 
 type AsExprReducer interface {
-	// 591:23: as_expr -> ...
+	// 588:23: as_expr -> ...
 	ToAsExpr(AccessibleExpr_ Expression, Dot_ TokenValue, As_ TokenValue, Lparen_ TokenValue, TypeExpr_ TypeExpression, Rparen_ TokenValue) (Expression, error)
 }
 
 type PostfixUnaryExprReducer interface {
-	// 601:34: postfix_unary_expr -> ...
+	// 598:34: postfix_unary_expr -> ...
 	ToPostfixUnaryExpr(AccessibleExpr_ Expression, PostfixUnaryOp_ TokenValue) (Expression, error)
 }
 
 type PrefixUnaryExprReducer interface {
-	// 607:33: prefix_unary_expr -> ...
+	// 604:33: prefix_unary_expr -> ...
 	ToPrefixUnaryExpr(PrefixUnaryOp_ TokenValue, PrefixableExpr_ Expression) (Expression, error)
 }
 
 type BinaryMulExprReducer interface {
-	// 643:31: binary_mul_expr -> ...
+	// 640:31: binary_mul_expr -> ...
 	ToBinaryMulExpr(MulExpr_ Expression, MulOp_ TokenValue, PrefixableExpr_ Expression) (Expression, error)
 }
 
 type BinaryAddExprReducer interface {
-	// 657:31: binary_add_expr -> ...
+	// 654:31: binary_add_expr -> ...
 	ToBinaryAddExpr(AddExpr_ Expression, AddOp_ TokenValue, MulExpr_ Expression) (Expression, error)
 }
 
 type BinaryCmpExprReducer interface {
-	// 669:31: binary_cmp_expr -> ...
+	// 666:31: binary_cmp_expr -> ...
 	ToBinaryCmpExpr(CmpExpr_ Expression, CmpOp_ TokenValue, AddExpr_ Expression) (Expression, error)
 }
 
 type BinaryAndExprReducer interface {
-	// 683:31: binary_and_expr -> ...
+	// 680:31: binary_and_expr -> ...
 	ToBinaryAndExpr(AndExpr_ Expression, And_ TokenValue, CmpExpr_ Expression) (Expression, error)
 }
 
 type BinaryOrExprReducer interface {
-	// 689:30: binary_or_expr -> ...
+	// 686:30: binary_or_expr -> ...
 	ToBinaryOrExpr(OrExpr_ Expression, Or_ TokenValue, AndExpr_ Expression) (Expression, error)
 }
 
 type SendExprReducer interface {
-	// 696:25: send_expr -> ...
+	// 693:25: send_expr -> ...
 	ToSendExpr(SendRecvExpr_ Expression, Arrow_ TokenValue, OrExpr_ Expression) (Expression, error)
 }
 
 type RecvExprReducer interface {
-	// 698:25: recv_expr -> ...
+	// 695:25: recv_expr -> ...
 	ToRecvExpr(Arrow_ TokenValue, OrExpr_ Expression) (Expression, error)
 }
 
 type SliceTypeExprReducer interface {
-	// 713:35: slice_type_expr -> ...
+	// 710:35: slice_type_expr -> ...
 	ToSliceTypeExpr(Lbracket_ TokenValue, TypeExpr_ TypeExpression, Rbracket_ TokenValue) (TypeExpression, error)
 }
 
 type ArrayTypeExprReducer interface {
-	// 716:2: array_type_expr -> ...
+	// 713:2: array_type_expr -> ...
 	ToArrayTypeExpr(Lbracket_ TokenValue, TypeExpr_ TypeExpression, Comma_ TokenValue, IntegerLiteral_ TokenValue, Rbracket_ TokenValue) (TypeExpression, error)
 }
 
 type MapTypeExprReducer interface {
-	// 719:33: map_type_expr -> ...
+	// 716:33: map_type_expr -> ...
 	ToMapTypeExpr(Lbracket_ TokenValue, TypeExpr_ TypeExpression, Colon_ TokenValue, TypeExpr_2 TypeExpression, Rbracket_ TokenValue) (TypeExpression, error)
 }
 
 type NamedTypeExprReducer interface {
-	// 733:2: named_type_expr -> local: ...
+	// 730:2: named_type_expr -> local: ...
 	LocalToNamedTypeExpr(Identifier_ TokenValue, GenericArguments_ *GenericArgumentList) (TypeExpression, error)
 
-	// 734:2: named_type_expr -> external: ...
+	// 731:2: named_type_expr -> external: ...
 	ExternalToNamedTypeExpr(Identifier_ TokenValue, Dot_ TokenValue, Identifier_2 TokenValue, GenericArguments_ *GenericArgumentList) (TypeExpression, error)
 }
 
 type InferredTypeExprReducer interface {
-	// 742:2: inferred_type_expr -> DOT: ...
+	// 739:2: inferred_type_expr -> DOT: ...
 	DotToInferredTypeExpr(Dot_ TokenValue) (TypeExpression, error)
 
-	// 743:2: inferred_type_expr -> UNDERSCORE: ...
+	// 740:2: inferred_type_expr -> UNDERSCORE: ...
 	UnderscoreToInferredTypeExpr(Underscore_ TokenValue) (TypeExpression, error)
 }
 
 type ParseErrorTypeExprReducer interface {
-	// 745:41: parse_error_type_expr -> ...
+	// 742:41: parse_error_type_expr -> ...
 	ToParseErrorTypeExpr(ParseError_ ParseErrorSymbol) (TypeExpression, error)
 }
 
 type PrefixUnaryTypeExprReducer interface {
-	// 755:2: prefix_unary_type_expr -> ...
+	// 752:2: prefix_unary_type_expr -> ...
 	ToPrefixUnaryTypeExpr(PrefixUnaryTypeOp_ TokenValue, ReturnableTypeExpr_ TypeExpression) (TypeExpression, error)
 }
 
 type BinaryTypeExprReducer interface {
-	// 771:2: binary_type_expr -> ...
+	// 768:2: binary_type_expr -> ...
 	ToBinaryTypeExpr(TypeExpr_ TypeExpression, BinaryTypeOp_ TokenValue, ReturnableTypeExpr_ TypeExpression) (TypeExpression, error)
 }
 
 type TypeDefReducer interface {
-	// 779:2: type_def -> definition: ...
+	// 776:2: type_def -> definition: ...
 	DefinitionToTypeDef(Type_ TokenValue, Identifier_ TokenValue, GenericParameters_ *GenericParameterList, TypeExpr_ TypeExpression) (Definition, error)
 
-	// 780:2: type_def -> constrained_def: ...
+	// 777:2: type_def -> constrained_def: ...
 	ConstrainedDefToTypeDef(Type_ TokenValue, Identifier_ TokenValue, GenericParameters_ *GenericParameterList, TypeExpr_ TypeExpression, Implements_ TokenValue, TypeExpr_2 TypeExpression) (Definition, error)
 
-	// 781:2: type_def -> alias: ...
+	// 778:2: type_def -> alias: ...
 	AliasToTypeDef(Type_ TokenValue, Identifier_ TokenValue, Assign_ TokenValue, TypeExpr_ TypeExpression) (Definition, error)
 }
 
 type GenericParameterReducer interface {
-	// 789:2: generic_parameter -> unconstrained: ...
+	// 786:2: generic_parameter -> unconstrained: ...
 	UnconstrainedToGenericParameter(Identifier_ TokenValue) (*GenericParameter, error)
 
-	// 790:2: generic_parameter -> constrained: ...
+	// 787:2: generic_parameter -> constrained: ...
 	ConstrainedToGenericParameter(Identifier_ TokenValue, TypeExpr_ TypeExpression) (*GenericParameter, error)
 }
 
 type GenericParametersReducer interface {
-	// 793:2: generic_parameters -> generic: ...
+	// 790:2: generic_parameters -> generic: ...
 	GenericToGenericParameters(DollarLbracket_ TokenValue, GenericParameterList_ *GenericParameterList, Rbracket_ TokenValue) (*GenericParameterList, error)
 
-	// 794:2: generic_parameters -> nil: ...
+	// 791:2: generic_parameters -> nil: ...
 	NilToGenericParameters() (*GenericParameterList, error)
 }
 
 type ProperGenericParameterListReducer interface {
-	// 797:2: proper_generic_parameter_list -> add: ...
+	// 794:2: proper_generic_parameter_list -> add: ...
 	AddToProperGenericParameterList(ProperGenericParameterList_ *GenericParameterList, Comma_ TokenValue, GenericParameter_ *GenericParameter) (*GenericParameterList, error)
 
-	// 798:2: proper_generic_parameter_list -> generic_parameter: ...
+	// 795:2: proper_generic_parameter_list -> generic_parameter: ...
 	GenericParameterToProperGenericParameterList(GenericParameter_ *GenericParameter) (*GenericParameterList, error)
 }
 
 type GenericParameterListReducer interface {
 
-	// 802:2: generic_parameter_list -> improper: ...
+	// 799:2: generic_parameter_list -> improper: ...
 	ImproperToGenericParameterList(ProperGenericParameterList_ *GenericParameterList, Comma_ TokenValue) (*GenericParameterList, error)
 
-	// 803:2: generic_parameter_list -> nil: ...
+	// 800:2: generic_parameter_list -> nil: ...
 	NilToGenericParameterList() (*GenericParameterList, error)
 }
 
 type GenericArgumentsReducer interface {
-	// 806:2: generic_arguments -> binding: ...
+	// 803:2: generic_arguments -> binding: ...
 	BindingToGenericArguments(DollarLbracket_ TokenValue, GenericArgumentList_ *GenericArgumentList, Rbracket_ TokenValue) (*GenericArgumentList, error)
 
-	// 807:2: generic_arguments -> nil: ...
+	// 804:2: generic_arguments -> nil: ...
 	NilToGenericArguments() (*GenericArgumentList, error)
 }
 
 type ProperGenericArgumentListReducer interface {
-	// 810:2: proper_generic_argument_list -> add: ...
+	// 807:2: proper_generic_argument_list -> add: ...
 	AddToProperGenericArgumentList(ProperGenericArgumentList_ *GenericArgumentList, Comma_ TokenValue, TypeExpr_ TypeExpression) (*GenericArgumentList, error)
 
-	// 811:2: proper_generic_argument_list -> type_expr: ...
+	// 808:2: proper_generic_argument_list -> type_expr: ...
 	TypeExprToProperGenericArgumentList(TypeExpr_ TypeExpression) (*GenericArgumentList, error)
 }
 
 type GenericArgumentListReducer interface {
 
-	// 815:2: generic_argument_list -> improper: ...
+	// 812:2: generic_argument_list -> improper: ...
 	ImproperToGenericArgumentList(ProperGenericArgumentList_ *GenericArgumentList, Comma_ TokenValue) (*GenericArgumentList, error)
 
-	// 816:2: generic_argument_list -> nil: ...
+	// 813:2: generic_argument_list -> nil: ...
 	NilToGenericArgumentList() (*GenericArgumentList, error)
 }
 
 type FieldDefReducer interface {
-	// 823:2: field_def -> named: ...
+	// 820:2: field_def -> named: ...
 	NamedToFieldDef(Identifier_ TokenValue, TypeExpr_ TypeExpression) (*FieldDef, error)
 
-	// 824:2: field_def -> unnamed: ...
+	// 821:2: field_def -> unnamed: ...
 	UnnamedToFieldDef(TypeExpr_ TypeExpression) (*FieldDef, error)
 }
 
 type TypePropertyReducer interface {
 
-	// 835:2: type_property -> default_enum_field_def: ...
+	// 832:2: type_property -> default_enum_field_def: ...
 	DefaultEnumFieldDefToTypeProperty(Default_ TokenValue, FieldDef_ *FieldDef) (TypeProperty, error)
 
-	// 836:2: type_property -> padding_field_def: ...
+	// 833:2: type_property -> padding_field_def: ...
 	PaddingFieldDefToTypeProperty(Underscore_ TokenValue, TypeExpr_ TypeExpression) (TypeProperty, error)
 }
 
 type ProperImplicitTypePropertiesReducer interface {
-	// 841:2: proper_implicit_type_properties -> add: ...
+	// 838:2: proper_implicit_type_properties -> add: ...
 	AddToProperImplicitTypeProperties(ProperImplicitTypeProperties_ *TypePropertyList, Comma_ TokenValue, TypeProperty_ TypeProperty) (*TypePropertyList, error)
 
-	// 842:2: proper_implicit_type_properties -> type_property: ...
+	// 839:2: proper_implicit_type_properties -> type_property: ...
 	TypePropertyToProperImplicitTypeProperties(TypeProperty_ TypeProperty) (*TypePropertyList, error)
 }
 
 type ImplicitTypePropertiesReducer interface {
 
-	// 846:2: implicit_type_properties -> improper: ...
+	// 843:2: implicit_type_properties -> improper: ...
 	ImproperToImplicitTypeProperties(ProperImplicitTypeProperties_ *TypePropertyList, Comma_ TokenValue) (*TypePropertyList, error)
 
-	// 847:2: implicit_type_properties -> nil: ...
+	// 844:2: implicit_type_properties -> nil: ...
 	NilToImplicitTypeProperties() (*TypePropertyList, error)
 }
 
 type ImplicitStructTypeExprReducer interface {
-	// 850:2: implicit_struct_type_expr -> ...
+	// 847:2: implicit_struct_type_expr -> ...
 	ToImplicitStructTypeExpr(Lparen_ TokenValue, ImplicitTypeProperties_ *TypePropertyList, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type ProperExplicitTypePropertiesReducer interface {
-	// 853:2: proper_explicit_type_properties -> add_implicit: ...
+	// 850:2: proper_explicit_type_properties -> add_implicit: ...
 	AddImplicitToProperExplicitTypeProperties(ProperExplicitTypeProperties_ *TypePropertyList, Newlines_ TokenCount, TypeProperty_ TypeProperty) (*TypePropertyList, error)
 
-	// 854:2: proper_explicit_type_properties -> add_explicit: ...
+	// 851:2: proper_explicit_type_properties -> add_explicit: ...
 	AddExplicitToProperExplicitTypeProperties(ProperExplicitTypeProperties_ *TypePropertyList, Comma_ TokenValue, TypeProperty_ TypeProperty) (*TypePropertyList, error)
 
-	// 855:2: proper_explicit_type_properties -> type_property: ...
+	// 852:2: proper_explicit_type_properties -> type_property: ...
 	TypePropertyToProperExplicitTypeProperties(TypeProperty_ TypeProperty) (*TypePropertyList, error)
 }
 
 type ExplicitTypePropertiesReducer interface {
 
-	// 859:2: explicit_type_properties -> improper_implicit: ...
+	// 856:2: explicit_type_properties -> improper_implicit: ...
 	ImproperImplicitToExplicitTypeProperties(ProperExplicitTypeProperties_ *TypePropertyList, Newlines_ TokenCount) (*TypePropertyList, error)
 
-	// 860:2: explicit_type_properties -> improper_explicit: ...
+	// 857:2: explicit_type_properties -> improper_explicit: ...
 	ImproperExplicitToExplicitTypeProperties(ProperExplicitTypeProperties_ *TypePropertyList, Comma_ TokenValue) (*TypePropertyList, error)
 
-	// 861:2: explicit_type_properties -> nil: ...
+	// 858:2: explicit_type_properties -> nil: ...
 	NilToExplicitTypeProperties() (*TypePropertyList, error)
 }
 
 type ExplicitStructTypeExprReducer interface {
-	// 864:2: explicit_struct_type_expr -> ...
+	// 861:2: explicit_struct_type_expr -> ...
 	ToExplicitStructTypeExpr(Struct_ TokenValue, Lparen_ TokenValue, ExplicitTypeProperties_ *TypePropertyList, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type TraitTypeExprReducer interface {
-	// 867:2: trait_type_expr -> ...
+	// 864:2: trait_type_expr -> ...
 	ToTraitTypeExpr(Trait_ TokenValue, Lparen_ TokenValue, ExplicitTypeProperties_ *TypePropertyList, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type ProperImplicitEnumTypePropertiesReducer interface {
-	// 878:2: proper_implicit_enum_type_properties -> pair: ...
+	// 875:2: proper_implicit_enum_type_properties -> pair: ...
 	PairToProperImplicitEnumTypeProperties(TypeProperty_ TypeProperty, Or_ TokenValue, TypeProperty_2 TypeProperty) (*TypePropertyList, error)
 
-	// 879:2: proper_implicit_enum_type_properties -> add: ...
+	// 876:2: proper_implicit_enum_type_properties -> add: ...
 	AddToProperImplicitEnumTypeProperties(ProperImplicitEnumTypeProperties_ *TypePropertyList, Or_ TokenValue, TypeProperty_ TypeProperty) (*TypePropertyList, error)
 }
 
 type ImplicitEnumTypePropertiesReducer interface {
 
-	// 884:2: implicit_enum_type_properties -> improper: ...
+	// 881:2: implicit_enum_type_properties -> improper: ...
 	ImproperToImplicitEnumTypeProperties(ProperImplicitEnumTypeProperties_ *TypePropertyList, Newlines_ TokenCount) (*TypePropertyList, error)
 }
 
 type ImplicitEnumTypeExprReducer interface {
-	// 887:2: implicit_enum_type_expr -> ...
+	// 884:2: implicit_enum_type_expr -> ...
 	ToImplicitEnumTypeExpr(Lparen_ TokenValue, ImplicitEnumTypeProperties_ *TypePropertyList, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type ProperExplicitEnumTypePropertiesReducer interface {
-	// 890:2: proper_explicit_enum_type_properties -> explicit_pair: ...
+	// 887:2: proper_explicit_enum_type_properties -> explicit_pair: ...
 	ExplicitPairToProperExplicitEnumTypeProperties(TypeProperty_ TypeProperty, Or_ TokenValue, TypeProperty_2 TypeProperty) (*TypePropertyList, error)
 
-	// 891:2: proper_explicit_enum_type_properties -> implicit_pair: ...
+	// 888:2: proper_explicit_enum_type_properties -> implicit_pair: ...
 	ImplicitPairToProperExplicitEnumTypeProperties(TypeProperty_ TypeProperty, Newlines_ TokenCount, TypeProperty_2 TypeProperty) (*TypePropertyList, error)
 
-	// 892:2: proper_explicit_enum_type_properties -> explicit_add: ...
+	// 889:2: proper_explicit_enum_type_properties -> explicit_add: ...
 	ExplicitAddToProperExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *TypePropertyList, Or_ TokenValue, TypeProperty_ TypeProperty) (*TypePropertyList, error)
 
-	// 893:2: proper_explicit_enum_type_properties -> implicit_add: ...
+	// 890:2: proper_explicit_enum_type_properties -> implicit_add: ...
 	ImplicitAddToProperExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *TypePropertyList, Newlines_ TokenCount, TypeProperty_ TypeProperty) (*TypePropertyList, error)
 }
 
 type ExplicitEnumTypePropertiesReducer interface {
 
-	// 898:2: explicit_enum_type_properties -> improper: ...
+	// 895:2: explicit_enum_type_properties -> improper: ...
 	ImproperToExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *TypePropertyList, Newlines_ TokenCount) (*TypePropertyList, error)
 }
 
 type ExplicitEnumTypeExprReducer interface {
-	// 901:2: explicit_enum_type_expr -> ...
+	// 898:2: explicit_enum_type_expr -> ...
 	ToExplicitEnumTypeExpr(Enum_ TokenValue, Lparen_ TokenValue, ExplicitEnumTypeProperties_ *TypePropertyList, Rparen_ TokenValue) (TypeExpression, error)
 }
 
 type ReturnTypeReducer interface {
 
-	// 910:2: return_type -> nil: ...
+	// 907:2: return_type -> nil: ...
 	NilToReturnType() (TypeExpression, error)
 }
 
 type ProperParameterDefReducer interface {
-	// 913:2: proper_parameter_def -> named_typed_arg: ...
+	// 910:2: proper_parameter_def -> named_typed_arg: ...
 	NamedTypedArgToProperParameterDef(Identifier_ TokenValue, TypeExpr_ TypeExpression) (*Parameter, error)
 
-	// 914:2: proper_parameter_def -> named_typed_vararg: ...
+	// 911:2: proper_parameter_def -> named_typed_vararg: ...
 	NamedTypedVarargToProperParameterDef(Identifier_ TokenValue, Ellipsis_ TokenValue, TypeExpr_ TypeExpression) (*Parameter, error)
 
-	// 915:2: proper_parameter_def -> named_inferred_vararg: ...
+	// 912:2: proper_parameter_def -> named_inferred_vararg: ...
 	NamedInferredVarargToProperParameterDef(Identifier_ TokenValue, Ellipsis_ TokenValue) (*Parameter, error)
 
-	// 916:2: proper_parameter_def -> ignore_typed_arg: ...
+	// 913:2: proper_parameter_def -> ignore_typed_arg: ...
 	IgnoreTypedArgToProperParameterDef(Underscore_ TokenValue, TypeExpr_ TypeExpression) (*Parameter, error)
 
-	// 917:2: proper_parameter_def -> ignore_inferred_vararg: ...
+	// 914:2: proper_parameter_def -> ignore_inferred_vararg: ...
 	IgnoreInferredVarargToProperParameterDef(Underscore_ TokenValue, Ellipsis_ TokenValue) (*Parameter, error)
 
-	// 918:2: proper_parameter_def -> ignore_typed_vararg: ...
+	// 915:2: proper_parameter_def -> ignore_typed_vararg: ...
 	IgnoreTypedVarargToProperParameterDef(Underscore_ TokenValue, Ellipsis_ TokenValue, TypeExpr_ TypeExpression) (*Parameter, error)
 }
 
 type ParameterDeclReducer interface {
 
-	// 924:2: parameter_decl -> unnamed_typed_arg: ...
+	// 921:2: parameter_decl -> unnamed_typed_arg: ...
 	UnnamedTypedArgToParameterDecl(TypeExpr_ TypeExpression) (*Parameter, error)
 
-	// 925:2: parameter_decl -> unnamed_inferred_vararg: ...
+	// 922:2: parameter_decl -> unnamed_inferred_vararg: ...
 	UnnamedInferredVarargToParameterDecl(Ellipsis_ TokenValue) (*Parameter, error)
 
-	// 926:2: parameter_decl -> unnamed_typed_vararg: ...
+	// 923:2: parameter_decl -> unnamed_typed_vararg: ...
 	UnnamedTypedVarargToParameterDecl(Ellipsis_ TokenValue, TypeExpr_ TypeExpression) (*Parameter, error)
 }
 
 type ParameterDefReducer interface {
 
-	// 934:2: parameter_def -> named_inferred_arg: ...
+	// 931:2: parameter_def -> named_inferred_arg: ...
 	NamedInferredArgToParameterDef(Identifier_ TokenValue) (*Parameter, error)
 
-	// 935:2: parameter_def -> ignore_inferred_arg: ...
+	// 932:2: parameter_def -> ignore_inferred_arg: ...
 	IgnoreInferredArgToParameterDef(Underscore_ TokenValue) (*Parameter, error)
 }
 
 type ProperParameterDeclListReducer interface {
-	// 938:2: proper_parameter_decl_list -> add: ...
+	// 935:2: proper_parameter_decl_list -> add: ...
 	AddToProperParameterDeclList(ProperParameterDeclList_ *ParameterList, Comma_ TokenValue, ParameterDecl_ *Parameter) (*ParameterList, error)
 
-	// 939:2: proper_parameter_decl_list -> parameter_decl: ...
+	// 936:2: proper_parameter_decl_list -> parameter_decl: ...
 	ParameterDeclToProperParameterDeclList(ParameterDecl_ *Parameter) (*ParameterList, error)
 }
 
 type ParameterDeclListReducer interface {
 
-	// 943:2: parameter_decl_list -> improper: ...
+	// 940:2: parameter_decl_list -> improper: ...
 	ImproperToParameterDeclList(ProperParameterDeclList_ *ParameterList, Comma_ TokenValue) (*ParameterList, error)
 
-	// 944:2: parameter_decl_list -> nil: ...
+	// 941:2: parameter_decl_list -> nil: ...
 	NilToParameterDeclList() (*ParameterList, error)
 }
 
 type ParameterDeclsReducer interface {
-	// 946:31: parameter_decls -> ...
+	// 943:31: parameter_decls -> ...
 	ToParameterDecls(Lparen_ TokenValue, ParameterDeclList_ *ParameterList, Rparen_ TokenValue) (*ParameterList, error)
 }
 
 type ProperParameterDefListReducer interface {
-	// 949:2: proper_parameter_def_list -> add: ...
+	// 946:2: proper_parameter_def_list -> add: ...
 	AddToProperParameterDefList(ProperParameterDefList_ *ParameterList, Comma_ TokenValue, ParameterDef_ *Parameter) (*ParameterList, error)
 
-	// 950:2: proper_parameter_def_list -> parameter_def: ...
+	// 947:2: proper_parameter_def_list -> parameter_def: ...
 	ParameterDefToProperParameterDefList(ParameterDef_ *Parameter) (*ParameterList, error)
 }
 
 type ParameterDefListReducer interface {
 
-	// 954:2: parameter_def_list -> improper: ...
+	// 951:2: parameter_def_list -> improper: ...
 	ImproperToParameterDefList(ProperParameterDefList_ *ParameterList, Comma_ TokenValue) (*ParameterList, error)
 
-	// 955:2: parameter_def_list -> nil: ...
+	// 952:2: parameter_def_list -> nil: ...
 	NilToParameterDefList() (*ParameterList, error)
 }
 
 type ParameterDefsReducer interface {
-	// 957:30: parameter_defs -> ...
+	// 954:30: parameter_defs -> ...
 	ToParameterDefs(Lparen_ TokenValue, ParameterDefList_ *ParameterList, Rparen_ TokenValue) (*ParameterList, error)
 }
 
 type FuncTypeExprReducer interface {
-	// 959:34: func_type_expr -> ...
+	// 956:34: func_type_expr -> ...
 	ToFuncTypeExpr(Func_ TokenValue, ParameterDecls_ *ParameterList, ReturnType_ TypeExpression) (TypeExpression, error)
 }
 
 type MethodSignatureReducer interface {
-	// 970:34: method_signature -> ...
+	// 967:34: method_signature -> ...
 	ToMethodSignature(Func_ TokenValue, Identifier_ TokenValue, ParameterDecls_ *ParameterList, ReturnType_ TypeExpression) (TypeProperty, error)
 }
 
 type NamedFuncDefReducer interface {
-	// 978:2: named_func_def -> func_def: ...
+	// 975:2: named_func_def -> func_def: ...
 	FuncDefToNamedFuncDef(Func_ TokenValue, Identifier_ TokenValue, GenericParameters_ *GenericParameterList, ParameterDefs_ *ParameterList, ReturnType_ TypeExpression, Statements_ Expression) (Definition, error)
 
-	// 979:2: named_func_def -> method_def: ...
+	// 976:2: named_func_def -> method_def: ...
 	MethodDefToNamedFuncDef(Func_ TokenValue, Lparen_ TokenValue, ParameterDef_ *Parameter, Rparen_ TokenValue, Identifier_ TokenValue, ParameterDefs_ *ParameterList, ReturnType_ TypeExpression, Statements_ Expression) (Definition, error)
 }
 
 type AnonymousFuncExprReducer interface {
-	// 982:2: anonymous_func_expr -> ...
+	// 979:2: anonymous_func_expr -> ...
 	ToAnonymousFuncExpr(Func_ TokenValue, ParameterDefs_ *ParameterList, ReturnType_ TypeExpression, Statements_ Expression) (Expression, error)
 }
 
 type PackageDefReducer interface {
-	// 993:27: package_def -> ...
+	// 990:27: package_def -> ...
 	ToPackageDef(Package_ TokenValue, Statements_ Expression) (Definition, error)
 }
 
@@ -5107,49 +5096,49 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomExprType
-		//line grammar.lr:547:4
+		//line grammar.lr:544:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceLiteralExprToAtomExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomExprType
-		//line grammar.lr:548:4
+		//line grammar.lr:545:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceNamedExprToAtomExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomExprType
-		//line grammar.lr:549:4
+		//line grammar.lr:546:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceStatementsExprToAtomExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomExprType
-		//line grammar.lr:550:4
+		//line grammar.lr:547:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceAnonymousFuncExprToAtomExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomExprType
-		//line grammar.lr:551:4
+		//line grammar.lr:548:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceInitializeExprToAtomExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomExprType
-		//line grammar.lr:552:4
+		//line grammar.lr:549:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceImplicitStructExprToAtomExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomExprType
-		//line grammar.lr:553:4
+		//line grammar.lr:550:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToParseErrorExpr:
@@ -5201,7 +5190,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = StatementsExprType
-		//line grammar.lr:570:4
+		//line grammar.lr:567:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceLabelledToStatementsExpr:
@@ -5223,35 +5212,35 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AccessibleExprType
-		//line grammar.lr:578:4
+		//line grammar.lr:575:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceAccessExprToAccessibleExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AccessibleExprType
-		//line grammar.lr:579:4
+		//line grammar.lr:576:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceCallExprToAccessibleExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AccessibleExprType
-		//line grammar.lr:580:4
+		//line grammar.lr:577:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceIndexExprToAccessibleExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AccessibleExprType
-		//line grammar.lr:581:4
+		//line grammar.lr:578:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceAsExprToAccessibleExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AccessibleExprType
-		//line grammar.lr:582:4
+		//line grammar.lr:579:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToAccessExpr:
@@ -5273,28 +5262,28 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixableExprType
-		//line grammar.lr:594:4
+		//line grammar.lr:591:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReducePostfixUnaryExprToPostfixableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixableExprType
-		//line grammar.lr:595:4
+		//line grammar.lr:592:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceQuestionToPostfixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixUnaryOpType
-		//line grammar.lr:598:4
+		//line grammar.lr:595:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceExclaimToPostfixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixUnaryOpType
-		//line grammar.lr:599:4
+		//line grammar.lr:596:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceToPostfixUnaryExpr:
@@ -5306,14 +5295,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixableExprType
-		//line grammar.lr:604:4
+		//line grammar.lr:601:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReducePrefixUnaryExprToPrefixableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixableExprType
-		//line grammar.lr:605:4
+		//line grammar.lr:602:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToPrefixUnaryExpr:
@@ -5325,63 +5314,63 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:610:4
+		//line grammar.lr:607:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitNegToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:611:4
+		//line grammar.lr:608:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:612:4
+		//line grammar.lr:609:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceMulToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:615:4
+		//line grammar.lr:612:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:618:4
+		//line grammar.lr:615:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAsyncToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:636:4
+		//line grammar.lr:633:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDeferToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:637:4
+		//line grammar.lr:634:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReducePrefixableExprToMulExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulExprType
-		//line grammar.lr:640:4
+		//line grammar.lr:637:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryMulExprToMulExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulExprType
-		//line grammar.lr:641:4
+		//line grammar.lr:638:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryMulExpr:
@@ -5393,56 +5382,56 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:646:4
+		//line grammar.lr:643:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDivToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:647:4
+		//line grammar.lr:644:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceModToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:648:4
+		//line grammar.lr:645:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:649:4
+		//line grammar.lr:646:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitLshiftToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:650:4
+		//line grammar.lr:647:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitRshiftToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:651:4
+		//line grammar.lr:648:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceMulExprToAddExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddExprType
-		//line grammar.lr:654:4
+		//line grammar.lr:651:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryAddExprToAddExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddExprType
-		//line grammar.lr:655:4
+		//line grammar.lr:652:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryAddExpr:
@@ -5454,42 +5443,42 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:660:4
+		//line grammar.lr:657:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:661:4
+		//line grammar.lr:658:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitOrToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:662:4
+		//line grammar.lr:659:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitXorToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:663:4
+		//line grammar.lr:660:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAddExprToCmpExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpExprType
-		//line grammar.lr:666:4
+		//line grammar.lr:663:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryCmpExprToCmpExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpExprType
-		//line grammar.lr:667:4
+		//line grammar.lr:664:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryCmpExpr:
@@ -5501,56 +5490,56 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:672:4
+		//line grammar.lr:669:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceNotEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:673:4
+		//line grammar.lr:670:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceLessToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:674:4
+		//line grammar.lr:671:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceLessOrEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:675:4
+		//line grammar.lr:672:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceGreaterToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:676:4
+		//line grammar.lr:673:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceGreaterOrEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:677:4
+		//line grammar.lr:674:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceCmpExprToAndExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AndExprType
-		//line grammar.lr:680:4
+		//line grammar.lr:677:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryAndExprToAndExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AndExprType
-		//line grammar.lr:681:4
+		//line grammar.lr:678:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryAndExpr:
@@ -5562,14 +5551,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OrExprType
-		//line grammar.lr:686:4
+		//line grammar.lr:683:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryOrExprToOrExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OrExprType
-		//line grammar.lr:687:4
+		//line grammar.lr:684:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryOrExpr:
@@ -5581,21 +5570,21 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SendRecvExprType
-		//line grammar.lr:692:4
+		//line grammar.lr:689:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceSendExprToSendRecvExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SendRecvExprType
-		//line grammar.lr:693:4
+		//line grammar.lr:690:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceRecvExprToSendRecvExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SendRecvExprType
-		//line grammar.lr:694:4
+		//line grammar.lr:691:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToSendExpr:
@@ -5612,28 +5601,28 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = InitializableTypeExprType
-		//line grammar.lr:707:4
+		//line grammar.lr:704:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceSliceTypeExprToInitializableTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = InitializableTypeExprType
-		//line grammar.lr:708:4
+		//line grammar.lr:705:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceArrayTypeExprToInitializableTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = InitializableTypeExprType
-		//line grammar.lr:709:4
+		//line grammar.lr:706:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceMapTypeExprToInitializableTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = InitializableTypeExprType
-		//line grammar.lr:710:4
+		//line grammar.lr:707:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceToSliceTypeExpr:
@@ -5655,63 +5644,63 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:722:4
+		//line grammar.lr:719:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceNamedTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:723:4
+		//line grammar.lr:720:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceInferredTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:724:4
+		//line grammar.lr:721:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceImplicitStructTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:725:4
+		//line grammar.lr:722:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceExplicitEnumTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:726:4
+		//line grammar.lr:723:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceImplicitEnumTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:727:4
+		//line grammar.lr:724:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceTraitTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:728:4
+		//line grammar.lr:725:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceFuncTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:729:4
+		//line grammar.lr:726:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceParseErrorTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:730:4
+		//line grammar.lr:727:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceLocalToNamedTypeExpr:
@@ -5743,14 +5732,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnableTypeExprType
-		//line grammar.lr:751:4
+		//line grammar.lr:748:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReducePrefixUnaryTypeExprToReturnableTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnableTypeExprType
-		//line grammar.lr:752:4
+		//line grammar.lr:749:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceToPrefixUnaryTypeExpr:
@@ -5762,49 +5751,49 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryTypeOpType
-		//line grammar.lr:758:4
+		//line grammar.lr:755:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceExclaimToPrefixUnaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryTypeOpType
-		//line grammar.lr:759:4
+		//line grammar.lr:756:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToPrefixUnaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryTypeOpType
-		//line grammar.lr:760:4
+		//line grammar.lr:757:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitNegToPrefixUnaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryTypeOpType
-		//line grammar.lr:761:4
+		//line grammar.lr:758:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceTildeTildeToPrefixUnaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryTypeOpType
-		//line grammar.lr:762:4
+		//line grammar.lr:759:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceReturnableTypeExprToTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TypeExprType
-		//line grammar.lr:767:4
+		//line grammar.lr:764:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceBinaryTypeExprToTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TypeExprType
-		//line grammar.lr:768:4
+		//line grammar.lr:765:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceToBinaryTypeExpr:
@@ -5816,21 +5805,21 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryTypeOpType
-		//line grammar.lr:774:4
+		//line grammar.lr:771:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAddToBinaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryTypeOpType
-		//line grammar.lr:775:4
+		//line grammar.lr:772:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubToBinaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryTypeOpType
-		//line grammar.lr:776:4
+		//line grammar.lr:773:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDefinitionToTypeDef:
@@ -5880,7 +5869,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = GenericParameterListType
-		//line grammar.lr:801:4
+		//line grammar.lr:798:4
 		symbol.GenericParameterList = args[0].GenericParameterList
 		err = nil
 	case _ReduceImproperToGenericParameterList:
@@ -5913,7 +5902,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = GenericArgumentListType
-		//line grammar.lr:814:4
+		//line grammar.lr:811:4
 		symbol.GenericArgumentList = args[0].GenericArgumentList
 		err = nil
 	case _ReduceImproperToGenericArgumentList:
@@ -5938,7 +5927,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TypePropertyType
-		//line grammar.lr:834:4
+		//line grammar.lr:831:4
 		symbol.TypeProperty = args[0].FieldDef
 		err = nil
 	case _ReduceDefaultEnumFieldDefToTypeProperty:
@@ -5955,14 +5944,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TypePropertyType
-		//line grammar.lr:837:4
+		//line grammar.lr:834:4
 		symbol.TypeProperty = args[0].TypeProperty
 		err = nil
 	case _ReduceUnsafeStatementToTypeProperty:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TypePropertyType
-		//line grammar.lr:838:4
+		//line grammar.lr:835:4
 		symbol.TypeProperty = args[0].UnsafeStatement
 		err = nil
 	case _ReduceAddToProperImplicitTypeProperties:
@@ -5979,7 +5968,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ImplicitTypePropertiesType
-		//line grammar.lr:845:4
+		//line grammar.lr:842:4
 		symbol.TypeProperties = args[0].TypeProperties
 		err = nil
 	case _ReduceImproperToImplicitTypeProperties:
@@ -6014,7 +6003,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ExplicitTypePropertiesType
-		//line grammar.lr:858:4
+		//line grammar.lr:855:4
 		symbol.TypeProperties = args[0].TypeProperties
 		err = nil
 	case _ReduceImproperImplicitToExplicitTypeProperties:
@@ -6054,7 +6043,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ImplicitEnumTypePropertiesType
-		//line grammar.lr:882:4
+		//line grammar.lr:879:4
 		symbol.TypeProperties = args[0].TypeProperties
 		err = nil
 	case _ReduceImproperToImplicitEnumTypeProperties:
@@ -6091,7 +6080,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ExplicitEnumTypePropertiesType
-		//line grammar.lr:896:4
+		//line grammar.lr:893:4
 		symbol.TypeProperties = args[0].TypeProperties
 		err = nil
 	case _ReduceImproperToExplicitEnumTypeProperties:
@@ -6108,7 +6097,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnTypeType
-		//line grammar.lr:909:4
+		//line grammar.lr:906:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceNilToReturnType:
@@ -6148,7 +6137,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ParameterDeclType
-		//line grammar.lr:923:4
+		//line grammar.lr:920:4
 		symbol.Parameter = args[0].Parameter
 		err = nil
 	case _ReduceUnnamedTypedArgToParameterDecl:
@@ -6170,7 +6159,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ParameterDefType
-		//line grammar.lr:933:4
+		//line grammar.lr:930:4
 		symbol.Parameter = args[0].Parameter
 		err = nil
 	case _ReduceNamedInferredArgToParameterDef:
@@ -6197,7 +6186,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ParameterDeclListType
-		//line grammar.lr:942:4
+		//line grammar.lr:939:4
 		symbol.Parameters = args[0].Parameters
 		err = nil
 	case _ReduceImproperToParameterDeclList:
@@ -6227,7 +6216,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ParameterDefListType
-		//line grammar.lr:953:4
+		//line grammar.lr:950:4
 		symbol.Parameters = args[0].Parameters
 		err = nil
 	case _ReduceImproperToParameterDefList:
