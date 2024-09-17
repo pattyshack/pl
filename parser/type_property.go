@@ -19,7 +19,7 @@ const (
 )
 
 type FieldDef struct {
-	isTypeProperty
+	IsTypeProp
 	StartEndPos
 	LeadingTrailingComments
 

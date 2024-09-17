@@ -11,7 +11,7 @@ import (
 type VarPatternKind SymbolId
 
 type VarPattern struct {
-	isExpression
+	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -157,7 +157,7 @@ func (CasePatternsReducerImpl) AddToSwitchableCasePatterns(
 // REMINDER: In post analysis, ensure AssignPattern is valid (reject case enum
 // pattern).
 type CaseAssignPattern struct {
-	isExpression
+	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -226,7 +226,7 @@ func (CaseAssignPatternReducerImpl) ToCaseAssignExpr(
 //
 
 type CaseEnumPattern struct {
-	isExpression
+	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 

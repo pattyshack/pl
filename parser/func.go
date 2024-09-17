@@ -5,8 +5,8 @@ import (
 )
 
 type FuncSignature struct {
-	isTypeExpression
-	isTypeProperty
+	IsTypeExpr
+	IsTypeProp
 	StartEndPos
 	LeadingTrailingComments
 
@@ -54,8 +54,8 @@ func (sig FuncSignature) TreeString(indent string, label string) string {
 }
 
 type FuncDefinition struct {
-	isExpression
-	isDefinition
+	IsExpr
+	IsDef
 	StartEndPos
 	LeadingTrailingComments
 

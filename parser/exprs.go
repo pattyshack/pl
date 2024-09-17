@@ -9,7 +9,7 @@ import (
 //
 
 type BoolLiteralExpr struct {
-	isExpression
+	IsExpr
 	TokenValue
 }
 
@@ -18,7 +18,7 @@ func (expr BoolLiteralExpr) TreeString(indent string, label string) string {
 }
 
 type IntLiteralExpr struct {
-	isExpression
+	IsExpr
 	TokenValue
 }
 
@@ -27,7 +27,7 @@ func (expr IntLiteralExpr) TreeString(indent string, label string) string {
 }
 
 type FloatLiteralExpr struct {
-	isExpression
+	IsExpr
 	TokenValue
 }
 
@@ -36,7 +36,7 @@ func (expr FloatLiteralExpr) TreeString(indent string, label string) string {
 }
 
 type RuneLiteralExpr struct {
-	isExpression
+	IsExpr
 	TokenValue
 }
 
@@ -45,7 +45,7 @@ func (expr RuneLiteralExpr) TreeString(indent string, label string) string {
 }
 
 type StringLiteralExpr struct {
-	isExpression
+	IsExpr
 	TokenValue
 }
 
@@ -116,7 +116,7 @@ func (reducer *LiteralExprReducerImpl) StringLiteralToLiteralExpr(
 //
 
 type NamedExpr struct {
-	isExpression
+	IsExpr
 	TokenValue
 }
 
@@ -151,7 +151,7 @@ func (reducer *NamedExprReducerImpl) UnderscoreToNamedExpr(
 //
 
 type AccessExpr struct {
-	isExpression
+	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -204,7 +204,7 @@ func (reducer *AccessExprReducerImpl) ToAccessExpr(
 type UnaryOp SymbolId
 
 type UnaryExpr struct {
-	isExpression
+	IsExpr
 
 	StartEndPos
 	LeadingTrailingComments
@@ -322,7 +322,7 @@ func (reducer *UnaryExprReducerImpl) ToUnaryOpAssignStatement(
 type BinaryOp SymbolId
 
 type BinaryExpr struct {
-	isExpression
+	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -494,7 +494,7 @@ func (reducer *BinaryExprReducerImpl) DefToGlobalVarDef(
 //
 
 type ImplicitStructExpr struct {
-	isExpression
+	IsExpr
 	ArgumentList
 
 	// An improper struct is the a comma separated list of expressions without
@@ -634,7 +634,7 @@ func (reducer *ImplicitStructExprReducerImpl) ToTuplePattern(
 //
 
 type ColonExpr struct {
-	isExpression
+	IsExpr
 	ArgumentList
 }
 
@@ -806,7 +806,7 @@ func (reducer *ColonExprReducerImpl) ColonExprExprTupleToColonExpr(
 //
 
 type CallExpr struct {
-	isExpression
+	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -872,7 +872,7 @@ func (reducer *CallExprReducerImpl) ToCallExpr(
 //
 
 type IndexExpr struct {
-	isExpression
+	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -925,7 +925,7 @@ func (reducer *IndexExprReducerImpl) ToIndexExpr(
 //
 
 type AsExpr struct {
-	isExpression
+	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -987,7 +987,7 @@ func (reducer *AsExprReducerImpl) ToAsExpr(
 //
 
 type InitializeExpr struct {
-	isExpression
+	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -1051,7 +1051,7 @@ func (cb ConditionBranch) TreeString(indent string, label string) string {
 }
 
 type IfExpr struct {
-	isExpression
+	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -1191,7 +1191,7 @@ func (reducer *IfExprReducerImpl) ToIfOnlyExpr(
 //
 
 type SwitchExpr struct {
-	isExpression
+	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -1274,7 +1274,7 @@ func (reducer *SwitchExprReducerImpl) ToSwitchExprBody(
 //
 
 type SelectExpr struct {
-	isExpression
+	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -1363,7 +1363,7 @@ const (
 )
 
 type LoopExpr struct {
-	isExpression
+	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 

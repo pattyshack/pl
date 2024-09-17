@@ -10,8 +10,7 @@ import (
 //
 
 type StatementsExpr struct {
-	isDefinition
-	isExpression
+	IsExpr
 
 	LabelDecl string // optional
 	NodeList[Statement]
@@ -256,7 +255,7 @@ func (reducer *ImportClauseReducerImpl) ImportToLocalToImportClause(
 //
 
 type ImportStatement struct {
-	isStatement
+	IsStmt
 	NodeList[*ImportClause]
 }
 
@@ -369,7 +368,7 @@ func (ImportStatementReducerImpl) ExplicitToImportClauses(
 type JumpOp SymbolId
 
 type JumpStatement struct {
-	isStatement
+	IsStmt
 	StartEndPos
 	LeadingTrailingComments
 
@@ -490,8 +489,8 @@ func (JumpStatementReducerImpl) FallthroughToJumpStatement(
 //
 
 type UnsafeStatement struct {
-	isStatement
-	isTypeProperty
+	IsStmt
+	IsTypeProp
 	StartEndPos
 	LeadingTrailingComments
 
@@ -553,7 +552,7 @@ func (UnsafeStatementReducerImpl) ToUnsafeStatement(
 //
 
 type BranchStatement struct {
-	isStatement
+	IsStmt
 	StartEndPos
 	LeadingTrailingComments
 

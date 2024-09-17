@@ -61,7 +61,7 @@ func (DefinitionListReducerImpl) NilToDefinitions() (*DefinitionList, error) {
 //
 
 type FloatingComment struct {
-	isDefinition
+	IsDef
 	StartEndPos
 	LeadingTrailingComments
 }
@@ -94,7 +94,7 @@ func (FloatingCommentReducerImpl) ToFloatingComment(
 //
 
 type PackageDef struct {
-	isDefinition
+	IsDef
 	StartEndPos
 	LeadingTrailingComments
 
@@ -143,7 +143,7 @@ func (PackageDefReducerImpl) ToPackageDef(
 //
 
 type TypeDef struct {
-	isDefinition
+	IsDef
 	StartEndPos
 	LeadingTrailingComments
 

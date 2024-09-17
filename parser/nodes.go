@@ -53,48 +53,48 @@ type Expression interface {
 	IsExpression()
 }
 
-type isExpression struct {
-	isStatement
-	isDefinition
+type IsExpr struct {
+	IsStmt
+	IsDef
 }
 
-func (isExpression) IsExpression() {}
+func (IsExpr) IsExpression() {}
 
 type TypeExpression interface {
 	Node
 	IsTypeExpression()
 }
 
-type isTypeExpression struct{}
+type IsTypeExpr struct{}
 
-func (isTypeExpression) IsTypeExpression() {}
+func (IsTypeExpr) IsTypeExpression() {}
 
 type TypeProperty interface {
 	Node
 	IsTypeProperty()
 }
 
-type isTypeProperty struct{}
+type IsTypeProp struct{}
 
-func (isTypeProperty) IsTypeProperty() {}
+func (IsTypeProp) IsTypeProperty() {}
 
 type Statement interface {
 	Node
 	IsStatement()
 }
 
-type isStatement struct{}
+type IsStmt struct{}
 
-func (isStatement) IsStatement() {}
+func (IsStmt) IsStatement() {}
 
 type Definition interface {
 	Node
 	IsDefinition()
 }
 
-type isDefinition struct{}
+type IsDef struct{}
 
-func (isDefinition) IsDefinition() {}
+func (IsDef) IsDefinition() {}
 
 // A comment group is a single block comment, or a group of line comments
 // separated by single newlines (ignoring spaces).
@@ -250,9 +250,9 @@ func (s TokenValue) TreeString(indent string, label string) string {
 }
 
 type ParseErrorSymbol struct {
-	isExpression
-	isTypeExpression
-	isDefinition
+	IsExpr
+	IsTypeExpr
+	IsDef
 
 	StartEndPos
 	LeadingTrailingComments

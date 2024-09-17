@@ -9,7 +9,7 @@ import (
 //
 
 type SliceTypeExpr struct {
-	isTypeExpression
+	IsTypeExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -56,7 +56,7 @@ func (reducer *SliceTypeExprReducerImpl) ToSliceTypeExpr(
 //
 
 type ArrayTypeExpr struct {
-	isTypeExpression
+	IsTypeExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -113,7 +113,7 @@ func (reducer *ArrayTypeExprReducerImpl) ToArrayTypeExpr(
 //
 
 type MapTypeExpr struct {
-	isTypeExpression
+	IsTypeExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -167,7 +167,7 @@ func (reducer *MapTypeExprReducerImpl) ToMapTypeExpr(
 //
 
 type InferredTypeExpr struct {
-	isTypeExpression
+	IsTypeExpr
 	TokenValue
 }
 
@@ -212,7 +212,7 @@ func (reducer *InferredTypeExprReducerImpl) UnderscoreToInferredTypeExpr(
 //
 
 type NamedTypeExpr struct {
-	isTypeExpression
+	IsTypeExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -314,7 +314,7 @@ func (reducer *NamedTypeExprReducerImpl) ExternalToNamedTypeExpr(
 type UnaryTypeOp SymbolId
 
 type UnaryTypeExpr struct {
-	isTypeExpression
+	IsTypeExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -367,7 +367,7 @@ func (reducer *UnaryTypeExprReducerImpl) ToPrefixUnaryTypeExpr(
 type BinaryTypeOp SymbolId
 
 type BinaryTypeExpr struct {
-	isTypeExpression
+	IsTypeExpr
 	StartEndPos
 	LeadingTrailingComments
 
@@ -428,7 +428,7 @@ const (
 )
 
 type PropertiesTypeExpr struct {
-	isTypeExpression
+	IsTypeExpr
 	StartEndPos
 	LeadingTrailingComments
 
