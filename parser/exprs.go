@@ -921,6 +921,68 @@ func (reducer *IndexExprReducerImpl) ToIndexExpr(
 }
 
 //
+// AsExpr
+//
+
+type AsExpr struct {
+	isExpression
+	StartEndPos
+	LeadingTrailingComments
+
+	Accessible Expression
+	CastType   TypeExpression
+}
+
+var _ Expression = &AsExpr{}
+
+func (expr AsExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf("%s%s[AsExpr:\n", indent, label)
+	result += expr.Accessible.TreeString(indent+"  ", "Accessible=") + "\n"
+	result += expr.CastType.TreeString(indent+"  ", "CastType=") + "\n"
+	result += "\n" + indent + "]"
+	return result
+}
+
+type AsExprReducerImpl struct {
+	AsExprs []*AsExpr
+}
+
+var _ AsExprReducer = &AsExprReducerImpl{}
+
+func (reducer *AsExprReducerImpl) ToAsExpr(
+	accessible Expression,
+	dot TokenValue,
+	as TokenValue,
+	lparen TokenValue,
+	castType TypeExpression,
+	rparen TokenValue,
+) (
+	Expression,
+	error,
+) {
+	leading := accessible.TakeLeading()
+	accessible.AppendToTrailing(dot.TakeLeading())
+	comments := dot.TakeTrailing()
+	comments.Append(as.TakeLeading())
+	comments.Append(as.TakeTrailing())
+	comments.Append(lparen.TakeLeading())
+	comments.Append(lparen.TakeTrailing())
+	castType.PrependToLeading(comments)
+	castType.AppendToTrailing(rparen.TakeLeading())
+	trailing := rparen.TakeTrailing()
+
+	expr := &AsExpr{
+		StartEndPos: newStartEndPos(accessible.Loc(), rparen.End()),
+		Accessible:  accessible,
+		CastType:    castType,
+	}
+	expr.LeadingComment = leading
+	expr.TrailingComment = trailing
+
+	return expr, nil
+}
+
+//
 // InitializeExpr
 //
 

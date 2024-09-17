@@ -61,6 +61,7 @@ var (
 		"defer":       DeferToken,
 		"var":         VarToken,
 		"let":         LetToken,
+		"as":          AsToken,
 		"and":         AndToken,
 		"or":          OrToken,
 		"not":         NotToken,

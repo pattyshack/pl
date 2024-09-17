@@ -6,6 +6,7 @@ type ReducerImpl struct {
 	FuncReducerImpl
 
 	AccessExprReducerImpl
+	AsExprReducerImpl
 	BinaryExprReducerImpl
 	CallExprReducerImpl
 	ColonExprReducerImpl
