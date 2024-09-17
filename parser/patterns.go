@@ -2,6 +2,8 @@ package parser
 
 import (
 	"fmt"
+
+	. "github.com/pattyshack/pl/ast"
 )
 
 //
@@ -102,14 +104,6 @@ func (VarPatternReducerImpl) ToAssignVarPattern(
 //
 // ExpressionList
 //
-
-type ExpressionList = NodeList[Expression]
-
-func NewExpressionList() *ExpressionList {
-	return NewNodeList[Expression]("ExpressionList")
-}
-
-var _ Node = &ExpressionList{}
 
 type CasePatternsReducerImpl struct{}
 

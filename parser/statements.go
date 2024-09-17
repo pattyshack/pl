@@ -3,6 +3,8 @@ package parser
 import (
 	"fmt"
 	"strings"
+
+	. "github.com/pattyshack/pl/ast"
 )
 
 //
@@ -30,7 +32,7 @@ func (expr StatementsExpr) TreeString(indent string, label string) string {
 		return result + "]"
 	}
 
-	result += expr.elementsString(indent + "  ")
+	result += expr.ElementsString(indent + "  ")
 	result += "\n" + indent + "]"
 	return result
 }

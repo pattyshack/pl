@@ -2,6 +2,8 @@ package parser
 
 import (
 	"fmt"
+
+	. "github.com/pattyshack/pl/ast"
 )
 
 //
@@ -153,14 +155,6 @@ func (GenericParameterListReducerImpl) NilToGenericParameterList() (
 //
 // GenericArgumentList
 //
-
-type GenericArgumentList = NodeList[TypeExpression]
-
-var _ Node = &GenericArgumentList{}
-
-func NewGenericArgumentList() *GenericArgumentList {
-	return NewNodeList[TypeExpression]("GenericArgumentList")
-}
 
 type GenericArgumentListReducerImpl struct{}
 

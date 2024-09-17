@@ -2,17 +2,13 @@ package parser
 
 import (
 	"fmt"
+
+	. "github.com/pattyshack/pl/ast"
 )
 
 //
 // DefinitionList
 //
-
-type DefinitionList = NodeList[Definition]
-
-func NewDefinitionList() *DefinitionList {
-	return NewNodeList[Definition]("DefinitionList")
-}
 
 type DefinitionListReducerImpl struct{}
 
@@ -77,7 +73,7 @@ type FloatingCommentReducerImpl struct{}
 var _ FloatingCommentReducer = &FloatingCommentReducerImpl{}
 
 func (FloatingCommentReducerImpl) ToFloatingComment(
-	comments CommentGroups,
+	comments CommentGroupsTok,
 ) (
 	Definition,
 	error,
@@ -85,7 +81,7 @@ func (FloatingCommentReducerImpl) ToFloatingComment(
 	floating := &FloatingComment{
 		StartEndPos: NewStartEndPos(comments.Loc(), comments.End()),
 	}
-	floating.LeadingComment = comments
+	floating.LeadingComment = comments.CommentGroups
 	return floating, nil
 }
 

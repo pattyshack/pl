@@ -7,6 +7,8 @@ import (
 
 	"github.com/pattyshack/gt/lexutil"
 	"github.com/pattyshack/gt/stringutil"
+
+	. "github.com/pattyshack/pl/ast"
 )
 
 const (

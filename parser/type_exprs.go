@@ -2,6 +2,8 @@ package parser
 
 import (
 	"fmt"
+
+	. "github.com/pattyshack/pl/ast"
 )
 
 //

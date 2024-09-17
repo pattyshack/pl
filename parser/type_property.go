@@ -2,6 +2,8 @@ package parser
 
 import (
 	"fmt"
+
+	. "github.com/pattyshack/pl/ast"
 )
 
 //
@@ -121,14 +123,6 @@ func (reducer FieldDefReducerImpl) PaddingFieldDefToTypeProperty(
 //
 // TypePropertyList
 //
-
-type TypePropertyList = NodeList[TypeProperty]
-
-func NewTypePropertyList() *TypePropertyList {
-	return NewNodeList[TypeProperty]("TypePropertyList")
-}
-
-var _ Node = &TypePropertyList{}
 
 type TypePropertyListReducerImpl struct{}
 

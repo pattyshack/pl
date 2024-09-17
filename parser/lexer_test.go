@@ -5,6 +5,8 @@ import (
 
 	"github.com/pattyshack/gt/testing/expect"
 	"github.com/pattyshack/gt/testing/suite"
+
+	. "github.com/pattyshack/pl/ast"
 )
 
 func expectCommentGroup(
@@ -12,15 +14,9 @@ func expectCommentGroup(
 	token Token,
 	expectedComments ...string,
 ) {
-	group, ok := token.(CommentGroup)
+	group, ok := token.(CommentGroupToken)
 	expect.True(t, ok)
-
-	comments := []string{}
-	for _, value := range group {
-		comments = append(comments, value.Val())
-	}
-
-	expect.Equal(t, expectedComments, comments)
+	expect.Equal(t, expectedComments, group.Comments)
 }
 
 func expectCommentGroups(
@@ -30,12 +26,7 @@ func expectCommentGroups(
 ) {
 	commentGroups := [][]string{}
 	for _, group := range groups.Groups {
-		comments := []string{}
-		for _, value := range group {
-			comments = append(comments, value.Val())
-		}
-
-		commentGroups = append(commentGroups, comments)
+		commentGroups = append(commentGroups, group.Comments)
 	}
 
 	expect.Equal(t, expected, commentGroups)
@@ -202,11 +193,11 @@ func (s *AssociateCommentGroupsLexerSuite) TestAssociation(t *testing.T) {
 		[]string{"//c1"})
 	expect.Nil(t, c.TrailingComment.Groups)
 
-	floating, ok := tokens[6].(CommentGroups)
+	floating, ok := tokens[6].(CommentGroupsTok)
 	expect.True(t, ok)
 	expectCommentGroups(
 		t,
-		floating,
+		floating.CommentGroups,
 		[]string{"//?1l1", "//?1l2"},
 		[]string{"//?2l1", "//?2l2", "//?2l3"})
 }

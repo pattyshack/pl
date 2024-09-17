@@ -5,6 +5,7 @@ package parser
 import (
 	fmt "fmt"
 	lexutil "github.com/pattyshack/gt/lexutil"
+	ast "github.com/pattyshack/pl/ast"
 	io "io"
 )
 
@@ -133,46 +134,46 @@ type Lexer interface {
 
 type ProperDefinitionsReducer interface {
 	// 63:2: proper_definitions -> add: ...
-	AddToProperDefinitions(ProperDefinitions_ *DefinitionList, Newlines_ TokenCount, Definition_ Definition) (*DefinitionList, error)
+	AddToProperDefinitions(ProperDefinitions_ *ast.DefinitionList, Newlines_ TokenCount, Definition_ ast.Definition) (*ast.DefinitionList, error)
 
 	// 64:2: proper_definitions -> definition: ...
-	DefinitionToProperDefinitions(Definition_ Definition) (*DefinitionList, error)
+	DefinitionToProperDefinitions(Definition_ ast.Definition) (*ast.DefinitionList, error)
 }
 
 type DefinitionsReducer interface {
 
 	// 68:2: definitions -> improper: ...
-	ImproperToDefinitions(ProperDefinitions_ *DefinitionList, Newlines_ TokenCount) (*DefinitionList, error)
+	ImproperToDefinitions(ProperDefinitions_ *ast.DefinitionList, Newlines_ TokenCount) (*ast.DefinitionList, error)
 
 	// 69:2: definitions -> nil: ...
-	NilToDefinitions() (*DefinitionList, error)
+	NilToDefinitions() (*ast.DefinitionList, error)
 }
 
 type GlobalVarDefReducer interface {
 
 	// 85:2: global_var_def -> def: ...
-	DefToGlobalVarDef(DeclVarPattern_ Expression, Assign_ *TokenValue, Expr_ Expression) (Definition, error)
+	DefToGlobalVarDef(DeclVarPattern_ ast.Expression, Assign_ *TokenValue, Expr_ ast.Expression) (ast.Definition, error)
 }
 
 type FloatingCommentReducer interface {
 	// 90:32: floating_comment -> ...
-	ToFloatingComment(CommentGroups_ CommentGroups) (Definition, error)
+	ToFloatingComment(CommentGroups_ CommentGroupsTok) (ast.Definition, error)
 }
 
 type StatementsReducer interface {
 	// 111:26: statements -> ...
-	ToStatements(Lbrace_ *TokenValue, StatementList_ *StatementsExpr, Rbrace_ *TokenValue) (Expression, error)
+	ToStatements(Lbrace_ *TokenValue, StatementList_ *StatementsExpr, Rbrace_ *TokenValue) (ast.Expression, error)
 }
 
 type ProperStatementListReducer interface {
 	// 114:2: proper_statement_list -> add_implicit: ...
-	AddImplicitToProperStatementList(ProperStatementList_ *StatementsExpr, Newlines_ TokenCount, Statement_ Statement) (*StatementsExpr, error)
+	AddImplicitToProperStatementList(ProperStatementList_ *StatementsExpr, Newlines_ TokenCount, Statement_ ast.Statement) (*StatementsExpr, error)
 
 	// 115:2: proper_statement_list -> add_explicit: ...
-	AddExplicitToProperStatementList(ProperStatementList_ *StatementsExpr, Semicolon_ *TokenValue, Statement_ Statement) (*StatementsExpr, error)
+	AddExplicitToProperStatementList(ProperStatementList_ *StatementsExpr, Semicolon_ *TokenValue, Statement_ ast.Statement) (*StatementsExpr, error)
 
 	// 116:2: proper_statement_list -> statement: ...
-	StatementToProperStatementList(Statement_ Statement) (*StatementsExpr, error)
+	StatementToProperStatementList(Statement_ ast.Statement) (*StatementsExpr, error)
 }
 
 type StatementListReducer interface {
@@ -189,15 +190,15 @@ type StatementListReducer interface {
 
 type BranchStatementReducer interface {
 	// 167:2: branch_statement -> case_branch: ...
-	CaseBranchToBranchStatement(Case_ *TokenValue, CasePatterns_ *ExpressionList, Colon_ *TokenValue, TrailingSimpleStatement_ *StatementsExpr) (Statement, error)
+	CaseBranchToBranchStatement(Case_ *TokenValue, CasePatterns_ *ast.ExpressionList, Colon_ *TokenValue, TrailingSimpleStatement_ *StatementsExpr) (ast.Statement, error)
 
 	// 168:2: branch_statement -> default_branch: ...
-	DefaultBranchToBranchStatement(Default_ *TokenValue, Colon_ *TokenValue, TrailingSimpleStatement_ *StatementsExpr) (Statement, error)
+	DefaultBranchToBranchStatement(Default_ *TokenValue, Colon_ *TokenValue, TrailingSimpleStatement_ *StatementsExpr) (ast.Statement, error)
 }
 
 type TrailingSimpleStatementReducer interface {
 	// 171:2: trailing_simple_statement -> simple_statement: ...
-	SimpleStatementToTrailingSimpleStatement(SimpleStatement_ Statement) (*StatementsExpr, error)
+	SimpleStatementToTrailingSimpleStatement(SimpleStatement_ ast.Statement) (*StatementsExpr, error)
 
 	// 172:2: trailing_simple_statement -> nil: ...
 	NilToTrailingSimpleStatement() (*StatementsExpr, error)
@@ -205,18 +206,18 @@ type TrailingSimpleStatementReducer interface {
 
 type ImproperSequenceExprStructReducer interface {
 	// 189:2: improper_sequence_expr_struct -> pair: ...
-	PairToImproperSequenceExprStruct(SequenceExpr_ Expression, Comma_ *TokenValue, SequenceExpr_2 Expression) (*ImplicitStructExpr, error)
+	PairToImproperSequenceExprStruct(SequenceExpr_ ast.Expression, Comma_ *TokenValue, SequenceExpr_2 ast.Expression) (*ImplicitStructExpr, error)
 
 	// 190:2: improper_sequence_expr_struct -> add: ...
-	AddToImproperSequenceExprStruct(ImproperSequenceExprStruct_ *ImplicitStructExpr, Comma_ *TokenValue, SequenceExpr_ Expression) (*ImplicitStructExpr, error)
+	AddToImproperSequenceExprStruct(ImproperSequenceExprStruct_ *ImplicitStructExpr, Comma_ *TokenValue, SequenceExpr_ ast.Expression) (*ImplicitStructExpr, error)
 }
 
 type ImproperExprStructReducer interface {
 	// 193:2: improper_expr_struct -> pair: ...
-	PairToImproperExprStruct(Expr_ Expression, Comma_ *TokenValue, Expr_2 Expression) (*ImplicitStructExpr, error)
+	PairToImproperExprStruct(Expr_ ast.Expression, Comma_ *TokenValue, Expr_2 ast.Expression) (*ImplicitStructExpr, error)
 
 	// 194:2: improper_expr_struct -> add: ...
-	AddToImproperExprStruct(ImproperExprStruct_ *ImplicitStructExpr, Comma_ *TokenValue, Expr_ Expression) (*ImplicitStructExpr, error)
+	AddToImproperExprStruct(ImproperExprStruct_ *ImplicitStructExpr, Comma_ *TokenValue, Expr_ ast.Expression) (*ImplicitStructExpr, error)
 }
 
 type UnsafeStatementReducer interface {
@@ -226,47 +227,47 @@ type UnsafeStatementReducer interface {
 
 type JumpStatementReducer interface {
 	// 210:2: jump_statement -> unlabeled_no_value: ...
-	UnlabeledNoValueToJumpStatement(JumpOp_ *TokenValue) (Statement, error)
+	UnlabeledNoValueToJumpStatement(JumpOp_ *TokenValue) (ast.Statement, error)
 
 	// 211:2: jump_statement -> unlabeled_valued: ...
-	UnlabeledValuedToJumpStatement(JumpOp_ *TokenValue, ExprOrImproperExprStruct_ Expression) (Statement, error)
+	UnlabeledValuedToJumpStatement(JumpOp_ *TokenValue, ExprOrImproperExprStruct_ ast.Expression) (ast.Statement, error)
 
 	// 212:2: jump_statement -> labeled_no_value: ...
-	LabeledNoValueToJumpStatement(JumpOp_ *TokenValue, JumpLabel_ *TokenValue) (Statement, error)
+	LabeledNoValueToJumpStatement(JumpOp_ *TokenValue, JumpLabel_ *TokenValue) (ast.Statement, error)
 
 	// 213:2: jump_statement -> labeled_valued: ...
-	LabeledValuedToJumpStatement(JumpOp_ *TokenValue, JumpLabel_ *TokenValue, ExprOrImproperExprStruct_ Expression) (Statement, error)
+	LabeledValuedToJumpStatement(JumpOp_ *TokenValue, JumpLabel_ *TokenValue, ExprOrImproperExprStruct_ ast.Expression) (ast.Statement, error)
 
 	// 216:2: jump_statement -> FALLTHROUGH: ...
-	FallthroughToJumpStatement(Fallthrough_ *TokenValue) (Statement, error)
+	FallthroughToJumpStatement(Fallthrough_ *TokenValue) (ast.Statement, error)
 }
 
 type SequenceExprAssignStatementReducer interface {
 	// 229:2: sequence_expr_assign_statement -> ...
-	ToSequenceExprAssignStatement(SequenceExprAssignPattern_ Expression, Assign_ *TokenValue, Expr_ Expression) (Statement, error)
+	ToSequenceExprAssignStatement(SequenceExprAssignPattern_ ast.Expression, Assign_ *TokenValue, Expr_ ast.Expression) (ast.Statement, error)
 }
 
 type ExprAssignStatementReducer interface {
 	// 231:36: expr_assign_statement -> ...
-	ToExprAssignStatement(ExprAssignPattern_ Expression, Assign_ *TokenValue, Expr_ Expression) (Statement, error)
+	ToExprAssignStatement(ExprAssignPattern_ ast.Expression, Assign_ *TokenValue, Expr_ ast.Expression) (ast.Statement, error)
 }
 
 type UnaryOpAssignStatementReducer interface {
 	// 233:40: unary_op_assign_statement -> ...
-	ToUnaryOpAssignStatement(AccessibleExpr_ Expression, UnaryOpAssign_ *TokenValue) (Statement, error)
+	ToUnaryOpAssignStatement(AccessibleExpr_ ast.Expression, UnaryOpAssign_ *TokenValue) (ast.Statement, error)
 }
 
 type BinaryOpAssignStatementReducer interface {
 	// 239:41: binary_op_assign_statement -> ...
-	ToBinaryOpAssignStatement(AccessibleExpr_ Expression, BinaryOpAssign_ *TokenValue, Expr_ Expression) (Statement, error)
+	ToBinaryOpAssignStatement(AccessibleExpr_ ast.Expression, BinaryOpAssign_ *TokenValue, Expr_ ast.Expression) (ast.Statement, error)
 }
 
 type ImportStatementReducer interface {
 	// 259:2: import_statement -> single: ...
-	SingleToImportStatement(Import_ *TokenValue, ImportClause_ *ImportClause) (Statement, error)
+	SingleToImportStatement(Import_ *TokenValue, ImportClause_ *ImportClause) (ast.Statement, error)
 
 	// 260:2: import_statement -> multiple: ...
-	MultipleToImportStatement(Import_ *TokenValue, Lparen_ *TokenValue, ImportClauses_ *ImportStatement, Rparen_ *TokenValue) (Statement, error)
+	MultipleToImportStatement(Import_ *TokenValue, Lparen_ *TokenValue, ImportClauses_ *ImportStatement, Rparen_ *TokenValue) (ast.Statement, error)
 }
 
 type ProperImportClausesReducer interface {
@@ -305,20 +306,20 @@ type ImportClauseReducer interface {
 
 type DeclVarPatternReducer interface {
 	// 286:2: decl_var_pattern -> inferred: ...
-	InferredToDeclVarPattern(VarType_ *TokenValue, VarPattern_ Expression) (Expression, error)
+	InferredToDeclVarPattern(VarType_ *TokenValue, VarPattern_ ast.Expression) (ast.Expression, error)
 
 	// 287:2: decl_var_pattern -> typed: ...
-	TypedToDeclVarPattern(VarType_ *TokenValue, VarPattern_ Expression, TypeExpr_ TypeExpression) (Expression, error)
+	TypedToDeclVarPattern(VarType_ *TokenValue, VarPattern_ ast.Expression, TypeExpr_ ast.TypeExpression) (ast.Expression, error)
 }
 
 type AssignVarPatternReducer interface {
 	// 292:34: assign_var_pattern -> ...
-	ToAssignVarPattern(Greater_ *TokenValue, VarPattern_ Expression) (Expression, error)
+	ToAssignVarPattern(Greater_ *TokenValue, VarPattern_ ast.Expression) (ast.Expression, error)
 }
 
 type TuplePatternReducer interface {
 	// 302:29: tuple_pattern -> ...
-	ToTuplePattern(Lparen_ *TokenValue, FieldVarPatterns_ *ArgumentList, Rparen_ *TokenValue) (Expression, error)
+	ToTuplePattern(Lparen_ *TokenValue, FieldVarPatterns_ *ArgumentList, Rparen_ *TokenValue) (ast.Expression, error)
 }
 
 type ProperFieldVarPatternsReducer interface {
@@ -337,10 +338,10 @@ type FieldVarPatternsReducer interface {
 
 type FieldVarPatternReducer interface {
 	// 313:2: field_var_pattern -> positional: ...
-	PositionalToFieldVarPattern(VarPattern_ Expression) (*Argument, error)
+	PositionalToFieldVarPattern(VarPattern_ ast.Expression) (*Argument, error)
 
 	// 314:2: field_var_pattern -> named_assignment: ...
-	NamedAssignmentToFieldVarPattern(Identifier_ *TokenValue, Assign_ *TokenValue, VarPattern_ Expression) (*Argument, error)
+	NamedAssignmentToFieldVarPattern(Identifier_ *TokenValue, Assign_ *TokenValue, VarPattern_ ast.Expression) (*Argument, error)
 
 	// 315:2: field_var_pattern -> skip_pattern: ...
 	SkipPatternToFieldVarPattern(Ellipsis_ *TokenValue) (*Argument, error)
@@ -349,128 +350,128 @@ type FieldVarPatternReducer interface {
 type CasePatternsReducer interface {
 
 	// 333:2: case_patterns -> ...
-	ToCasePatterns(CaseAssignPattern_ *CaseAssignPattern) (*ExpressionList, error)
+	ToCasePatterns(CaseAssignPattern_ *CaseAssignPattern) (*ast.ExpressionList, error)
 }
 
 type CaseAssignPatternReducer interface {
 	// 344:2: case_assign_pattern -> ...
-	ToCaseAssignPattern(SwitchableCasePatterns_ *ExpressionList, Assign_ *TokenValue, SequenceExpr_ Expression) (*CaseAssignPattern, error)
+	ToCaseAssignPattern(SwitchableCasePatterns_ *ast.ExpressionList, Assign_ *TokenValue, SequenceExpr_ ast.Expression) (*CaseAssignPattern, error)
 }
 
 type SwitchableCasePatternsReducer interface {
 	// 347:2: switchable_case_patterns -> switchable_case_pattern: ...
-	SwitchableCasePatternToSwitchableCasePatterns(SwitchableCasePattern_ Expression) (*ExpressionList, error)
+	SwitchableCasePatternToSwitchableCasePatterns(SwitchableCasePattern_ ast.Expression) (*ast.ExpressionList, error)
 
 	// 348:2: switchable_case_patterns -> add: ...
-	AddToSwitchableCasePatterns(SwitchableCasePatterns_ *ExpressionList, Comma_ *TokenValue, SwitchableCasePattern_ Expression) (*ExpressionList, error)
+	AddToSwitchableCasePatterns(SwitchableCasePatterns_ *ast.ExpressionList, Comma_ *TokenValue, SwitchableCasePattern_ ast.Expression) (*ast.ExpressionList, error)
 }
 
 type CaseEnumPatternReducer interface {
 	// 380:2: case_enum_pattern -> enum_match_pattern: ...
-	EnumMatchPatternToCaseEnumPattern(Dot_ *TokenValue, Identifier_ *TokenValue, ImplicitStructExpr_ Expression) (Expression, error)
+	EnumMatchPatternToCaseEnumPattern(Dot_ *TokenValue, Identifier_ *TokenValue, ImplicitStructExpr_ ast.Expression) (ast.Expression, error)
 
 	// 381:2: case_enum_pattern -> enum_nondata_match_patten: ...
-	EnumNondataMatchPattenToCaseEnumPattern(Dot_ *TokenValue, Identifier_ *TokenValue) (Expression, error)
+	EnumNondataMatchPattenToCaseEnumPattern(Dot_ *TokenValue, Identifier_ *TokenValue) (ast.Expression, error)
 
 	// 382:2: case_enum_pattern -> enum_decl_var_pattern: ...
-	EnumDeclVarPatternToCaseEnumPattern(VarType_ *TokenValue, Dot_ *TokenValue, Identifier_ *TokenValue, TuplePattern_ Expression) (Expression, error)
+	EnumDeclVarPatternToCaseEnumPattern(VarType_ *TokenValue, Dot_ *TokenValue, Identifier_ *TokenValue, TuplePattern_ ast.Expression) (ast.Expression, error)
 }
 
 type IfExprReducer interface {
 	// 413:2: if_expr -> unlabelled: ...
-	UnlabelledToIfExpr(IfElseExpr_ *IfExpr) (Expression, error)
+	UnlabelledToIfExpr(IfElseExpr_ *IfExpr) (ast.Expression, error)
 
 	// 414:2: if_expr -> labelled: ...
-	LabelledToIfExpr(LabelDecl_ *TokenValue, IfElseExpr_ *IfExpr) (Expression, error)
+	LabelledToIfExpr(LabelDecl_ *TokenValue, IfElseExpr_ *IfExpr) (ast.Expression, error)
 }
 
 type IfElseExprReducer interface {
 
 	// 418:2: if_else_expr -> else: ...
-	ElseToIfElseExpr(IfElifExpr_ *IfExpr, Else_ *TokenValue, Statements_ Expression) (*IfExpr, error)
+	ElseToIfElseExpr(IfElifExpr_ *IfExpr, Else_ *TokenValue, Statements_ ast.Expression) (*IfExpr, error)
 }
 
 type IfElifExprReducer interface {
 
 	// 422:2: if_elif_expr -> elif: ...
-	ElifToIfElifExpr(IfElifExpr_ *IfExpr, Else_ *TokenValue, If_ *TokenValue, Condition_ Expression, Statements_ Expression) (*IfExpr, error)
+	ElifToIfElifExpr(IfElifExpr_ *IfExpr, Else_ *TokenValue, If_ *TokenValue, Condition_ ast.Expression, Statements_ ast.Expression) (*IfExpr, error)
 }
 
 type IfOnlyExprReducer interface {
 	// 425:2: if_only_expr -> ...
-	ToIfOnlyExpr(If_ *TokenValue, Condition_ Expression, Statements_ Expression) (*IfExpr, error)
+	ToIfOnlyExpr(If_ *TokenValue, Condition_ ast.Expression, Statements_ ast.Expression) (*IfExpr, error)
 }
 
 type CaseAssignExprReducer interface {
 	// 431:32: case_assign_expr -> ...
-	ToCaseAssignExpr(Case_ *TokenValue, CaseAssignPattern_ *CaseAssignPattern) (Expression, error)
+	ToCaseAssignExpr(Case_ *TokenValue, CaseAssignPattern_ *CaseAssignPattern) (ast.Expression, error)
 }
 
 type SwitchExprReducer interface {
 
 	// 456:2: switch_expr -> labelled: ...
-	LabelledToSwitchExpr(LabelDecl_ *TokenValue, SwitchExprBody_ Expression) (Expression, error)
+	LabelledToSwitchExpr(LabelDecl_ *TokenValue, SwitchExprBody_ ast.Expression) (ast.Expression, error)
 }
 
 type SwitchExprBodyReducer interface {
 	// 458:32: switch_expr_body -> ...
-	ToSwitchExprBody(Switch_ *TokenValue, SequenceExpr_ Expression, Statements_ Expression) (Expression, error)
+	ToSwitchExprBody(Switch_ *TokenValue, SequenceExpr_ ast.Expression, Statements_ ast.Expression) (ast.Expression, error)
 }
 
 type SelectExprReducer interface {
 
 	// 466:2: select_expr -> labelled: ...
-	LabelledToSelectExpr(LabelDecl_ *TokenValue, SelectExprBody_ Expression) (Expression, error)
+	LabelledToSelectExpr(LabelDecl_ *TokenValue, SelectExprBody_ ast.Expression) (ast.Expression, error)
 }
 
 type SelectExprBodyReducer interface {
 	// 468:32: select_expr_body -> ...
-	ToSelectExprBody(Select_ *TokenValue, Statements_ Expression) (Expression, error)
+	ToSelectExprBody(Select_ *TokenValue, Statements_ ast.Expression) (ast.Expression, error)
 }
 
 type LoopExprReducer interface {
 
 	// 483:2: loop_expr -> labelled: ...
-	LabelledToLoopExpr(LabelDecl_ *TokenValue, LoopExprBody_ Expression) (Expression, error)
+	LabelledToLoopExpr(LabelDecl_ *TokenValue, LoopExprBody_ ast.Expression) (ast.Expression, error)
 }
 
 type LoopExprBodyReducer interface {
 	// 486:2: loop_expr_body -> infinite: ...
-	InfiniteToLoopExprBody(LoopBody_ Expression) (Expression, error)
+	InfiniteToLoopExprBody(LoopBody_ ast.Expression) (ast.Expression, error)
 
 	// 487:2: loop_expr_body -> do_while: ...
-	DoWhileToLoopExprBody(LoopBody_ Expression, For_ *TokenValue, SequenceExpr_ Expression) (Expression, error)
+	DoWhileToLoopExprBody(LoopBody_ ast.Expression, For_ *TokenValue, SequenceExpr_ ast.Expression) (ast.Expression, error)
 
 	// 488:2: loop_expr_body -> while: ...
-	WhileToLoopExprBody(For_ *TokenValue, SequenceExpr_ Expression, LoopBody_ Expression) (Expression, error)
+	WhileToLoopExprBody(For_ *TokenValue, SequenceExpr_ ast.Expression, LoopBody_ ast.Expression) (ast.Expression, error)
 
 	// 489:2: loop_expr_body -> iterator: ...
-	IteratorToLoopExprBody(For_ *TokenValue, SequenceExprAssignPattern_ Expression, In_ *TokenValue, SequenceExpr_ Expression, LoopBody_ Expression) (Expression, error)
+	IteratorToLoopExprBody(For_ *TokenValue, SequenceExprAssignPattern_ ast.Expression, In_ *TokenValue, SequenceExpr_ ast.Expression, LoopBody_ ast.Expression) (ast.Expression, error)
 
 	// 490:2: loop_expr_body -> for: ...
-	ForToLoopExprBody(For_ *TokenValue, OptionalSequenceStatement_ Statement, Semicolon_ *TokenValue, OptionalSequenceExpr_ Expression, Semicolon_2 *TokenValue, OptionalSequenceStatement_2 Statement, LoopBody_ Expression) (Expression, error)
+	ForToLoopExprBody(For_ *TokenValue, OptionalSequenceStatement_ ast.Statement, Semicolon_ *TokenValue, OptionalSequenceExpr_ ast.Expression, Semicolon_2 *TokenValue, OptionalSequenceStatement_2 ast.Statement, LoopBody_ ast.Expression) (ast.Expression, error)
 }
 
 type OptionalSequenceStatementReducer interface {
 
 	// 494:2: optional_sequence_statement -> nil: ...
-	NilToOptionalSequenceStatement() (Statement, error)
+	NilToOptionalSequenceStatement() (ast.Statement, error)
 }
 
 type OptionalSequenceExprReducer interface {
 
 	// 498:2: optional_sequence_expr -> nil: ...
-	NilToOptionalSequenceExpr() (Expression, error)
+	NilToOptionalSequenceExpr() (ast.Expression, error)
 }
 
 type LoopBodyReducer interface {
 	// 500:25: loop_body -> ...
-	ToLoopBody(Do_ *TokenValue, Statements_ Expression) (Expression, error)
+	ToLoopBody(Do_ *TokenValue, Statements_ ast.Expression) (ast.Expression, error)
 }
 
 type CallExprReducer interface {
 	// 507:2: call_expr -> ...
-	ToCallExpr(AccessibleExpr_ Expression, GenericArguments_ *GenericArgumentList, Lparen_ *TokenValue, Arguments_ *ArgumentList, Rparen_ *TokenValue) (Expression, error)
+	ToCallExpr(AccessibleExpr_ ast.Expression, GenericArguments_ *ast.GenericArgumentList, Lparen_ *TokenValue, Arguments_ *ArgumentList, Rparen_ *TokenValue) (ast.Expression, error)
 }
 
 type ProperArgumentsReducer interface {
@@ -492,16 +493,16 @@ type ArgumentsReducer interface {
 
 type ArgumentReducer interface {
 	// 519:2: argument -> positional: ...
-	PositionalToArgument(Expr_ Expression) (*Argument, error)
+	PositionalToArgument(Expr_ ast.Expression) (*Argument, error)
 
 	// 520:2: argument -> colon_expr: ...
 	ColonExprToArgument(ColonExpr_ *ColonExpr) (*Argument, error)
 
 	// 521:2: argument -> named_assignment: ...
-	NamedAssignmentToArgument(Identifier_ *TokenValue, Assign_ *TokenValue, Expr_ Expression) (*Argument, error)
+	NamedAssignmentToArgument(Identifier_ *TokenValue, Assign_ *TokenValue, Expr_ ast.Expression) (*Argument, error)
 
 	// 525:2: argument -> vararg_assignment: ...
-	VarargAssignmentToArgument(Expr_ Expression, Ellipsis_ *TokenValue) (*Argument, error)
+	VarargAssignmentToArgument(Expr_ ast.Expression, Ellipsis_ *TokenValue) (*Argument, error)
 
 	// 528:2: argument -> skip_pattern: ...
 	SkipPatternToArgument(Ellipsis_ *TokenValue) (*Argument, error)
@@ -512,185 +513,185 @@ type ColonExprReducer interface {
 	UnitUnitPairToColonExpr(Colon_ *TokenValue) (*ColonExpr, error)
 
 	// 533:2: colon_expr -> expr_unit_pair: ...
-	ExprUnitPairToColonExpr(Expr_ Expression, Colon_ *TokenValue) (*ColonExpr, error)
+	ExprUnitPairToColonExpr(Expr_ ast.Expression, Colon_ *TokenValue) (*ColonExpr, error)
 
 	// 534:2: colon_expr -> unit_expr_pair: ...
-	UnitExprPairToColonExpr(Colon_ *TokenValue, Expr_ Expression) (*ColonExpr, error)
+	UnitExprPairToColonExpr(Colon_ *TokenValue, Expr_ ast.Expression) (*ColonExpr, error)
 
 	// 535:2: colon_expr -> expr_expr_pair: ...
-	ExprExprPairToColonExpr(Expr_ Expression, Colon_ *TokenValue, Expr_2 Expression) (*ColonExpr, error)
+	ExprExprPairToColonExpr(Expr_ ast.Expression, Colon_ *TokenValue, Expr_2 ast.Expression) (*ColonExpr, error)
 
 	// 536:2: colon_expr -> colon_expr_unit_tuple: ...
 	ColonExprUnitTupleToColonExpr(ColonExpr_ *ColonExpr, Colon_ *TokenValue) (*ColonExpr, error)
 
 	// 537:2: colon_expr -> colon_expr_expr_tuple: ...
-	ColonExprExprTupleToColonExpr(ColonExpr_ *ColonExpr, Colon_ *TokenValue, Expr_ Expression) (*ColonExpr, error)
+	ColonExprExprTupleToColonExpr(ColonExpr_ *ColonExpr, Colon_ *TokenValue, Expr_ ast.Expression) (*ColonExpr, error)
 }
 
 type ParseErrorExprReducer interface {
 	// 552:32: parse_error_expr -> ...
-	ToParseErrorExpr(ParseError_ ParseErrorSymbol) (Expression, error)
+	ToParseErrorExpr(ParseError_ ParseErrorSymbol) (ast.Expression, error)
 }
 
 type LiteralExprReducer interface {
 	// 555:2: literal_expr -> TRUE: ...
-	TrueToLiteralExpr(True_ *TokenValue) (Expression, error)
+	TrueToLiteralExpr(True_ *TokenValue) (ast.Expression, error)
 
 	// 556:2: literal_expr -> FALSE: ...
-	FalseToLiteralExpr(False_ *TokenValue) (Expression, error)
+	FalseToLiteralExpr(False_ *TokenValue) (ast.Expression, error)
 
 	// 557:2: literal_expr -> INTEGER_LITERAL: ...
-	IntegerLiteralToLiteralExpr(IntegerLiteral_ *TokenValue) (Expression, error)
+	IntegerLiteralToLiteralExpr(IntegerLiteral_ *TokenValue) (ast.Expression, error)
 
 	// 558:2: literal_expr -> FLOAT_LITERAL: ...
-	FloatLiteralToLiteralExpr(FloatLiteral_ *TokenValue) (Expression, error)
+	FloatLiteralToLiteralExpr(FloatLiteral_ *TokenValue) (ast.Expression, error)
 
 	// 559:2: literal_expr -> RUNE_LITERAL: ...
-	RuneLiteralToLiteralExpr(RuneLiteral_ *TokenValue) (Expression, error)
+	RuneLiteralToLiteralExpr(RuneLiteral_ *TokenValue) (ast.Expression, error)
 
 	// 560:2: literal_expr -> STRING_LITERAL: ...
-	StringLiteralToLiteralExpr(StringLiteral_ *TokenValue) (Expression, error)
+	StringLiteralToLiteralExpr(StringLiteral_ *TokenValue) (ast.Expression, error)
 }
 
 type NamedExprReducer interface {
 	// 563:2: named_expr -> IDENTIFIER: ...
-	IdentifierToNamedExpr(Identifier_ *TokenValue) (Expression, error)
+	IdentifierToNamedExpr(Identifier_ *TokenValue) (ast.Expression, error)
 
 	// 564:2: named_expr -> UNDERSCORE: ...
-	UnderscoreToNamedExpr(Underscore_ *TokenValue) (Expression, error)
+	UnderscoreToNamedExpr(Underscore_ *TokenValue) (ast.Expression, error)
 }
 
 type StatementsExprReducer interface {
 
 	// 568:2: statements_expr -> labelled: ...
-	LabelledToStatementsExpr(LabelDecl_ *TokenValue, Statements_ Expression) (Expression, error)
+	LabelledToStatementsExpr(LabelDecl_ *TokenValue, Statements_ ast.Expression) (ast.Expression, error)
 }
 
 type InitializeExprReducer interface {
 	// 570:31: initialize_expr -> ...
-	ToInitializeExpr(InitializableTypeExpr_ TypeExpression, Lparen_ *TokenValue, Arguments_ *ArgumentList, Rparen_ *TokenValue) (Expression, error)
+	ToInitializeExpr(InitializableTypeExpr_ ast.TypeExpression, Lparen_ *TokenValue, Arguments_ *ArgumentList, Rparen_ *TokenValue) (ast.Expression, error)
 }
 
 type ImplicitStructExprReducer interface {
 	// 572:36: implicit_struct_expr -> ...
-	ToImplicitStructExpr(Lparen_ *TokenValue, Arguments_ *ArgumentList, Rparen_ *TokenValue) (Expression, error)
+	ToImplicitStructExpr(Lparen_ *TokenValue, Arguments_ *ArgumentList, Rparen_ *TokenValue) (ast.Expression, error)
 }
 
 type AccessExprReducer interface {
 	// 581:27: access_expr -> ...
-	ToAccessExpr(AccessibleExpr_ Expression, Dot_ *TokenValue, Identifier_ *TokenValue) (Expression, error)
+	ToAccessExpr(AccessibleExpr_ ast.Expression, Dot_ *TokenValue, Identifier_ *TokenValue) (ast.Expression, error)
 }
 
 type IndexExprReducer interface {
 	// 585:26: index_expr -> ...
-	ToIndexExpr(AccessibleExpr_ Expression, Lbracket_ *TokenValue, Argument_ *Argument, Rbracket_ *TokenValue) (Expression, error)
+	ToIndexExpr(AccessibleExpr_ ast.Expression, Lbracket_ *TokenValue, Argument_ *Argument, Rbracket_ *TokenValue) (ast.Expression, error)
 }
 
 type AsExprReducer interface {
 	// 588:23: as_expr -> ...
-	ToAsExpr(AccessibleExpr_ Expression, Dot_ *TokenValue, As_ *TokenValue, Lparen_ *TokenValue, TypeExpr_ TypeExpression, Rparen_ *TokenValue) (Expression, error)
+	ToAsExpr(AccessibleExpr_ ast.Expression, Dot_ *TokenValue, As_ *TokenValue, Lparen_ *TokenValue, TypeExpr_ ast.TypeExpression, Rparen_ *TokenValue) (ast.Expression, error)
 }
 
 type PostfixUnaryExprReducer interface {
 	// 598:34: postfix_unary_expr -> ...
-	ToPostfixUnaryExpr(AccessibleExpr_ Expression, PostfixUnaryOp_ *TokenValue) (Expression, error)
+	ToPostfixUnaryExpr(AccessibleExpr_ ast.Expression, PostfixUnaryOp_ *TokenValue) (ast.Expression, error)
 }
 
 type PrefixUnaryExprReducer interface {
 	// 604:33: prefix_unary_expr -> ...
-	ToPrefixUnaryExpr(PrefixUnaryOp_ *TokenValue, PrefixableExpr_ Expression) (Expression, error)
+	ToPrefixUnaryExpr(PrefixUnaryOp_ *TokenValue, PrefixableExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryMulExprReducer interface {
 	// 640:31: binary_mul_expr -> ...
-	ToBinaryMulExpr(MulExpr_ Expression, MulOp_ *TokenValue, PrefixableExpr_ Expression) (Expression, error)
+	ToBinaryMulExpr(MulExpr_ ast.Expression, MulOp_ *TokenValue, PrefixableExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryAddExprReducer interface {
 	// 654:31: binary_add_expr -> ...
-	ToBinaryAddExpr(AddExpr_ Expression, AddOp_ *TokenValue, MulExpr_ Expression) (Expression, error)
+	ToBinaryAddExpr(AddExpr_ ast.Expression, AddOp_ *TokenValue, MulExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryCmpExprReducer interface {
 	// 666:31: binary_cmp_expr -> ...
-	ToBinaryCmpExpr(CmpExpr_ Expression, CmpOp_ *TokenValue, AddExpr_ Expression) (Expression, error)
+	ToBinaryCmpExpr(CmpExpr_ ast.Expression, CmpOp_ *TokenValue, AddExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryAndExprReducer interface {
 	// 680:31: binary_and_expr -> ...
-	ToBinaryAndExpr(AndExpr_ Expression, And_ *TokenValue, CmpExpr_ Expression) (Expression, error)
+	ToBinaryAndExpr(AndExpr_ ast.Expression, And_ *TokenValue, CmpExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryOrExprReducer interface {
 	// 686:30: binary_or_expr -> ...
-	ToBinaryOrExpr(OrExpr_ Expression, Or_ *TokenValue, AndExpr_ Expression) (Expression, error)
+	ToBinaryOrExpr(OrExpr_ ast.Expression, Or_ *TokenValue, AndExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type SendExprReducer interface {
 	// 693:25: send_expr -> ...
-	ToSendExpr(SendRecvExpr_ Expression, Arrow_ *TokenValue, OrExpr_ Expression) (Expression, error)
+	ToSendExpr(SendRecvExpr_ ast.Expression, Arrow_ *TokenValue, OrExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type RecvExprReducer interface {
 	// 695:25: recv_expr -> ...
-	ToRecvExpr(Arrow_ *TokenValue, OrExpr_ Expression) (Expression, error)
+	ToRecvExpr(Arrow_ *TokenValue, OrExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type SliceTypeExprReducer interface {
 	// 710:35: slice_type_expr -> ...
-	ToSliceTypeExpr(Lbracket_ *TokenValue, TypeExpr_ TypeExpression, Rbracket_ *TokenValue) (TypeExpression, error)
+	ToSliceTypeExpr(Lbracket_ *TokenValue, TypeExpr_ ast.TypeExpression, Rbracket_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ArrayTypeExprReducer interface {
 	// 713:2: array_type_expr -> ...
-	ToArrayTypeExpr(Lbracket_ *TokenValue, TypeExpr_ TypeExpression, Comma_ *TokenValue, IntegerLiteral_ *TokenValue, Rbracket_ *TokenValue) (TypeExpression, error)
+	ToArrayTypeExpr(Lbracket_ *TokenValue, TypeExpr_ ast.TypeExpression, Comma_ *TokenValue, IntegerLiteral_ *TokenValue, Rbracket_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type MapTypeExprReducer interface {
 	// 716:33: map_type_expr -> ...
-	ToMapTypeExpr(Lbracket_ *TokenValue, TypeExpr_ TypeExpression, Colon_ *TokenValue, TypeExpr_2 TypeExpression, Rbracket_ *TokenValue) (TypeExpression, error)
+	ToMapTypeExpr(Lbracket_ *TokenValue, TypeExpr_ ast.TypeExpression, Colon_ *TokenValue, TypeExpr_2 ast.TypeExpression, Rbracket_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type NamedTypeExprReducer interface {
 	// 730:2: named_type_expr -> local: ...
-	LocalToNamedTypeExpr(Identifier_ *TokenValue, GenericArguments_ *GenericArgumentList) (TypeExpression, error)
+	LocalToNamedTypeExpr(Identifier_ *TokenValue, GenericArguments_ *ast.GenericArgumentList) (ast.TypeExpression, error)
 
 	// 731:2: named_type_expr -> external: ...
-	ExternalToNamedTypeExpr(Identifier_ *TokenValue, Dot_ *TokenValue, Identifier_2 *TokenValue, GenericArguments_ *GenericArgumentList) (TypeExpression, error)
+	ExternalToNamedTypeExpr(Identifier_ *TokenValue, Dot_ *TokenValue, Identifier_2 *TokenValue, GenericArguments_ *ast.GenericArgumentList) (ast.TypeExpression, error)
 }
 
 type InferredTypeExprReducer interface {
 	// 739:2: inferred_type_expr -> DOT: ...
-	DotToInferredTypeExpr(Dot_ *TokenValue) (TypeExpression, error)
+	DotToInferredTypeExpr(Dot_ *TokenValue) (ast.TypeExpression, error)
 
 	// 740:2: inferred_type_expr -> UNDERSCORE: ...
-	UnderscoreToInferredTypeExpr(Underscore_ *TokenValue) (TypeExpression, error)
+	UnderscoreToInferredTypeExpr(Underscore_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ParseErrorTypeExprReducer interface {
 	// 742:41: parse_error_type_expr -> ...
-	ToParseErrorTypeExpr(ParseError_ ParseErrorSymbol) (TypeExpression, error)
+	ToParseErrorTypeExpr(ParseError_ ParseErrorSymbol) (ast.TypeExpression, error)
 }
 
 type PrefixUnaryTypeExprReducer interface {
 	// 752:2: prefix_unary_type_expr -> ...
-	ToPrefixUnaryTypeExpr(PrefixUnaryTypeOp_ *TokenValue, ReturnableTypeExpr_ TypeExpression) (TypeExpression, error)
+	ToPrefixUnaryTypeExpr(PrefixUnaryTypeOp_ *TokenValue, ReturnableTypeExpr_ ast.TypeExpression) (ast.TypeExpression, error)
 }
 
 type BinaryTypeExprReducer interface {
 	// 768:2: binary_type_expr -> ...
-	ToBinaryTypeExpr(TypeExpr_ TypeExpression, BinaryTypeOp_ *TokenValue, ReturnableTypeExpr_ TypeExpression) (TypeExpression, error)
+	ToBinaryTypeExpr(TypeExpr_ ast.TypeExpression, BinaryTypeOp_ *TokenValue, ReturnableTypeExpr_ ast.TypeExpression) (ast.TypeExpression, error)
 }
 
 type TypeDefReducer interface {
 	// 776:2: type_def -> definition: ...
-	DefinitionToTypeDef(Type_ *TokenValue, Identifier_ *TokenValue, GenericParameters_ *GenericParameterList, TypeExpr_ TypeExpression) (Definition, error)
+	DefinitionToTypeDef(Type_ *TokenValue, Identifier_ *TokenValue, GenericParameters_ *GenericParameterList, TypeExpr_ ast.TypeExpression) (ast.Definition, error)
 
 	// 777:2: type_def -> constrained_def: ...
-	ConstrainedDefToTypeDef(Type_ *TokenValue, Identifier_ *TokenValue, GenericParameters_ *GenericParameterList, TypeExpr_ TypeExpression, Implements_ *TokenValue, TypeExpr_2 TypeExpression) (Definition, error)
+	ConstrainedDefToTypeDef(Type_ *TokenValue, Identifier_ *TokenValue, GenericParameters_ *GenericParameterList, TypeExpr_ ast.TypeExpression, Implements_ *TokenValue, TypeExpr_2 ast.TypeExpression) (ast.Definition, error)
 
 	// 778:2: type_def -> alias: ...
-	AliasToTypeDef(Type_ *TokenValue, Identifier_ *TokenValue, Assign_ *TokenValue, TypeExpr_ TypeExpression) (Definition, error)
+	AliasToTypeDef(Type_ *TokenValue, Identifier_ *TokenValue, Assign_ *TokenValue, TypeExpr_ ast.TypeExpression) (ast.Definition, error)
 }
 
 type GenericParameterReducer interface {
@@ -698,7 +699,7 @@ type GenericParameterReducer interface {
 	UnconstrainedToGenericParameter(Identifier_ *TokenValue) (*GenericParameter, error)
 
 	// 787:2: generic_parameter -> constrained: ...
-	ConstrainedToGenericParameter(Identifier_ *TokenValue, TypeExpr_ TypeExpression) (*GenericParameter, error)
+	ConstrainedToGenericParameter(Identifier_ *TokenValue, TypeExpr_ ast.TypeExpression) (*GenericParameter, error)
 }
 
 type GenericParametersReducer interface {
@@ -728,181 +729,181 @@ type GenericParameterListReducer interface {
 
 type GenericArgumentsReducer interface {
 	// 803:2: generic_arguments -> binding: ...
-	BindingToGenericArguments(DollarLbracket_ *TokenValue, GenericArgumentList_ *GenericArgumentList, Rbracket_ *TokenValue) (*GenericArgumentList, error)
+	BindingToGenericArguments(DollarLbracket_ *TokenValue, GenericArgumentList_ *ast.GenericArgumentList, Rbracket_ *TokenValue) (*ast.GenericArgumentList, error)
 
 	// 804:2: generic_arguments -> nil: ...
-	NilToGenericArguments() (*GenericArgumentList, error)
+	NilToGenericArguments() (*ast.GenericArgumentList, error)
 }
 
 type ProperGenericArgumentListReducer interface {
 	// 807:2: proper_generic_argument_list -> add: ...
-	AddToProperGenericArgumentList(ProperGenericArgumentList_ *GenericArgumentList, Comma_ *TokenValue, TypeExpr_ TypeExpression) (*GenericArgumentList, error)
+	AddToProperGenericArgumentList(ProperGenericArgumentList_ *ast.GenericArgumentList, Comma_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.GenericArgumentList, error)
 
 	// 808:2: proper_generic_argument_list -> type_expr: ...
-	TypeExprToProperGenericArgumentList(TypeExpr_ TypeExpression) (*GenericArgumentList, error)
+	TypeExprToProperGenericArgumentList(TypeExpr_ ast.TypeExpression) (*ast.GenericArgumentList, error)
 }
 
 type GenericArgumentListReducer interface {
 
 	// 812:2: generic_argument_list -> improper: ...
-	ImproperToGenericArgumentList(ProperGenericArgumentList_ *GenericArgumentList, Comma_ *TokenValue) (*GenericArgumentList, error)
+	ImproperToGenericArgumentList(ProperGenericArgumentList_ *ast.GenericArgumentList, Comma_ *TokenValue) (*ast.GenericArgumentList, error)
 
 	// 813:2: generic_argument_list -> nil: ...
-	NilToGenericArgumentList() (*GenericArgumentList, error)
+	NilToGenericArgumentList() (*ast.GenericArgumentList, error)
 }
 
 type FieldDefReducer interface {
 	// 820:2: field_def -> named: ...
-	NamedToFieldDef(Identifier_ *TokenValue, TypeExpr_ TypeExpression) (*FieldDef, error)
+	NamedToFieldDef(Identifier_ *TokenValue, TypeExpr_ ast.TypeExpression) (*FieldDef, error)
 
 	// 821:2: field_def -> unnamed: ...
-	UnnamedToFieldDef(TypeExpr_ TypeExpression) (*FieldDef, error)
+	UnnamedToFieldDef(TypeExpr_ ast.TypeExpression) (*FieldDef, error)
 }
 
 type TypePropertyReducer interface {
 
 	// 832:2: type_property -> default_enum_field_def: ...
-	DefaultEnumFieldDefToTypeProperty(Default_ *TokenValue, FieldDef_ *FieldDef) (TypeProperty, error)
+	DefaultEnumFieldDefToTypeProperty(Default_ *TokenValue, FieldDef_ *FieldDef) (ast.TypeProperty, error)
 
 	// 833:2: type_property -> padding_field_def: ...
-	PaddingFieldDefToTypeProperty(Underscore_ *TokenValue, TypeExpr_ TypeExpression) (TypeProperty, error)
+	PaddingFieldDefToTypeProperty(Underscore_ *TokenValue, TypeExpr_ ast.TypeExpression) (ast.TypeProperty, error)
 }
 
 type ProperImplicitTypePropertiesReducer interface {
 	// 838:2: proper_implicit_type_properties -> add: ...
-	AddToProperImplicitTypeProperties(ProperImplicitTypeProperties_ *TypePropertyList, Comma_ *TokenValue, TypeProperty_ TypeProperty) (*TypePropertyList, error)
+	AddToProperImplicitTypeProperties(ProperImplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 
 	// 839:2: proper_implicit_type_properties -> type_property: ...
-	TypePropertyToProperImplicitTypeProperties(TypeProperty_ TypeProperty) (*TypePropertyList, error)
+	TypePropertyToProperImplicitTypeProperties(TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 }
 
 type ImplicitTypePropertiesReducer interface {
 
 	// 843:2: implicit_type_properties -> improper: ...
-	ImproperToImplicitTypeProperties(ProperImplicitTypeProperties_ *TypePropertyList, Comma_ *TokenValue) (*TypePropertyList, error)
+	ImproperToImplicitTypeProperties(ProperImplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue) (*ast.TypePropertyList, error)
 
 	// 844:2: implicit_type_properties -> nil: ...
-	NilToImplicitTypeProperties() (*TypePropertyList, error)
+	NilToImplicitTypeProperties() (*ast.TypePropertyList, error)
 }
 
 type ImplicitStructTypeExprReducer interface {
 	// 847:2: implicit_struct_type_expr -> ...
-	ToImplicitStructTypeExpr(Lparen_ *TokenValue, ImplicitTypeProperties_ *TypePropertyList, Rparen_ *TokenValue) (TypeExpression, error)
+	ToImplicitStructTypeExpr(Lparen_ *TokenValue, ImplicitTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ProperExplicitTypePropertiesReducer interface {
 	// 850:2: proper_explicit_type_properties -> add_implicit: ...
-	AddImplicitToProperExplicitTypeProperties(ProperExplicitTypeProperties_ *TypePropertyList, Newlines_ TokenCount, TypeProperty_ TypeProperty) (*TypePropertyList, error)
+	AddImplicitToProperExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 
 	// 851:2: proper_explicit_type_properties -> add_explicit: ...
-	AddExplicitToProperExplicitTypeProperties(ProperExplicitTypeProperties_ *TypePropertyList, Comma_ *TokenValue, TypeProperty_ TypeProperty) (*TypePropertyList, error)
+	AddExplicitToProperExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 
 	// 852:2: proper_explicit_type_properties -> type_property: ...
-	TypePropertyToProperExplicitTypeProperties(TypeProperty_ TypeProperty) (*TypePropertyList, error)
+	TypePropertyToProperExplicitTypeProperties(TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 }
 
 type ExplicitTypePropertiesReducer interface {
 
 	// 856:2: explicit_type_properties -> improper_implicit: ...
-	ImproperImplicitToExplicitTypeProperties(ProperExplicitTypeProperties_ *TypePropertyList, Newlines_ TokenCount) (*TypePropertyList, error)
+	ImproperImplicitToExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount) (*ast.TypePropertyList, error)
 
 	// 857:2: explicit_type_properties -> improper_explicit: ...
-	ImproperExplicitToExplicitTypeProperties(ProperExplicitTypeProperties_ *TypePropertyList, Comma_ *TokenValue) (*TypePropertyList, error)
+	ImproperExplicitToExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue) (*ast.TypePropertyList, error)
 
 	// 858:2: explicit_type_properties -> nil: ...
-	NilToExplicitTypeProperties() (*TypePropertyList, error)
+	NilToExplicitTypeProperties() (*ast.TypePropertyList, error)
 }
 
 type ExplicitStructTypeExprReducer interface {
 	// 861:2: explicit_struct_type_expr -> ...
-	ToExplicitStructTypeExpr(Struct_ *TokenValue, Lparen_ *TokenValue, ExplicitTypeProperties_ *TypePropertyList, Rparen_ *TokenValue) (TypeExpression, error)
+	ToExplicitStructTypeExpr(Struct_ *TokenValue, Lparen_ *TokenValue, ExplicitTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type TraitTypeExprReducer interface {
 	// 864:2: trait_type_expr -> ...
-	ToTraitTypeExpr(Trait_ *TokenValue, Lparen_ *TokenValue, ExplicitTypeProperties_ *TypePropertyList, Rparen_ *TokenValue) (TypeExpression, error)
+	ToTraitTypeExpr(Trait_ *TokenValue, Lparen_ *TokenValue, ExplicitTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ProperImplicitEnumTypePropertiesReducer interface {
 	// 875:2: proper_implicit_enum_type_properties -> pair: ...
-	PairToProperImplicitEnumTypeProperties(TypeProperty_ TypeProperty, Or_ *TokenValue, TypeProperty_2 TypeProperty) (*TypePropertyList, error)
+	PairToProperImplicitEnumTypeProperties(TypeProperty_ ast.TypeProperty, Or_ *TokenValue, TypeProperty_2 ast.TypeProperty) (*ast.TypePropertyList, error)
 
 	// 876:2: proper_implicit_enum_type_properties -> add: ...
-	AddToProperImplicitEnumTypeProperties(ProperImplicitEnumTypeProperties_ *TypePropertyList, Or_ *TokenValue, TypeProperty_ TypeProperty) (*TypePropertyList, error)
+	AddToProperImplicitEnumTypeProperties(ProperImplicitEnumTypeProperties_ *ast.TypePropertyList, Or_ *TokenValue, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 }
 
 type ImplicitEnumTypePropertiesReducer interface {
 
 	// 881:2: implicit_enum_type_properties -> improper: ...
-	ImproperToImplicitEnumTypeProperties(ProperImplicitEnumTypeProperties_ *TypePropertyList, Newlines_ TokenCount) (*TypePropertyList, error)
+	ImproperToImplicitEnumTypeProperties(ProperImplicitEnumTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount) (*ast.TypePropertyList, error)
 }
 
 type ImplicitEnumTypeExprReducer interface {
 	// 884:2: implicit_enum_type_expr -> ...
-	ToImplicitEnumTypeExpr(Lparen_ *TokenValue, ImplicitEnumTypeProperties_ *TypePropertyList, Rparen_ *TokenValue) (TypeExpression, error)
+	ToImplicitEnumTypeExpr(Lparen_ *TokenValue, ImplicitEnumTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ProperExplicitEnumTypePropertiesReducer interface {
 	// 887:2: proper_explicit_enum_type_properties -> explicit_pair: ...
-	ExplicitPairToProperExplicitEnumTypeProperties(TypeProperty_ TypeProperty, Or_ *TokenValue, TypeProperty_2 TypeProperty) (*TypePropertyList, error)
+	ExplicitPairToProperExplicitEnumTypeProperties(TypeProperty_ ast.TypeProperty, Or_ *TokenValue, TypeProperty_2 ast.TypeProperty) (*ast.TypePropertyList, error)
 
 	// 888:2: proper_explicit_enum_type_properties -> implicit_pair: ...
-	ImplicitPairToProperExplicitEnumTypeProperties(TypeProperty_ TypeProperty, Newlines_ TokenCount, TypeProperty_2 TypeProperty) (*TypePropertyList, error)
+	ImplicitPairToProperExplicitEnumTypeProperties(TypeProperty_ ast.TypeProperty, Newlines_ TokenCount, TypeProperty_2 ast.TypeProperty) (*ast.TypePropertyList, error)
 
 	// 889:2: proper_explicit_enum_type_properties -> explicit_add: ...
-	ExplicitAddToProperExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *TypePropertyList, Or_ *TokenValue, TypeProperty_ TypeProperty) (*TypePropertyList, error)
+	ExplicitAddToProperExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *ast.TypePropertyList, Or_ *TokenValue, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 
 	// 890:2: proper_explicit_enum_type_properties -> implicit_add: ...
-	ImplicitAddToProperExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *TypePropertyList, Newlines_ TokenCount, TypeProperty_ TypeProperty) (*TypePropertyList, error)
+	ImplicitAddToProperExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 }
 
 type ExplicitEnumTypePropertiesReducer interface {
 
 	// 895:2: explicit_enum_type_properties -> improper: ...
-	ImproperToExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *TypePropertyList, Newlines_ TokenCount) (*TypePropertyList, error)
+	ImproperToExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount) (*ast.TypePropertyList, error)
 }
 
 type ExplicitEnumTypeExprReducer interface {
 	// 898:2: explicit_enum_type_expr -> ...
-	ToExplicitEnumTypeExpr(Enum_ *TokenValue, Lparen_ *TokenValue, ExplicitEnumTypeProperties_ *TypePropertyList, Rparen_ *TokenValue) (TypeExpression, error)
+	ToExplicitEnumTypeExpr(Enum_ *TokenValue, Lparen_ *TokenValue, ExplicitEnumTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ReturnTypeReducer interface {
 
 	// 907:2: return_type -> nil: ...
-	NilToReturnType() (TypeExpression, error)
+	NilToReturnType() (ast.TypeExpression, error)
 }
 
 type ProperParameterDefReducer interface {
 	// 910:2: proper_parameter_def -> named_typed_arg: ...
-	NamedTypedArgToProperParameterDef(Identifier_ *TokenValue, TypeExpr_ TypeExpression) (*Parameter, error)
+	NamedTypedArgToProperParameterDef(Identifier_ *TokenValue, TypeExpr_ ast.TypeExpression) (*Parameter, error)
 
 	// 911:2: proper_parameter_def -> named_typed_vararg: ...
-	NamedTypedVarargToProperParameterDef(Identifier_ *TokenValue, Ellipsis_ *TokenValue, TypeExpr_ TypeExpression) (*Parameter, error)
+	NamedTypedVarargToProperParameterDef(Identifier_ *TokenValue, Ellipsis_ *TokenValue, TypeExpr_ ast.TypeExpression) (*Parameter, error)
 
 	// 912:2: proper_parameter_def -> named_inferred_vararg: ...
 	NamedInferredVarargToProperParameterDef(Identifier_ *TokenValue, Ellipsis_ *TokenValue) (*Parameter, error)
 
 	// 913:2: proper_parameter_def -> ignore_typed_arg: ...
-	IgnoreTypedArgToProperParameterDef(Underscore_ *TokenValue, TypeExpr_ TypeExpression) (*Parameter, error)
+	IgnoreTypedArgToProperParameterDef(Underscore_ *TokenValue, TypeExpr_ ast.TypeExpression) (*Parameter, error)
 
 	// 914:2: proper_parameter_def -> ignore_inferred_vararg: ...
 	IgnoreInferredVarargToProperParameterDef(Underscore_ *TokenValue, Ellipsis_ *TokenValue) (*Parameter, error)
 
 	// 915:2: proper_parameter_def -> ignore_typed_vararg: ...
-	IgnoreTypedVarargToProperParameterDef(Underscore_ *TokenValue, Ellipsis_ *TokenValue, TypeExpr_ TypeExpression) (*Parameter, error)
+	IgnoreTypedVarargToProperParameterDef(Underscore_ *TokenValue, Ellipsis_ *TokenValue, TypeExpr_ ast.TypeExpression) (*Parameter, error)
 }
 
 type ParameterDeclReducer interface {
 
 	// 921:2: parameter_decl -> unnamed_typed_arg: ...
-	UnnamedTypedArgToParameterDecl(TypeExpr_ TypeExpression) (*Parameter, error)
+	UnnamedTypedArgToParameterDecl(TypeExpr_ ast.TypeExpression) (*Parameter, error)
 
 	// 922:2: parameter_decl -> unnamed_inferred_vararg: ...
 	UnnamedInferredVarargToParameterDecl(Ellipsis_ *TokenValue) (*Parameter, error)
 
 	// 923:2: parameter_decl -> unnamed_typed_vararg: ...
-	UnnamedTypedVarargToParameterDecl(Ellipsis_ *TokenValue, TypeExpr_ TypeExpression) (*Parameter, error)
+	UnnamedTypedVarargToParameterDecl(Ellipsis_ *TokenValue, TypeExpr_ ast.TypeExpression) (*Parameter, error)
 }
 
 type ParameterDefReducer interface {
@@ -960,30 +961,30 @@ type ParameterDefsReducer interface {
 
 type FuncTypeExprReducer interface {
 	// 956:34: func_type_expr -> ...
-	ToFuncTypeExpr(Func_ *TokenValue, ParameterDecls_ *ParameterList, ReturnType_ TypeExpression) (TypeExpression, error)
+	ToFuncTypeExpr(Func_ *TokenValue, ParameterDecls_ *ParameterList, ReturnType_ ast.TypeExpression) (ast.TypeExpression, error)
 }
 
 type MethodSignatureReducer interface {
 	// 967:34: method_signature -> ...
-	ToMethodSignature(Func_ *TokenValue, Identifier_ *TokenValue, ParameterDecls_ *ParameterList, ReturnType_ TypeExpression) (TypeProperty, error)
+	ToMethodSignature(Func_ *TokenValue, Identifier_ *TokenValue, ParameterDecls_ *ParameterList, ReturnType_ ast.TypeExpression) (ast.TypeProperty, error)
 }
 
 type NamedFuncDefReducer interface {
 	// 975:2: named_func_def -> func_def: ...
-	FuncDefToNamedFuncDef(Func_ *TokenValue, Identifier_ *TokenValue, GenericParameters_ *GenericParameterList, ParameterDefs_ *ParameterList, ReturnType_ TypeExpression, Statements_ Expression) (Definition, error)
+	FuncDefToNamedFuncDef(Func_ *TokenValue, Identifier_ *TokenValue, GenericParameters_ *GenericParameterList, ParameterDefs_ *ParameterList, ReturnType_ ast.TypeExpression, Statements_ ast.Expression) (ast.Definition, error)
 
 	// 976:2: named_func_def -> method_def: ...
-	MethodDefToNamedFuncDef(Func_ *TokenValue, Lparen_ *TokenValue, ParameterDef_ *Parameter, Rparen_ *TokenValue, Identifier_ *TokenValue, ParameterDefs_ *ParameterList, ReturnType_ TypeExpression, Statements_ Expression) (Definition, error)
+	MethodDefToNamedFuncDef(Func_ *TokenValue, Lparen_ *TokenValue, ParameterDef_ *Parameter, Rparen_ *TokenValue, Identifier_ *TokenValue, ParameterDefs_ *ParameterList, ReturnType_ ast.TypeExpression, Statements_ ast.Expression) (ast.Definition, error)
 }
 
 type AnonymousFuncExprReducer interface {
 	// 979:2: anonymous_func_expr -> ...
-	ToAnonymousFuncExpr(Func_ *TokenValue, ParameterDefs_ *ParameterList, ReturnType_ TypeExpression, Statements_ Expression) (Expression, error)
+	ToAnonymousFuncExpr(Func_ *TokenValue, ParameterDefs_ *ParameterList, ReturnType_ ast.TypeExpression, Statements_ ast.Expression) (ast.Expression, error)
 }
 
 type PackageDefReducer interface {
 	// 990:27: package_def -> ...
-	ToPackageDef(Package_ *TokenValue, Statements_ Expression) (Definition, error)
+	ToPackageDef(Package_ *TokenValue, Statements_ ast.Expression) (ast.Definition, error)
 }
 
 type Reducer interface {
@@ -1390,7 +1391,7 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	return nil
 }
 
-func ParseSource(lexer Lexer, reducer Reducer) (*DefinitionList, error) {
+func ParseSource(lexer Lexer, reducer Reducer) (*ast.DefinitionList, error) {
 
 	return ParseSourceWithCustomErrorHandler(
 		lexer,
@@ -1402,18 +1403,18 @@ func ParseSourceWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
 	errHandler ParseErrorHandler) (
-	*DefinitionList,
+	*ast.DefinitionList,
 	error) {
 
 	item, err := _Parse(lexer, reducer, errHandler, _State1)
 	if err != nil {
-		var errRetVal *DefinitionList
+		var errRetVal *ast.DefinitionList
 		return errRetVal, err
 	}
 	return item.Definitions, nil
 }
 
-func ParseDefinition(lexer Lexer, reducer Reducer) (Definition, error) {
+func ParseDefinition(lexer Lexer, reducer Reducer) (ast.Definition, error) {
 
 	return ParseDefinitionWithCustomErrorHandler(
 		lexer,
@@ -1425,18 +1426,18 @@ func ParseDefinitionWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
 	errHandler ParseErrorHandler) (
-	Definition,
+	ast.Definition,
 	error) {
 
 	item, err := _Parse(lexer, reducer, errHandler, _State2)
 	if err != nil {
-		var errRetVal Definition
+		var errRetVal ast.Definition
 		return errRetVal, err
 	}
 	return item.Definition, nil
 }
 
-func ParseStatement(lexer Lexer, reducer Reducer) (Statement, error) {
+func ParseStatement(lexer Lexer, reducer Reducer) (ast.Statement, error) {
 
 	return ParseStatementWithCustomErrorHandler(
 		lexer,
@@ -1448,18 +1449,18 @@ func ParseStatementWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
 	errHandler ParseErrorHandler) (
-	Statement,
+	ast.Statement,
 	error) {
 
 	item, err := _Parse(lexer, reducer, errHandler, _State3)
 	if err != nil {
-		var errRetVal Statement
+		var errRetVal ast.Statement
 		return errRetVal, err
 	}
 	return item.Statement, nil
 }
 
-func ParseExpr(lexer Lexer, reducer Reducer) (Expression, error) {
+func ParseExpr(lexer Lexer, reducer Reducer) (ast.Expression, error) {
 
 	return ParseExprWithCustomErrorHandler(
 		lexer,
@@ -1471,18 +1472,18 @@ func ParseExprWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
 	errHandler ParseErrorHandler) (
-	Expression,
+	ast.Expression,
 	error) {
 
 	item, err := _Parse(lexer, reducer, errHandler, _State4)
 	if err != nil {
-		var errRetVal Expression
+		var errRetVal ast.Expression
 		return errRetVal, err
 	}
 	return item.Expression, nil
 }
 
-func ParseTypeExpr(lexer Lexer, reducer Reducer) (TypeExpression, error) {
+func ParseTypeExpr(lexer Lexer, reducer Reducer) (ast.TypeExpression, error) {
 
 	return ParseTypeExprWithCustomErrorHandler(
 		lexer,
@@ -1494,18 +1495,18 @@ func ParseTypeExprWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
 	errHandler ParseErrorHandler) (
-	TypeExpression,
+	ast.TypeExpression,
 	error) {
 
 	item, err := _Parse(lexer, reducer, errHandler, _State5)
 	if err != nil {
-		var errRetVal TypeExpression
+		var errRetVal ast.TypeExpression
 		return errRetVal, err
 	}
 	return item.TypeExpression, nil
 }
 
-func ParseStatements(lexer Lexer, reducer Reducer) (Expression, error) {
+func ParseStatements(lexer Lexer, reducer Reducer) (ast.Expression, error) {
 
 	return ParseStatementsWithCustomErrorHandler(
 		lexer,
@@ -1517,12 +1518,12 @@ func ParseStatementsWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
 	errHandler ParseErrorHandler) (
-	Expression,
+	ast.Expression,
 	error) {
 
 	item, err := _Parse(lexer, reducer, errHandler, _State6)
 	if err != nil {
-		var errRetVal Expression
+		var errRetVal ast.Expression
 		return errRetVal, err
 	}
 	return item.Expression, nil
@@ -3663,14 +3664,14 @@ type Symbol struct {
 	ArgumentList         *ArgumentList
 	CaseAssignPattern    *CaseAssignPattern
 	ColonExpr            *ColonExpr
-	CommentGroups        CommentGroups
+	CommentGroups        CommentGroupsTok
 	Count                TokenCount
-	Definition           Definition
-	Definitions          *DefinitionList
-	Expression           Expression
-	ExpressionList       *ExpressionList
+	Definition           ast.Definition
+	Definitions          *ast.DefinitionList
+	Expression           ast.Expression
+	ExpressionList       *ast.ExpressionList
 	FieldDef             *FieldDef
-	GenericArgumentList  *GenericArgumentList
+	GenericArgumentList  *ast.GenericArgumentList
 	GenericParameter     *GenericParameter
 	GenericParameterList *GenericParameterList
 	IfExpr               *IfExpr
@@ -3680,11 +3681,11 @@ type Symbol struct {
 	Parameter            *Parameter
 	Parameters           *ParameterList
 	ParseError           ParseErrorSymbol
-	Statement            Statement
+	Statement            ast.Statement
 	StatementsExpr       *StatementsExpr
-	TypeExpression       TypeExpression
-	TypeProperties       *TypePropertyList
-	TypeProperty         TypeProperty
+	TypeExpression       ast.TypeExpression
+	TypeProperties       *ast.TypePropertyList
+	TypeProperty         ast.TypeProperty
 	UnsafeStatement      *UnsafeStatement
 	Value                *TokenValue
 }
@@ -3698,11 +3699,11 @@ func NewSymbol(token Token) (*Symbol, error) {
 	symbol = &Symbol{SymbolId_: token.Id()}
 	switch token.Id() {
 	case CommentGroupsToken:
-		val, ok := token.(CommentGroups)
+		val, ok := token.(CommentGroupsTok)
 		if !ok {
 			return nil, fmt.Errorf(
 				"Invalid value type for token %s.  "+
-					"Expecting CommentGroups (%v)",
+					"Expecting CommentGroupsTok (%v)",
 				token.Id(),
 				token.Loc())
 		}

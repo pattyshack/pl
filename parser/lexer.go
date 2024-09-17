@@ -4,6 +4,8 @@ import (
 	"io"
 
 	"github.com/pattyshack/gt/lexutil"
+
+	. "github.com/pattyshack/pl/ast"
 )
 
 type TokenPeekDiscarder interface {
@@ -142,12 +144,12 @@ func (lexer *CommentGroupLexer) Next() (Token, error) {
 	}
 
 	if token.Id() == blockCommentToken {
-		return CommentGroup{token.(*TokenValue)}, nil
+		return CommentGroupToken{*NewCommentGroup(token.(*TokenValue))}, nil
 	} else if token.Id() != lineCommentToken {
 		return token, nil
 	}
 
-	group := CommentGroup{token.(*TokenValue)}
+	group := NewCommentGroup(token.(*TokenValue))
 	for {
 		peeked, err := lexer.Peek(2)
 		if err != nil {
@@ -163,7 +165,7 @@ func (lexer *CommentGroupLexer) Next() (Token, error) {
 				break
 			}
 
-			group = append(group, peeked[1].(*TokenValue))
+			group.Add(peeked[1].(*TokenValue))
 
 			_, err := lexer.Discard(2)
 			if err != nil {
@@ -174,7 +176,7 @@ func (lexer *CommentGroupLexer) Next() (Token, error) {
 		}
 	}
 
-	return group, nil
+	return CommentGroupToken{*group}, nil
 }
 
 // Associate comment groups to real tokens whenever possible.
@@ -216,7 +218,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 	// Handle Leading comment groups
 	if token.Id() == commentGroupToken {
 		groups := CommentGroups{
-			Groups: []CommentGroup{token.(CommentGroup)},
+			Groups: []CommentGroup{token.(CommentGroupToken).CommentGroup},
 		}
 
 		found := false
@@ -224,7 +226,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 			peeked, err := lexer.Peek(1)
 			if len(peeked) == 0 || err != nil {
 				// groups not associated with any real token
-				return groups, nil
+				return CommentGroupsTok{groups}, nil
 			}
 
 			token = peeked[0]
@@ -238,7 +240,9 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 			case NewlinesToken:
 				// drop the newlines token
 			case commentGroupToken:
-				groups.Groups = append(groups.Groups, token.(CommentGroup))
+				groups.Groups = append(
+					groups.Groups,
+					token.(CommentGroupToken).CommentGroup)
 			default:
 				// Found a real token
 				found = true
@@ -265,7 +269,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 
 		value.TrailingComment.Groups = append(
 			value.TrailingComment.Groups,
-			peeked[0].(CommentGroup))
+			peeked[0].(CommentGroupToken).CommentGroup)
 
 		_, err = lexer.Discard(1)
 		if err != nil {
