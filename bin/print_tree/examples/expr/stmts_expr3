@@ -1,0 +1,16 @@
+{
+1 + 2
+foo(3) < abc.def["blah"]
+zzz
+  {
+    bad+
+  }
+
+  {
+    {
+      abc
+    }
+
+    {x < y < z}
+  }
+}

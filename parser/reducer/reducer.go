@@ -2,6 +2,7 @@ package reducer
 
 import (
 	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/parser/lr"
 )
 
 type Reducer struct {
@@ -47,6 +48,8 @@ type Reducer struct {
 	MethodDefinitions  []*FuncDefinition
 	AnonymousFuncExprs []*FuncDefinition
 }
+
+var _ lr.Reducer = &Reducer{}
 
 func NewReducer() *Reducer {
 	return &Reducer{}

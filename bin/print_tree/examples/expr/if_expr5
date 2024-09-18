@@ -6,4 +6,5 @@ jump_label@ if c1 {
   b3
 } else if c4 {
   b4
+} else {
 }

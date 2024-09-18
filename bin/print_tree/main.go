@@ -15,9 +15,17 @@ import (
 
 type Command struct {
 	*argparse.Command
+
+	useBasicLexer bool
 }
 
 func (cmd *Command) Setup() {
+	argparse.BoolVar(
+		&cmd.useBasicLexer,
+		"use-basic-lexer",
+		false,
+		"when true, use basic lexer for strict bottom-up lr parsing")
+
 	exprCmd := cmd.AddSubcommand("expr", "print expression")
 	exprCmd.SetCommandFunc(
 		cmd.printExpr,
@@ -79,6 +87,19 @@ func (cmd *Command) Setup() {
 		})
 }
 
+func (cmd *Command) newLexer(
+	fileName string,
+	reader io.Reader,
+	options lexer.LexerOptions,
+	reducer lr.Reducer,
+) lr.Lexer {
+	if cmd.useBasicLexer {
+		return lexer.NewBasicLexer(fileName, reader, options)
+	}
+
+	return lexer.NewLexer(fileName, reader, options, reducer)
+}
+
 func (cmd *Command) printFunc(
 	parse func(lr.Lexer, lr.Reducer) (ast.Node, error),
 	args []string,
@@ -102,7 +123,7 @@ func (cmd *Command) printFunc(
 		buffer := bytes.NewBuffer(content[:len(content)-1])
 
 		reducer := reducer.NewReducer()
-		lexer := lexer.NewBasicLexer(fileName, buffer, lexer.LexerOptions{})
+		lexer := cmd.newLexer(fileName, buffer, lexer.LexerOptions{}, reducer)
 
 		expr, err := parse(lexer, reducer)
 		if err != nil {
