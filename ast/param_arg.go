@@ -31,7 +31,7 @@ type Parameter struct {
 
 	Kind ParameterKind
 
-	Name        ValueNode // optional
+	Name        ValuedNode // optional
 	HasEllipsis bool
 	Type        TypeExpression // optional
 }
@@ -107,8 +107,8 @@ func NewPositionalArgument(expr Expression) *Argument {
 }
 
 func NewNamedArgument(
-	name ValueNode,
-	assign ValueNode,
+	name ValuedNode,
+	assign ValuedNode,
 	expr Expression,
 ) *Argument {
 	arg := &Argument{
@@ -130,7 +130,7 @@ func NewNamedArgument(
 }
 
 func NewSkipPatternArgument(
-	ellipsis ValueNode,
+	ellipsis ValuedNode,
 ) *Argument {
 	arg := &Argument{
 		StartEndPos: NewStartEndPos(ellipsis.Loc(), ellipsis.End()),

@@ -35,7 +35,7 @@ type ArrayTypeExpr struct {
 	LeadingTrailingComments
 
 	Value TypeExpression
-	Size  ValueNode
+	Size  ValuedNode
 }
 
 var _ TypeExpression = &ArrayTypeExpr{}
@@ -105,7 +105,7 @@ type NamedTypeExpr struct {
 
 	Pkg string // optional.  "" = local
 
-	Name ValueNode
+	Name ValuedNode
 
 	GenericArguments GenericArgumentList
 }

@@ -1,6 +1,8 @@
 package ast
 
 import (
+	"fmt"
+
 	"github.com/pattyshack/gt/lexutil"
 )
 
@@ -25,7 +27,7 @@ type Node interface {
 	TakeTrailing() CommentGroups
 }
 
-type ValueNode interface {
+type ValuedNode interface {
 	Node
 	Val() string
 }
@@ -87,14 +89,14 @@ type CommentGroup struct {
 	Comments []string
 }
 
-func NewCommentGroup(value ValueNode) *CommentGroup {
+func NewCommentGroup(value ValuedNode) *CommentGroup {
 	return &CommentGroup{
 		StartEndPos: NewStartEndPos(value.Loc(), value.End()),
 		Comments:    []string{value.Val()},
 	}
 }
 
-func (group *CommentGroup) Add(value ValueNode) {
+func (group *CommentGroup) Add(value ValuedNode) {
 	group.EndPos = value.End()
 	group.Comments = append(group.Comments, value.Val())
 }
@@ -190,4 +192,35 @@ func (sep StartEndPos) Loc() lexutil.Location {
 
 func (sep StartEndPos) End() lexutil.Location {
 	return sep.EndPos
+}
+
+type ParseErrorNode struct {
+	IsExpr
+	IsTypeExpr
+
+	StartEndPos
+	LeadingTrailingComments
+
+	Errors []error
+}
+
+func NewParseErrorNode(startEnd StartEndPos, err error) *ParseErrorNode {
+	return &ParseErrorNode{
+		StartEndPos: startEnd,
+		Errors:      []error{err},
+	}
+}
+
+func (s ParseErrorNode) TreeString(indent string, label string) string {
+	more := ""
+	if len(s.Errors) > 1 {
+		fmt.Sprintf("(and %d more errors) ", len(s.Errors)-1)
+	}
+	return fmt.Sprintf(
+		"%s%s[ParseErrorNode: %s %s%s]",
+		indent,
+		label,
+		s.Errors[0],
+		more,
+		s.StartPos)
 }

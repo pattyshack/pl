@@ -1,20 +1,16 @@
-package parser
+package reducer
 
 import (
 	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/parser"
 )
 
 //
 // FieldDef
 //
 
-type FieldDefReducerImpl struct{}
-
-var _ FieldDefReducer = &FieldDefReducerImpl{}
-var _ TypePropertyReducer = &FieldDefReducerImpl{}
-
-func (FieldDefReducerImpl) NamedToFieldDef(
-	name *TokenValue,
+func (Reducer) NamedToFieldDef(
+	name *parser.TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*FieldDef,
@@ -34,7 +30,7 @@ func (FieldDefReducerImpl) NamedToFieldDef(
 	return def, nil
 }
 
-func (FieldDefReducerImpl) UnnamedToFieldDef(
+func (Reducer) UnnamedToFieldDef(
 	typeExpr TypeExpression,
 ) (
 	*FieldDef,
@@ -52,8 +48,8 @@ func (FieldDefReducerImpl) UnnamedToFieldDef(
 	return def, nil
 }
 
-func (FieldDefReducerImpl) DefaultEnumFieldDefToTypeProperty(
-	defaultKW *TokenValue,
+func (Reducer) DefaultEnumFieldDefToTypeProperty(
+	defaultKW *parser.TokenValue,
 	def *FieldDef,
 ) (
 	TypeProperty,
@@ -71,8 +67,8 @@ func (FieldDefReducerImpl) DefaultEnumFieldDefToTypeProperty(
 	return def, nil
 }
 
-func (reducer FieldDefReducerImpl) PaddingFieldDefToTypeProperty(
-	underscore *TokenValue,
+func (reducer *Reducer) PaddingFieldDefToTypeProperty(
+	underscore *parser.TokenValue,
 	typeExpr TypeExpression,
 ) (
 	TypeProperty,
@@ -87,20 +83,9 @@ func (reducer FieldDefReducerImpl) PaddingFieldDefToTypeProperty(
 // TypePropertyList
 //
 
-type TypePropertyListReducerImpl struct{}
-
-var _ ProperImplicitTypePropertiesReducer = &TypePropertyListReducerImpl{}
-var _ ImplicitTypePropertiesReducer = &TypePropertyListReducerImpl{}
-var _ ProperExplicitTypePropertiesReducer = &TypePropertyListReducerImpl{}
-var _ ExplicitTypePropertiesReducer = &TypePropertyListReducerImpl{}
-var _ ProperImplicitEnumTypePropertiesReducer = &TypePropertyListReducerImpl{}
-var _ ImplicitEnumTypePropertiesReducer = &TypePropertyListReducerImpl{}
-var _ ProperExplicitEnumTypePropertiesReducer = &TypePropertyListReducerImpl{}
-var _ ExplicitEnumTypePropertiesReducer = &TypePropertyListReducerImpl{}
-
-func (TypePropertyListReducerImpl) AddToProperImplicitTypeProperties(
+func (Reducer) AddToProperImplicitTypeProperties(
 	list *TypePropertyList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 	property TypeProperty,
 ) (
 	*TypePropertyList,
@@ -110,7 +95,7 @@ func (TypePropertyListReducerImpl) AddToProperImplicitTypeProperties(
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) TypePropertyToProperImplicitTypeProperties(
+func (Reducer) TypePropertyToProperImplicitTypeProperties(
 	property TypeProperty,
 ) (
 	*TypePropertyList,
@@ -121,9 +106,9 @@ func (TypePropertyListReducerImpl) TypePropertyToProperImplicitTypeProperties(
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) ImproperToImplicitTypeProperties(
+func (Reducer) ImproperToImplicitTypeProperties(
 	list *TypePropertyList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 ) (
 	*TypePropertyList,
 	error,
@@ -132,28 +117,28 @@ func (TypePropertyListReducerImpl) ImproperToImplicitTypeProperties(
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) NilToImplicitTypeProperties() (
+func (Reducer) NilToImplicitTypeProperties() (
 	*TypePropertyList,
 	error,
 ) {
 	return NewTypePropertyList(), nil
 }
 
-func (TypePropertyListReducerImpl) AddImplicitToProperExplicitTypeProperties(
+func (Reducer) AddImplicitToProperExplicitTypeProperties(
 	list *TypePropertyList,
-	newlines TokenCount,
+	newlines parser.TokenCount,
 	property TypeProperty,
 ) (
 	*TypePropertyList,
 	error,
 ) {
-	list.ReduceAdd(&TokenValue{}, property)
+	list.ReduceAdd(&parser.TokenValue{}, property)
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) AddExplicitToProperExplicitTypeProperties(
+func (Reducer) AddExplicitToProperExplicitTypeProperties(
 	list *TypePropertyList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 	property TypeProperty,
 ) (
 	*TypePropertyList,
@@ -163,7 +148,7 @@ func (TypePropertyListReducerImpl) AddExplicitToProperExplicitTypeProperties(
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) TypePropertyToProperExplicitTypeProperties(
+func (Reducer) TypePropertyToProperExplicitTypeProperties(
 	property TypeProperty,
 ) (
 	*TypePropertyList,
@@ -174,9 +159,9 @@ func (TypePropertyListReducerImpl) TypePropertyToProperExplicitTypeProperties(
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) ImproperImplicitToExplicitTypeProperties(
+func (Reducer) ImproperImplicitToExplicitTypeProperties(
 	list *TypePropertyList,
-	newlines TokenCount,
+	newlines parser.TokenCount,
 ) (
 	*TypePropertyList,
 	error,
@@ -184,9 +169,9 @@ func (TypePropertyListReducerImpl) ImproperImplicitToExplicitTypeProperties(
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) ImproperExplicitToExplicitTypeProperties(
+func (Reducer) ImproperExplicitToExplicitTypeProperties(
 	list *TypePropertyList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 ) (
 	*TypePropertyList,
 	error,
@@ -195,16 +180,16 @@ func (TypePropertyListReducerImpl) ImproperExplicitToExplicitTypeProperties(
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) NilToExplicitTypeProperties() (
+func (Reducer) NilToExplicitTypeProperties() (
 	*TypePropertyList,
 	error,
 ) {
 	return NewTypePropertyList(), nil
 }
 
-func (TypePropertyListReducerImpl) PairToProperImplicitEnumTypeProperties(
+func (Reducer) PairToProperImplicitEnumTypeProperties(
 	property1 TypeProperty,
-	or *TokenValue,
+	or *parser.TokenValue,
 	property2 TypeProperty,
 ) (
 	*TypePropertyList,
@@ -216,9 +201,9 @@ func (TypePropertyListReducerImpl) PairToProperImplicitEnumTypeProperties(
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) AddToProperImplicitEnumTypeProperties(
+func (Reducer) AddToProperImplicitEnumTypeProperties(
 	list *TypePropertyList,
-	or *TokenValue,
+	or *parser.TokenValue,
 	property TypeProperty,
 ) (
 	*TypePropertyList,
@@ -228,9 +213,9 @@ func (TypePropertyListReducerImpl) AddToProperImplicitEnumTypeProperties(
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) ImproperToImplicitEnumTypeProperties(
+func (Reducer) ImproperToImplicitEnumTypeProperties(
 	list *TypePropertyList,
-	newlines TokenCount,
+	newlines parser.TokenCount,
 ) (
 	*TypePropertyList,
 	error,
@@ -238,9 +223,9 @@ func (TypePropertyListReducerImpl) ImproperToImplicitEnumTypeProperties(
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) ExplicitPairToProperExplicitEnumTypeProperties(
+func (Reducer) ExplicitPairToProperExplicitEnumTypeProperties(
 	property1 TypeProperty,
-	or *TokenValue,
+	or *parser.TokenValue,
 	property2 TypeProperty,
 ) (
 	*TypePropertyList,
@@ -252,9 +237,9 @@ func (TypePropertyListReducerImpl) ExplicitPairToProperExplicitEnumTypePropertie
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) ImplicitPairToProperExplicitEnumTypeProperties(
+func (Reducer) ImplicitPairToProperExplicitEnumTypeProperties(
 	property1 TypeProperty,
-	newlines TokenCount,
+	newlines parser.TokenCount,
 	property2 TypeProperty,
 ) (
 	*TypePropertyList,
@@ -262,13 +247,13 @@ func (TypePropertyListReducerImpl) ImplicitPairToProperExplicitEnumTypePropertie
 ) {
 	list := NewTypePropertyList()
 	list.Add(property1)
-	list.ReduceAdd(&TokenValue{}, property2)
+	list.ReduceAdd(&parser.TokenValue{}, property2)
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) ExplicitAddToProperExplicitEnumTypeProperties(
+func (Reducer) ExplicitAddToProperExplicitEnumTypeProperties(
 	list *TypePropertyList,
-	or *TokenValue,
+	or *parser.TokenValue,
 	property TypeProperty,
 ) (
 	*TypePropertyList,
@@ -278,21 +263,21 @@ func (TypePropertyListReducerImpl) ExplicitAddToProperExplicitEnumTypeProperties
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) ImplicitAddToProperExplicitEnumTypeProperties(
+func (Reducer) ImplicitAddToProperExplicitEnumTypeProperties(
 	list *TypePropertyList,
-	newlines TokenCount,
+	newlines parser.TokenCount,
 	property TypeProperty,
 ) (
 	*TypePropertyList,
 	error,
 ) {
-	list.ReduceAdd(&TokenValue{}, property)
+	list.ReduceAdd(&parser.TokenValue{}, property)
 	return list, nil
 }
 
-func (TypePropertyListReducerImpl) ImproperToExplicitEnumTypeProperties(
+func (Reducer) ImproperToExplicitEnumTypeProperties(
 	list *TypePropertyList,
-	newlines TokenCount,
+	newlines parser.TokenCount,
 ) (
 	*TypePropertyList,
 	error,

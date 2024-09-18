@@ -10,7 +10,7 @@ import (
 
 type BoolLiteralExpr struct {
 	IsExpr
-	ValueNode
+	ValuedNode
 }
 
 func (expr BoolLiteralExpr) TreeString(indent string, label string) string {
@@ -19,7 +19,7 @@ func (expr BoolLiteralExpr) TreeString(indent string, label string) string {
 
 type IntLiteralExpr struct {
 	IsExpr
-	ValueNode
+	ValuedNode
 }
 
 func (expr IntLiteralExpr) TreeString(indent string, label string) string {
@@ -28,7 +28,7 @@ func (expr IntLiteralExpr) TreeString(indent string, label string) string {
 
 type FloatLiteralExpr struct {
 	IsExpr
-	ValueNode
+	ValuedNode
 }
 
 func (expr FloatLiteralExpr) TreeString(indent string, label string) string {
@@ -37,7 +37,7 @@ func (expr FloatLiteralExpr) TreeString(indent string, label string) string {
 
 type RuneLiteralExpr struct {
 	IsExpr
-	ValueNode
+	ValuedNode
 }
 
 func (expr RuneLiteralExpr) TreeString(indent string, label string) string {
@@ -46,7 +46,7 @@ func (expr RuneLiteralExpr) TreeString(indent string, label string) string {
 
 type StringLiteralExpr struct {
 	IsExpr
-	ValueNode
+	ValuedNode
 }
 
 func (expr StringLiteralExpr) TreeString(indent string, label string) string {
@@ -59,7 +59,7 @@ func (expr StringLiteralExpr) TreeString(indent string, label string) string {
 
 type NamedExpr struct {
 	IsExpr
-	ValueNode
+	ValuedNode
 }
 
 func (expr NamedExpr) TreeString(indent string, label string) string {
@@ -76,7 +76,7 @@ type AccessExpr struct {
 	LeadingTrailingComments
 
 	Operand Expression
-	Field   ValueNode
+	Field   ValuedNode
 }
 
 func (expr AccessExpr) TreeString(indent string, label string) string {

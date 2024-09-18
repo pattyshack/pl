@@ -8,6 +8,7 @@ import (
 
 	"github.com/pattyshack/gt/argparse"
 	"github.com/pattyshack/pl/parser"
+	"github.com/pattyshack/pl/parser/reducer"
 )
 
 type Command struct {
@@ -55,7 +56,7 @@ func (cmd *Command) printExpr(args []string) error {
 
 		buffer := bytes.NewBuffer(content[:len(content)-1])
 
-		reducer := parser.NewReducer()
+		reducer := reducer.NewReducer()
 		lexer := parser.NewLexer(fileName, buffer, parser.LexerOptions{})
 
 		expr, err := parser.ParseExpr(lexer, reducer)

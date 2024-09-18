@@ -400,8 +400,9 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 		}
 
 		return &ParseErrorSymbol{
-			StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
-			Error:       fmt.Errorf("unexpected utf8 rune"),
+			NewParseErrorNode(
+				NewStartEndPos(loc, lexer.Location),
+				fmt.Errorf("unexpected utf8 rune")),
 		}, nil
 	}
 
@@ -462,8 +463,9 @@ func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
 
 	if scopeLevel > 0 {
 		return &ParseErrorSymbol{
-			StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
-			Error:       fmt.Errorf("block comment not terminated"),
+			NewParseErrorNode(
+				NewStartEndPos(loc, Location(lexer.Location)),
+				fmt.Errorf("block comment not terminated")),
 		}, nil
 	}
 
@@ -654,8 +656,8 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 
 	if !hasDigits {
 		return &ParseErrorSymbol{
-			StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
-			Error:       fmt.Errorf("%s has no digits", subType),
+			NewParseErrorNode(NewStartEndPos(loc, Location(lexer.Location)),
+				fmt.Errorf("%s has no digits", subType)),
 		}, nil
 	}
 
@@ -1057,8 +1059,9 @@ func (lexer *RawLexer) lexRuneLiteralToken() (Token, error) {
 
 	if result.errorMsg != "" {
 		return &ParseErrorSymbol{
-			StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
-			Error:       fmt.Errorf(result.errorMsg),
+			NewParseErrorNode(
+				NewStartEndPos(loc, Location(lexer.Location)),
+				fmt.Errorf(result.errorMsg)),
 		}, nil
 	}
 
@@ -1114,8 +1117,9 @@ func (lexer *RawLexer) lexStringLiteralToken(
 
 	if result.errorMsg != "" {
 		return &ParseErrorSymbol{
-			StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
-			Error:       fmt.Errorf(result.errorMsg),
+			NewParseErrorNode(
+				NewStartEndPos(loc, Location(lexer.Location)),
+				fmt.Errorf(result.errorMsg)),
 		}, nil
 	}
 
@@ -1147,8 +1151,9 @@ func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
 		}
 
 		return &ParseErrorSymbol{
-			StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
-			Error:       fmt.Errorf("no label name associated with @"),
+			NewParseErrorNode(
+				NewStartEndPos(loc, Location(lexer.Location)),
+				fmt.Errorf("no label name associated with @")),
 		}, nil
 	}
 
@@ -1234,8 +1239,9 @@ func (lexer *RawLexer) Next() (Token, error) {
 		}
 
 		return &ParseErrorSymbol{
-			StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
-			Error:       fmt.Errorf("unexpected utf8 rune"),
+			NewParseErrorNode(
+				NewStartEndPos(loc, Location(lexer.Location)),
+				fmt.Errorf("unexpected utf8 rune")),
 		}, nil
 	}
 

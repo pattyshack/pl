@@ -1,69 +1,60 @@
-package parser
+package reducer
 
 import (
 	"fmt"
 
 	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/parser"
 )
 
 //
 // (Bool/Int/Float/Rune/String)LiteralExpr
 //
 
-type LiteralExprReducerImpl struct {
-	BoolLiteralExprs   []*BoolLiteralExpr
-	IntLiteralExprs    []*IntLiteralExpr
-	FloatLiteralExprs  []*FloatLiteralExpr
-	RuneLiteralExprs   []*RuneLiteralExpr
-	StringLiteralExprs []*StringLiteralExpr
-}
-
-var _ LiteralExprReducer = &LiteralExprReducerImpl{}
-
-func (reducer *LiteralExprReducerImpl) TrueToLiteralExpr(
-	value *TokenValue,
+func (reducer *Reducer) TrueToLiteralExpr(
+	value *parser.TokenValue,
 ) (Expression, error) {
-	expr := &BoolLiteralExpr{ValueNode: value}
+	expr := &BoolLiteralExpr{ValuedNode: value}
 	reducer.BoolLiteralExprs = append(reducer.BoolLiteralExprs, expr)
 	return expr, nil
 }
 
-func (reducer *LiteralExprReducerImpl) FalseToLiteralExpr(
-	value *TokenValue,
+func (reducer *Reducer) FalseToLiteralExpr(
+	value *parser.TokenValue,
 ) (Expression, error) {
-	expr := &BoolLiteralExpr{ValueNode: value}
+	expr := &BoolLiteralExpr{ValuedNode: value}
 	reducer.BoolLiteralExprs = append(reducer.BoolLiteralExprs, expr)
 	return expr, nil
 }
 
-func (reducer *LiteralExprReducerImpl) IntegerLiteralToLiteralExpr(
-	value *TokenValue,
+func (reducer *Reducer) IntegerLiteralToLiteralExpr(
+	value *parser.TokenValue,
 ) (Expression, error) {
-	expr := &IntLiteralExpr{ValueNode: value}
+	expr := &IntLiteralExpr{ValuedNode: value}
 	reducer.IntLiteralExprs = append(reducer.IntLiteralExprs, expr)
 	return expr, nil
 }
 
-func (reducer *LiteralExprReducerImpl) FloatLiteralToLiteralExpr(
-	value *TokenValue,
+func (reducer *Reducer) FloatLiteralToLiteralExpr(
+	value *parser.TokenValue,
 ) (Expression, error) {
-	expr := &FloatLiteralExpr{ValueNode: value}
+	expr := &FloatLiteralExpr{ValuedNode: value}
 	reducer.FloatLiteralExprs = append(reducer.FloatLiteralExprs, expr)
 	return expr, nil
 }
 
-func (reducer *LiteralExprReducerImpl) RuneLiteralToLiteralExpr(
-	value *TokenValue,
+func (reducer *Reducer) RuneLiteralToLiteralExpr(
+	value *parser.TokenValue,
 ) (Expression, error) {
-	expr := &RuneLiteralExpr{ValueNode: value}
+	expr := &RuneLiteralExpr{ValuedNode: value}
 	reducer.RuneLiteralExprs = append(reducer.RuneLiteralExprs, expr)
 	return expr, nil
 }
 
-func (reducer *LiteralExprReducerImpl) StringLiteralToLiteralExpr(
-	value *TokenValue,
+func (reducer *Reducer) StringLiteralToLiteralExpr(
+	value *parser.TokenValue,
 ) (Expression, error) {
-	expr := &StringLiteralExpr{ValueNode: value}
+	expr := &StringLiteralExpr{ValuedNode: value}
 	reducer.StringLiteralExprs = append(reducer.StringLiteralExprs, expr)
 	return expr, nil
 }
@@ -72,24 +63,18 @@ func (reducer *LiteralExprReducerImpl) StringLiteralToLiteralExpr(
 // NamedExpr
 //
 
-type NamedExprReducerImpl struct {
-	NamedExprs []*NamedExpr
-}
-
-var _ NamedExprReducer = &NamedExprReducerImpl{}
-
-func (reducer *NamedExprReducerImpl) IdentifierToNamedExpr(
-	value *TokenValue,
+func (reducer *Reducer) IdentifierToNamedExpr(
+	value *parser.TokenValue,
 ) (Expression, error) {
-	expr := &NamedExpr{ValueNode: value}
+	expr := &NamedExpr{ValuedNode: value}
 	reducer.NamedExprs = append(reducer.NamedExprs, expr)
 	return expr, nil
 }
 
-func (reducer *NamedExprReducerImpl) UnderscoreToNamedExpr(
-	value *TokenValue,
+func (reducer *Reducer) UnderscoreToNamedExpr(
+	value *parser.TokenValue,
 ) (Expression, error) {
-	expr := &NamedExpr{ValueNode: value}
+	expr := &NamedExpr{ValuedNode: value}
 	reducer.NamedExprs = append(reducer.NamedExprs, expr)
 	return expr, nil
 }
@@ -98,16 +83,10 @@ func (reducer *NamedExprReducerImpl) UnderscoreToNamedExpr(
 // AccessExpr
 //
 
-type AccessExprReducerImpl struct {
-	AccessExprs []*AccessExpr
-}
-
-var _ AccessExprReducer = &AccessExprReducerImpl{}
-
-func (reducer *AccessExprReducerImpl) ToAccessExpr(
+func (reducer *Reducer) ToAccessExpr(
 	operand Expression,
-	dot *TokenValue,
-	field *TokenValue,
+	dot *parser.TokenValue,
+	field *parser.TokenValue,
 ) (
 	Expression,
 	error,
@@ -131,18 +110,9 @@ func (reducer *AccessExprReducerImpl) ToAccessExpr(
 // UnaryExpr
 //
 
-type UnaryExprReducerImpl struct {
-	UnaryExprs []*UnaryExpr
-}
-
-var _ PostfixUnaryExprReducer = &UnaryExprReducerImpl{}
-var _ PrefixUnaryExprReducer = &UnaryExprReducerImpl{}
-var _ UnaryOpAssignStatementReducer = &UnaryExprReducerImpl{}
-var _ RecvExprReducer = &UnaryExprReducerImpl{}
-
-func (reducer *UnaryExprReducerImpl) toPostfixUnaryExpr(
+func (reducer *Reducer) toPostfixUnaryExpr(
 	operand Expression,
-	op *TokenValue,
+	op *parser.TokenValue,
 ) *UnaryExpr {
 	expr := &UnaryExpr{
 		StartEndPos: NewStartEndPos(operand.Loc(), op.End()),
@@ -159,9 +129,9 @@ func (reducer *UnaryExprReducerImpl) toPostfixUnaryExpr(
 	return expr
 }
 
-func (reducer *UnaryExprReducerImpl) ToPostfixUnaryExpr(
+func (reducer *Reducer) ToPostfixUnaryExpr(
 	operand Expression,
-	op *TokenValue,
+	op *parser.TokenValue,
 ) (
 	Expression,
 	error,
@@ -169,8 +139,8 @@ func (reducer *UnaryExprReducerImpl) ToPostfixUnaryExpr(
 	return reducer.toPostfixUnaryExpr(operand, op), nil
 }
 
-func (reducer *UnaryExprReducerImpl) toPrefixUnaryExpr(
-	op *TokenValue,
+func (reducer *Reducer) toPrefixUnaryExpr(
+	op *parser.TokenValue,
 	operand Expression,
 ) Expression {
 	expr := &UnaryExpr{
@@ -188,8 +158,8 @@ func (reducer *UnaryExprReducerImpl) toPrefixUnaryExpr(
 	return expr
 }
 
-func (reducer *UnaryExprReducerImpl) ToPrefixUnaryExpr(
-	op *TokenValue,
+func (reducer *Reducer) ToPrefixUnaryExpr(
+	op *parser.TokenValue,
 	operand Expression,
 ) (
 	Expression,
@@ -198,8 +168,8 @@ func (reducer *UnaryExprReducerImpl) ToPrefixUnaryExpr(
 	return reducer.toPrefixUnaryExpr(op, operand), nil
 }
 
-func (reducer *UnaryExprReducerImpl) ToRecvExpr(
-	arrow *TokenValue,
+func (reducer *Reducer) ToRecvExpr(
+	arrow *parser.TokenValue,
 	expr Expression,
 ) (
 	Expression,
@@ -208,9 +178,9 @@ func (reducer *UnaryExprReducerImpl) ToRecvExpr(
 	return reducer.toPrefixUnaryExpr(arrow, expr), nil
 }
 
-func (reducer *UnaryExprReducerImpl) ToUnaryOpAssignStatement(
+func (reducer *Reducer) ToUnaryOpAssignStatement(
 	operand Expression,
-	op *TokenValue,
+	op *parser.TokenValue,
 ) (
 	Statement,
 	error,
@@ -222,24 +192,9 @@ func (reducer *UnaryExprReducerImpl) ToUnaryOpAssignStatement(
 // BinaryExpr
 //
 
-type BinaryExprReducerImpl struct {
-	BinaryExprs []*BinaryExpr
-}
-
-var _ BinaryMulExprReducer = &BinaryExprReducerImpl{}
-var _ BinaryAndExprReducer = &BinaryExprReducerImpl{}
-var _ BinaryCmpExprReducer = &BinaryExprReducerImpl{}
-var _ BinaryAndExprReducer = &BinaryExprReducerImpl{}
-var _ BinaryOrExprReducer = &BinaryExprReducerImpl{}
-var _ BinaryOpAssignStatementReducer = &BinaryExprReducerImpl{}
-var _ SendExprReducer = &BinaryExprReducerImpl{}
-var _ ExprAssignStatementReducer = &BinaryExprReducerImpl{}
-var _ SequenceExprAssignStatementReducer = &BinaryExprReducerImpl{}
-var _ GlobalVarDefReducer = &BinaryExprReducerImpl{}
-
-func (reducer *BinaryExprReducerImpl) toBinaryExpr(
+func (reducer *Reducer) toBinaryExpr(
 	left Expression,
-	op *TokenValue,
+	op *parser.TokenValue,
 	right Expression,
 ) (
 	Expression,
@@ -261,9 +216,9 @@ func (reducer *BinaryExprReducerImpl) toBinaryExpr(
 	return expr, nil
 }
 
-func (reducer *BinaryExprReducerImpl) ToBinaryMulExpr(
+func (reducer *Reducer) ToBinaryMulExpr(
 	left Expression,
-	op *TokenValue,
+	op *parser.TokenValue,
 	right Expression,
 ) (
 	Expression,
@@ -272,9 +227,9 @@ func (reducer *BinaryExprReducerImpl) ToBinaryMulExpr(
 	return reducer.toBinaryExpr(left, op, right)
 }
 
-func (reducer *BinaryExprReducerImpl) ToBinaryAddExpr(
+func (reducer *Reducer) ToBinaryAddExpr(
 	left Expression,
-	op *TokenValue,
+	op *parser.TokenValue,
 	right Expression,
 ) (
 	Expression,
@@ -283,9 +238,9 @@ func (reducer *BinaryExprReducerImpl) ToBinaryAddExpr(
 	return reducer.toBinaryExpr(left, op, right)
 }
 
-func (reducer *BinaryExprReducerImpl) ToBinaryCmpExpr(
+func (reducer *Reducer) ToBinaryCmpExpr(
 	left Expression,
-	op *TokenValue,
+	op *parser.TokenValue,
 	right Expression,
 ) (
 	Expression,
@@ -294,9 +249,9 @@ func (reducer *BinaryExprReducerImpl) ToBinaryCmpExpr(
 	return reducer.toBinaryExpr(left, op, right)
 }
 
-func (reducer *BinaryExprReducerImpl) ToBinaryAndExpr(
+func (reducer *Reducer) ToBinaryAndExpr(
 	left Expression,
-	op *TokenValue,
+	op *parser.TokenValue,
 	right Expression,
 ) (
 	Expression,
@@ -305,9 +260,9 @@ func (reducer *BinaryExprReducerImpl) ToBinaryAndExpr(
 	return reducer.toBinaryExpr(left, op, right)
 }
 
-func (reducer *BinaryExprReducerImpl) ToBinaryOrExpr(
+func (reducer *Reducer) ToBinaryOrExpr(
 	left Expression,
-	op *TokenValue,
+	op *parser.TokenValue,
 	right Expression,
 ) (
 	Expression,
@@ -316,9 +271,9 @@ func (reducer *BinaryExprReducerImpl) ToBinaryOrExpr(
 	return reducer.toBinaryExpr(left, op, right)
 }
 
-func (reducer *BinaryExprReducerImpl) ToSendExpr(
+func (reducer *Reducer) ToSendExpr(
 	receiver Expression,
-	arrow *TokenValue,
+	arrow *parser.TokenValue,
 	expr Expression,
 ) (
 	Expression,
@@ -327,9 +282,9 @@ func (reducer *BinaryExprReducerImpl) ToSendExpr(
 	return reducer.toBinaryExpr(receiver, arrow, expr)
 }
 
-func (reducer *BinaryExprReducerImpl) ToBinaryOpAssignStatement(
+func (reducer *Reducer) ToBinaryOpAssignStatement(
 	address Expression,
-	op *TokenValue,
+	op *parser.TokenValue,
 	value Expression,
 ) (
 	Statement,
@@ -338,9 +293,9 @@ func (reducer *BinaryExprReducerImpl) ToBinaryOpAssignStatement(
 	return reducer.toBinaryExpr(address, op, value)
 }
 
-func (reducer *BinaryExprReducerImpl) ToExprAssignStatement(
+func (reducer *Reducer) ToExprAssignStatement(
 	pattern Expression,
-	assign *TokenValue,
+	assign *parser.TokenValue,
 	value Expression,
 ) (
 	Statement,
@@ -349,9 +304,9 @@ func (reducer *BinaryExprReducerImpl) ToExprAssignStatement(
 	return reducer.toBinaryExpr(pattern, assign, value)
 }
 
-func (reducer *BinaryExprReducerImpl) ToSequenceExprAssignStatement(
+func (reducer *Reducer) ToSequenceExprAssignStatement(
 	pattern Expression,
-	assign *TokenValue,
+	assign *parser.TokenValue,
 	value Expression,
 ) (
 	Statement,
@@ -360,9 +315,9 @@ func (reducer *BinaryExprReducerImpl) ToSequenceExprAssignStatement(
 	return reducer.toBinaryExpr(pattern, assign, value)
 }
 
-func (reducer *BinaryExprReducerImpl) DefToGlobalVarDef(
+func (reducer *Reducer) DefToGlobalVarDef(
 	pattern Expression,
-	assign *TokenValue,
+	assign *parser.TokenValue,
 	value Expression,
 ) (
 	Definition,
@@ -375,19 +330,10 @@ func (reducer *BinaryExprReducerImpl) DefToGlobalVarDef(
 // ImplicitStructExpr
 //
 
-type ImplicitStructExprReducerImpl struct {
-	ImplicitStructExprs []*ImplicitStructExpr
-}
-
-var _ ImplicitStructExprReducer = &ImplicitStructExprReducerImpl{}
-var _ ImproperExprStructReducer = &ImplicitStructExprReducerImpl{}
-var _ ImproperSequenceExprStructReducer = &ImplicitStructExprReducerImpl{}
-var _ TuplePatternReducer = &ImplicitStructExprReducerImpl{}
-
-func (reducer *ImplicitStructExprReducerImpl) toImplicitStructExpr(
-	lparen *TokenValue,
+func (reducer *Reducer) toImplicitStructExpr(
+	lparen *parser.TokenValue,
 	args *ArgumentList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) *ImplicitStructExpr {
 	args.ReduceMarkers(lparen, rparen)
 	return &ImplicitStructExpr{
@@ -395,10 +341,10 @@ func (reducer *ImplicitStructExprReducerImpl) toImplicitStructExpr(
 	}
 }
 
-func (reducer *ImplicitStructExprReducerImpl) ToImplicitStructExpr(
-	lparen *TokenValue,
+func (reducer *Reducer) ToImplicitStructExpr(
+	lparen *parser.TokenValue,
 	args *ArgumentList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) (
 	Expression,
 	error,
@@ -408,9 +354,9 @@ func (reducer *ImplicitStructExprReducerImpl) ToImplicitStructExpr(
 	return expr, nil
 }
 
-func (reducer *ImplicitStructExprReducerImpl) PairToImproperExprStruct(
+func (reducer *Reducer) PairToImproperExprStruct(
 	expr1 Expression,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 	expr2 Expression,
 ) (
 	*ImplicitStructExpr,
@@ -431,9 +377,9 @@ func (reducer *ImplicitStructExprReducerImpl) PairToImproperExprStruct(
 	return expr, nil
 }
 
-func (reducer *ImplicitStructExprReducerImpl) AddToImproperExprStruct(
+func (reducer *Reducer) AddToImproperExprStruct(
 	structExpr *ImplicitStructExpr,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 	expr Expression,
 ) (
 	*ImplicitStructExpr,
@@ -444,9 +390,9 @@ func (reducer *ImplicitStructExprReducerImpl) AddToImproperExprStruct(
 	return structExpr, nil
 }
 
-func (reducer *ImplicitStructExprReducerImpl) PairToImproperSequenceExprStruct(
+func (reducer *Reducer) PairToImproperSequenceExprStruct(
 	expr1 Expression,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 	expr2 Expression,
 ) (
 	*ImplicitStructExpr,
@@ -467,9 +413,9 @@ func (reducer *ImplicitStructExprReducerImpl) PairToImproperSequenceExprStruct(
 	return expr, nil
 }
 
-func (reducer *ImplicitStructExprReducerImpl) AddToImproperSequenceExprStruct(
+func (reducer *Reducer) AddToImproperSequenceExprStruct(
 	structExpr *ImplicitStructExpr,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 	expr Expression,
 ) (
 	*ImplicitStructExpr,
@@ -480,10 +426,10 @@ func (reducer *ImplicitStructExprReducerImpl) AddToImproperSequenceExprStruct(
 	return structExpr, nil
 }
 
-func (reducer *ImplicitStructExprReducerImpl) ToTuplePattern(
-	lparen *TokenValue,
+func (reducer *Reducer) ToTuplePattern(
+	lparen *parser.TokenValue,
 	list *ArgumentList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) (
 	Expression,
 	error,
@@ -495,13 +441,8 @@ func (reducer *ImplicitStructExprReducerImpl) ToTuplePattern(
 // ColonExpr
 //
 
-type ColonExprReducerImpl struct {
-}
-
-var _ ColonExprReducer = &ColonExprReducerImpl{}
-
-func (ColonExprReducerImpl) UnitUnitPairToColonExpr(
-	colon *TokenValue,
+func (Reducer) UnitUnitPairToColonExpr(
+	colon *parser.TokenValue,
 ) (
 	*ColonExpr,
 	error,
@@ -526,9 +467,9 @@ func (ColonExprReducerImpl) UnitUnitPairToColonExpr(
 	}, nil
 }
 
-func (ColonExprReducerImpl) ExprUnitPairToColonExpr(
+func (Reducer) ExprUnitPairToColonExpr(
 	leftExpr Expression,
-	colon *TokenValue,
+	colon *parser.TokenValue,
 ) (
 	*ColonExpr,
 	error,
@@ -556,8 +497,8 @@ func (ColonExprReducerImpl) ExprUnitPairToColonExpr(
 	}, nil
 }
 
-func (reducer *ColonExprReducerImpl) UnitExprPairToColonExpr(
-	colon *TokenValue,
+func (reducer *Reducer) UnitExprPairToColonExpr(
+	colon *parser.TokenValue,
 	rightExpr Expression,
 ) (
 	*ColonExpr,
@@ -586,9 +527,9 @@ func (reducer *ColonExprReducerImpl) UnitExprPairToColonExpr(
 	}, nil
 }
 
-func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
+func (reducer *Reducer) ExprExprPairToColonExpr(
 	leftExpr Expression,
-	colon *TokenValue,
+	colon *parser.TokenValue,
 	rightExpr Expression,
 ) (
 	*ColonExpr,
@@ -620,9 +561,9 @@ func (reducer *ColonExprReducerImpl) ExprExprPairToColonExpr(
 	}, nil
 }
 
-func (reducer *ColonExprReducerImpl) ColonExprUnitTupleToColonExpr(
+func (reducer *Reducer) ColonExprUnitTupleToColonExpr(
 	list *ColonExpr,
-	colon *TokenValue,
+	colon *parser.TokenValue,
 ) (
 	*ColonExpr,
 	error,
@@ -637,9 +578,9 @@ func (reducer *ColonExprReducerImpl) ColonExprUnitTupleToColonExpr(
 	return list, nil
 }
 
-func (reducer *ColonExprReducerImpl) ColonExprExprTupleToColonExpr(
+func (reducer *Reducer) ColonExprExprTupleToColonExpr(
 	list *ColonExpr,
-	colon *TokenValue,
+	colon *parser.TokenValue,
 	expr Expression,
 ) (
 	*ColonExpr,
@@ -662,18 +603,12 @@ func (reducer *ColonExprReducerImpl) ColonExprExprTupleToColonExpr(
 // CallExpr
 //
 
-type CallExprReducerImpl struct {
-	CallExprs []*CallExpr
-}
-
-var _ CallExprReducer = &CallExprReducerImpl{}
-
-func (reducer *CallExprReducerImpl) ToCallExpr(
+func (reducer *Reducer) ToCallExpr(
 	funcExpr Expression,
 	genericArguments *GenericArgumentList,
-	lparen *TokenValue,
+	lparen *parser.TokenValue,
 	arguments *ArgumentList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) (
 	Expression,
 	error,
@@ -703,17 +638,11 @@ func (reducer *CallExprReducerImpl) ToCallExpr(
 // IndexExpr
 //
 
-type IndexExprReducerImpl struct {
-	IndexExprs []*IndexExpr
-}
-
-var _ IndexExprReducer = &IndexExprReducerImpl{}
-
-func (reducer *IndexExprReducerImpl) ToIndexExpr(
+func (reducer *Reducer) ToIndexExpr(
 	accessible Expression,
-	lbracket *TokenValue,
+	lbracket *parser.TokenValue,
 	index *Argument,
-	rbracket *TokenValue,
+	rbracket *parser.TokenValue,
 ) (
 	Expression,
 	error,
@@ -739,19 +668,13 @@ func (reducer *IndexExprReducerImpl) ToIndexExpr(
 // AsExpr
 //
 
-type AsExprReducerImpl struct {
-	AsExprs []*AsExpr
-}
-
-var _ AsExprReducer = &AsExprReducerImpl{}
-
-func (reducer *AsExprReducerImpl) ToAsExpr(
+func (reducer *Reducer) ToAsExpr(
 	accessible Expression,
-	dot *TokenValue,
-	as *TokenValue,
-	lparen *TokenValue,
+	dot *parser.TokenValue,
+	as *parser.TokenValue,
+	lparen *parser.TokenValue,
 	castType TypeExpression,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) (
 	Expression,
 	error,
@@ -782,17 +705,11 @@ func (reducer *AsExprReducerImpl) ToAsExpr(
 // InitializeExpr
 //
 
-type InitializeExprReducerImpl struct {
-	InitializeExprs []*InitializeExpr
-}
-
-var _ InitializeExprReducer = &InitializeExprReducerImpl{}
-
-func (reducer *InitializeExprReducerImpl) ToInitializeExpr(
+func (reducer *Reducer) ToInitializeExpr(
 	initializable TypeExpression,
-	lparen *TokenValue,
+	lparen *parser.TokenValue,
 	arguments *ArgumentList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) (
 	Expression,
 	error,
@@ -816,16 +733,7 @@ func (reducer *InitializeExprReducerImpl) ToInitializeExpr(
 // IfExpr
 //
 
-type IfExprReducerImpl struct {
-	IfExprs []*IfExpr
-}
-
-var _ IfExprReducer = &IfExprReducerImpl{}
-var _ IfElseExprReducer = &IfExprReducerImpl{}
-var _ IfElifExprReducer = &IfExprReducerImpl{}
-var _ IfOnlyExprReducer = &IfExprReducerImpl{}
-
-func (reducer *IfExprReducerImpl) UnlabelledToIfExpr(
+func (reducer *Reducer) UnlabelledToIfExpr(
 	ifExpr *IfExpr,
 ) (
 	Expression,
@@ -841,8 +749,8 @@ func (reducer *IfExprReducerImpl) UnlabelledToIfExpr(
 	return ifExpr, nil
 }
 
-func (reducer *IfExprReducerImpl) LabelledToIfExpr(
-	labelDecl *TokenValue,
+func (reducer *Reducer) LabelledToIfExpr(
+	labelDecl *parser.TokenValue,
 	ifExpr *IfExpr,
 ) (
 	Expression,
@@ -857,9 +765,9 @@ func (reducer *IfExprReducerImpl) LabelledToIfExpr(
 	return ifExpr, nil
 }
 
-func (reducer *IfExprReducerImpl) ElseToIfElseExpr(
+func (reducer *Reducer) ElseToIfElseExpr(
 	ifExpr *IfExpr,
-	elseKW *TokenValue,
+	elseKW *parser.TokenValue,
 	branch Expression,
 ) (
 	*IfExpr,
@@ -876,10 +784,10 @@ func (reducer *IfExprReducerImpl) ElseToIfElseExpr(
 	return ifExpr, nil
 }
 
-func (reducer *IfExprReducerImpl) ElifToIfElifExpr(
+func (reducer *Reducer) ElifToIfElifExpr(
 	ifExpr *IfExpr,
-	elseKW *TokenValue,
-	ifKW *TokenValue,
+	elseKW *parser.TokenValue,
+	ifKW *parser.TokenValue,
 	condition Expression,
 	branch Expression,
 ) (
@@ -902,8 +810,8 @@ func (reducer *IfExprReducerImpl) ElifToIfElifExpr(
 	return ifExpr, nil
 }
 
-func (reducer *IfExprReducerImpl) ToIfOnlyExpr(
-	ifKW *TokenValue,
+func (reducer *Reducer) ToIfOnlyExpr(
+	ifKW *parser.TokenValue,
 	condition Expression,
 	branch Expression,
 ) (
@@ -925,15 +833,8 @@ func (reducer *IfExprReducerImpl) ToIfOnlyExpr(
 // SwitchExpr
 //
 
-type SwitchExprReducerImpl struct {
-	SwitchExprs []*SwitchExpr
-}
-
-var _ SwitchExprReducer = &SwitchExprReducerImpl{}
-var _ SwitchExprBodyReducer = &SwitchExprReducerImpl{}
-
-func (reducer *SwitchExprReducerImpl) LabelledToSwitchExpr(
-	labelDecl *TokenValue,
+func (reducer *Reducer) LabelledToSwitchExpr(
+	labelDecl *parser.TokenValue,
 	expr Expression,
 ) (
 	Expression,
@@ -946,15 +847,15 @@ func (reducer *SwitchExprReducerImpl) LabelledToSwitchExpr(
 		switchExpr.PrependToLeading(labelDecl.TakeLeading())
 		switchExpr.LabelDecl = labelDecl.Value
 		return switchExpr, nil
-	case *ParseErrorSymbol:
+	case *ParseErrorNode:
 		return expr, nil
 	}
 
 	panic(fmt.Sprintf("Unexpected expression: %v", expr))
 }
 
-func (reducer *SwitchExprReducerImpl) ToSwitchExprBody(
-	switchKW *TokenValue,
+func (reducer *Reducer) ToSwitchExprBody(
+	switchKW *parser.TokenValue,
 	operand Expression,
 	expr Expression,
 ) (
@@ -977,7 +878,7 @@ func (reducer *SwitchExprReducerImpl) ToSwitchExprBody(
 
 		reducer.SwitchExprs = append(reducer.SwitchExprs, switchExpr)
 		return switchExpr, nil
-	case *ParseErrorSymbol:
+	case *ParseErrorNode:
 		return expr, nil
 	}
 
@@ -988,15 +889,8 @@ func (reducer *SwitchExprReducerImpl) ToSwitchExprBody(
 // SelectExpr
 //
 
-type SelectExprReducerImpl struct {
-	SelectExprs []*SelectExpr
-}
-
-var _ SelectExprReducer = &SelectExprReducerImpl{}
-var _ SelectExprBodyReducer = &SelectExprReducerImpl{}
-
-func (reducer *SelectExprReducerImpl) LabelledToSelectExpr(
-	labelDecl *TokenValue,
+func (reducer *Reducer) LabelledToSelectExpr(
+	labelDecl *parser.TokenValue,
 	expr Expression,
 ) (
 	Expression,
@@ -1009,15 +903,15 @@ func (reducer *SelectExprReducerImpl) LabelledToSelectExpr(
 		selectExpr.PrependToLeading(labelDecl.TakeLeading())
 		selectExpr.LabelDecl = labelDecl.Value
 		return selectExpr, nil
-	case *ParseErrorSymbol:
+	case *ParseErrorNode:
 		return expr, nil
 	}
 
 	panic(fmt.Sprintf("Unexpected expression: %v", expr))
 }
 
-func (reducer *SelectExprReducerImpl) ToSelectExprBody(
-	switchKW *TokenValue,
+func (reducer *Reducer) ToSelectExprBody(
+	switchKW *parser.TokenValue,
 	expr Expression,
 ) (
 	Expression,
@@ -1038,7 +932,7 @@ func (reducer *SelectExprReducerImpl) ToSelectExprBody(
 
 		reducer.SelectExprs = append(reducer.SelectExprs, selectExpr)
 		return selectExpr, nil
-	case *ParseErrorSymbol:
+	case *ParseErrorNode:
 		return expr, nil
 	}
 
@@ -1049,18 +943,8 @@ func (reducer *SelectExprReducerImpl) ToSelectExprBody(
 // LoopExpr
 //
 
-type LoopExprReducerImpl struct {
-	LoopExprs []*LoopExpr
-}
-
-var _ LoopExprReducer = &LoopExprReducerImpl{}
-var _ LoopExprBodyReducer = &LoopExprReducerImpl{}
-var _ OptionalSequenceStatementReducer = &LoopExprReducerImpl{}
-var _ OptionalSequenceExprReducer = &LoopExprReducerImpl{}
-var _ LoopBodyReducer = &LoopExprReducerImpl{}
-
-func (reducer *LoopExprReducerImpl) LabelledToLoopExpr(
-	labelDecl *TokenValue,
+func (reducer *Reducer) LabelledToLoopExpr(
+	labelDecl *parser.TokenValue,
 	expr Expression,
 ) (
 	Expression,
@@ -1073,14 +957,14 @@ func (reducer *LoopExprReducerImpl) LabelledToLoopExpr(
 		loop.PrependToLeading(labelDecl.TakeLeading())
 		loop.LabelDecl = labelDecl.Value
 		return loop, nil
-	case *ParseErrorSymbol:
+	case *ParseErrorNode:
 		return expr, nil
 	}
 
 	panic(fmt.Sprintf("Unexpected expression: %v", expr))
 }
 
-func (reducer *LoopExprReducerImpl) InfiniteToLoopExprBody(
+func (reducer *Reducer) InfiniteToLoopExprBody(
 	bodyExpr Expression,
 ) (
 	Expression,
@@ -1100,16 +984,16 @@ func (reducer *LoopExprReducerImpl) InfiniteToLoopExprBody(
 		loop.TrailingComment = trailing
 
 		return loop, nil
-	case *ParseErrorSymbol:
+	case *ParseErrorNode:
 		return bodyExpr, nil
 	}
 
 	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
 }
 
-func (reducer *LoopExprReducerImpl) DoWhileToLoopExprBody(
+func (reducer *Reducer) DoWhileToLoopExprBody(
 	bodyExpr Expression,
-	forKW *TokenValue,
+	forKW *parser.TokenValue,
 	condition Expression,
 ) (
 	Expression,
@@ -1132,15 +1016,15 @@ func (reducer *LoopExprReducerImpl) DoWhileToLoopExprBody(
 		loop.TrailingComment = trailing
 
 		return loop, nil
-	case *ParseErrorSymbol:
+	case *ParseErrorNode:
 		return bodyExpr, nil
 	}
 
 	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
 }
 
-func (reducer *LoopExprReducerImpl) WhileToLoopExprBody(
-	forKW *TokenValue,
+func (reducer *Reducer) WhileToLoopExprBody(
+	forKW *parser.TokenValue,
 	condition Expression,
 	bodyExpr Expression,
 ) (
@@ -1163,17 +1047,17 @@ func (reducer *LoopExprReducerImpl) WhileToLoopExprBody(
 		loop.TrailingComment = trailing
 
 		return loop, nil
-	case *ParseErrorSymbol:
+	case *ParseErrorNode:
 		return bodyExpr, nil
 	}
 
 	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
 }
 
-func (reducer *LoopExprReducerImpl) IteratorToLoopExprBody(
-	forKW *TokenValue,
+func (reducer *Reducer) IteratorToLoopExprBody(
+	forKW *parser.TokenValue,
 	assignPattern Expression,
-	in *TokenValue,
+	in *parser.TokenValue,
 	iterator Expression,
 	bodyExpr Expression,
 ) (
@@ -1199,19 +1083,19 @@ func (reducer *LoopExprReducerImpl) IteratorToLoopExprBody(
 		loop.TrailingComment = trailing
 
 		return loop, nil
-	case *ParseErrorSymbol:
+	case *ParseErrorNode:
 		return bodyExpr, nil
 	}
 
 	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
 }
 
-func (reducer *LoopExprReducerImpl) ForToLoopExprBody(
-	forKW *TokenValue,
+func (reducer *Reducer) ForToLoopExprBody(
+	forKW *parser.TokenValue,
 	init Statement,
-	semicolon1 *TokenValue,
+	semicolon1 *parser.TokenValue,
 	condition Expression,
-	semicolon2 *TokenValue,
+	semicolon2 *parser.TokenValue,
 	post Statement,
 	bodyExpr Expression,
 ) (
@@ -1257,29 +1141,29 @@ func (reducer *LoopExprReducerImpl) ForToLoopExprBody(
 		loop.TrailingComment = trailing
 
 		return loop, nil
-	case *ParseErrorSymbol:
+	case *ParseErrorNode:
 		return bodyExpr, nil
 	}
 
 	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
 }
 
-func (reducer *LoopExprReducerImpl) NilToOptionalSequenceStatement() (
+func (reducer *Reducer) NilToOptionalSequenceStatement() (
 	Statement,
 	error,
 ) {
 	return nil, nil
 }
 
-func (reducer *LoopExprReducerImpl) NilToOptionalSequenceExpr() (
+func (reducer *Reducer) NilToOptionalSequenceExpr() (
 	Expression,
 	error,
 ) {
 	return nil, nil
 }
 
-func (reducer *LoopExprReducerImpl) ToLoopBody(
-	do *TokenValue,
+func (reducer *Reducer) ToLoopBody(
+	do *parser.TokenValue,
 	expr Expression,
 ) (
 	Expression,
@@ -1291,7 +1175,7 @@ func (reducer *LoopExprReducerImpl) ToLoopBody(
 		body.PrependToLeading(do.TakeTrailing())
 		body.PrependToLeading(do.TakeLeading())
 		return body, nil
-	case *ParseErrorSymbol:
+	case *ParseErrorNode:
 		return expr, nil
 	}
 

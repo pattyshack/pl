@@ -54,7 +54,7 @@ func (list *NodeList[T]) Add(element T) {
 	list.Elements = append(list.Elements, element)
 }
 
-func (list *NodeList[T]) ReduceAdd(separator ValueNode, element T) {
+func (list *NodeList[T]) ReduceAdd(separator ValuedNode, element T) {
 	prev := list.Elements[len(list.Elements)-1]
 	prev.AppendToTrailing(separator.TakeLeading())
 	prev.AppendToTrailing(separator.TakeTrailing())
@@ -62,7 +62,7 @@ func (list *NodeList[T]) ReduceAdd(separator ValueNode, element T) {
 	list.Add(element)
 }
 
-func (list *NodeList[T]) ReduceImproper(separator ValueNode) {
+func (list *NodeList[T]) ReduceImproper(separator ValuedNode) {
 	list.EndPos = separator.End()
 
 	lastElement := list.Elements[len(list.Elements)-1]
@@ -70,7 +70,7 @@ func (list *NodeList[T]) ReduceImproper(separator ValueNode) {
 	lastElement.AppendToTrailing(separator.TakeTrailing())
 }
 
-func (list *NodeList[T]) ReduceMarkers(start ValueNode, end ValueNode) {
+func (list *NodeList[T]) ReduceMarkers(start ValuedNode, end ValuedNode) {
 	list.StartPos = start.Loc()
 	list.EndPos = end.End()
 

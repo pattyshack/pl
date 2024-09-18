@@ -1,23 +1,20 @@
-package parser
+package reducer
 
 import (
+	"github.com/pattyshack/gt/lexutil"
+
 	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/parser"
 )
 
 //
 // SliceTypeExpr
 //
 
-type SliceTypeExprReducerImpl struct {
-	SliceTypeExprs []*SliceTypeExpr
-}
-
-var _ SliceTypeExprReducer = &SliceTypeExprReducerImpl{}
-
-func (reducer *SliceTypeExprReducerImpl) ToSliceTypeExpr(
-	lbracket *TokenValue,
+func (reducer *Reducer) ToSliceTypeExpr(
+	lbracket *parser.TokenValue,
 	value TypeExpression,
-	rbracket *TokenValue,
+	rbracket *parser.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -40,18 +37,12 @@ func (reducer *SliceTypeExprReducerImpl) ToSliceTypeExpr(
 // ArrayTypeExpr
 //
 
-type ArrayTypeExprReducerImpl struct {
-	ArrayTypeExprs []*ArrayTypeExpr
-}
-
-var _ ArrayTypeExprReducer = &ArrayTypeExprReducerImpl{}
-
-func (reducer *ArrayTypeExprReducerImpl) ToArrayTypeExpr(
-	lbracket *TokenValue,
+func (reducer *Reducer) ToArrayTypeExpr(
+	lbracket *parser.TokenValue,
 	value TypeExpression,
-	comma *TokenValue,
-	size *TokenValue,
-	rbracket *TokenValue,
+	comma *parser.TokenValue,
+	size *parser.TokenValue,
+	rbracket *parser.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -77,18 +68,12 @@ func (reducer *ArrayTypeExprReducerImpl) ToArrayTypeExpr(
 // MapTypeExpr
 //
 
-type MapTypeExprReducerImpl struct {
-	MapTypeExprs []*MapTypeExpr
-}
-
-var _ MapTypeExprReducer = &MapTypeExprReducerImpl{}
-
-func (reducer *MapTypeExprReducerImpl) ToMapTypeExpr(
-	lbracket *TokenValue,
+func (reducer *Reducer) ToMapTypeExpr(
+	lbracket *parser.TokenValue,
 	key TypeExpression,
-	semicolon *TokenValue,
+	semicolon *parser.TokenValue,
 	value TypeExpression,
-	rbracket *TokenValue,
+	rbracket *parser.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -114,14 +99,8 @@ func (reducer *MapTypeExprReducerImpl) ToMapTypeExpr(
 // InferredTypeExpr
 //
 
-type InferredTypeExprReducerImpl struct {
-	InferredTypeExprs []*InferredTypeExpr
-}
-
-var _ InferredTypeExprReducer = &InferredTypeExprReducerImpl{}
-
-func (reducer *InferredTypeExprReducerImpl) DotToInferredTypeExpr(
-	dot *TokenValue,
+func (reducer *Reducer) DotToInferredTypeExpr(
+	dot *parser.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -136,8 +115,8 @@ func (reducer *InferredTypeExprReducerImpl) DotToInferredTypeExpr(
 	return expr, nil
 }
 
-func (reducer *InferredTypeExprReducerImpl) UnderscoreToInferredTypeExpr(
-	underscore *TokenValue,
+func (reducer *Reducer) UnderscoreToInferredTypeExpr(
+	underscore *parser.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -156,17 +135,11 @@ func (reducer *InferredTypeExprReducerImpl) UnderscoreToInferredTypeExpr(
 // NamedTypeExpr
 //
 
-type NamedTypeExprReducerImpl struct {
-	NamedTypeExprs []*NamedTypeExpr
-}
-
-var _ NamedTypeExprReducer = &NamedTypeExprReducerImpl{}
-
-func (reducer *NamedTypeExprReducerImpl) toNamedTypeExpr(
-	name *TokenValue,
+func (reducer *Reducer) toNamedTypeExpr(
+	name *parser.TokenValue,
 	genericArguments *GenericArgumentList,
 ) *NamedTypeExpr {
-	var endPos Location
+	var endPos lexutil.Location
 	var trailing CommentGroups
 	if genericArguments == nil {
 		genericArguments = &GenericArgumentList{}
@@ -189,8 +162,8 @@ func (reducer *NamedTypeExprReducerImpl) toNamedTypeExpr(
 	return named
 }
 
-func (reducer *NamedTypeExprReducerImpl) LocalToNamedTypeExpr(
-	name *TokenValue,
+func (reducer *Reducer) LocalToNamedTypeExpr(
+	name *parser.TokenValue,
 	genericArguments *GenericArgumentList,
 ) (
 	TypeExpression,
@@ -201,10 +174,10 @@ func (reducer *NamedTypeExprReducerImpl) LocalToNamedTypeExpr(
 	return named, nil
 }
 
-func (reducer *NamedTypeExprReducerImpl) ExternalToNamedTypeExpr(
-	pkg *TokenValue,
-	dot *TokenValue,
-	name *TokenValue,
+func (reducer *Reducer) ExternalToNamedTypeExpr(
+	pkg *parser.TokenValue,
+	dot *parser.TokenValue,
+	name *parser.TokenValue,
 	genericArguments *GenericArgumentList,
 ) (
 	TypeExpression,
@@ -225,14 +198,8 @@ func (reducer *NamedTypeExprReducerImpl) ExternalToNamedTypeExpr(
 // UnaryTypeExpr
 //
 
-type UnaryTypeExprReducerImpl struct {
-	UnaryTypeExprs []*UnaryTypeExpr
-}
-
-var _ PrefixUnaryTypeExprReducer = &UnaryTypeExprReducerImpl{}
-
-func (reducer *UnaryTypeExprReducerImpl) ToPrefixUnaryTypeExpr(
-	op *TokenValue,
+func (reducer *Reducer) ToPrefixUnaryTypeExpr(
+	op *parser.TokenValue,
 	operand TypeExpression,
 ) (
 	TypeExpression,
@@ -256,15 +223,9 @@ func (reducer *UnaryTypeExprReducerImpl) ToPrefixUnaryTypeExpr(
 // BinaryTypeExpr
 //
 
-type BinaryTypeExprReducerImpl struct {
-	BinaryTypeExprs []*BinaryTypeExpr
-}
-
-var _ BinaryTypeExprReducer = &BinaryTypeExprReducerImpl{}
-
-func (reducer *BinaryTypeExprReducerImpl) ToBinaryTypeExpr(
+func (reducer *Reducer) ToBinaryTypeExpr(
 	left TypeExpression,
-	op *TokenValue,
+	op *parser.TokenValue,
 	right TypeExpression,
 ) (
 	TypeExpression,
@@ -290,23 +251,11 @@ func (reducer *BinaryTypeExprReducerImpl) ToBinaryTypeExpr(
 // Struct / Enum / Trait PropertiesType
 //
 
-type PropertiesTypeExprReducer struct {
-	StructTypeExprs []*PropertiesTypeExpr
-	EnumTypeExprs   []*PropertiesTypeExpr
-	TraitTypeExprs  []*PropertiesTypeExpr
-}
-
-var _ ImplicitStructTypeExprReducer = &PropertiesTypeExprReducer{}
-var _ ExplicitStructTypeExprReducer = &PropertiesTypeExprReducer{}
-var _ TraitTypeExprReducer = &PropertiesTypeExprReducer{}
-var _ ImplicitEnumTypeExprReducer = &PropertiesTypeExprReducer{}
-var _ ExplicitEnumTypeExprReducer = &PropertiesTypeExprReducer{}
-
-func (PropertiesTypeExprReducer) implicit(
+func (reducer *Reducer) implicit(
 	kind PropertiesKind,
-	lparen *TokenValue,
+	lparen *parser.TokenValue,
 	properties *TypePropertyList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) *PropertiesTypeExpr {
 	properties.ReduceMarkers(lparen, rparen)
 	expr := &PropertiesTypeExpr{
@@ -321,12 +270,12 @@ func (PropertiesTypeExprReducer) implicit(
 	return expr
 }
 
-func (PropertiesTypeExprReducer) explicit(
+func (reducer *Reducer) explicit(
 	kind PropertiesKind,
-	kw *TokenValue,
-	lparen *TokenValue,
+	kw *parser.TokenValue,
+	lparen *parser.TokenValue,
 	properties *TypePropertyList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) *PropertiesTypeExpr {
 	properties.ReduceMarkers(lparen, rparen)
 
@@ -345,10 +294,10 @@ func (PropertiesTypeExprReducer) explicit(
 	return expr
 }
 
-func (reducer *PropertiesTypeExprReducer) ToImplicitStructTypeExpr(
-	lparen *TokenValue,
+func (reducer *Reducer) ToImplicitStructTypeExpr(
+	lparen *parser.TokenValue,
 	properties *TypePropertyList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -358,11 +307,11 @@ func (reducer *PropertiesTypeExprReducer) ToImplicitStructTypeExpr(
 	return expr, nil
 }
 
-func (reducer *PropertiesTypeExprReducer) ToExplicitStructTypeExpr(
-	structKW *TokenValue,
-	lparen *TokenValue,
+func (reducer *Reducer) ToExplicitStructTypeExpr(
+	structKW *parser.TokenValue,
+	lparen *parser.TokenValue,
 	properties *TypePropertyList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -372,11 +321,11 @@ func (reducer *PropertiesTypeExprReducer) ToExplicitStructTypeExpr(
 	return expr, nil
 }
 
-func (reducer *PropertiesTypeExprReducer) ToTraitTypeExpr(
-	trait *TokenValue,
-	lparen *TokenValue,
+func (reducer *Reducer) ToTraitTypeExpr(
+	trait *parser.TokenValue,
+	lparen *parser.TokenValue,
 	properties *TypePropertyList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -386,10 +335,10 @@ func (reducer *PropertiesTypeExprReducer) ToTraitTypeExpr(
 	return expr, nil
 }
 
-func (reducer *PropertiesTypeExprReducer) ToImplicitEnumTypeExpr(
-	lparen *TokenValue,
+func (reducer *Reducer) ToImplicitEnumTypeExpr(
+	lparen *parser.TokenValue,
 	properties *TypePropertyList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -399,11 +348,11 @@ func (reducer *PropertiesTypeExprReducer) ToImplicitEnumTypeExpr(
 	return expr, nil
 }
 
-func (reducer *PropertiesTypeExprReducer) ToExplicitEnumTypeExpr(
-	enum *TokenValue,
-	lparen *TokenValue,
+func (reducer *Reducer) ToExplicitEnumTypeExpr(
+	enum *parser.TokenValue,
+	lparen *parser.TokenValue,
 	properties *TypePropertyList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) (
 	TypeExpression,
 	error,

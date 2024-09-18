@@ -1,33 +1,21 @@
-package parser
+package reducer
 
 import (
 	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/parser"
 )
 
-type FuncReducerImpl struct {
-	FuncTypeExprs []*FuncSignature
-
-	FuncDefinitions    []*FuncDefinition
-	MethodDefinitions  []*FuncDefinition
-	AnonymousFuncExprs []*FuncDefinition
-}
-
-var _ FuncTypeExprReducer = &FuncReducerImpl{}
-var _ MethodSignatureReducer = &FuncReducerImpl{}
-var _ NamedFuncDefReducer = &FuncReducerImpl{}
-var _ AnonymousFuncExprReducer = &FuncReducerImpl{}
-
-func (reducer *FuncReducerImpl) NilToReturnType() (
+func (reducer *Reducer) NilToReturnType() (
 	TypeExpression,
 	error,
 ) {
 	return nil, nil
 }
 
-func (reducer *FuncReducerImpl) toFuncSignature(
-	funcKW *TokenValue,
+func (reducer *Reducer) toFuncSignature(
+	funcKW *parser.TokenValue,
 	receiver *Parameter, // optional
-	nameToken *TokenValue, // optional
+	nameToken *parser.TokenValue, // optional
 	genericParameters *GenericParameterList, // optional
 	parameters *ParameterList,
 	returnType TypeExpression,
@@ -82,10 +70,10 @@ func (reducer *FuncReducerImpl) toFuncSignature(
 	return sig
 }
 
-func (reducer *FuncReducerImpl) toFuncDefinition(
-	funcKW *TokenValue,
+func (reducer *Reducer) toFuncDefinition(
+	funcKW *parser.TokenValue,
 	receiver *Parameter,
-	nameToken *TokenValue,
+	nameToken *parser.TokenValue,
 	genericParameters *GenericParameterList,
 	parameters *ParameterList,
 	returnType TypeExpression,
@@ -110,8 +98,8 @@ func (reducer *FuncReducerImpl) toFuncDefinition(
 	}
 }
 
-func (reducer *FuncReducerImpl) ToFuncTypeExpr(
-	funcKW *TokenValue,
+func (reducer *Reducer) ToFuncTypeExpr(
+	funcKW *parser.TokenValue,
 	parameters *ParameterList,
 	returnType TypeExpression,
 ) (
@@ -129,9 +117,9 @@ func (reducer *FuncReducerImpl) ToFuncTypeExpr(
 	return sig, nil
 }
 
-func (reducer *FuncReducerImpl) ToMethodSignature(
-	funcKW *TokenValue,
-	name *TokenValue,
+func (reducer *Reducer) ToMethodSignature(
+	funcKW *parser.TokenValue,
+	name *parser.TokenValue,
 	parameters *ParameterList,
 	returnType TypeExpression,
 ) (
@@ -147,9 +135,9 @@ func (reducer *FuncReducerImpl) ToMethodSignature(
 		returnType), nil
 }
 
-func (reducer *FuncReducerImpl) FuncDefToNamedFuncDef(
-	funcKW *TokenValue,
-	name *TokenValue,
+func (reducer *Reducer) FuncDefToNamedFuncDef(
+	funcKW *parser.TokenValue,
+	name *parser.TokenValue,
 	genericParameters *GenericParameterList,
 	parameters *ParameterList,
 	returnType TypeExpression,
@@ -171,12 +159,12 @@ func (reducer *FuncReducerImpl) FuncDefToNamedFuncDef(
 	return def, nil
 }
 
-func (reducer *FuncReducerImpl) MethodDefToNamedFuncDef(
-	funcKW *TokenValue,
-	lparen *TokenValue,
+func (reducer *Reducer) MethodDefToNamedFuncDef(
+	funcKW *parser.TokenValue,
+	lparen *parser.TokenValue,
 	receiver *Parameter,
-	rparen *TokenValue,
-	name *TokenValue,
+	rparen *parser.TokenValue,
+	name *parser.TokenValue,
 	parameters *ParameterList,
 	returnType TypeExpression,
 	body Expression,
@@ -201,8 +189,8 @@ func (reducer *FuncReducerImpl) MethodDefToNamedFuncDef(
 	return def, nil
 }
 
-func (reducer *FuncReducerImpl) ToAnonymousFuncExpr(
-	funcKW *TokenValue,
+func (reducer *Reducer) ToAnonymousFuncExpr(
+	funcKW *parser.TokenValue,
 	parameters *ParameterList,
 	returnType TypeExpression,
 	body Expression,

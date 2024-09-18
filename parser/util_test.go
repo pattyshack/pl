@@ -11,7 +11,7 @@ import (
 func expectError(t *testing.T, token Token, errMsg string) {
 	pe, ok := token.(*ParseErrorSymbol)
 	expect.True(t, ok)
-	expect.Error(t, pe.Error, errMsg)
+	expect.Error(t, pe.Errors[0], errMsg)
 }
 
 func expectValue(

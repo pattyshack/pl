@@ -1,22 +1,17 @@
-package parser
+package reducer
 
 import (
 	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/parser"
 )
 
 //
 // Parameter
 //
 
-type ParameterReducerImpl struct{}
-
-var _ ProperParameterDefReducer = &ParameterReducerImpl{}
-var _ ParameterDeclReducer = &ParameterReducerImpl{}
-var _ ParameterDefReducer = &ParameterReducerImpl{}
-
-func (reducer *ParameterReducerImpl) namedTypedArg(
+func (reducer *Reducer) namedTypedArg(
 	kind ParameterKind,
-	name *TokenValue,
+	name *parser.TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
@@ -34,8 +29,8 @@ func (reducer *ParameterReducerImpl) namedTypedArg(
 	return param, nil
 }
 
-func (reducer *ParameterReducerImpl) NamedTypedArgToProperParameterDef(
-	name *TokenValue,
+func (reducer *Reducer) NamedTypedArgToProperParameterDef(
+	name *parser.TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
@@ -44,8 +39,8 @@ func (reducer *ParameterReducerImpl) NamedTypedArgToProperParameterDef(
 	return reducer.namedTypedArg(NamedTypedArgParameter, name, typeExpr)
 }
 
-func (reducer *ParameterReducerImpl) IgnoreTypedArgToProperParameterDef(
-	underscore *TokenValue,
+func (reducer *Reducer) IgnoreTypedArgToProperParameterDef(
+	underscore *parser.TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
@@ -54,10 +49,10 @@ func (reducer *ParameterReducerImpl) IgnoreTypedArgToProperParameterDef(
 	return reducer.namedTypedArg(IgnoreTypedArgParameter, underscore, typeExpr)
 }
 
-func (reducer *ParameterReducerImpl) namedTypedVararg(
+func (reducer *Reducer) namedTypedVararg(
 	kind ParameterKind,
-	name *TokenValue,
-	ellipsis *TokenValue,
+	name *parser.TokenValue,
+	ellipsis *parser.TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
@@ -77,9 +72,9 @@ func (reducer *ParameterReducerImpl) namedTypedVararg(
 	return param, nil
 }
 
-func (reducer *ParameterReducerImpl) NamedTypedVarargToProperParameterDef(
-	name *TokenValue,
-	ellipsis *TokenValue,
+func (reducer *Reducer) NamedTypedVarargToProperParameterDef(
+	name *parser.TokenValue,
+	ellipsis *parser.TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
@@ -92,9 +87,9 @@ func (reducer *ParameterReducerImpl) NamedTypedVarargToProperParameterDef(
 		typeExpr)
 }
 
-func (reducer *ParameterReducerImpl) IgnoreTypedVarargToProperParameterDef(
-	underscore *TokenValue,
-	ellipsis *TokenValue,
+func (reducer *Reducer) IgnoreTypedVarargToProperParameterDef(
+	underscore *parser.TokenValue,
+	ellipsis *parser.TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
@@ -107,10 +102,10 @@ func (reducer *ParameterReducerImpl) IgnoreTypedVarargToProperParameterDef(
 		typeExpr)
 }
 
-func (reducer *ParameterReducerImpl) namedInferredVararg(
+func (reducer *Reducer) namedInferredVararg(
 	kind ParameterKind,
-	name *TokenValue,
-	ellipsis *TokenValue,
+	name *parser.TokenValue,
+	ellipsis *parser.TokenValue,
 ) (
 	*Parameter,
 	error,
@@ -128,9 +123,9 @@ func (reducer *ParameterReducerImpl) namedInferredVararg(
 	return param, nil
 }
 
-func (reducer *ParameterReducerImpl) NamedInferredVarargToProperParameterDef(
-	name *TokenValue,
-	ellipsis *TokenValue,
+func (reducer *Reducer) NamedInferredVarargToProperParameterDef(
+	name *parser.TokenValue,
+	ellipsis *parser.TokenValue,
 ) (
 	*Parameter,
 	error,
@@ -141,9 +136,9 @@ func (reducer *ParameterReducerImpl) NamedInferredVarargToProperParameterDef(
 		ellipsis)
 }
 
-func (reducer *ParameterReducerImpl) IgnoreInferredVarargToProperParameterDef(
-	underscore *TokenValue,
-	ellipsis *TokenValue,
+func (reducer *Reducer) IgnoreInferredVarargToProperParameterDef(
+	underscore *parser.TokenValue,
+	ellipsis *parser.TokenValue,
 ) (
 	*Parameter,
 	error,
@@ -154,7 +149,7 @@ func (reducer *ParameterReducerImpl) IgnoreInferredVarargToProperParameterDef(
 		ellipsis)
 }
 
-func (reducer *ParameterReducerImpl) UnnamedTypedArgToParameterDecl(
+func (reducer *Reducer) UnnamedTypedArgToParameterDecl(
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
@@ -172,8 +167,8 @@ func (reducer *ParameterReducerImpl) UnnamedTypedArgToParameterDecl(
 	return param, nil
 }
 
-func (reducer *ParameterReducerImpl) UnnamedInferredVarargToParameterDecl(
-	ellipsis *TokenValue,
+func (reducer *Reducer) UnnamedInferredVarargToParameterDecl(
+	ellipsis *parser.TokenValue,
 ) (
 	*Parameter,
 	error,
@@ -189,8 +184,8 @@ func (reducer *ParameterReducerImpl) UnnamedInferredVarargToParameterDecl(
 	return param, nil
 }
 
-func (reducer *ParameterReducerImpl) UnnamedTypedVarargToParameterDecl(
-	ellipsis *TokenValue,
+func (reducer *Reducer) UnnamedTypedVarargToParameterDecl(
+	ellipsis *parser.TokenValue,
 	typeExpr TypeExpression,
 ) (
 	*Parameter,
@@ -209,9 +204,9 @@ func (reducer *ParameterReducerImpl) UnnamedTypedVarargToParameterDecl(
 	return param, nil
 }
 
-func (reducer *ParameterReducerImpl) namedInferredArg(
+func (reducer *Reducer) namedInferredArg(
 	kind ParameterKind,
-	name *TokenValue,
+	name *parser.TokenValue,
 ) (
 	*Parameter,
 	error,
@@ -228,8 +223,8 @@ func (reducer *ParameterReducerImpl) namedInferredArg(
 	return param, nil
 }
 
-func (reducer *ParameterReducerImpl) NamedInferredArgToParameterDef(
-	name *TokenValue,
+func (reducer *Reducer) NamedInferredArgToParameterDef(
+	name *parser.TokenValue,
 ) (
 	*Parameter,
 	error,
@@ -237,8 +232,8 @@ func (reducer *ParameterReducerImpl) NamedInferredArgToParameterDef(
 	return reducer.namedInferredArg(NamedInferredArgParameter, name)
 }
 
-func (reducer *ParameterReducerImpl) IgnoreInferredArgToParameterDef(
-	underscore *TokenValue,
+func (reducer *Reducer) IgnoreInferredArgToParameterDef(
+	underscore *parser.TokenValue,
 ) (
 	*Parameter,
 	error,
@@ -250,18 +245,9 @@ func (reducer *ParameterReducerImpl) IgnoreInferredArgToParameterDef(
 // ParameterList
 //
 
-type ParameterListReducerImpl struct{}
-
-var _ ProperParameterDeclListReducer = &ParameterListReducerImpl{}
-var _ ParameterDeclListReducer = &ParameterListReducerImpl{}
-var _ ParameterDeclsReducer = &ParameterListReducerImpl{}
-var _ ProperParameterDefListReducer = &ParameterListReducerImpl{}
-var _ ParameterDefListReducer = &ParameterListReducerImpl{}
-var _ ParameterDefsReducer = &ParameterListReducerImpl{}
-
-func (reducer *ParameterListReducerImpl) AddToProperParameterDeclList(
+func (reducer *Reducer) AddToProperParameterDeclList(
 	list *ParameterList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 	parameter *Parameter,
 ) (
 	*ParameterList,
@@ -271,7 +257,7 @@ func (reducer *ParameterListReducerImpl) AddToProperParameterDeclList(
 	return list, nil
 }
 
-func (reducer *ParameterListReducerImpl) ParameterDeclToProperParameterDeclList(
+func (reducer *Reducer) ParameterDeclToProperParameterDeclList(
 	parameter *Parameter,
 ) (
 	*ParameterList,
@@ -282,9 +268,9 @@ func (reducer *ParameterListReducerImpl) ParameterDeclToProperParameterDeclList(
 	return list, nil
 }
 
-func (reducer *ParameterListReducerImpl) ImproperToParameterDeclList(
+func (reducer *Reducer) ImproperToParameterDeclList(
 	list *ParameterList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 ) (
 	*ParameterList,
 	error,
@@ -293,17 +279,17 @@ func (reducer *ParameterListReducerImpl) ImproperToParameterDeclList(
 	return list, nil
 }
 
-func (reducer *ParameterListReducerImpl) NilToParameterDeclList() (
+func (reducer *Reducer) NilToParameterDeclList() (
 	*ParameterList,
 	error,
 ) {
 	return NewParameterList(), nil
 }
 
-func (reducer *ParameterListReducerImpl) ToParameterDecls(
-	lparen *TokenValue,
+func (reducer *Reducer) ToParameterDecls(
+	lparen *parser.TokenValue,
 	list *ParameterList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) (
 	*ParameterList,
 	error,
@@ -312,9 +298,9 @@ func (reducer *ParameterListReducerImpl) ToParameterDecls(
 	return list, nil
 }
 
-func (reducer *ParameterListReducerImpl) AddToProperParameterDefList(
+func (reducer *Reducer) AddToProperParameterDefList(
 	list *ParameterList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 	parameter *Parameter,
 ) (
 	*ParameterList,
@@ -324,7 +310,7 @@ func (reducer *ParameterListReducerImpl) AddToProperParameterDefList(
 	return list, nil
 }
 
-func (reducer *ParameterListReducerImpl) ParameterDefToProperParameterDefList(
+func (reducer *Reducer) ParameterDefToProperParameterDefList(
 	parameter *Parameter,
 ) (
 	*ParameterList,
@@ -335,9 +321,9 @@ func (reducer *ParameterListReducerImpl) ParameterDefToProperParameterDefList(
 	return list, nil
 }
 
-func (reducer *ParameterListReducerImpl) ImproperToParameterDefList(
+func (reducer *Reducer) ImproperToParameterDefList(
 	list *ParameterList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 ) (
 	*ParameterList,
 	error,
@@ -346,17 +332,17 @@ func (reducer *ParameterListReducerImpl) ImproperToParameterDefList(
 	return list, nil
 }
 
-func (reducer *ParameterListReducerImpl) NilToParameterDefList() (
+func (reducer *Reducer) NilToParameterDefList() (
 	*ParameterList,
 	error,
 ) {
 	return NewParameterList(), nil
 }
 
-func (reducer *ParameterListReducerImpl) ToParameterDefs(
-	lparen *TokenValue,
+func (reducer *Reducer) ToParameterDefs(
+	lparen *parser.TokenValue,
 	list *ParameterList,
-	rparen *TokenValue,
+	rparen *parser.TokenValue,
 ) (
 	*ParameterList,
 	error,
@@ -369,13 +355,7 @@ func (reducer *ParameterListReducerImpl) ToParameterDefs(
 // Argument
 //
 
-type ArgumentReducerImpl struct {
-}
-
-var _ ArgumentReducer = ArgumentReducerImpl{}
-var _ FieldVarPatternReducer = ArgumentReducerImpl{}
-
-func (ArgumentReducerImpl) PositionalToArgument(
+func (Reducer) PositionalToArgument(
 	expr Expression,
 ) (
 	*Argument,
@@ -384,7 +364,7 @@ func (ArgumentReducerImpl) PositionalToArgument(
 	return NewPositionalArgument(expr), nil
 }
 
-func (ArgumentReducerImpl) ColonExprToArgument(
+func (Reducer) ColonExprToArgument(
 	expr *ColonExpr,
 ) (
 	*Argument,
@@ -402,9 +382,9 @@ func (ArgumentReducerImpl) ColonExprToArgument(
 	}, nil
 }
 
-func (ArgumentReducerImpl) NamedAssignmentToArgument(
-	name *TokenValue,
-	assign *TokenValue,
+func (Reducer) NamedAssignmentToArgument(
+	name *parser.TokenValue,
+	assign *parser.TokenValue,
 	expr Expression,
 ) (
 	*Argument,
@@ -413,9 +393,9 @@ func (ArgumentReducerImpl) NamedAssignmentToArgument(
 	return NewNamedArgument(name, assign, expr), nil
 }
 
-func (ArgumentReducerImpl) VarargAssignmentToArgument(
+func (Reducer) VarargAssignmentToArgument(
 	expr Expression,
-	ellipsis *TokenValue,
+	ellipsis *parser.TokenValue,
 ) (
 	*Argument,
 	error,
@@ -433,8 +413,8 @@ func (ArgumentReducerImpl) VarargAssignmentToArgument(
 	return arg, nil
 }
 
-func (ArgumentReducerImpl) SkipPatternToArgument(
-	ellipsis *TokenValue,
+func (Reducer) SkipPatternToArgument(
+	ellipsis *parser.TokenValue,
 ) (
 	*Argument,
 	error,
@@ -442,7 +422,7 @@ func (ArgumentReducerImpl) SkipPatternToArgument(
 	return NewSkipPatternArgument(ellipsis), nil
 }
 
-func (ArgumentReducerImpl) PositionalToFieldVarPattern(
+func (Reducer) PositionalToFieldVarPattern(
 	expr Expression,
 ) (
 	*Argument,
@@ -451,9 +431,9 @@ func (ArgumentReducerImpl) PositionalToFieldVarPattern(
 	return NewPositionalArgument(expr), nil
 }
 
-func (ArgumentReducerImpl) NamedAssignmentToFieldVarPattern(
-	name *TokenValue,
-	assign *TokenValue,
+func (Reducer) NamedAssignmentToFieldVarPattern(
+	name *parser.TokenValue,
+	assign *parser.TokenValue,
 	expr Expression,
 ) (
 	*Argument,
@@ -462,8 +442,8 @@ func (ArgumentReducerImpl) NamedAssignmentToFieldVarPattern(
 	return NewNamedArgument(name, assign, expr), nil
 }
 
-func (ArgumentReducerImpl) SkipPatternToFieldVarPattern(
-	ellipsis *TokenValue,
+func (Reducer) SkipPatternToFieldVarPattern(
+	ellipsis *parser.TokenValue,
 ) (
 	*Argument,
 	error,
@@ -475,16 +455,9 @@ func (ArgumentReducerImpl) SkipPatternToFieldVarPattern(
 // Argument list
 //
 
-type ArgumentListReducerImpl struct{}
-
-var _ ProperArgumentsReducer = &ArgumentListReducerImpl{}
-var _ ArgumentsReducer = &ArgumentListReducerImpl{}
-var _ ProperFieldVarPatternsReducer = &ArgumentListReducerImpl{}
-var _ FieldVarPatternsReducer = &ArgumentListReducerImpl{}
-
-func (reducer *ArgumentListReducerImpl) AddToProperArguments(
+func (reducer *Reducer) AddToProperArguments(
 	list *ArgumentList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 	arg *Argument,
 ) (
 	*ArgumentList,
@@ -494,7 +467,7 @@ func (reducer *ArgumentListReducerImpl) AddToProperArguments(
 	return list, nil
 }
 
-func (reducer *ArgumentListReducerImpl) ArgumentToProperArguments(
+func (reducer *Reducer) ArgumentToProperArguments(
 	arg *Argument,
 ) (
 	*ArgumentList,
@@ -505,9 +478,9 @@ func (reducer *ArgumentListReducerImpl) ArgumentToProperArguments(
 	return list, nil
 }
 
-func (reducer *ArgumentListReducerImpl) ImproperToArguments(
+func (reducer *Reducer) ImproperToArguments(
 	list *ArgumentList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 ) (
 	*ArgumentList,
 	error,
@@ -516,14 +489,14 @@ func (reducer *ArgumentListReducerImpl) ImproperToArguments(
 	return list, nil
 }
 
-func (reducer *ArgumentListReducerImpl) NilToArguments() (
+func (reducer *Reducer) NilToArguments() (
 	*ArgumentList,
 	error,
 ) {
 	return NewArgumentList(), nil
 }
 
-func (reducer *ArgumentListReducerImpl) FieldVarPatternToProperFieldVarPatterns(
+func (reducer *Reducer) FieldVarPatternToProperFieldVarPatterns(
 	pattern *Argument,
 ) (
 	*ArgumentList,
@@ -534,9 +507,9 @@ func (reducer *ArgumentListReducerImpl) FieldVarPatternToProperFieldVarPatterns(
 	return list, nil
 }
 
-func (reducer *ArgumentListReducerImpl) AddToProperFieldVarPatterns(
+func (reducer *Reducer) AddToProperFieldVarPatterns(
 	list *ArgumentList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 	pattern *Argument,
 ) (
 	*ArgumentList,
@@ -546,9 +519,9 @@ func (reducer *ArgumentListReducerImpl) AddToProperFieldVarPatterns(
 	return list, nil
 }
 
-func (reducer *ArgumentListReducerImpl) ImproperToFieldVarPatterns(
+func (reducer *Reducer) ImproperToFieldVarPatterns(
 	list *ArgumentList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 ) (
 	*ArgumentList,
 	error,

@@ -94,8 +94,8 @@ type JumpStatement struct {
 var _ Statement = &JumpStatement{}
 
 func NewJumpStatement(
-	op ValueNode,
-	labelToken ValueNode,
+	op ValuedNode,
+	labelToken ValuedNode,
 	value Expression,
 ) *JumpStatement {
 	start := op.Loc()

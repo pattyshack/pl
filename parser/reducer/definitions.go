@@ -1,33 +1,29 @@
-package parser
+package reducer
 
 import (
 	"fmt"
 
 	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/parser"
 )
 
 //
 // DefinitionList
 //
 
-type DefinitionListReducerImpl struct{}
-
-var _ ProperDefinitionsReducer = &DefinitionListReducerImpl{}
-var _ DefinitionsReducer = &DefinitionListReducerImpl{}
-
-func (DefinitionListReducerImpl) AddToProperDefinitions(
+func (reducer *Reducer) AddToProperDefinitions(
 	list *DefinitionList,
-	newlines TokenCount,
+	newlines parser.TokenCount,
 	def Definition,
 ) (
 	*DefinitionList,
 	error,
 ) {
-	list.ReduceAdd(&TokenValue{}, def)
+	list.ReduceAdd(&parser.TokenValue{}, def)
 	return list, nil
 }
 
-func (DefinitionListReducerImpl) DefinitionToProperDefinitions(
+func (reducer *Reducer) DefinitionToProperDefinitions(
 	def Definition,
 ) (
 	*DefinitionList,
@@ -38,9 +34,9 @@ func (DefinitionListReducerImpl) DefinitionToProperDefinitions(
 	return list, nil
 }
 
-func (DefinitionListReducerImpl) ImproperToDefinitions(
+func (reducer *Reducer) ImproperToDefinitions(
 	list *DefinitionList,
-	newlines TokenCount,
+	newlines parser.TokenCount,
 ) (
 	*DefinitionList,
 	error,
@@ -48,7 +44,7 @@ func (DefinitionListReducerImpl) ImproperToDefinitions(
 	return list, nil
 }
 
-func (DefinitionListReducerImpl) NilToDefinitions() (*DefinitionList, error) {
+func (reducer *Reducer) NilToDefinitions() (*DefinitionList, error) {
 	return NewDefinitionList(), nil
 }
 
@@ -56,12 +52,8 @@ func (DefinitionListReducerImpl) NilToDefinitions() (*DefinitionList, error) {
 // FloatingComment
 //
 
-type FloatingCommentReducerImpl struct{}
-
-var _ FloatingCommentReducer = &FloatingCommentReducerImpl{}
-
-func (FloatingCommentReducerImpl) ToFloatingComment(
-	comments CommentGroupsTok,
+func (reducer *Reducer) ToFloatingComment(
+	comments parser.CommentGroupsTok,
 ) (
 	Definition,
 	error,
@@ -77,12 +69,8 @@ func (FloatingCommentReducerImpl) ToFloatingComment(
 // PackageDef
 //
 
-type PackageDefReducerImpl struct{}
-
-var _ PackageDefReducer = &PackageDefReducerImpl{}
-
-func (PackageDefReducerImpl) ToPackageDef(
-	pkg *TokenValue,
+func (reducer *Reducer) ToPackageDef(
+	pkg *parser.TokenValue,
 	expr Expression,
 ) (
 	Definition,
@@ -98,7 +86,7 @@ func (PackageDefReducerImpl) ToPackageDef(
 		def.LeadingComment = pkg.TakeLeading()
 
 		return def, nil
-	case *ParseErrorSymbol:
+	case *ParseErrorNode:
 		return expr, nil
 	}
 
@@ -109,15 +97,9 @@ func (PackageDefReducerImpl) ToPackageDef(
 // TypeDef
 //
 
-type TypeDefReducerImpl struct {
-	TypeDefs []*TypeDef
-}
-
-var _ TypeDefReducer = &TypeDefReducerImpl{}
-
-func (reducer *TypeDefReducerImpl) DefinitionToTypeDef(
-	typeKW *TokenValue,
-	name *TokenValue,
+func (reducer *Reducer) DefinitionToTypeDef(
+	typeKW *parser.TokenValue,
+	name *parser.TokenValue,
 	genericParameters *GenericParameterList,
 	baseType TypeExpression,
 ) (
@@ -149,12 +131,12 @@ func (reducer *TypeDefReducerImpl) DefinitionToTypeDef(
 	return def, nil
 }
 
-func (reducer *TypeDefReducerImpl) ConstrainedDefToTypeDef(
-	typeKW *TokenValue,
-	name *TokenValue,
+func (reducer *Reducer) ConstrainedDefToTypeDef(
+	typeKW *parser.TokenValue,
+	name *parser.TokenValue,
 	genericParameters *GenericParameterList,
 	baseType TypeExpression,
-	implements *TokenValue,
+	implements *parser.TokenValue,
 	constraint TypeExpression,
 ) (
 	Definition,
@@ -189,10 +171,10 @@ func (reducer *TypeDefReducerImpl) ConstrainedDefToTypeDef(
 	return def, nil
 }
 
-func (reducer *TypeDefReducerImpl) AliasToTypeDef(
-	typeKW *TokenValue,
-	name *TokenValue,
-	assign *TokenValue,
+func (reducer *Reducer) AliasToTypeDef(
+	typeKW *parser.TokenValue,
+	name *parser.TokenValue,
+	assign *parser.TokenValue,
 	baseType TypeExpression,
 ) (
 	Definition,

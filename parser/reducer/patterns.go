@@ -1,20 +1,16 @@
-package parser
+package reducer
 
 import (
 	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/parser"
 )
 
 //
 // VarPattern
 //
 
-type VarPatternReducerImpl struct{}
-
-var _ DeclVarPatternReducer = VarPatternReducerImpl{}
-var _ AssignVarPatternReducer = VarPatternReducerImpl{}
-
-func (VarPatternReducerImpl) InferredToDeclVarPattern(
-	varType *TokenValue,
+func (reducer *Reducer) InferredToDeclVarPattern(
+	varType *parser.TokenValue,
 	pattern Expression,
 ) (
 	Expression,
@@ -23,8 +19,8 @@ func (VarPatternReducerImpl) InferredToDeclVarPattern(
 	return NewVarPattern(varType, pattern, nil), nil
 }
 
-func (VarPatternReducerImpl) TypedToDeclVarPattern(
-	varType *TokenValue,
+func (Reducer) TypedToDeclVarPattern(
+	varType *parser.TokenValue,
 	pattern Expression,
 	typeExpr TypeExpression,
 ) (
@@ -34,8 +30,8 @@ func (VarPatternReducerImpl) TypedToDeclVarPattern(
 	return NewVarPattern(varType, pattern, typeExpr), nil
 }
 
-func (VarPatternReducerImpl) ToAssignVarPattern(
-	varType *TokenValue,
+func (Reducer) ToAssignVarPattern(
+	varType *parser.TokenValue,
 	pattern Expression,
 ) (
 	Expression,
@@ -48,12 +44,7 @@ func (VarPatternReducerImpl) ToAssignVarPattern(
 // ExpressionList
 //
 
-type CasePatternsReducerImpl struct{}
-
-var _ CasePatternsReducer = &CasePatternsReducerImpl{}
-var _ SwitchableCasePatternsReducer = &CasePatternsReducerImpl{}
-
-func (CasePatternsReducerImpl) ToCasePatterns(
+func (Reducer) ToCasePatterns(
 	pattern *CaseAssignPattern,
 ) (
 	*ExpressionList,
@@ -64,7 +55,7 @@ func (CasePatternsReducerImpl) ToCasePatterns(
 	return list, nil
 }
 
-func (CasePatternsReducerImpl) SwitchableCasePatternToSwitchableCasePatterns(
+func (Reducer) SwitchableCasePatternToSwitchableCasePatterns(
 	pattern Expression,
 ) (
 	*ExpressionList,
@@ -75,9 +66,9 @@ func (CasePatternsReducerImpl) SwitchableCasePatternToSwitchableCasePatterns(
 	return list, nil
 }
 
-func (CasePatternsReducerImpl) AddToSwitchableCasePatterns(
+func (Reducer) AddToSwitchableCasePatterns(
 	list *ExpressionList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 	pattern Expression,
 ) (
 	*ExpressionList,
@@ -91,14 +82,9 @@ func (CasePatternsReducerImpl) AddToSwitchableCasePatterns(
 // CaseAssignPattern
 //
 
-type CaseAssignPatternReducerImpl struct{}
-
-var _ CaseAssignPatternReducer = CaseAssignPatternReducerImpl{}
-var _ CaseAssignExprReducer = CaseAssignPatternReducerImpl{}
-
-func (CaseAssignPatternReducerImpl) ToCaseAssignPattern(
+func (Reducer) ToCaseAssignPattern(
 	assignPattern *ExpressionList,
-	assign *TokenValue,
+	assign *parser.TokenValue,
 	value Expression,
 ) (
 	*CaseAssignPattern,
@@ -119,8 +105,8 @@ func (CaseAssignPatternReducerImpl) ToCaseAssignPattern(
 	return pattern, nil
 }
 
-func (CaseAssignPatternReducerImpl) ToCaseAssignExpr(
-	caseKW *TokenValue,
+func (Reducer) ToCaseAssignExpr(
+	caseKW *parser.TokenValue,
 	pattern *CaseAssignPattern,
 ) (
 	Expression,
@@ -135,13 +121,9 @@ func (CaseAssignPatternReducerImpl) ToCaseAssignExpr(
 // CaseEnumPattern
 //
 
-type CaseEnumPatternReducerImpl struct{}
-
-var _ CaseEnumPatternReducer = &CaseEnumPatternReducerImpl{}
-
-func (CaseEnumPatternReducerImpl) EnumMatchPatternToCaseEnumPattern(
-	dot *TokenValue,
-	enumValue *TokenValue,
+func (Reducer) EnumMatchPatternToCaseEnumPattern(
+	dot *parser.TokenValue,
+	enumValue *parser.TokenValue,
 	varPattern Expression,
 ) (
 	Expression,
@@ -163,9 +145,9 @@ func (CaseEnumPatternReducerImpl) EnumMatchPatternToCaseEnumPattern(
 	return pattern, nil
 }
 
-func (CaseEnumPatternReducerImpl) EnumNondataMatchPattenToCaseEnumPattern(
-	dot *TokenValue,
-	enumValue *TokenValue,
+func (Reducer) EnumNondataMatchPattenToCaseEnumPattern(
+	dot *parser.TokenValue,
+	enumValue *parser.TokenValue,
 ) (
 	Expression,
 	error,
@@ -184,10 +166,10 @@ func (CaseEnumPatternReducerImpl) EnumNondataMatchPattenToCaseEnumPattern(
 	return pattern, nil
 }
 
-func (CaseEnumPatternReducerImpl) EnumDeclVarPatternToCaseEnumPattern(
-	varType *TokenValue,
-	dot *TokenValue,
-	enumValue *TokenValue,
+func (Reducer) EnumDeclVarPatternToCaseEnumPattern(
+	varType *parser.TokenValue,
+	dot *parser.TokenValue,
+	enumValue *parser.TokenValue,
 	tuplePattern Expression,
 ) (
 	Expression,

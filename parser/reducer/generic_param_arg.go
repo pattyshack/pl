@@ -1,19 +1,16 @@
-package parser
+package reducer
 
 import (
 	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/parser"
 )
 
 //
 // GenericParameter
 //
 
-type GenericParameterReducerImpl struct{}
-
-var _ GenericParameterReducer = &GenericParameterReducerImpl{}
-
-func (GenericParameterReducerImpl) UnconstrainedToGenericParameter(
-	name *TokenValue,
+func (Reducer) UnconstrainedToGenericParameter(
+	name *parser.TokenValue,
 ) (
 	*GenericParameter,
 	error,
@@ -25,8 +22,8 @@ func (GenericParameterReducerImpl) UnconstrainedToGenericParameter(
 	}, nil
 }
 
-func (GenericParameterReducerImpl) ConstrainedToGenericParameter(
-	name *TokenValue,
+func (Reducer) ConstrainedToGenericParameter(
+	name *parser.TokenValue,
 	constraint TypeExpression,
 ) (
 	*GenericParameter,
@@ -48,16 +45,10 @@ func (GenericParameterReducerImpl) ConstrainedToGenericParameter(
 // GenericParameterList
 //
 
-type GenericParameterListReducerImpl struct{}
-
-var _ GenericParametersReducer = &GenericParameterListReducerImpl{}
-var _ ProperGenericParameterListReducer = &GenericParameterListReducerImpl{}
-var _ GenericParameterListReducer = &GenericParameterListReducerImpl{}
-
-func (GenericParameterListReducerImpl) GenericToGenericParameters(
-	dollarLbracket *TokenValue,
+func (Reducer) GenericToGenericParameters(
+	dollarLbracket *parser.TokenValue,
 	list *GenericParameterList,
-	rbracket *TokenValue,
+	rbracket *parser.TokenValue,
 ) (
 	*GenericParameterList,
 	error,
@@ -66,16 +57,16 @@ func (GenericParameterListReducerImpl) GenericToGenericParameters(
 	return list, nil
 }
 
-func (GenericParameterListReducerImpl) NilToGenericParameters() (
+func (Reducer) NilToGenericParameters() (
 	*GenericParameterList,
 	error,
 ) {
 	return nil, nil
 }
 
-func (GenericParameterListReducerImpl) AddToProperGenericParameterList(
+func (Reducer) AddToProperGenericParameterList(
 	list *GenericParameterList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 	parameter *GenericParameter,
 ) (
 	*GenericParameterList,
@@ -85,7 +76,7 @@ func (GenericParameterListReducerImpl) AddToProperGenericParameterList(
 	return list, nil
 }
 
-func (GenericParameterListReducerImpl) GenericParameterToProperGenericParameterList(
+func (Reducer) GenericParameterToProperGenericParameterList(
 	parameter *GenericParameter,
 ) (
 	*GenericParameterList,
@@ -96,9 +87,9 @@ func (GenericParameterListReducerImpl) GenericParameterToProperGenericParameterL
 	return list, nil
 }
 
-func (GenericParameterListReducerImpl) ImproperToGenericParameterList(
+func (Reducer) ImproperToGenericParameterList(
 	list *GenericParameterList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 ) (
 	*GenericParameterList,
 	error,
@@ -107,7 +98,7 @@ func (GenericParameterListReducerImpl) ImproperToGenericParameterList(
 	return list, nil
 }
 
-func (GenericParameterListReducerImpl) NilToGenericParameterList() (
+func (Reducer) NilToGenericParameterList() (
 	*GenericParameterList,
 	error,
 ) {
@@ -118,16 +109,10 @@ func (GenericParameterListReducerImpl) NilToGenericParameterList() (
 // GenericArgumentList
 //
 
-type GenericArgumentListReducerImpl struct{}
-
-var _ GenericArgumentsReducer = &GenericArgumentListReducerImpl{}
-var _ ProperGenericArgumentListReducer = &GenericArgumentListReducerImpl{}
-var _ GenericArgumentListReducer = &GenericArgumentListReducerImpl{}
-
-func (reducer *GenericArgumentListReducerImpl) BindingToGenericArguments(
-	dollarLbracket *TokenValue,
+func (reducer *Reducer) BindingToGenericArguments(
+	dollarLbracket *parser.TokenValue,
 	list *GenericArgumentList,
-	rbracket *TokenValue,
+	rbracket *parser.TokenValue,
 ) (
 	*GenericArgumentList,
 	error,
@@ -136,16 +121,16 @@ func (reducer *GenericArgumentListReducerImpl) BindingToGenericArguments(
 	return list, nil
 }
 
-func (reducer *GenericArgumentListReducerImpl) NilToGenericArguments() (
+func (reducer *Reducer) NilToGenericArguments() (
 	*GenericArgumentList,
 	error,
 ) {
 	return nil, nil
 }
 
-func (reducer *GenericArgumentListReducerImpl) AddToProperGenericArgumentList(
+func (reducer *Reducer) AddToProperGenericArgumentList(
 	list *GenericArgumentList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 	arg TypeExpression,
 ) (
 	*GenericArgumentList,
@@ -155,7 +140,7 @@ func (reducer *GenericArgumentListReducerImpl) AddToProperGenericArgumentList(
 	return list, nil
 }
 
-func (reducer *GenericArgumentListReducerImpl) TypeExprToProperGenericArgumentList(
+func (reducer *Reducer) TypeExprToProperGenericArgumentList(
 	arg TypeExpression,
 ) (
 	*GenericArgumentList,
@@ -166,9 +151,9 @@ func (reducer *GenericArgumentListReducerImpl) TypeExprToProperGenericArgumentLi
 	return list, nil
 }
 
-func (reducer *GenericArgumentListReducerImpl) ImproperToGenericArgumentList(
+func (reducer *Reducer) ImproperToGenericArgumentList(
 	list *GenericArgumentList,
-	comma *TokenValue,
+	comma *parser.TokenValue,
 ) (
 	*GenericArgumentList,
 	error,
@@ -177,7 +162,7 @@ func (reducer *GenericArgumentListReducerImpl) ImproperToGenericArgumentList(
 	return list, nil
 }
 
-func (reducer *GenericArgumentListReducerImpl) NilToGenericArgumentList() (
+func (reducer *Reducer) NilToGenericArgumentList() (
 	*GenericArgumentList,
 	error,
 ) {

@@ -77,48 +77,9 @@ func (s TokenValue) TreeString(indent string, label string) string {
 }
 
 type ParseErrorSymbol struct {
-	IsExpr
-	IsTypeExpr
-	IsDef
-
-	StartEndPos
-	LeadingTrailingComments
-
-	Error error
+	*ParseErrorNode
 }
 
 func (ParseErrorSymbol) Id() SymbolId {
 	return ParseErrorToken
-}
-
-func (s ParseErrorSymbol) TreeString(indent string, label string) string {
-	return fmt.Sprintf(
-		"%s%s[ParseError: %s %s]",
-		indent,
-		label,
-		s.Error,
-		s.StartPos)
-}
-
-type ParseErrorReducerImpl struct {
-	ParseErrors []*ParseErrorSymbol
-}
-
-var _ ParseErrorExprReducer = &ParseErrorReducerImpl{}
-var _ ParseErrorTypeExprReducer = &ParseErrorReducerImpl{}
-
-func (Reducer *ParseErrorReducerImpl) ToParseErrorExpr(
-	pe ParseErrorSymbol,
-) (Expression, error) {
-	ptr := &pe
-	Reducer.ParseErrors = append(Reducer.ParseErrors, ptr)
-	return ptr, nil
-}
-
-func (Reducer *ParseErrorReducerImpl) ToParseErrorTypeExpr(
-	pe ParseErrorSymbol,
-) (TypeExpression, error) {
-	ptr := &pe
-	Reducer.ParseErrors = append(Reducer.ParseErrors, ptr)
-	return ptr, nil
 }
