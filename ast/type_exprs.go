@@ -146,7 +146,7 @@ type UnaryTypeExpr struct {
 
 func (expr UnaryTypeExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
-		"%s%s[UnaryTypeExpr: Op=%s\n",
+		"%s%s[UnaryTypeExpr: Op=(%s)\n",
 		indent,
 		label,
 		expr.Op)
@@ -172,7 +172,11 @@ type BinaryTypeExpr struct {
 }
 
 func (expr BinaryTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[BinaryTypeExpr: Op=%s\n", indent, label, expr.Op)
+	result := fmt.Sprintf(
+		"%s%s[BinaryTypeExpr: Op=(%s)\n",
+		indent,
+		label,
+		expr.Op)
 	result += expr.Left.TreeString(indent+"  ", "Left=") + "\n"
 	result += expr.Right.TreeString(indent+"  ", "Right=")
 	result += "\n" + indent + "]"
