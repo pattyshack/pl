@@ -6,7 +6,7 @@ import (
 	"github.com/pattyshack/gt/lexutil"
 
 	. "github.com/pattyshack/pl/ast"
-	. "github.com/pattyshack/pl/parser"
+	. "github.com/pattyshack/pl/parser/lr"
 )
 
 type TokenPeekDiscarder interface {

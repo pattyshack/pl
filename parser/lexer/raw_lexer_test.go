@@ -7,7 +7,7 @@ import (
 	"github.com/pattyshack/gt/testing/expect"
 	"github.com/pattyshack/gt/testing/suite"
 
-	. "github.com/pattyshack/pl/parser"
+	. "github.com/pattyshack/pl/parser/lr"
 )
 
 type RawLexerSuite struct {

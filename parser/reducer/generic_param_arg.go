@@ -2,7 +2,7 @@ package reducer
 
 import (
 	. "github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/parser"
+	"github.com/pattyshack/pl/parser/lr"
 )
 
 //
@@ -10,7 +10,7 @@ import (
 //
 
 func (Reducer) UnconstrainedToGenericParameter(
-	name *parser.TokenValue,
+	name *lr.TokenValue,
 ) (
 	*GenericParameter,
 	error,
@@ -23,7 +23,7 @@ func (Reducer) UnconstrainedToGenericParameter(
 }
 
 func (Reducer) ConstrainedToGenericParameter(
-	name *parser.TokenValue,
+	name *lr.TokenValue,
 	constraint TypeExpression,
 ) (
 	*GenericParameter,
@@ -46,9 +46,9 @@ func (Reducer) ConstrainedToGenericParameter(
 //
 
 func (Reducer) GenericToGenericParameters(
-	dollarLbracket *parser.TokenValue,
+	dollarLbracket *lr.TokenValue,
 	list *GenericParameterList,
-	rbracket *parser.TokenValue,
+	rbracket *lr.TokenValue,
 ) (
 	*GenericParameterList,
 	error,
@@ -66,7 +66,7 @@ func (Reducer) NilToGenericParameters() (
 
 func (Reducer) AddToProperGenericParameterList(
 	list *GenericParameterList,
-	comma *parser.TokenValue,
+	comma *lr.TokenValue,
 	parameter *GenericParameter,
 ) (
 	*GenericParameterList,
@@ -89,7 +89,7 @@ func (Reducer) GenericParameterToProperGenericParameterList(
 
 func (Reducer) ImproperToGenericParameterList(
 	list *GenericParameterList,
-	comma *parser.TokenValue,
+	comma *lr.TokenValue,
 ) (
 	*GenericParameterList,
 	error,
@@ -110,9 +110,9 @@ func (Reducer) NilToGenericParameterList() (
 //
 
 func (reducer *Reducer) BindingToGenericArguments(
-	dollarLbracket *parser.TokenValue,
+	dollarLbracket *lr.TokenValue,
 	list *GenericArgumentList,
-	rbracket *parser.TokenValue,
+	rbracket *lr.TokenValue,
 ) (
 	*GenericArgumentList,
 	error,
@@ -130,7 +130,7 @@ func (reducer *Reducer) NilToGenericArguments() (
 
 func (reducer *Reducer) AddToProperGenericArgumentList(
 	list *GenericArgumentList,
-	comma *parser.TokenValue,
+	comma *lr.TokenValue,
 	arg TypeExpression,
 ) (
 	*GenericArgumentList,
@@ -153,7 +153,7 @@ func (reducer *Reducer) TypeExprToProperGenericArgumentList(
 
 func (reducer *Reducer) ImproperToGenericArgumentList(
 	list *GenericArgumentList,
-	comma *parser.TokenValue,
+	comma *lr.TokenValue,
 ) (
 	*GenericArgumentList,
 	error,

@@ -991,7 +991,7 @@ package_def<Definition> -> PACKAGE statements
 
 %%lang_specs{
 go:
-  package: parser
+  package: lr
   value_types:
     ParseError: "ParseErrorSymbol"
     Count: "TokenCount"

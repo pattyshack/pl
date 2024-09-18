@@ -1,4 +1,4 @@
-package parser
+package lr
 
 import (
 	_ "github.com/pattyshack/gt/tools"

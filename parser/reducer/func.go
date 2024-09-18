@@ -2,7 +2,7 @@ package reducer
 
 import (
 	. "github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/parser"
+	"github.com/pattyshack/pl/parser/lr"
 )
 
 func (reducer *Reducer) NilToReturnType() (
@@ -13,9 +13,9 @@ func (reducer *Reducer) NilToReturnType() (
 }
 
 func (reducer *Reducer) toFuncSignature(
-	funcKW *parser.TokenValue,
+	funcKW *lr.TokenValue,
 	receiver *Parameter, // optional
-	nameToken *parser.TokenValue, // optional
+	nameToken *lr.TokenValue, // optional
 	genericParameters *GenericParameterList, // optional
 	parameters *ParameterList,
 	returnType TypeExpression,
@@ -71,9 +71,9 @@ func (reducer *Reducer) toFuncSignature(
 }
 
 func (reducer *Reducer) toFuncDefinition(
-	funcKW *parser.TokenValue,
+	funcKW *lr.TokenValue,
 	receiver *Parameter,
-	nameToken *parser.TokenValue,
+	nameToken *lr.TokenValue,
 	genericParameters *GenericParameterList,
 	parameters *ParameterList,
 	returnType TypeExpression,
@@ -99,7 +99,7 @@ func (reducer *Reducer) toFuncDefinition(
 }
 
 func (reducer *Reducer) ToFuncTypeExpr(
-	funcKW *parser.TokenValue,
+	funcKW *lr.TokenValue,
 	parameters *ParameterList,
 	returnType TypeExpression,
 ) (
@@ -118,8 +118,8 @@ func (reducer *Reducer) ToFuncTypeExpr(
 }
 
 func (reducer *Reducer) ToMethodSignature(
-	funcKW *parser.TokenValue,
-	name *parser.TokenValue,
+	funcKW *lr.TokenValue,
+	name *lr.TokenValue,
 	parameters *ParameterList,
 	returnType TypeExpression,
 ) (
@@ -136,8 +136,8 @@ func (reducer *Reducer) ToMethodSignature(
 }
 
 func (reducer *Reducer) FuncDefToNamedFuncDef(
-	funcKW *parser.TokenValue,
-	name *parser.TokenValue,
+	funcKW *lr.TokenValue,
+	name *lr.TokenValue,
 	genericParameters *GenericParameterList,
 	parameters *ParameterList,
 	returnType TypeExpression,
@@ -160,11 +160,11 @@ func (reducer *Reducer) FuncDefToNamedFuncDef(
 }
 
 func (reducer *Reducer) MethodDefToNamedFuncDef(
-	funcKW *parser.TokenValue,
-	lparen *parser.TokenValue,
+	funcKW *lr.TokenValue,
+	lparen *lr.TokenValue,
 	receiver *Parameter,
-	rparen *parser.TokenValue,
-	name *parser.TokenValue,
+	rparen *lr.TokenValue,
+	name *lr.TokenValue,
 	parameters *ParameterList,
 	returnType TypeExpression,
 	body Expression,
@@ -190,7 +190,7 @@ func (reducer *Reducer) MethodDefToNamedFuncDef(
 }
 
 func (reducer *Reducer) ToAnonymousFuncExpr(
-	funcKW *parser.TokenValue,
+	funcKW *lr.TokenValue,
 	parameters *ParameterList,
 	returnType TypeExpression,
 	body Expression,

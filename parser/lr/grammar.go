@@ -1,6 +1,6 @@
 // Auto-generated from source: grammar.lr
 
-package parser
+package lr
 
 import (
 	fmt "fmt"

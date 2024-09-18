@@ -4,7 +4,7 @@ import (
 	"github.com/pattyshack/gt/lexutil"
 
 	. "github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/parser"
+	"github.com/pattyshack/pl/parser/lr"
 )
 
 //
@@ -12,9 +12,9 @@ import (
 //
 
 func (reducer *Reducer) ToSliceTypeExpr(
-	lbracket *parser.TokenValue,
+	lbracket *lr.TokenValue,
 	value TypeExpression,
-	rbracket *parser.TokenValue,
+	rbracket *lr.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -38,11 +38,11 @@ func (reducer *Reducer) ToSliceTypeExpr(
 //
 
 func (reducer *Reducer) ToArrayTypeExpr(
-	lbracket *parser.TokenValue,
+	lbracket *lr.TokenValue,
 	value TypeExpression,
-	comma *parser.TokenValue,
-	size *parser.TokenValue,
-	rbracket *parser.TokenValue,
+	comma *lr.TokenValue,
+	size *lr.TokenValue,
+	rbracket *lr.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -69,11 +69,11 @@ func (reducer *Reducer) ToArrayTypeExpr(
 //
 
 func (reducer *Reducer) ToMapTypeExpr(
-	lbracket *parser.TokenValue,
+	lbracket *lr.TokenValue,
 	key TypeExpression,
-	semicolon *parser.TokenValue,
+	semicolon *lr.TokenValue,
 	value TypeExpression,
-	rbracket *parser.TokenValue,
+	rbracket *lr.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -100,7 +100,7 @@ func (reducer *Reducer) ToMapTypeExpr(
 //
 
 func (reducer *Reducer) DotToInferredTypeExpr(
-	dot *parser.TokenValue,
+	dot *lr.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -116,7 +116,7 @@ func (reducer *Reducer) DotToInferredTypeExpr(
 }
 
 func (reducer *Reducer) UnderscoreToInferredTypeExpr(
-	underscore *parser.TokenValue,
+	underscore *lr.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -136,7 +136,7 @@ func (reducer *Reducer) UnderscoreToInferredTypeExpr(
 //
 
 func (reducer *Reducer) toNamedTypeExpr(
-	name *parser.TokenValue,
+	name *lr.TokenValue,
 	genericArguments *GenericArgumentList,
 ) *NamedTypeExpr {
 	var endPos lexutil.Location
@@ -163,7 +163,7 @@ func (reducer *Reducer) toNamedTypeExpr(
 }
 
 func (reducer *Reducer) LocalToNamedTypeExpr(
-	name *parser.TokenValue,
+	name *lr.TokenValue,
 	genericArguments *GenericArgumentList,
 ) (
 	TypeExpression,
@@ -175,9 +175,9 @@ func (reducer *Reducer) LocalToNamedTypeExpr(
 }
 
 func (reducer *Reducer) ExternalToNamedTypeExpr(
-	pkg *parser.TokenValue,
-	dot *parser.TokenValue,
-	name *parser.TokenValue,
+	pkg *lr.TokenValue,
+	dot *lr.TokenValue,
+	name *lr.TokenValue,
 	genericArguments *GenericArgumentList,
 ) (
 	TypeExpression,
@@ -199,7 +199,7 @@ func (reducer *Reducer) ExternalToNamedTypeExpr(
 //
 
 func (reducer *Reducer) ToPrefixUnaryTypeExpr(
-	op *parser.TokenValue,
+	op *lr.TokenValue,
 	operand TypeExpression,
 ) (
 	TypeExpression,
@@ -225,7 +225,7 @@ func (reducer *Reducer) ToPrefixUnaryTypeExpr(
 
 func (reducer *Reducer) ToBinaryTypeExpr(
 	left TypeExpression,
-	op *parser.TokenValue,
+	op *lr.TokenValue,
 	right TypeExpression,
 ) (
 	TypeExpression,
@@ -253,9 +253,9 @@ func (reducer *Reducer) ToBinaryTypeExpr(
 
 func (reducer *Reducer) implicit(
 	kind PropertiesKind,
-	lparen *parser.TokenValue,
+	lparen *lr.TokenValue,
 	properties *TypePropertyList,
-	rparen *parser.TokenValue,
+	rparen *lr.TokenValue,
 ) *PropertiesTypeExpr {
 	properties.ReduceMarkers(lparen, rparen)
 	expr := &PropertiesTypeExpr{
@@ -272,10 +272,10 @@ func (reducer *Reducer) implicit(
 
 func (reducer *Reducer) explicit(
 	kind PropertiesKind,
-	kw *parser.TokenValue,
-	lparen *parser.TokenValue,
+	kw *lr.TokenValue,
+	lparen *lr.TokenValue,
 	properties *TypePropertyList,
-	rparen *parser.TokenValue,
+	rparen *lr.TokenValue,
 ) *PropertiesTypeExpr {
 	properties.ReduceMarkers(lparen, rparen)
 
@@ -295,9 +295,9 @@ func (reducer *Reducer) explicit(
 }
 
 func (reducer *Reducer) ToImplicitStructTypeExpr(
-	lparen *parser.TokenValue,
+	lparen *lr.TokenValue,
 	properties *TypePropertyList,
-	rparen *parser.TokenValue,
+	rparen *lr.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -308,10 +308,10 @@ func (reducer *Reducer) ToImplicitStructTypeExpr(
 }
 
 func (reducer *Reducer) ToExplicitStructTypeExpr(
-	structKW *parser.TokenValue,
-	lparen *parser.TokenValue,
+	structKW *lr.TokenValue,
+	lparen *lr.TokenValue,
 	properties *TypePropertyList,
-	rparen *parser.TokenValue,
+	rparen *lr.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -322,10 +322,10 @@ func (reducer *Reducer) ToExplicitStructTypeExpr(
 }
 
 func (reducer *Reducer) ToTraitTypeExpr(
-	trait *parser.TokenValue,
-	lparen *parser.TokenValue,
+	trait *lr.TokenValue,
+	lparen *lr.TokenValue,
 	properties *TypePropertyList,
-	rparen *parser.TokenValue,
+	rparen *lr.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -336,9 +336,9 @@ func (reducer *Reducer) ToTraitTypeExpr(
 }
 
 func (reducer *Reducer) ToImplicitEnumTypeExpr(
-	lparen *parser.TokenValue,
+	lparen *lr.TokenValue,
 	properties *TypePropertyList,
-	rparen *parser.TokenValue,
+	rparen *lr.TokenValue,
 ) (
 	TypeExpression,
 	error,
@@ -349,10 +349,10 @@ func (reducer *Reducer) ToImplicitEnumTypeExpr(
 }
 
 func (reducer *Reducer) ToExplicitEnumTypeExpr(
-	enum *parser.TokenValue,
-	lparen *parser.TokenValue,
+	enum *lr.TokenValue,
+	lparen *lr.TokenValue,
 	properties *TypePropertyList,
-	rparen *parser.TokenValue,
+	rparen *lr.TokenValue,
 ) (
 	TypeExpression,
 	error,

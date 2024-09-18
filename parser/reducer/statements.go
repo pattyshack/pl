@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	. "github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/parser"
+	"github.com/pattyshack/pl/parser/lr"
 )
 
 //
@@ -13,19 +13,19 @@ import (
 
 func (reducer *Reducer) AddImplicitToProperStatementList(
 	statements *StatementsExpr,
-	newlines parser.TokenCount,
+	newlines lr.TokenCount,
 	statement Statement,
 ) (
 	*StatementsExpr,
 	error,
 ) {
-	statements.ReduceAdd(&parser.TokenValue{}, statement)
+	statements.ReduceAdd(&lr.TokenValue{}, statement)
 	return statements, nil
 }
 
 func (reducer *Reducer) AddExplicitToProperStatementList(
 	statements *StatementsExpr,
-	semicolon *parser.TokenValue,
+	semicolon *lr.TokenValue,
 	statement Statement,
 ) (
 	*StatementsExpr,
@@ -48,7 +48,7 @@ func (reducer *Reducer) StatementToProperStatementList(
 
 func (reducer *Reducer) ImproperImplicitToStatementList(
 	statements *StatementsExpr,
-	newlines parser.TokenCount,
+	newlines lr.TokenCount,
 ) (
 	*StatementsExpr,
 	error,
@@ -58,7 +58,7 @@ func (reducer *Reducer) ImproperImplicitToStatementList(
 
 func (reducer *Reducer) ImproperExplicitToStatementList(
 	statements *StatementsExpr,
-	semicolon *parser.TokenValue,
+	semicolon *lr.TokenValue,
 ) (
 	*StatementsExpr,
 	error,
@@ -72,9 +72,9 @@ func (reducer *Reducer) NilToStatementList() (*StatementsExpr, error) {
 }
 
 func (reducer *Reducer) ToStatements(
-	lbrace *parser.TokenValue,
+	lbrace *lr.TokenValue,
 	list *StatementsExpr,
-	rbrace *parser.TokenValue,
+	rbrace *lr.TokenValue,
 ) (
 	Expression,
 	error,
@@ -84,7 +84,7 @@ func (reducer *Reducer) ToStatements(
 }
 
 func (reducer *Reducer) LabelledToStatementsExpr(
-	labelDecl *parser.TokenValue,
+	labelDecl *lr.TokenValue,
 	statementsExprOrParseError Expression,
 ) (
 	Expression,
@@ -127,7 +127,7 @@ func (reducer *Reducer) NilToTrailingSimpleStatement() (
 //
 
 func (reducer *Reducer) StringLiteralToImportClause(
-	pkg *parser.TokenValue,
+	pkg *lr.TokenValue,
 ) (
 	*ImportClause,
 	error,
@@ -143,8 +143,8 @@ func (reducer *Reducer) StringLiteralToImportClause(
 }
 
 func (reducer *Reducer) aliasImport(
-	alias *parser.TokenValue,
-	pkg *parser.TokenValue,
+	alias *lr.TokenValue,
+	pkg *lr.TokenValue,
 ) *ImportClause {
 	clause := &ImportClause{
 		StartEndPos: NewStartEndPos(alias.Loc(), pkg.End()),
@@ -164,8 +164,8 @@ func (reducer *Reducer) aliasImport(
 }
 
 func (reducer *Reducer) AliasToImportClause(
-	alias *parser.TokenValue,
-	pkg *parser.TokenValue,
+	alias *lr.TokenValue,
+	pkg *lr.TokenValue,
 ) (
 	*ImportClause,
 	error,
@@ -174,8 +174,8 @@ func (reducer *Reducer) AliasToImportClause(
 }
 
 func (reducer *Reducer) UnusableImportToImportClause(
-	underscore *parser.TokenValue,
-	pkg *parser.TokenValue,
+	underscore *lr.TokenValue,
+	pkg *lr.TokenValue,
 ) (
 	*ImportClause,
 	error,
@@ -184,8 +184,8 @@ func (reducer *Reducer) UnusableImportToImportClause(
 }
 
 func (reducer *Reducer) ImportToLocalToImportClause(
-	dot *parser.TokenValue,
-	pkg *parser.TokenValue,
+	dot *lr.TokenValue,
+	pkg *lr.TokenValue,
 ) (
 	*ImportClause,
 	error,
@@ -198,7 +198,7 @@ func (reducer *Reducer) ImportToLocalToImportClause(
 //
 
 func (reducer *Reducer) SingleToImportStatement(
-	importKW *parser.TokenValue,
+	importKW *lr.TokenValue,
 	importClause *ImportClause,
 ) (
 	Statement,
@@ -214,10 +214,10 @@ func (reducer *Reducer) SingleToImportStatement(
 }
 
 func (reducer *Reducer) MultipleToImportStatement(
-	importKW *parser.TokenValue,
-	lparen *parser.TokenValue,
+	importKW *lr.TokenValue,
+	lparen *lr.TokenValue,
 	stmt *ImportStatement,
-	rparen *parser.TokenValue,
+	rparen *lr.TokenValue,
 ) (
 	Statement,
 	error,
@@ -232,19 +232,19 @@ func (reducer *Reducer) MultipleToImportStatement(
 
 func (reducer *Reducer) AddImplicitToProperImportClauses(
 	stmt *ImportStatement,
-	newlines parser.TokenCount,
+	newlines lr.TokenCount,
 	importClause *ImportClause,
 ) (
 	*ImportStatement,
 	error,
 ) {
-	stmt.ReduceAdd(&parser.TokenValue{}, importClause)
+	stmt.ReduceAdd(&lr.TokenValue{}, importClause)
 	return stmt, nil
 }
 
 func (reducer *Reducer) AddExplicitToProperImportClauses(
 	stmt *ImportStatement,
-	comma *parser.TokenValue,
+	comma *lr.TokenValue,
 	importClause *ImportClause,
 ) (
 	*ImportStatement,
@@ -266,7 +266,7 @@ func (reducer *Reducer) ImportClauseToProperImportClauses(
 
 func (reducer *Reducer) ImplicitToImportClauses(
 	stmt *ImportStatement,
-	newlines parser.TokenCount,
+	newlines lr.TokenCount,
 ) (
 	*ImportStatement,
 	error,
@@ -276,7 +276,7 @@ func (reducer *Reducer) ImplicitToImportClauses(
 
 func (reducer *Reducer) ExplicitToImportClauses(
 	stmt *ImportStatement,
-	comma *parser.TokenValue,
+	comma *lr.TokenValue,
 ) (
 	*ImportStatement,
 	error,
@@ -290,7 +290,7 @@ func (reducer *Reducer) ExplicitToImportClauses(
 //
 
 func (reducer *Reducer) UnlabeledNoValueToJumpStatement(
-	op *parser.TokenValue,
+	op *lr.TokenValue,
 ) (
 	Statement,
 	error,
@@ -299,7 +299,7 @@ func (reducer *Reducer) UnlabeledNoValueToJumpStatement(
 }
 
 func (reducer *Reducer) UnlabeledValuedToJumpStatement(
-	op *parser.TokenValue,
+	op *lr.TokenValue,
 	value Expression,
 ) (
 	Statement,
@@ -309,8 +309,8 @@ func (reducer *Reducer) UnlabeledValuedToJumpStatement(
 }
 
 func (reducer *Reducer) LabeledNoValueToJumpStatement(
-	op *parser.TokenValue,
-	label *parser.TokenValue,
+	op *lr.TokenValue,
+	label *lr.TokenValue,
 ) (
 	Statement,
 	error,
@@ -319,8 +319,8 @@ func (reducer *Reducer) LabeledNoValueToJumpStatement(
 }
 
 func (reducer *Reducer) LabeledValuedToJumpStatement(
-	op *parser.TokenValue,
-	label *parser.TokenValue,
+	op *lr.TokenValue,
+	label *lr.TokenValue,
 	value Expression,
 ) (
 	Statement,
@@ -330,7 +330,7 @@ func (reducer *Reducer) LabeledValuedToJumpStatement(
 }
 
 func (reducer *Reducer) FallthroughToJumpStatement(
-	op *parser.TokenValue,
+	op *lr.TokenValue,
 ) (
 	Statement,
 	error,
@@ -343,11 +343,11 @@ func (reducer *Reducer) FallthroughToJumpStatement(
 //
 
 func (reducer *Reducer) ToUnsafeStatement(
-	unsafe *parser.TokenValue,
-	less *parser.TokenValue,
-	language *parser.TokenValue,
-	greater *parser.TokenValue,
-	verbatimSource *parser.TokenValue,
+	unsafe *lr.TokenValue,
+	less *lr.TokenValue,
+	language *lr.TokenValue,
+	greater *lr.TokenValue,
+	verbatimSource *lr.TokenValue,
 ) (
 	*UnsafeStatement,
 	error,
@@ -376,9 +376,9 @@ func (reducer *Reducer) ToUnsafeStatement(
 //
 
 func (reducer *Reducer) CaseBranchToBranchStatement(
-	caseKW *parser.TokenValue,
+	caseKW *lr.TokenValue,
 	casePatterns *ExpressionList,
-	colon *parser.TokenValue,
+	colon *lr.TokenValue,
 	body *StatementsExpr,
 ) (
 	Statement,
@@ -407,8 +407,8 @@ func (reducer *Reducer) CaseBranchToBranchStatement(
 }
 
 func (reducer *Reducer) DefaultBranchToBranchStatement(
-	defaultKW *parser.TokenValue,
-	colon *parser.TokenValue,
+	defaultKW *lr.TokenValue,
+	colon *lr.TokenValue,
 	body *StatementsExpr,
 ) (
 	Statement,

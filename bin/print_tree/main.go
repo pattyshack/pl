@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/pattyshack/gt/argparse"
-	"github.com/pattyshack/pl/parser"
 	"github.com/pattyshack/pl/parser/lexer"
+	"github.com/pattyshack/pl/parser/lr"
 	"github.com/pattyshack/pl/parser/reducer"
 )
 
@@ -60,7 +60,7 @@ func (cmd *Command) printExpr(args []string) error {
 		reducer := reducer.NewReducer()
 		lexer := lexer.NewLexer(fileName, buffer, lexer.LexerOptions{})
 
-		expr, err := parser.ParseExpr(lexer, reducer)
+		expr, err := lr.ParseExpr(lexer, reducer)
 		if err != nil {
 			fmt.Println("Parse error:", err)
 			continue

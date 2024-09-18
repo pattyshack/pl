@@ -2,11 +2,11 @@ package reducer
 
 import (
 	. "github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/parser"
+	"github.com/pattyshack/pl/parser/lr"
 )
 
 func (Reducer *Reducer) ToParseErrorExpr(
-	pe parser.ParseErrorSymbol,
+	pe lr.ParseErrorSymbol,
 ) (
 	Expression,
 	error,
@@ -16,7 +16,7 @@ func (Reducer *Reducer) ToParseErrorExpr(
 }
 
 func (Reducer *Reducer) ToParseErrorTypeExpr(
-	pe parser.ParseErrorSymbol,
+	pe lr.ParseErrorSymbol,
 ) (
 	TypeExpression,
 	error,

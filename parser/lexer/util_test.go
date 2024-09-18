@@ -7,7 +7,7 @@ import (
 
 	"github.com/pattyshack/gt/testing/expect"
 
-	. "github.com/pattyshack/pl/parser"
+	. "github.com/pattyshack/pl/parser/lr"
 )
 
 func expectError(t *testing.T, token Token, errMsg string) {

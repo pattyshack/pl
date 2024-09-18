@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	. "github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/parser"
+	"github.com/pattyshack/pl/parser/lr"
 )
 
 //
@@ -13,13 +13,13 @@ import (
 
 func (reducer *Reducer) AddToProperDefinitions(
 	list *DefinitionList,
-	newlines parser.TokenCount,
+	newlines lr.TokenCount,
 	def Definition,
 ) (
 	*DefinitionList,
 	error,
 ) {
-	list.ReduceAdd(&parser.TokenValue{}, def)
+	list.ReduceAdd(&lr.TokenValue{}, def)
 	return list, nil
 }
 
@@ -36,7 +36,7 @@ func (reducer *Reducer) DefinitionToProperDefinitions(
 
 func (reducer *Reducer) ImproperToDefinitions(
 	list *DefinitionList,
-	newlines parser.TokenCount,
+	newlines lr.TokenCount,
 ) (
 	*DefinitionList,
 	error,
@@ -53,7 +53,7 @@ func (reducer *Reducer) NilToDefinitions() (*DefinitionList, error) {
 //
 
 func (reducer *Reducer) ToFloatingComment(
-	comments parser.CommentGroupsTok,
+	comments lr.CommentGroupsTok,
 ) (
 	Definition,
 	error,
@@ -70,7 +70,7 @@ func (reducer *Reducer) ToFloatingComment(
 //
 
 func (reducer *Reducer) ToPackageDef(
-	pkg *parser.TokenValue,
+	pkg *lr.TokenValue,
 	expr Expression,
 ) (
 	Definition,
@@ -98,8 +98,8 @@ func (reducer *Reducer) ToPackageDef(
 //
 
 func (reducer *Reducer) DefinitionToTypeDef(
-	typeKW *parser.TokenValue,
-	name *parser.TokenValue,
+	typeKW *lr.TokenValue,
+	name *lr.TokenValue,
 	genericParameters *GenericParameterList,
 	baseType TypeExpression,
 ) (
@@ -132,11 +132,11 @@ func (reducer *Reducer) DefinitionToTypeDef(
 }
 
 func (reducer *Reducer) ConstrainedDefToTypeDef(
-	typeKW *parser.TokenValue,
-	name *parser.TokenValue,
+	typeKW *lr.TokenValue,
+	name *lr.TokenValue,
 	genericParameters *GenericParameterList,
 	baseType TypeExpression,
-	implements *parser.TokenValue,
+	implements *lr.TokenValue,
 	constraint TypeExpression,
 ) (
 	Definition,
@@ -172,9 +172,9 @@ func (reducer *Reducer) ConstrainedDefToTypeDef(
 }
 
 func (reducer *Reducer) AliasToTypeDef(
-	typeKW *parser.TokenValue,
-	name *parser.TokenValue,
-	assign *parser.TokenValue,
+	typeKW *lr.TokenValue,
+	name *lr.TokenValue,
+	assign *lr.TokenValue,
 	baseType TypeExpression,
 ) (
 	Definition,
