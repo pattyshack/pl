@@ -1,4 +1,4 @@
-package parser
+package lexer
 
 import (
 	"bytes"
@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/pattyshack/gt/testing/expect"
+
+	. "github.com/pattyshack/pl/parser"
 )
 
 func expectError(t *testing.T, token Token, errMsg string) {

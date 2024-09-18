@@ -1,4 +1,4 @@
-package parser
+package lexer
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 
 	"github.com/pattyshack/gt/testing/expect"
 	"github.com/pattyshack/gt/testing/suite"
+
+	. "github.com/pattyshack/pl/parser"
 )
 
 type RawLexerSuite struct {

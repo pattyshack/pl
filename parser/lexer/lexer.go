@@ -1,4 +1,4 @@
-package parser
+package lexer
 
 import (
 	"io"
@@ -6,6 +6,7 @@ import (
 	"github.com/pattyshack/gt/lexutil"
 
 	. "github.com/pattyshack/pl/ast"
+	. "github.com/pattyshack/pl/parser"
 )
 
 type TokenPeekDiscarder interface {
@@ -216,7 +217,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 
 	var value *TokenValue
 	// Handle Leading comment groups
-	if token.Id() == commentGroupToken {
+	if token.Id() == CommentGroupTokenId {
 		groups := CommentGroups{
 			Groups: []CommentGroup{token.(CommentGroupToken).CommentGroup},
 		}
@@ -239,7 +240,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 			switch token.Id() {
 			case NewlinesToken:
 				// drop the newlines token
-			case commentGroupToken:
+			case CommentGroupTokenId:
 				groups.Groups = append(
 					groups.Groups,
 					token.(CommentGroupToken).CommentGroup)
@@ -263,7 +264,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 			break
 		}
 
-		if peeked[0].Id() != commentGroupToken {
+		if peeked[0].Id() != CommentGroupTokenId {
 			break
 		}
 

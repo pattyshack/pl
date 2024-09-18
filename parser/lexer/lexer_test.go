@@ -1,4 +1,4 @@
-package parser
+package lexer
 
 import (
 	"testing"
@@ -7,6 +7,7 @@ import (
 	"github.com/pattyshack/gt/testing/suite"
 
 	. "github.com/pattyshack/pl/ast"
+	. "github.com/pattyshack/pl/parser"
 )
 
 func expectCommentGroup(
@@ -90,8 +91,8 @@ func (s *CommentGroupLexerSuite) lex(
 func (s *CommentGroupLexerSuite) TestBlockCommentGroups(t *testing.T) {
 	tokens := s.lex(
 		t, " a  /* group1 */ /* group2 */ b /* group3 */",
-		IdentifierToken, commentGroupToken, commentGroupToken,
-		IdentifierToken, commentGroupToken)
+		IdentifierToken, CommentGroupTokenId, CommentGroupTokenId,
+		IdentifierToken, CommentGroupTokenId)
 	expectValue(t, "a", tokens[0])
 	expectCommentGroup(t, tokens[1], "/* group1 */")
 	expectCommentGroup(t, tokens[2], "/* group2 */")
@@ -104,8 +105,8 @@ func (s *CommentGroupLexerSuite) TestLineGroups(t *testing.T) {
 		t,
 		" a //g1l1\n  //g1l2\n //g1l3\n\n //g2l1\n"+
 			"\t//g2l2\n /*g3*/ //g4l1\n//g4l2\nb",
-		IdentifierToken, commentGroupToken, NewlinesToken, commentGroupToken,
-		NewlinesToken, commentGroupToken, commentGroupToken,
+		IdentifierToken, CommentGroupTokenId, NewlinesToken, CommentGroupTokenId,
+		NewlinesToken, CommentGroupTokenId, CommentGroupTokenId,
 		NewlinesToken, IdentifierToken)
 	expectValue(t, "a", tokens[0])
 	expectCommentGroup(t, tokens[1], "//g1l1", "//g1l2", "//g1l3")

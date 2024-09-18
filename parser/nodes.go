@@ -20,13 +20,15 @@ const (
 
 	DecimalFloat     = "decimal float literal"
 	HexadecimalFloat = "hexadecimal float literal"
+
+	CommentGroupTokenId = SymbolId(-4)
 )
 
 type CommentGroupToken struct {
 	CommentGroup
 }
 
-func (CommentGroupToken) Id() SymbolId { return commentGroupToken }
+func (CommentGroupToken) Id() SymbolId { return CommentGroupTokenId }
 
 type CommentGroupsTok struct {
 	CommentGroups

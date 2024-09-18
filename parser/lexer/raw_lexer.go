@@ -1,4 +1,4 @@
-package parser
+package lexer
 
 import (
 	"fmt"
@@ -9,13 +9,13 @@ import (
 	"github.com/pattyshack/gt/stringutil"
 
 	. "github.com/pattyshack/pl/ast"
+	. "github.com/pattyshack/pl/parser"
 )
 
 const (
 	spacesToken       = SymbolId(-1) // [ \t]+
 	lineCommentToken  = SymbolId(-2)
 	blockCommentToken = SymbolId(-3)
-	commentGroupToken = SymbolId(-4)
 
 	// s - single-line  vs m - multiple-line
 	// i - interpreted  vs r - raw string

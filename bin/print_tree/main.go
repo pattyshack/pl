@@ -8,6 +8,7 @@ import (
 
 	"github.com/pattyshack/gt/argparse"
 	"github.com/pattyshack/pl/parser"
+	"github.com/pattyshack/pl/parser/lexer"
 	"github.com/pattyshack/pl/parser/reducer"
 )
 
@@ -57,7 +58,7 @@ func (cmd *Command) printExpr(args []string) error {
 		buffer := bytes.NewBuffer(content[:len(content)-1])
 
 		reducer := reducer.NewReducer()
-		lexer := parser.NewLexer(fileName, buffer, parser.LexerOptions{})
+		lexer := lexer.NewLexer(fileName, buffer, lexer.LexerOptions{})
 
 		expr, err := parser.ParseExpr(lexer, reducer)
 		if err != nil {
@@ -94,7 +95,7 @@ func (cmd *Command) printTokens(args []string) error {
 
 		buffer := bytes.NewBuffer(content[:len(content)-1])
 
-		lexer := parser.NewLexer(fileName, buffer, parser.LexerOptions{})
+		lexer := lexer.NewLexer(fileName, buffer, lexer.LexerOptions{})
 		for {
 			token, err := lexer.Next()
 			if err == io.EOF {
