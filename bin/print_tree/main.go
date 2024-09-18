@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/pattyshack/gt/argparse"
+	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lexer"
 	"github.com/pattyshack/pl/parser/lr"
 	"github.com/pattyshack/pl/parser/reducer"
@@ -27,6 +28,46 @@ func (cmd *Command) Setup() {
 			VarArgs:     true,
 		})
 
+	exprCmd = cmd.AddSubcommand("type_expr", "print type expression")
+	exprCmd.SetCommandFunc(
+		cmd.printTypeExpr,
+		argparse.PositionalArgument{
+			Name:        "files",
+			Description: "list of expression file name paths",
+			NumExpected: 1,
+			VarArgs:     true,
+		})
+
+	exprCmd = cmd.AddSubcommand("statement", "print statement")
+	exprCmd.SetCommandFunc(
+		cmd.printStatement,
+		argparse.PositionalArgument{
+			Name:        "files",
+			Description: "list of expression file name paths",
+			NumExpected: 1,
+			VarArgs:     true,
+		})
+
+	exprCmd = cmd.AddSubcommand("definition", "print definition")
+	exprCmd.SetCommandFunc(
+		cmd.printDefinition,
+		argparse.PositionalArgument{
+			Name:        "files",
+			Description: "list of expression file name paths",
+			NumExpected: 1,
+			VarArgs:     true,
+		})
+
+	exprCmd = cmd.AddSubcommand("source", "print source")
+	exprCmd.SetCommandFunc(
+		cmd.printSource,
+		argparse.PositionalArgument{
+			Name:        "files",
+			Description: "list of expression file name paths",
+			NumExpected: 1,
+			VarArgs:     true,
+		})
+
 	exprCmd = cmd.AddSubcommand("tokens", "print token")
 	exprCmd.SetCommandFunc(
 		cmd.printTokens,
@@ -38,7 +79,10 @@ func (cmd *Command) Setup() {
 		})
 }
 
-func (cmd *Command) printExpr(args []string) error {
+func (cmd *Command) printFunc(
+	parse func(lr.Lexer, lr.Reducer) (ast.Node, error),
+	args []string,
+) error {
 	for _, fileName := range args {
 		fmt.Println("==========================")
 		fmt.Println("File name:", fileName)
@@ -58,9 +102,9 @@ func (cmd *Command) printExpr(args []string) error {
 		buffer := bytes.NewBuffer(content[:len(content)-1])
 
 		reducer := reducer.NewReducer()
-		lexer := lexer.NewLexer(fileName, buffer, lexer.LexerOptions{})
+		lexer := lexer.NewBasicLexer(fileName, buffer, lexer.LexerOptions{})
 
-		expr, err := lr.ParseExpr(lexer, reducer)
+		expr, err := parse(lexer, reducer)
 		if err != nil {
 			fmt.Println("Parse error:", err)
 			continue
@@ -72,6 +116,46 @@ func (cmd *Command) printExpr(args []string) error {
 	}
 
 	return nil
+}
+
+func (cmd *Command) printExpr(args []string) error {
+	return cmd.printFunc(
+		func(lexer lr.Lexer, reducer lr.Reducer) (ast.Node, error) {
+			return lr.ParseExpr(lexer, reducer)
+		},
+		args)
+}
+
+func (cmd *Command) printTypeExpr(args []string) error {
+	return cmd.printFunc(
+		func(lexer lr.Lexer, reducer lr.Reducer) (ast.Node, error) {
+			return lr.ParseTypeExpr(lexer, reducer)
+		},
+		args)
+}
+
+func (cmd *Command) printStatement(args []string) error {
+	return cmd.printFunc(
+		func(lexer lr.Lexer, reducer lr.Reducer) (ast.Node, error) {
+			return lr.ParseStatement(lexer, reducer)
+		},
+		args)
+}
+
+func (cmd *Command) printDefinition(args []string) error {
+	return cmd.printFunc(
+		func(lexer lr.Lexer, reducer lr.Reducer) (ast.Node, error) {
+			return lr.ParseDefinition(lexer, reducer)
+		},
+		args)
+}
+
+func (cmd *Command) printSource(args []string) error {
+	return cmd.printFunc(
+		func(lexer lr.Lexer, reducer lr.Reducer) (ast.Node, error) {
+			return lr.ParseSource(lexer, reducer)
+		},
+		args)
 }
 
 func (cmd *Command) printTokens(args []string) error {
@@ -95,7 +179,7 @@ func (cmd *Command) printTokens(args []string) error {
 
 		buffer := bytes.NewBuffer(content[:len(content)-1])
 
-		lexer := lexer.NewLexer(fileName, buffer, lexer.LexerOptions{})
+		lexer := lexer.NewBasicLexer(fileName, buffer, lexer.LexerOptions{})
 		for {
 			token, err := lexer.Next()
 			if err == io.EOF {
