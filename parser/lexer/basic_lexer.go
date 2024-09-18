@@ -36,8 +36,8 @@ func readToken(reader TokenPeekDiscarder) (lr.Token, error) {
 
 // Discard spacesToken and merge adjacent NewlinesTokens
 type TrimSpacesLexer struct {
-	*lexutil.BufferedReader[lr.Token]
-	base lr.Lexer
+	buffered *lexutil.BufferedReader[lr.Token]
+	base     lr.Lexer
 }
 
 func NewTrimSpacesLexer(
@@ -47,7 +47,7 @@ func NewTrimSpacesLexer(
 ) lr.Lexer {
 	base := NewRawLexer(sourceFileName, sourceContent, options)
 	return &TrimSpacesLexer{
-		BufferedReader: lexutil.NewBufferedReader(
+		buffered: lexutil.NewBufferedReader(
 			lexutil.NewLexerReader[lr.Token](base),
 			10),
 		base: base,
@@ -55,7 +55,7 @@ func NewTrimSpacesLexer(
 }
 
 func (lexer *TrimSpacesLexer) CurrentLocation() lexutil.Location {
-	peeked, err := lexer.Peek(1)
+	peeked, err := lexer.buffered.Peek(1)
 	if err != nil || len(peeked) == 0 {
 		return (lexer.base.CurrentLocation())
 	}
@@ -64,13 +64,13 @@ func (lexer *TrimSpacesLexer) CurrentLocation() lexutil.Location {
 }
 
 func (lexer *TrimSpacesLexer) Next() (lr.Token, error) {
-	token, err := readToken(lexer)
+	token, err := readToken(lexer.buffered)
 	if err != nil {
 		return nil, err
 	}
 
 	if token.Id() == spacesToken {
-		token, err = readToken(lexer)
+		token, err = readToken(lexer.buffered)
 		if err != nil {
 			return nil, err
 		}
@@ -82,7 +82,7 @@ func (lexer *TrimSpacesLexer) Next() (lr.Token, error) {
 
 	newlines := token.(lr.TokenCount)
 	for {
-		peeked, err := lexer.Peek(2)
+		peeked, err := lexer.buffered.Peek(2)
 		if err != nil {
 			break
 		}
@@ -95,7 +95,7 @@ func (lexer *TrimSpacesLexer) Next() (lr.Token, error) {
 			newlines.Count += other.Count
 			newlines.EndPos = other.EndPos
 
-			_, err = lexer.Discard(2)
+			_, err = lexer.buffered.Discard(2)
 			if err != nil {
 				panic("should never happen")
 			}
@@ -111,8 +111,8 @@ func (lexer *TrimSpacesLexer) Next() (lr.Token, error) {
 // adjacent to any other comment.  lineComment is adjacent to other
 // lineComments if they are separated by a single newline.
 type CommentGroupLexer struct {
-	*lexutil.BufferedReader[lr.Token]
-	base lr.Lexer
+	buffered *lexutil.BufferedReader[lr.Token]
+	base     lr.Lexer
 }
 
 func NewCommentGroupLexer(
@@ -122,7 +122,7 @@ func NewCommentGroupLexer(
 ) lr.Lexer {
 	base := NewTrimSpacesLexer(sourceFileName, sourceContent, options)
 	return &CommentGroupLexer{
-		BufferedReader: lexutil.NewBufferedReader(
+		buffered: lexutil.NewBufferedReader(
 			lexutil.NewLexerReader[lr.Token](base),
 			10),
 		base: base,
@@ -130,7 +130,7 @@ func NewCommentGroupLexer(
 }
 
 func (lexer *CommentGroupLexer) CurrentLocation() lexutil.Location {
-	peeked, err := lexer.Peek(1)
+	peeked, err := lexer.buffered.Peek(1)
 	if err != nil || len(peeked) == 0 {
 		return lexer.base.CurrentLocation()
 	}
@@ -139,7 +139,7 @@ func (lexer *CommentGroupLexer) CurrentLocation() lexutil.Location {
 }
 
 func (lexer *CommentGroupLexer) Next() (lr.Token, error) {
-	token, err := readToken(lexer)
+	token, err := readToken(lexer.buffered)
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +154,7 @@ func (lexer *CommentGroupLexer) Next() (lr.Token, error) {
 
 	group := ast.NewCommentGroup(token.(*lr.TokenValue))
 	for {
-		peeked, err := lexer.Peek(2)
+		peeked, err := lexer.buffered.Peek(2)
 		if err != nil {
 			break
 		}
@@ -170,7 +170,7 @@ func (lexer *CommentGroupLexer) Next() (lr.Token, error) {
 
 			group.Add(peeked[1].(*lr.TokenValue))
 
-			_, err := lexer.Discard(2)
+			_, err := lexer.buffered.Discard(2)
 			if err != nil {
 				panic("should never happen")
 			}
@@ -184,8 +184,8 @@ func (lexer *CommentGroupLexer) Next() (lr.Token, error) {
 
 // Associate comment groups to real tokens whenever possible.
 type AssociateCommentGroupsLexer struct {
-	*lexutil.BufferedReader[lr.Token]
-	base lr.Lexer
+	buffered *lexutil.BufferedReader[lr.Token]
+	base     lr.Lexer
 }
 
 func NewAssociateCommentGroupsLexer(
@@ -195,7 +195,7 @@ func NewAssociateCommentGroupsLexer(
 ) lr.Lexer {
 	base := NewCommentGroupLexer(sourceFileName, sourceContent, options)
 	return &AssociateCommentGroupsLexer{
-		BufferedReader: lexutil.NewBufferedReader(
+		buffered: lexutil.NewBufferedReader(
 			lexutil.NewLexerReader[lr.Token](base),
 			10),
 		base: base,
@@ -203,7 +203,7 @@ func NewAssociateCommentGroupsLexer(
 }
 
 func (lexer *AssociateCommentGroupsLexer) CurrentLocation() lexutil.Location {
-	peeked, err := lexer.Peek(1)
+	peeked, err := lexer.buffered.Peek(1)
 	if err != nil || len(peeked) == 0 {
 		return lexer.base.CurrentLocation()
 	}
@@ -212,7 +212,7 @@ func (lexer *AssociateCommentGroupsLexer) CurrentLocation() lexutil.Location {
 }
 
 func (lexer *AssociateCommentGroupsLexer) Next() (lr.Token, error) {
-	token, err := readToken(lexer)
+	token, err := readToken(lexer.buffered)
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +226,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (lr.Token, error) {
 
 		found := false
 		for !found {
-			peeked, err := lexer.Peek(1)
+			peeked, err := lexer.buffered.Peek(1)
 			if len(peeked) == 0 || err != nil {
 				// groups not associated with any real token
 				return lr.CommentGroupsTok{groups}, nil
@@ -234,7 +234,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (lr.Token, error) {
 
 			token = peeked[0]
 
-			_, err = lexer.Discard(1)
+			_, err = lexer.buffered.Discard(1)
 			if err != nil {
 				panic("should never happen")
 			}
@@ -261,7 +261,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (lr.Token, error) {
 
 	// extract trailing comment groups
 	for {
-		peeked, err := lexer.Peek(1)
+		peeked, err := lexer.buffered.Peek(1)
 		if len(peeked) == 0 || err != nil {
 			break
 		}
@@ -274,7 +274,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (lr.Token, error) {
 			value.TrailingComment.Groups,
 			peeked[0].(lr.CommentGroupToken).CommentGroup)
 
-		_, err = lexer.Discard(1)
+		_, err = lexer.buffered.Discard(1)
 		if err != nil {
 			panic("should never happen")
 		}
@@ -293,8 +293,8 @@ func (lexer *AssociateCommentGroupsLexer) Next() (lr.Token, error) {
 //     `true`, or `false`
 //  5. one of: `++`, `--`, `)`, `}`, or `]`
 type TerminalNewlinesLexer struct {
-	*lexutil.BufferedReader[lr.Token]
-	base lr.Lexer
+	buffered *lexutil.BufferedReader[lr.Token]
+	base     lr.Lexer
 
 	previousId lr.SymbolId
 }
@@ -306,7 +306,7 @@ func NewBasicLexer(
 ) lr.Lexer {
 	base := NewAssociateCommentGroupsLexer(sourceFileName, sourceContent, options)
 	return &TerminalNewlinesLexer{
-		BufferedReader: lexutil.NewBufferedReader(
+		buffered: lexutil.NewBufferedReader(
 			lexutil.NewLexerReader[lr.Token](base),
 			10),
 		base: base,
@@ -314,7 +314,7 @@ func NewBasicLexer(
 }
 
 func (lexer *TerminalNewlinesLexer) CurrentLocation() lexutil.Location {
-	peeked, err := lexer.Peek(1)
+	peeked, err := lexer.buffered.Peek(1)
 	if err != nil || len(peeked) == 0 {
 		return lexer.base.CurrentLocation()
 	}
@@ -324,7 +324,7 @@ func (lexer *TerminalNewlinesLexer) CurrentLocation() lexutil.Location {
 
 func (lexer *TerminalNewlinesLexer) Next() (lr.Token, error) {
 	for {
-		token, err := readToken(lexer)
+		token, err := readToken(lexer.buffered)
 		if err != nil {
 			return nil, err
 		}
