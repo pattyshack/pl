@@ -5,16 +5,16 @@ import (
 
 	"github.com/pattyshack/gt/lexutil"
 
-	. "github.com/pattyshack/pl/ast"
-	. "github.com/pattyshack/pl/parser/lr"
+	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/parser/lr"
 )
 
 type TokenPeekDiscarder interface {
-	Peek(int) ([]Token, error)
+	Peek(int) ([]lr.Token, error)
 	Discard(int) (int, error)
 }
 
-func readToken(reader TokenPeekDiscarder) (Token, error) {
+func readToken(reader TokenPeekDiscarder) (lr.Token, error) {
 	peeked, err := reader.Peek(1)
 	if err != nil {
 		return nil, err
@@ -36,25 +36,25 @@ func readToken(reader TokenPeekDiscarder) (Token, error) {
 
 // Discard spacesToken and merge adjacent NewlinesTokens
 type TrimSpacesLexer struct {
-	*lexutil.BufferedReader[Token]
-	base Lexer
+	*lexutil.BufferedReader[lr.Token]
+	base lr.Lexer
 }
 
 func NewTrimSpacesLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
 	options LexerOptions,
-) Lexer {
+) lr.Lexer {
 	base := NewRawLexer(sourceFileName, sourceContent, options)
 	return &TrimSpacesLexer{
 		BufferedReader: lexutil.NewBufferedReader(
-			lexutil.NewLexerReader[Token](base),
+			lexutil.NewLexerReader[lr.Token](base),
 			10),
 		base: base,
 	}
 }
 
-func (lexer *TrimSpacesLexer) CurrentLocation() Location {
+func (lexer *TrimSpacesLexer) CurrentLocation() lexutil.Location {
 	peeked, err := lexer.Peek(1)
 	if err != nil || len(peeked) == 0 {
 		return (lexer.base.CurrentLocation())
@@ -63,7 +63,7 @@ func (lexer *TrimSpacesLexer) CurrentLocation() Location {
 	return peeked[0].Loc()
 }
 
-func (lexer *TrimSpacesLexer) Next() (Token, error) {
+func (lexer *TrimSpacesLexer) Next() (lr.Token, error) {
 	token, err := readToken(lexer)
 	if err != nil {
 		return nil, err
@@ -76,11 +76,11 @@ func (lexer *TrimSpacesLexer) Next() (Token, error) {
 		}
 	}
 
-	if token.Id() != NewlinesToken {
+	if token.Id() != lr.NewlinesToken {
 		return token, nil
 	}
 
-	newlines := token.(TokenCount)
+	newlines := token.(lr.TokenCount)
 	for {
 		peeked, err := lexer.Peek(2)
 		if err != nil {
@@ -89,9 +89,9 @@ func (lexer *TrimSpacesLexer) Next() (Token, error) {
 
 		if len(peeked) == 2 &&
 			peeked[0].Id() == spacesToken &&
-			peeked[1].Id() == NewlinesToken {
+			peeked[1].Id() == lr.NewlinesToken {
 
-			other := peeked[1].(TokenCount)
+			other := peeked[1].(lr.TokenCount)
 			newlines.Count += other.Count
 			newlines.EndPos = other.EndPos
 
@@ -111,25 +111,25 @@ func (lexer *TrimSpacesLexer) Next() (Token, error) {
 // adjacent to any other comment.  lineComment is adjacent to other
 // lineComments if they are separated by a single newline.
 type CommentGroupLexer struct {
-	*lexutil.BufferedReader[Token]
-	base Lexer
+	*lexutil.BufferedReader[lr.Token]
+	base lr.Lexer
 }
 
 func NewCommentGroupLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
 	options LexerOptions,
-) Lexer {
+) lr.Lexer {
 	base := NewTrimSpacesLexer(sourceFileName, sourceContent, options)
 	return &CommentGroupLexer{
 		BufferedReader: lexutil.NewBufferedReader(
-			lexutil.NewLexerReader[Token](base),
+			lexutil.NewLexerReader[lr.Token](base),
 			10),
 		base: base,
 	}
 }
 
-func (lexer *CommentGroupLexer) CurrentLocation() Location {
+func (lexer *CommentGroupLexer) CurrentLocation() lexutil.Location {
 	peeked, err := lexer.Peek(1)
 	if err != nil || len(peeked) == 0 {
 		return lexer.base.CurrentLocation()
@@ -138,19 +138,21 @@ func (lexer *CommentGroupLexer) CurrentLocation() Location {
 	return peeked[0].Loc()
 }
 
-func (lexer *CommentGroupLexer) Next() (Token, error) {
+func (lexer *CommentGroupLexer) Next() (lr.Token, error) {
 	token, err := readToken(lexer)
 	if err != nil {
 		return nil, err
 	}
 
 	if token.Id() == blockCommentToken {
-		return CommentGroupToken{*NewCommentGroup(token.(*TokenValue))}, nil
+		return lr.CommentGroupToken{
+			*ast.NewCommentGroup(token.(*lr.TokenValue)),
+		}, nil
 	} else if token.Id() != lineCommentToken {
 		return token, nil
 	}
 
-	group := NewCommentGroup(token.(*TokenValue))
+	group := ast.NewCommentGroup(token.(*lr.TokenValue))
 	for {
 		peeked, err := lexer.Peek(2)
 		if err != nil {
@@ -158,15 +160,15 @@ func (lexer *CommentGroupLexer) Next() (Token, error) {
 		}
 
 		if len(peeked) == 2 &&
-			peeked[0].Id() == NewlinesToken &&
+			peeked[0].Id() == lr.NewlinesToken &&
 			peeked[1].Id() == lineCommentToken {
 
-			newlines := peeked[0].(TokenCount)
+			newlines := peeked[0].(lr.TokenCount)
 			if newlines.Count > 1 {
 				break
 			}
 
-			group.Add(peeked[1].(*TokenValue))
+			group.Add(peeked[1].(*lr.TokenValue))
 
 			_, err := lexer.Discard(2)
 			if err != nil {
@@ -177,30 +179,30 @@ func (lexer *CommentGroupLexer) Next() (Token, error) {
 		}
 	}
 
-	return CommentGroupToken{*group}, nil
+	return lr.CommentGroupToken{*group}, nil
 }
 
 // Associate comment groups to real tokens whenever possible.
 type AssociateCommentGroupsLexer struct {
-	*lexutil.BufferedReader[Token]
-	base Lexer
+	*lexutil.BufferedReader[lr.Token]
+	base lr.Lexer
 }
 
 func NewAssociateCommentGroupsLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
 	options LexerOptions,
-) Lexer {
+) lr.Lexer {
 	base := NewCommentGroupLexer(sourceFileName, sourceContent, options)
 	return &AssociateCommentGroupsLexer{
 		BufferedReader: lexutil.NewBufferedReader(
-			lexutil.NewLexerReader[Token](base),
+			lexutil.NewLexerReader[lr.Token](base),
 			10),
 		base: base,
 	}
 }
 
-func (lexer *AssociateCommentGroupsLexer) CurrentLocation() Location {
+func (lexer *AssociateCommentGroupsLexer) CurrentLocation() lexutil.Location {
 	peeked, err := lexer.Peek(1)
 	if err != nil || len(peeked) == 0 {
 		return lexer.base.CurrentLocation()
@@ -209,17 +211,17 @@ func (lexer *AssociateCommentGroupsLexer) CurrentLocation() Location {
 	return peeked[0].Loc()
 }
 
-func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
+func (lexer *AssociateCommentGroupsLexer) Next() (lr.Token, error) {
 	token, err := readToken(lexer)
 	if err != nil {
 		return nil, err
 	}
 
-	var value *TokenValue
+	var value *lr.TokenValue
 	// Handle Leading comment groups
-	if token.Id() == CommentGroupTokenId {
-		groups := CommentGroups{
-			Groups: []CommentGroup{token.(CommentGroupToken).CommentGroup},
+	if token.Id() == lr.CommentGroupTokenId {
+		groups := ast.CommentGroups{
+			Groups: []ast.CommentGroup{token.(lr.CommentGroupToken).CommentGroup},
 		}
 
 		found := false
@@ -227,7 +229,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 			peeked, err := lexer.Peek(1)
 			if len(peeked) == 0 || err != nil {
 				// groups not associated with any real token
-				return CommentGroupsTok{groups}, nil
+				return lr.CommentGroupsTok{groups}, nil
 			}
 
 			token = peeked[0]
@@ -238,23 +240,23 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 			}
 
 			switch token.Id() {
-			case NewlinesToken:
+			case lr.NewlinesToken:
 				// drop the newlines token
-			case CommentGroupTokenId:
+			case lr.CommentGroupTokenId:
 				groups.Groups = append(
 					groups.Groups,
-					token.(CommentGroupToken).CommentGroup)
+					token.(lr.CommentGroupToken).CommentGroup)
 			default:
 				// Found a real token
 				found = true
-				value = token.(*TokenValue)
+				value = token.(*lr.TokenValue)
 				value.LeadingComment = groups
 			}
 		}
-	} else if token.Id() == NewlinesToken {
+	} else if token.Id() == lr.NewlinesToken {
 		return token, nil
 	} else {
-		value = token.(*TokenValue)
+		value = token.(*lr.TokenValue)
 	}
 
 	// extract trailing comment groups
@@ -264,13 +266,13 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 			break
 		}
 
-		if peeked[0].Id() != CommentGroupTokenId {
+		if peeked[0].Id() != lr.CommentGroupTokenId {
 			break
 		}
 
 		value.TrailingComment.Groups = append(
 			value.TrailingComment.Groups,
-			peeked[0].(CommentGroupToken).CommentGroup)
+			peeked[0].(lr.CommentGroupToken).CommentGroup)
 
 		_, err = lexer.Discard(1)
 		if err != nil {
@@ -291,27 +293,27 @@ func (lexer *AssociateCommentGroupsLexer) Next() (Token, error) {
 //     `true`, or `false`
 //  5. one of: `++`, `--`, `)`, `}`, or `]`
 type TerminalNewlinesLexer struct {
-	*lexutil.BufferedReader[Token]
-	base Lexer
+	*lexutil.BufferedReader[lr.Token]
+	base lr.Lexer
 
-	previousId SymbolId
+	previousId lr.SymbolId
 }
 
 func NewBasicLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
 	options LexerOptions,
-) Lexer {
+) lr.Lexer {
 	base := NewAssociateCommentGroupsLexer(sourceFileName, sourceContent, options)
 	return &TerminalNewlinesLexer{
 		BufferedReader: lexutil.NewBufferedReader(
-			lexutil.NewLexerReader[Token](base),
+			lexutil.NewLexerReader[lr.Token](base),
 			10),
 		base: base,
 	}
 }
 
-func (lexer *TerminalNewlinesLexer) CurrentLocation() Location {
+func (lexer *TerminalNewlinesLexer) CurrentLocation() lexutil.Location {
 	peeked, err := lexer.Peek(1)
 	if err != nil || len(peeked) == 0 {
 		return lexer.base.CurrentLocation()
@@ -320,29 +322,29 @@ func (lexer *TerminalNewlinesLexer) CurrentLocation() Location {
 	return peeked[0].Loc()
 }
 
-func (lexer *TerminalNewlinesLexer) Next() (Token, error) {
+func (lexer *TerminalNewlinesLexer) Next() (lr.Token, error) {
 	for {
 		token, err := readToken(lexer)
 		if err != nil {
 			return nil, err
 		}
 
-		if token.Id() != NewlinesToken {
+		if token.Id() != lr.NewlinesToken {
 			lexer.previousId = token.Id()
 			return token, nil
 		}
 
 		switch lexer.previousId {
-		case IdentifierToken, UnderscoreToken,
-			IntegerLiteralToken, StringLiteralToken,
-			RuneLiteralToken, FloatLiteralToken,
-			JumpLabelToken,
-			ReturnToken, BreakToken, ContinueToken, FallthroughToken,
-			TrueToken, FalseToken,
-			AddOneAssignToken, SubOneAssignToken,
-			RparenToken, RbraceToken, RbracketToken:
+		case lr.IdentifierToken, lr.UnderscoreToken,
+			lr.IntegerLiteralToken, lr.StringLiteralToken,
+			lr.RuneLiteralToken, lr.FloatLiteralToken,
+			lr.JumpLabelToken,
+			lr.ReturnToken, lr.BreakToken, lr.ContinueToken, lr.FallthroughToken,
+			lr.TrueToken, lr.FalseToken,
+			lr.AddOneAssignToken, lr.SubOneAssignToken,
+			lr.RparenToken, lr.RbraceToken, lr.RbracketToken:
 
-			lexer.previousId = NewlinesToken
+			lexer.previousId = lr.NewlinesToken
 			return token, nil
 		}
 	}

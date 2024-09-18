@@ -7,11 +7,11 @@ import (
 
 	"github.com/pattyshack/gt/testing/expect"
 
-	. "github.com/pattyshack/pl/parser/lr"
+	"github.com/pattyshack/pl/parser/lr"
 )
 
-func expectError(t *testing.T, token Token, errMsg string) {
-	pe, ok := token.(*ParseErrorSymbol)
+func expectError(t *testing.T, token lr.Token, errMsg string) {
+	pe, ok := token.(*lr.ParseErrorSymbol)
 	expect.True(t, ok)
 	expect.Error(t, pe.Errors[0], errMsg)
 }
@@ -19,9 +19,9 @@ func expectError(t *testing.T, token Token, errMsg string) {
 func expectValue(
 	t *testing.T,
 	expectedValue string,
-	token Token,
-) *TokenValue {
-	value, ok := token.(*TokenValue)
+	token lr.Token,
+) *lr.TokenValue {
+	value, ok := token.(*lr.TokenValue)
 	expect.True(t, ok)
 	expect.Equal(t, expectedValue, value.Value)
 	return value
@@ -30,19 +30,19 @@ func expectValue(
 func expectCount(
 	t *testing.T,
 	expectedCount int,
-	token Token,
+	token lr.Token,
 ) {
-	count, ok := token.(TokenCount)
+	count, ok := token.(lr.TokenCount)
 	expect.True(t, ok)
 	expect.Equal(t, expectedCount, count.Count)
 }
 
-func lex(
+func lex[T lr.Lexer](
 	t *testing.T,
-	newLexer func(string, io.Reader, LexerOptions) Lexer,
+	newLexer func(string, io.Reader, LexerOptions) T,
 	input string,
-	expected ...SymbolId,
-) []Token {
+	expected ...lr.SymbolId,
+) []lr.Token {
 	buffer := bytes.NewBufferString(input)
 
 	lexer := newLexer(
@@ -53,8 +53,8 @@ func lex(
 			initialPeekWindowSize:  1,
 		})
 
-	tokens := []Token{}
-	tokenIds := []SymbolId{}
+	tokens := []lr.Token{}
+	tokenIds := []lr.SymbolId{}
 	for {
 		token, err := lexer.Next()
 		if err == io.EOF {

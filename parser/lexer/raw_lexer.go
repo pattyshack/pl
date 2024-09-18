@@ -8,66 +8,66 @@ import (
 	"github.com/pattyshack/gt/lexutil"
 	"github.com/pattyshack/gt/stringutil"
 
-	. "github.com/pattyshack/pl/ast"
-	. "github.com/pattyshack/pl/parser/lr"
+	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/parser/lr"
 )
 
 const (
-	spacesToken       = SymbolId(-1) // [ \t]+
-	lineCommentToken  = SymbolId(-2)
-	blockCommentToken = SymbolId(-3)
+	spacesToken       = lr.SymbolId(-1) // [ \t]+
+	lineCommentToken  = lr.SymbolId(-2)
+	blockCommentToken = lr.SymbolId(-3)
 
 	// s - single-line  vs m - multiple-line
 	// i - interpreted  vs r - raw string
 	// d - double quote vs b - back quote
 
-	sidStringToken = SymbolId(-10)
-	sibStringToken = SymbolId(-11)
-	srdStringToken = SymbolId(-12)
-	srbStringToken = SymbolId(-13)
-	midStringToken = SymbolId(-14)
-	mibStringToken = SymbolId(-15)
-	mrdStringToken = SymbolId(-16)
-	mrbStringToken = SymbolId(-17)
+	sidStringToken = lr.SymbolId(-10)
+	sibStringToken = lr.SymbolId(-11)
+	srdStringToken = lr.SymbolId(-12)
+	srbStringToken = lr.SymbolId(-13)
+	midStringToken = lr.SymbolId(-14)
+	mibStringToken = lr.SymbolId(-15)
+	mrdStringToken = lr.SymbolId(-16)
+	mrbStringToken = lr.SymbolId(-17)
 
 	defaultInitialPeekWindowSize = 64
 )
 
 var (
-	keywords = map[string]SymbolId{
-		"true":        TrueToken,
-		"false":       FalseToken,
-		"if":          IfToken,
-		"else":        ElseToken,
-		"switch":      SwitchToken,
-		"select":      SelectToken,
-		"case":        CaseToken,
-		"default":     DefaultToken,
-		"for":         ForToken,
-		"do":          DoToken,
-		"in":          InToken,
-		"return":      ReturnToken,
-		"break":       BreakToken,
-		"continue":    ContinueToken,
-		"fallthrough": FallthroughToken,
-		"package":     PackageToken,
-		"import":      ImportToken,
-		"unsafe":      UnsafeToken,
-		"type":        TypeToken,
-		"implements":  ImplementsToken,
-		"struct":      StructToken,
-		"enum":        EnumToken,
-		"trait":       TraitToken,
-		"func":        FuncToken,
-		"async":       AsyncToken,
-		"defer":       DeferToken,
-		"var":         VarToken,
-		"let":         LetToken,
-		"as":          AsToken,
-		"and":         AndToken,
-		"or":          OrToken,
-		"not":         NotToken,
-		"_":           UnderscoreToken,
+	keywords = map[string]lr.SymbolId{
+		"true":        lr.TrueToken,
+		"false":       lr.FalseToken,
+		"if":          lr.IfToken,
+		"else":        lr.ElseToken,
+		"switch":      lr.SwitchToken,
+		"select":      lr.SelectToken,
+		"case":        lr.CaseToken,
+		"default":     lr.DefaultToken,
+		"for":         lr.ForToken,
+		"do":          lr.DoToken,
+		"in":          lr.InToken,
+		"return":      lr.ReturnToken,
+		"break":       lr.BreakToken,
+		"continue":    lr.ContinueToken,
+		"fallthrough": lr.FallthroughToken,
+		"package":     lr.PackageToken,
+		"import":      lr.ImportToken,
+		"unsafe":      lr.UnsafeToken,
+		"type":        lr.TypeToken,
+		"implements":  lr.ImplementsToken,
+		"struct":      lr.StructToken,
+		"enum":        lr.EnumToken,
+		"trait":       lr.TraitToken,
+		"func":        lr.FuncToken,
+		"async":       lr.AsyncToken,
+		"defer":       lr.DeferToken,
+		"var":         lr.VarToken,
+		"let":         lr.LetToken,
+		"as":          lr.AsToken,
+		"and":         lr.AndToken,
+		"or":          lr.OrToken,
+		"not":         lr.NotToken,
+		"_":           lr.UnderscoreToken,
 	}
 )
 
@@ -92,7 +92,7 @@ func NewRawLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
 	options LexerOptions,
-) Lexer {
+) lr.Lexer {
 	if options.initialPeekWindowSize <= 0 {
 		options.initialPeekWindowSize = defaultInitialPeekWindowSize
 	}
@@ -112,12 +112,12 @@ func NewRawLexer(
 	}
 }
 
-func (lexer *RawLexer) CurrentLocation() Location {
-	return Location(lexer.Location)
+func (lexer *RawLexer) CurrentLocation() lexutil.Location {
+	return lexer.Location
 }
 
 // variable length token will return 0 as length
-func (lexer *RawLexer) peekNextToken() (SymbolId, string, error) {
+func (lexer *RawLexer) peekNextToken() (lr.SymbolId, string, error) {
 	peeked, err := lexer.Peek(7)
 	if len(peeked) > 0 && err == io.EOF {
 		err = nil
@@ -138,11 +138,11 @@ func (lexer *RawLexer) peekNextToken() (SymbolId, string, error) {
 		('A' <= char && char <= 'Z') ||
 		char == '_' {
 
-		return IdentifierToken, "", nil
+		return lr.IdentifierToken, "", nil
 	}
 
 	if '0' <= char && char <= '9' {
-		return IntegerLiteralToken, "", nil // int or float
+		return lr.IntegerLiteralToken, "", nil // int or float
 	}
 
 	switch char {
@@ -174,78 +174,78 @@ func (lexer *RawLexer) peekNextToken() (SymbolId, string, error) {
 			}
 		}
 
-		return IdentifierToken, "", nil
+		return lr.IdentifierToken, "", nil
 	case '\'':
-		return RuneLiteralToken, "", nil
+		return lr.RuneLiteralToken, "", nil
 	case '\r', '\n':
-		return NewlinesToken, "", nil
+		return lr.NewlinesToken, "", nil
 	case ' ', '\t':
 		return spacesToken, "", nil
 	case '@':
-		return JumpLabelToken, "", nil
+		return lr.JumpLabelToken, "", nil
 
 	case '{':
-		return LbraceToken, "{", nil
+		return lr.LbraceToken, "{", nil
 	case '}':
-		return RbraceToken, "}", nil
+		return lr.RbraceToken, "}", nil
 	case '(':
-		return LparenToken, "(", nil
+		return lr.LparenToken, "(", nil
 	case ')':
-		return RparenToken, ")", nil
+		return lr.RparenToken, ")", nil
 	case '[':
-		return LbracketToken, "[", nil
+		return lr.LbracketToken, "[", nil
 	case ']':
-		return RbracketToken, "]", nil
+		return lr.RbracketToken, "]", nil
 	case '.':
 		if len(peeked) > 2 && peeked[1] == '.' && peeked[2] == '.' {
-			return EllipsisToken, "...", nil
+			return lr.EllipsisToken, "...", nil
 		}
 
 		if len(peeked) > 1 && '0' <= peeked[1] && peeked[1] <= '9' {
-			return FloatLiteralToken, "", nil
+			return lr.FloatLiteralToken, "", nil
 		}
 
-		return DotToken, ".", nil
+		return lr.DotToken, ".", nil
 	case ',':
-		return CommaToken, ",", nil
+		return lr.CommaToken, ",", nil
 	case '?':
-		return QuestionToken, "?", nil
+		return lr.QuestionToken, "?", nil
 	case ';':
-		return SemicolonToken, ";", nil
+		return lr.SemicolonToken, ";", nil
 	case ':':
-		return ColonToken, ":", nil
+		return lr.ColonToken, ":", nil
 	case '$':
 		if len(peeked) > 1 && peeked[1] == '[' {
-			return DollarLbracketToken, "$[", nil
+			return lr.DollarLbracketToken, "$[", nil
 		}
 	case '+':
 		if len(peeked) > 1 {
 			if peeked[1] == '+' {
-				return AddOneAssignToken, "++", nil
+				return lr.AddOneAssignToken, "++", nil
 
 			} else if peeked[1] == '=' {
-				return AddAssignToken, "+=", nil
+				return lr.AddAssignToken, "+=", nil
 			}
 		}
 
-		return AddToken, "+", nil
+		return lr.AddToken, "+", nil
 	case '-':
 		if len(peeked) > 1 {
 			if peeked[1] == '-' {
-				return SubOneAssignToken, "--", nil
+				return lr.SubOneAssignToken, "--", nil
 
 			} else if peeked[1] == '=' {
-				return SubAssignToken, "-=", nil
+				return lr.SubAssignToken, "-=", nil
 			}
 		}
 
-		return SubToken, "-", nil
+		return lr.SubToken, "-", nil
 	case '*':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return MulAssignToken, "*=", nil
+			return lr.MulAssignToken, "*=", nil
 		}
 
-		return MulToken, "*", nil
+		return lr.MulToken, "*", nil
 	case '/':
 		if len(peeked) > 1 {
 			if peeked[1] == '/' {
@@ -253,101 +253,101 @@ func (lexer *RawLexer) peekNextToken() (SymbolId, string, error) {
 			} else if peeked[1] == '*' {
 				return blockCommentToken, "", nil
 			} else if peeked[1] == '=' {
-				return DivAssignToken, "/=", nil
+				return lr.DivAssignToken, "/=", nil
 			}
 		}
 
-		return DivToken, "/", nil
+		return lr.DivToken, "/", nil
 	case '%':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return ModAssignToken, "%=", nil
+			return lr.ModAssignToken, "%=", nil
 		}
 
-		return ModToken, "%", nil
+		return lr.ModToken, "%", nil
 	case '~':
 		if len(peeked) > 1 {
 			if peeked[1] == '=' {
-				return BitNegAssignToken, "~=", nil
+				return lr.BitNegAssignToken, "~=", nil
 
 			} else if peeked[1] == '~' {
-				return TildeTildeToken, "~~", nil
+				return lr.TildeTildeToken, "~~", nil
 			}
 		}
 
-		return BitNegToken, "~", nil
+		return lr.BitNegToken, "~", nil
 	case '&':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return BitAndAssignToken, "&=", nil
+			return lr.BitAndAssignToken, "&=", nil
 		}
 
-		return BitAndToken, "&", nil
+		return lr.BitAndToken, "&", nil
 	case '^':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return BitXorAssignToken, "^=", nil
+			return lr.BitXorAssignToken, "^=", nil
 		}
 
-		return BitXorToken, "^", nil
+		return lr.BitXorToken, "^", nil
 	case '|':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return BitOrAssignToken, "|=", nil
+			return lr.BitOrAssignToken, "|=", nil
 		}
 
-		return BitOrToken, "|", nil
+		return lr.BitOrToken, "|", nil
 	case '=':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return EqualToken, "==", nil
+			return lr.EqualToken, "==", nil
 		}
 
-		return AssignToken, "=", nil
+		return lr.AssignToken, "=", nil
 	case '!':
 		if len(peeked) > 1 && peeked[1] == '=' {
-			return NotEqualToken, "!=", nil
+			return lr.NotEqualToken, "!=", nil
 		}
 
-		return ExclaimToken, "!", nil
+		return lr.ExclaimToken, "!", nil
 	case '<':
 		if len(peeked) > 1 {
 			if peeked[1] == '=' {
-				return LessOrEqualToken, "<=", nil
+				return lr.LessOrEqualToken, "<=", nil
 
 			} else if peeked[1] == '<' {
 				if len(peeked) > 2 && peeked[2] == '=' {
-					return BitLshiftAssignToken, "<<=", nil
+					return lr.BitLshiftAssignToken, "<<=", nil
 				}
 
-				return BitLshiftToken, "<<", nil
+				return lr.BitLshiftToken, "<<", nil
 			} else if peeked[1] == '-' {
-				return ArrowToken, "<-", nil
+				return lr.ArrowToken, "<-", nil
 			}
 		}
 
-		return LessToken, "<", nil
+		return lr.LessToken, "<", nil
 	case '>':
 		if len(peeked) > 1 {
 			if peeked[1] == '=' {
-				return GreaterOrEqualToken, ">=", nil
+				return lr.GreaterOrEqualToken, ">=", nil
 
 			} else if peeked[1] == '>' {
 				if len(peeked) > 2 && peeked[2] == '=' {
-					return BitRshiftAssignToken, ">>=", nil
+					return lr.BitRshiftAssignToken, ">>=", nil
 				}
 
-				return BitRshiftToken, ">>", nil
+				return lr.BitRshiftToken, ">>", nil
 			}
 		}
 
-		return GreaterToken, ">", nil
+		return lr.GreaterToken, ">", nil
 	}
 
 	utf8Char, size := utf8.DecodeRune(peeked)
 	if size == 1 || utf8Char == utf8.RuneError { // unexpected token
-		return ParseErrorToken, string(peeked[:size]), nil
+		return lr.ParseErrorToken, string(peeked[:size]), nil
 	}
 
-	return IdentifierToken, "", nil
+	return lr.IdentifierToken, "", nil
 }
 
-func (lexer *RawLexer) lexSpacesToken() (Token, error) {
+func (lexer *RawLexer) lexSpacesToken() (lr.Token, error) {
 	numSpaceBytes, err := lexutil.PeekSpaces(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize)
@@ -359,21 +359,21 @@ func (lexer *RawLexer) lexSpacesToken() (Token, error) {
 		panic("This should never happen")
 	}
 
-	loc := Location(lexer.Location)
+	loc := lexer.Location
 
 	_, err = lexer.Discard(numSpaceBytes)
 	if err != nil {
 		panic("This should never happen")
 	}
 
-	return TokenCount{
+	return lr.TokenCount{
 		SymbolId:    spacesToken,
-		StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
+		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
 		Count:       numSpaceBytes,
 	}, nil
 }
 
-func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
+func (lexer *RawLexer) lexNewlinesToken() (lr.Token, error) {
 	numNewlineBytes, numNewlines, foundInvalidNewline, err := lexutil.PeekNewlines(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize)
@@ -381,16 +381,16 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 		return nil, err
 	}
 
-	loc := Location(lexer.Location)
+	loc := lexer.Location
 	if numNewlineBytes > 0 {
 		_, err := lexer.Discard(numNewlineBytes)
 		if err != nil {
 			panic("This should never happen")
 		}
 
-		return TokenCount{
-			SymbolId:    NewlinesToken,
-			StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
+		return lr.TokenCount{
+			SymbolId:    lr.NewlinesToken,
+			StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
 			Count:       numNewlines,
 		}, nil
 	} else if foundInvalidNewline {
@@ -399,9 +399,9 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 			panic("This should never happen")
 		}
 
-		return &ParseErrorSymbol{
-			NewParseErrorNode(
-				NewStartEndPos(loc, lexer.Location),
+		return &lr.ParseErrorSymbol{
+			ast.NewParseErrorNode(
+				ast.NewStartEndPos(loc, lexer.Location),
 				fmt.Errorf("unexpected utf8 rune")),
 		}, nil
 	}
@@ -409,7 +409,7 @@ func (lexer *RawLexer) lexNewlinesToken() (Token, error) {
 	panic("This should never happen")
 }
 
-func (lexer *RawLexer) lexLineCommentToken() (Token, error) {
+func (lexer *RawLexer) lexLineCommentToken() (lr.Token, error) {
 	numCommentBytes, err := lexutil.PeekLineComment(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize)
@@ -417,7 +417,7 @@ func (lexer *RawLexer) lexLineCommentToken() (Token, error) {
 		return nil, err
 	}
 
-	loc := Location(lexer.Location)
+	loc := lexer.Location
 
 	value := ""
 	if lexer.PreserveCommentContent {
@@ -431,14 +431,14 @@ func (lexer *RawLexer) lexLineCommentToken() (Token, error) {
 		panic("This should never happen")
 	}
 
-	return &TokenValue{
+	return &lr.TokenValue{
 		SymbolId:    lineCommentToken,
-		StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
+		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
 		Value:       value,
 	}, nil
 }
 
-func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
+func (lexer *RawLexer) lexBlockCommentToken() (lr.Token, error) {
 	numCommentBytes, scopeLevel, err := lexutil.PeekBlockComment(
 		lexer.BufferedByteLocationReader,
 		true,
@@ -447,7 +447,7 @@ func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
 		return nil, err
 	}
 
-	loc := Location(lexer.Location)
+	loc := lexer.Location
 
 	value := ""
 	if lexer.PreserveCommentContent && scopeLevel == 0 {
@@ -462,16 +462,16 @@ func (lexer *RawLexer) lexBlockCommentToken() (Token, error) {
 	}
 
 	if scopeLevel > 0 {
-		return &ParseErrorSymbol{
-			NewParseErrorNode(
-				NewStartEndPos(loc, Location(lexer.Location)),
+		return &lr.ParseErrorSymbol{
+			ast.NewParseErrorNode(
+				ast.NewStartEndPos(loc, lexer.Location),
 				fmt.Errorf("block comment not terminated")),
 		}, nil
 	}
 
-	return &TokenValue{
+	return &lr.TokenValue{
 		SymbolId:    blockCommentToken,
-		StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
+		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
 		Value:       value,
 	}, nil
 }
@@ -553,7 +553,7 @@ func isHexadecimalDigit(char byte) bool {
 		'a' <= char && char <= 'f'
 }
 
-func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
+func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
 	peeked, err := lexer.Peek(2)
 	if len(peeked) > 0 && err == io.EOF {
 		err = nil
@@ -567,8 +567,8 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 		panic("should never happen")
 	}
 
-	loc := Location(lexer.Location)
-	subType := DecimalInteger
+	loc := lexer.Location
+	subType := lr.DecimalInteger
 	hasDigits := true
 	totalBytes := 1
 
@@ -587,7 +587,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 				return nil, err
 			}
 
-			subType = BinaryInteger
+			subType = lr.BinaryInteger
 			hasDigits = numBytes != 0
 			totalBytes = numBytes + 2
 		case 'o', 'O':
@@ -596,7 +596,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 				return nil, err
 			}
 
-			subType = ZeroOPrefixedOctalInteger
+			subType = lr.ZeroOPrefixedOctalInteger
 			hasDigits = numBytes != 0
 			totalBytes = numBytes + 2
 		case 'x', 'X':
@@ -605,7 +605,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 				return nil, err
 			}
 
-			subType = HexadecimalInteger
+			subType = lr.HexadecimalInteger
 			hasDigits = numBytes != 0
 			totalBytes = numBytes + 2
 		default:
@@ -615,17 +615,17 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 			}
 
 			if numBytes > 0 { // otherwise is a decimal "0"
-				subType = ZeroPrefixedOctalInteger
+				subType = lr.ZeroPrefixedOctalInteger
 				hasDigits = true
 				totalBytes = numBytes + 1
 			}
 		}
 	}
 
-	if subType == DecimalInteger || subType == HexadecimalInteger {
+	if subType == lr.DecimalInteger || subType == lr.HexadecimalInteger {
 		token, err := lexer.maybeLexIntPrefixedFloat(
 			totalBytes,
-			subType == HexadecimalInteger)
+			subType == lr.HexadecimalInteger)
 		if err != nil {
 			return nil, err
 		}
@@ -655,15 +655,15 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (Token, error) {
 	}
 
 	if !hasDigits {
-		return &ParseErrorSymbol{
-			NewParseErrorNode(NewStartEndPos(loc, Location(lexer.Location)),
+		return &lr.ParseErrorSymbol{
+			ast.NewParseErrorNode(ast.NewStartEndPos(loc, lexer.Location),
 				fmt.Errorf("%s has no digits", subType)),
 		}, nil
 	}
 
-	return &TokenValue{
-		SymbolId:    IntegerLiteralToken,
-		StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
+	return &lr.TokenValue{
+		SymbolId:    lr.IntegerLiteralToken,
+		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
 		Value:       value,
 		SubType:     subType,
 	}, nil
@@ -773,7 +773,7 @@ func (lexer *RawLexer) maybeLexIntPrefixedFloat(
 	leadingIntBytes int,
 	isHex bool, // false is decimal
 ) (
-	Token,
+	lr.Token,
 	error,
 ) {
 	numBytes, err := lexer.maybePeekFloat(leadingIntBytes, isHex)
@@ -790,7 +790,7 @@ func (lexer *RawLexer) maybeLexIntPrefixedFloat(
 		panic("should never happen")
 	}
 
-	loc := Location(lexer.Location)
+	loc := lexer.Location
 	value := string(peeked)
 
 	_, err = lexer.Discard(numBytes)
@@ -798,20 +798,20 @@ func (lexer *RawLexer) maybeLexIntPrefixedFloat(
 		panic("should never happen")
 	}
 
-	subType := DecimalFloat
+	subType := lr.DecimalFloat
 	if isHex {
-		subType = HexadecimalFloat
+		subType = lr.HexadecimalFloat
 	}
 
-	return &TokenValue{
-		SymbolId:    FloatLiteralToken,
-		StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
+	return &lr.TokenValue{
+		SymbolId:    lr.FloatLiteralToken,
+		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
 		Value:       value,
 		SubType:     subType,
 	}, nil
 }
 
-func (lexer *RawLexer) lexDotDecimalFloatLiteralToken() (Token, error) {
+func (lexer *RawLexer) lexDotDecimalFloatLiteralToken() (lr.Token, error) {
 	numBytes, err := lexer.maybePeekFloat(0, false)
 	if err != nil {
 		return nil, err
@@ -826,7 +826,7 @@ func (lexer *RawLexer) lexDotDecimalFloatLiteralToken() (Token, error) {
 		panic("should never happen")
 	}
 
-	loc := Location(lexer.Location)
+	loc := lexer.Location
 	value := string(peeked)
 
 	_, err = lexer.Discard(numBytes)
@@ -834,11 +834,11 @@ func (lexer *RawLexer) lexDotDecimalFloatLiteralToken() (Token, error) {
 		panic("should never happen")
 	}
 
-	return &TokenValue{
-		SymbolId:    FloatLiteralToken,
-		StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
+	return &lr.TokenValue{
+		SymbolId:    lr.FloatLiteralToken,
+		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
 		Value:       value,
-		SubType:     DecimalFloat,
+		SubType:     lr.DecimalFloat,
 	}, nil
 }
 
@@ -1017,7 +1017,7 @@ func (lexer *RawLexer) peekString(
 	return result, nil
 }
 
-func (lexer *RawLexer) lexRuneLiteralToken() (Token, error) {
+func (lexer *RawLexer) lexRuneLiteralToken() (lr.Token, error) {
 	result, err := lexer.peekString(
 		"rune literal",
 		'\'',
@@ -1029,7 +1029,7 @@ func (lexer *RawLexer) lexRuneLiteralToken() (Token, error) {
 		return nil, err
 	}
 
-	loc := Location(lexer.Location)
+	loc := lexer.Location
 
 	value := ""
 	if result.errorMsg == "" {
@@ -1058,16 +1058,16 @@ func (lexer *RawLexer) lexRuneLiteralToken() (Token, error) {
 	}
 
 	if result.errorMsg != "" {
-		return &ParseErrorSymbol{
-			NewParseErrorNode(
-				NewStartEndPos(loc, Location(lexer.Location)),
+		return &lr.ParseErrorSymbol{
+			ast.NewParseErrorNode(
+				ast.NewStartEndPos(loc, lexer.Location),
 				fmt.Errorf(result.errorMsg)),
 		}, nil
 	}
 
-	return &TokenValue{
-		SymbolId:    RuneLiteralToken,
-		StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
+	return &lr.TokenValue{
+		SymbolId:    lr.RuneLiteralToken,
+		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
 		Value:       value,
 	}, nil
 }
@@ -1080,7 +1080,7 @@ func (lexer *RawLexer) lexStringLiteralToken(
 	allowMultiline bool,
 	allowEscaped bool,
 ) (
-	Token,
+	lr.Token,
 	error,
 ) {
 	result, err := lexer.peekString(
@@ -1094,7 +1094,7 @@ func (lexer *RawLexer) lexStringLiteralToken(
 		return nil, err
 	}
 
-	loc := Location(lexer.Location)
+	loc := lexer.Location
 
 	value := ""
 	if result.errorMsg == "" {
@@ -1116,22 +1116,22 @@ func (lexer *RawLexer) lexStringLiteralToken(
 	}
 
 	if result.errorMsg != "" {
-		return &ParseErrorSymbol{
-			NewParseErrorNode(
-				NewStartEndPos(loc, Location(lexer.Location)),
+		return &lr.ParseErrorSymbol{
+			ast.NewParseErrorNode(
+				ast.NewStartEndPos(loc, lexer.Location),
 				fmt.Errorf(result.errorMsg)),
 		}, nil
 	}
 
-	return &TokenValue{
-		SymbolId:    StringLiteralToken,
-		StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
+	return &lr.TokenValue{
+		SymbolId:    lr.StringLiteralToken,
+		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
 		Value:       value,
 		SubType:     subType,
 	}, nil
 }
 
-func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
+func (lexer *RawLexer) lexJumpLabelToken() (lr.Token, error) {
 	// Note: we can skip checking the first byte, which we alreay know is '@'
 
 	size, err := lexutil.PeekIdentifier(
@@ -1142,7 +1142,7 @@ func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
 		return nil, err
 	}
 
-	loc := Location(lexer.Location)
+	loc := lexer.Location
 
 	if size == 0 {
 		_, err := lexer.Discard(1)
@@ -1150,9 +1150,9 @@ func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
 			panic("Should never happen")
 		}
 
-		return &ParseErrorSymbol{
-			NewParseErrorNode(
-				NewStartEndPos(loc, Location(lexer.Location)),
+		return &lr.ParseErrorSymbol{
+			ast.NewParseErrorNode(
+				ast.NewStartEndPos(loc, lexer.Location),
 				fmt.Errorf("no label name associated with @")),
 		}, nil
 	}
@@ -1171,15 +1171,15 @@ func (lexer *RawLexer) lexJumpLabelToken() (Token, error) {
 		panic("Should never happen")
 	}
 
-	return &TokenValue{
-		SymbolId:    JumpLabelToken,
-		StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
+	return &lr.TokenValue{
+		SymbolId:    lr.JumpLabelToken,
+		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
 		Value:       jumpLabel,
 	}, nil
 }
 
 func (lexer *RawLexer) lexIdentifierKeywordsOrLabelDeclToken() (
-	*TokenValue,
+	*lr.TokenValue,
 	error,
 ) {
 	size, err := lexutil.PeekIdentifier(
@@ -1194,15 +1194,15 @@ func (lexer *RawLexer) lexIdentifierKeywordsOrLabelDeclToken() (
 		panic("Should never hapapen")
 	}
 
-	symbolId := IdentifierToken
+	symbolId := lr.IdentifierToken
 
 	peeked, _ := lexer.Peek(size + 1)
 	if size+1 == len(peeked) && peeked[size] == '@' {
 		size++
-		symbolId = LabelDeclToken
+		symbolId = lr.LabelDeclToken
 	}
 
-	loc := Location(lexer.Location)
+	loc := lexer.Location
 	value := lexer.InternBytes(peeked[:size])
 
 	_, err = lexer.Discard(size)
@@ -1215,14 +1215,14 @@ func (lexer *RawLexer) lexIdentifierKeywordsOrLabelDeclToken() (
 		symbolId = kwSymbolId
 	}
 
-	return &TokenValue{
+	return &lr.TokenValue{
 		SymbolId:    symbolId,
-		StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
+		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
 		Value:       value,
 	}, nil
 }
 
-func (lexer *RawLexer) Next() (Token, error) {
+func (lexer *RawLexer) Next() (lr.Token, error) {
 	symbolId, value, err := lexer.peekNextToken()
 	if err != nil {
 		return nil, err
@@ -1230,32 +1230,32 @@ func (lexer *RawLexer) Next() (Token, error) {
 
 	size := len(value)
 
-	if symbolId == ParseErrorToken {
-		loc := Location(lexer.Location)
+	if symbolId == lr.ParseErrorToken {
+		loc := lexer.Location
 
 		_, err := lexer.Discard(size)
 		if err != nil {
 			panic("Should never happen")
 		}
 
-		return &ParseErrorSymbol{
-			NewParseErrorNode(
-				NewStartEndPos(loc, Location(lexer.Location)),
+		return &lr.ParseErrorSymbol{
+			ast.NewParseErrorNode(
+				ast.NewStartEndPos(loc, lexer.Location),
 				fmt.Errorf("unexpected utf8 rune")),
 		}, nil
 	}
 
 	if size > 0 {
-		loc := Location(lexer.Location)
+		loc := lexer.Location
 
 		_, err := lexer.Discard(size)
 		if err != nil {
 			panic("Should never happen")
 		}
 
-		return &TokenValue{
+		return &lr.TokenValue{
 			SymbolId:    symbolId,
-			StartEndPos: NewStartEndPos(loc, Location(lexer.Location)),
+			StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
 			Value:       value,
 		}, nil
 	}
@@ -1264,21 +1264,21 @@ func (lexer *RawLexer) Next() (Token, error) {
 	switch symbolId {
 	case spacesToken:
 		return lexer.lexSpacesToken()
-	case NewlinesToken:
+	case lr.NewlinesToken:
 		return lexer.lexNewlinesToken()
 	case lineCommentToken:
 		return lexer.lexLineCommentToken()
 	case blockCommentToken:
 		return lexer.lexBlockCommentToken()
-	case IntegerLiteralToken:
+	case lr.IntegerLiteralToken:
 		return lexer.lexIntegerOrFloatLiteralToken()
-	case FloatLiteralToken:
+	case lr.FloatLiteralToken:
 		return lexer.lexDotDecimalFloatLiteralToken()
-	case RuneLiteralToken:
+	case lr.RuneLiteralToken:
 		return lexer.lexRuneLiteralToken()
 	case sibStringToken:
 		return lexer.lexStringLiteralToken(
-			SingleLineString,
+			lr.SingleLineString,
 			'`',
 			1,     // start marker length
 			1,     // end marker length
@@ -1286,7 +1286,7 @@ func (lexer *RawLexer) Next() (Token, error) {
 			true)  // allow escaped
 	case sidStringToken:
 		return lexer.lexStringLiteralToken(
-			SingleLineString,
+			lr.SingleLineString,
 			'"',
 			1,     // start marker length
 			1,     // end marker length
@@ -1294,7 +1294,7 @@ func (lexer *RawLexer) Next() (Token, error) {
 			true)  // allow escaped
 	case srbStringToken:
 		return lexer.lexStringLiteralToken(
-			RawSingleLineString,
+			lr.RawSingleLineString,
 			'`',
 			2,     // start marker length
 			1,     // end marker length
@@ -1302,7 +1302,7 @@ func (lexer *RawLexer) Next() (Token, error) {
 			false) // allow escaped
 	case srdStringToken:
 		return lexer.lexStringLiteralToken(
-			RawSingleLineString,
+			lr.RawSingleLineString,
 			'"',
 			2,     // start marker length
 			1,     // end marker length
@@ -1310,7 +1310,7 @@ func (lexer *RawLexer) Next() (Token, error) {
 			false) // allow escaped
 	case mibStringToken:
 		return lexer.lexStringLiteralToken(
-			MultiLineString,
+			lr.MultiLineString,
 			'`',
 			3,    // start marker length
 			3,    // end marker length
@@ -1318,7 +1318,7 @@ func (lexer *RawLexer) Next() (Token, error) {
 			true) // allow escaped
 	case midStringToken:
 		return lexer.lexStringLiteralToken(
-			MultiLineString,
+			lr.MultiLineString,
 			'"',
 			3,    // start marker length
 			3,    // end marker length
@@ -1326,7 +1326,7 @@ func (lexer *RawLexer) Next() (Token, error) {
 			true) // allow escaped
 	case mrbStringToken:
 		return lexer.lexStringLiteralToken(
-			RawMultiLineString,
+			lr.RawMultiLineString,
 			'`',
 			4,     // start marker length
 			3,     // end marker length
@@ -1334,15 +1334,15 @@ func (lexer *RawLexer) Next() (Token, error) {
 			false) // allow escaped
 	case mrdStringToken:
 		return lexer.lexStringLiteralToken(
-			RawMultiLineString,
+			lr.RawMultiLineString,
 			'"',
 			4,     // start marker length
 			3,     // end marker length
 			true,  // allow multiline
 			false) // allow escaped
-	case JumpLabelToken:
+	case lr.JumpLabelToken:
 		return lexer.lexJumpLabelToken()
-	case IdentifierToken:
+	case lr.IdentifierToken:
 		return lexer.lexIdentifierKeywordsOrLabelDeclToken()
 	}
 
