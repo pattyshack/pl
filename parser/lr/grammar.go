@@ -1131,17 +1131,17 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State6:
 		return []SymbolId{LbraceToken}
 	case _State7:
-		return []SymbolId{}
+		return []SymbolId{_EndMarker}
 	case _State8:
-		return []SymbolId{}
+		return []SymbolId{_EndMarker}
 	case _State9:
-		return []SymbolId{}
+		return []SymbolId{_EndMarker}
 	case _State10:
-		return []SymbolId{}
+		return []SymbolId{_EndMarker}
 	case _State11:
-		return []SymbolId{AddToken, SubToken, MulToken}
+		return []SymbolId{AddToken, SubToken, MulToken, _EndMarker}
 	case _State12:
-		return []SymbolId{}
+		return []SymbolId{_EndMarker}
 	case _State13:
 		return []SymbolId{IdentifierToken, LparenToken}
 	case _State15:
