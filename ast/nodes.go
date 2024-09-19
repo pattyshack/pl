@@ -196,7 +196,6 @@ func (sep StartEndPos) End() lexutil.Location {
 
 type ParseErrorNode struct {
 	IsExpr
-	IsTypeExpr
 
 	StartEndPos
 	LeadingTrailingComments
