@@ -18,14 +18,12 @@ import (
 type Command struct {
 	*argparse.Command
 
-	useBasicLexer bool
-
 	parser.ParserOptions
 }
 
 func (cmd *Command) Setup() {
 	argparse.BoolVar(
-		&cmd.useBasicLexer,
+		&cmd.UseBasicLexer,
 		"use-basic-lexer",
 		false,
 		"when true, use basic lexer for strict bottom-up lr parsing")
@@ -97,31 +95,15 @@ func (cmd *Command) Setup() {
 		})
 }
 
-func (cmd *Command) newLexer(
-	fileName string,
-	reader io.Reader,
-	reducer lr.Reducer,
-) lr.Lexer {
-	if cmd.useBasicLexer {
-		return lexer.NewBasicLexer(fileName, reader, cmd.LexerOptions)
-	}
-
-	return lexer.NewLexer(fileName, reader, cmd.LexerOptions, reducer)
-}
-
 func (cmd *Command) printFunc(
-	parse func(string, io.Reader) (ast.Node, error),
+	parse func(string) (ast.Node, error),
 	args []string,
 ) error {
-	for _, fileName := range args {
-		fmt.Println("==========================")
-		fmt.Println("File name:", fileName)
-		fmt.Println("==========================")
-
+	cmd.NewReaderFunc = func(fileName string) (io.Reader, error) {
 		content, err := os.ReadFile(fileName)
 		if err != nil {
 			fmt.Println("Error opening file:", err)
-			continue
+			return nil, err
 		}
 
 		fmt.Println("Content:")
@@ -129,9 +111,15 @@ func (cmd *Command) printFunc(
 		fmt.Println(string(content[:len(content)-1]))
 		fmt.Println("++++++++++++++++++++++++++++++++")
 
-		buffer := bytes.NewBuffer(content[:len(content)-1])
+		return bytes.NewBuffer(content[:len(content)-1]), nil
+	}
 
-		expr, err := parse(fileName, buffer)
+	for _, fileName := range args {
+		fmt.Println("==========================")
+		fmt.Println("File name:", fileName)
+		fmt.Println("==========================")
+
+		expr, err := parse(fileName)
 		if err != nil {
 			fmt.Println("Parse error:", err)
 			continue
@@ -149,13 +137,15 @@ func (cmd *Command) printExpr(args []string) error {
 	return cmd.printFunc(
 		func(
 			fileName string,
-			reader io.Reader,
 		) (
 			ast.Node,
 			error,
 		) {
 			reducer := reducer.NewReducer()
-			lexer := cmd.newLexer(fileName, reader, reducer)
+			lexer, err := cmd.NewLexer(fileName, reducer)
+			if err != nil {
+				return nil, err
+			}
 			return lr.ParseExpr(lexer, reducer)
 		},
 		args)
@@ -165,13 +155,15 @@ func (cmd *Command) printTypeExpr(args []string) error {
 	return cmd.printFunc(
 		func(
 			fileName string,
-			reader io.Reader,
 		) (
 			ast.Node,
 			error,
 		) {
 			reducer := reducer.NewReducer()
-			lexer := cmd.newLexer(fileName, reader, reducer)
+			lexer, err := cmd.NewLexer(fileName, reducer)
+			if err != nil {
+				return nil, err
+			}
 			return lr.ParseTypeExpr(lexer, reducer)
 		},
 		args)
@@ -181,13 +173,15 @@ func (cmd *Command) printStatement(args []string) error {
 	return cmd.printFunc(
 		func(
 			fileName string,
-			reader io.Reader,
 		) (
 			ast.Node,
 			error,
 		) {
 			reducer := reducer.NewReducer()
-			lexer := cmd.newLexer(fileName, reader, reducer)
+			lexer, err := cmd.NewLexer(fileName, reducer)
+			if err != nil {
+				return nil, err
+			}
 			return lr.ParseStatement(lexer, reducer)
 		},
 		args)
@@ -197,13 +191,15 @@ func (cmd *Command) printDefinition(args []string) error {
 	return cmd.printFunc(
 		func(
 			fileName string,
-			reader io.Reader,
 		) (
 			ast.Node,
 			error,
 		) {
 			reducer := reducer.NewReducer()
-			lexer := cmd.newLexer(fileName, reader, reducer)
+			lexer, err := cmd.NewLexer(fileName, reducer)
+			if err != nil {
+				return nil, err
+			}
 			return lr.ParseDefinition(lexer, reducer)
 		},
 		args)
@@ -213,12 +209,11 @@ func (cmd *Command) printSource(args []string) error {
 	return cmd.printFunc(
 		func(
 			fileName string,
-			reader io.Reader,
 		) (
 			ast.Node,
 			error,
 		) {
-			_, src, err := parser.ParseSource(fileName, reader, cmd.ParserOptions)
+			_, src, err := parser.ParseSource(fileName, cmd.ParserOptions)
 			return src, err
 		},
 		args)

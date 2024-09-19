@@ -6,16 +6,9 @@ import (
 	"github.com/pattyshack/gt/lexutil"
 
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/parser/lexer"
 	"github.com/pattyshack/pl/parser/lr"
 	reducerImpl "github.com/pattyshack/pl/parser/reducer"
 )
-
-type ParserOptions struct {
-	lexer.LexerOptions
-
-	UseLRParseSource bool
-}
 
 type bufferLexer struct {
 	*lexutil.BufferedReader[lr.Token]
@@ -33,9 +26,8 @@ func (l bufferLexer) CurrentLocation() lexutil.Location {
 
 // This splits the source token stream into definition segments, then parse
 // each definition segments individually.  Each segment is terminated by either
-// newlines or eof.  Note that newlines inside lparen/rparen scopes are
-// ignored (newlines inside lbrace/rbrace scopes are handled by scoped lexer).
-// Parse errors are returned as part of the definition list.
+// newlines or eof.  Note that newlines inside paren/brace scopes are
+// ignored.  Parse errors are returned as part of the definition list.
 type sourceParser struct {
 	lexer   lr.Lexer
 	reducer *reducerImpl.Reducer
@@ -53,6 +45,7 @@ func newSourceParser(
 
 func (parser *sourceParser) readDefinitionSegment() ([]lr.Token, error) {
 	parenScope := 0
+	braceScope := 0
 	result := []lr.Token{}
 	for {
 		token, err := parser.lexer.Next()
@@ -62,19 +55,23 @@ func (parser *sourceParser) readDefinitionSegment() ([]lr.Token, error) {
 
 		switch token.Id() {
 		case lr.NewlinesToken:
-			if parenScope == 0 {
+			if parenScope == 0 && braceScope == 0 {
 				return result, nil
 			}
 		case lr.LparenToken:
 			parenScope++
 		case lr.RparenToken:
 			parenScope--
+		case lr.LbraceToken:
+			braceScope++
+		case lr.RbraceToken:
+			braceScope--
 		}
 
 		result = append(result, token)
 
-		if parenScope < 0 {
-			// mismatch paren.  this will always result in an parse error.
+		if parenScope < 0 || braceScope < 0 {
+			// mismatch paren/brace.  This will always result in an parse error.
 			return result, nil
 		}
 	}
@@ -95,13 +92,8 @@ func (parser *sourceParser) parse() (*ast.DefinitionList, error) {
 				},
 				parser.reducer)
 			if err != nil {
-				def, err = parser.reducer.ToParseErrorExpr(
-					lr.ParseErrorSymbol{
-						ast.NewParseErrorNode(ast.NewStartEndPos(start, end), err),
-					})
-				if err != nil {
-					return list, err
-				}
+				parser.reducer.ParseErrors = append(parser.reducer.ParseErrors, err)
+				def = ast.NewParseErrorNode(ast.NewStartEndPos(start, end), err)
 			}
 
 			if len(list.Elements) == 0 {
@@ -123,7 +115,6 @@ func (parser *sourceParser) parse() (*ast.DefinitionList, error) {
 
 func ParseSource(
 	fileName string,
-	content io.Reader,
 	options ParserOptions,
 ) (
 	*reducerImpl.Reducer,
@@ -131,10 +122,12 @@ func ParseSource(
 	error,
 ) {
 	reducer := reducerImpl.NewReducer()
-	lexer := lexer.NewLexer(fileName, content, options.LexerOptions, reducer)
+	lexer, err := options.NewLexer(fileName, reducer)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	var list *ast.DefinitionList
-	var err error
 	if options.UseLRParseSource {
 		list, err = lr.ParseSource(lexer, reducer)
 	} else {
