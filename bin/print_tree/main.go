@@ -7,7 +7,9 @@ import (
 	"os"
 
 	"github.com/pattyshack/gt/argparse"
+
 	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/parser"
 	"github.com/pattyshack/pl/parser/lexer"
 	"github.com/pattyshack/pl/parser/lr"
 	"github.com/pattyshack/pl/parser/reducer"
@@ -16,7 +18,8 @@ import (
 type Command struct {
 	*argparse.Command
 
-	useBasicLexer bool
+	useBasicLexer    bool
+	useLRParseSource bool
 }
 
 func (cmd *Command) Setup() {
@@ -25,6 +28,12 @@ func (cmd *Command) Setup() {
 		"use-basic-lexer",
 		false,
 		"when true, use basic lexer for strict bottom-up lr parsing")
+
+	argparse.BoolVar(
+		&cmd.useLRParseSource,
+		"use-lr-parse-source",
+		false,
+		"when true, use lr.ParseSource instead of parser.ParseSource for source")
 
 	exprCmd := cmd.AddSubcommand("expr", "print expression")
 	exprCmd.SetCommandFunc(
@@ -101,7 +110,7 @@ func (cmd *Command) newLexer(
 }
 
 func (cmd *Command) printFunc(
-	parse func(lr.Lexer, lr.Reducer) (ast.Node, error),
+	parse func(string, io.Reader, lexer.LexerOptions) (ast.Node, error),
 	args []string,
 ) error {
 	for _, fileName := range args {
@@ -122,10 +131,7 @@ func (cmd *Command) printFunc(
 
 		buffer := bytes.NewBuffer(content[:len(content)-1])
 
-		reducer := reducer.NewReducer()
-		lexer := cmd.newLexer(fileName, buffer, lexer.LexerOptions{}, reducer)
-
-		expr, err := parse(lexer, reducer)
+		expr, err := parse(fileName, buffer, lexer.LexerOptions{})
 		if err != nil {
 			fmt.Println("Parse error:", err)
 			continue
@@ -141,7 +147,16 @@ func (cmd *Command) printFunc(
 
 func (cmd *Command) printExpr(args []string) error {
 	return cmd.printFunc(
-		func(lexer lr.Lexer, reducer lr.Reducer) (ast.Node, error) {
+		func(
+			fileName string,
+			reader io.Reader,
+			options lexer.LexerOptions,
+		) (
+			ast.Node,
+			error,
+		) {
+			reducer := reducer.NewReducer()
+			lexer := cmd.newLexer(fileName, reader, options, reducer)
 			return lr.ParseExpr(lexer, reducer)
 		},
 		args)
@@ -149,7 +164,16 @@ func (cmd *Command) printExpr(args []string) error {
 
 func (cmd *Command) printTypeExpr(args []string) error {
 	return cmd.printFunc(
-		func(lexer lr.Lexer, reducer lr.Reducer) (ast.Node, error) {
+		func(
+			fileName string,
+			reader io.Reader,
+			options lexer.LexerOptions,
+		) (
+			ast.Node,
+			error,
+		) {
+			reducer := reducer.NewReducer()
+			lexer := cmd.newLexer(fileName, reader, options, reducer)
 			return lr.ParseTypeExpr(lexer, reducer)
 		},
 		args)
@@ -157,7 +181,16 @@ func (cmd *Command) printTypeExpr(args []string) error {
 
 func (cmd *Command) printStatement(args []string) error {
 	return cmd.printFunc(
-		func(lexer lr.Lexer, reducer lr.Reducer) (ast.Node, error) {
+		func(
+			fileName string,
+			reader io.Reader,
+			options lexer.LexerOptions,
+		) (
+			ast.Node,
+			error,
+		) {
+			reducer := reducer.NewReducer()
+			lexer := cmd.newLexer(fileName, reader, options, reducer)
 			return lr.ParseStatement(lexer, reducer)
 		},
 		args)
@@ -165,7 +198,16 @@ func (cmd *Command) printStatement(args []string) error {
 
 func (cmd *Command) printDefinition(args []string) error {
 	return cmd.printFunc(
-		func(lexer lr.Lexer, reducer lr.Reducer) (ast.Node, error) {
+		func(
+			fileName string,
+			reader io.Reader,
+			options lexer.LexerOptions,
+		) (
+			ast.Node,
+			error,
+		) {
+			reducer := reducer.NewReducer()
+			lexer := cmd.newLexer(fileName, reader, options, reducer)
 			return lr.ParseDefinition(lexer, reducer)
 		},
 		args)
@@ -173,8 +215,22 @@ func (cmd *Command) printDefinition(args []string) error {
 
 func (cmd *Command) printSource(args []string) error {
 	return cmd.printFunc(
-		func(lexer lr.Lexer, reducer lr.Reducer) (ast.Node, error) {
-			return lr.ParseSource(lexer, reducer)
+		func(
+			fileName string,
+			reader io.Reader,
+			options lexer.LexerOptions,
+		) (
+			ast.Node,
+			error,
+		) {
+			if cmd.useLRParseSource {
+				reducer := reducer.NewReducer()
+				lexer := cmd.newLexer(fileName, reader, options, reducer)
+				return lr.ParseSource(lexer, reducer)
+			} else {
+				_, src, err := parser.ParseSource(fileName, reader, options)
+				return src, err
+			}
 		},
 		args)
 }

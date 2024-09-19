@@ -122,10 +122,9 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 			return &lr.Symbol{SymbolId_: lr.StatementsType, Expression: block}, nil
 		}
 
-		errNode := &ast.ParseErrorNode{
-			StartEndPos: ast.NewStartEndPos(pos, pos),
-			Errors:      []error{parseErr},
-		}
+		errNode := ast.NewParseErrorNode(
+			ast.NewStartEndPos(pos, lexer.CurrentLocation()),
+			parseErr)
 
 		for len(lexer.stack) >= currentLevel {
 			if lexer.isEndOfCurrentScope() {
