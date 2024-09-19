@@ -102,14 +102,14 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 
 	peeked, err := lexer.buffered.Peek(1)
 	if err != nil || len(peeked) == 0 {
-		return readToken(lexer.buffered)
+		return lexer.buffered.Next()
 	}
 
 	switch peeked[0].Id() {
 	case lr.LbraceToken:
 		if lexer.isCurrentScopeFirstLbrace() {
 			lexer.consumeCurrentScopeFirstLbrace()
-			return readToken(lexer.buffered)
+			return lexer.buffered.Next()
 		}
 
 		currentLevel := lexer.pushScope()
@@ -161,5 +161,5 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 		lexer.endCurrentScope()
 	}
 
-	return readToken(lexer.buffered)
+	return lexer.buffered.Next()
 }

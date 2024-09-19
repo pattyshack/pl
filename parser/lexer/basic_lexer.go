@@ -9,31 +9,6 @@ import (
 	"github.com/pattyshack/pl/parser/lr"
 )
 
-type TokenPeekDiscarder interface {
-	Peek(int) ([]lr.Token, error)
-	Discard(int) (int, error)
-}
-
-func readToken(reader TokenPeekDiscarder) (lr.Token, error) {
-	peeked, err := reader.Peek(1)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(peeked) != 1 {
-		panic("should never happen")
-	}
-
-	token := peeked[0]
-
-	_, err = reader.Discard(1)
-	if err != nil {
-		panic("should never happen")
-	}
-
-	return token, nil
-}
-
 // Discard spacesToken and merge adjacent NewlinesTokens
 type TrimSpacesLexer struct {
 	buffered *lexutil.BufferedReader[lr.Token]
@@ -64,13 +39,13 @@ func (lexer *TrimSpacesLexer) CurrentLocation() lexutil.Location {
 }
 
 func (lexer *TrimSpacesLexer) Next() (lr.Token, error) {
-	token, err := readToken(lexer.buffered)
+	token, err := lexer.buffered.Next()
 	if err != nil {
 		return nil, err
 	}
 
 	if token.Id() == spacesToken {
-		token, err = readToken(lexer.buffered)
+		token, err = lexer.buffered.Next()
 		if err != nil {
 			return nil, err
 		}
@@ -139,7 +114,7 @@ func (lexer *CommentGroupLexer) CurrentLocation() lexutil.Location {
 }
 
 func (lexer *CommentGroupLexer) Next() (lr.Token, error) {
-	token, err := readToken(lexer.buffered)
+	token, err := lexer.buffered.Next()
 	if err != nil {
 		return nil, err
 	}
@@ -212,7 +187,7 @@ func (lexer *AssociateCommentGroupsLexer) CurrentLocation() lexutil.Location {
 }
 
 func (lexer *AssociateCommentGroupsLexer) Next() (lr.Token, error) {
-	token, err := readToken(lexer.buffered)
+	token, err := lexer.buffered.Next()
 	if err != nil {
 		return nil, err
 	}
@@ -324,7 +299,7 @@ func (lexer *TerminalNewlinesLexer) CurrentLocation() lexutil.Location {
 
 func (lexer *TerminalNewlinesLexer) Next() (lr.Token, error) {
 	for {
-		token, err := readToken(lexer.buffered)
+		token, err := lexer.buffered.Next()
 		if err != nil {
 			return nil, err
 		}
