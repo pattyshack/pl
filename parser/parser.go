@@ -11,6 +11,12 @@ import (
 	reducerImpl "github.com/pattyshack/pl/parser/reducer"
 )
 
+type ParserOptions struct {
+	lexer.LexerOptions
+
+	UseLRParseSource bool
+}
+
 type bufferLexer struct {
 	*lexutil.BufferedReader[lr.Token]
 	end lexutil.Location
@@ -36,13 +42,11 @@ type sourceParser struct {
 }
 
 func newSourceParser(
-	fileName string,
-	content io.Reader,
-	options lexer.LexerOptions,
+	lexer lr.Lexer,
 	reducer *reducerImpl.Reducer,
 ) *sourceParser {
 	return &sourceParser{
-		lexer:   lexer.NewLexer(fileName, content, options, reducer),
+		lexer:   lexer,
 		reducer: reducer,
 	}
 }
@@ -120,14 +124,23 @@ func (parser *sourceParser) parse() (*ast.DefinitionList, error) {
 func ParseSource(
 	fileName string,
 	content io.Reader,
-	options lexer.LexerOptions,
+	options ParserOptions,
 ) (
 	*reducerImpl.Reducer,
 	*ast.DefinitionList,
 	error,
 ) {
 	reducer := reducerImpl.NewReducer()
-	parser := newSourceParser(fileName, content, options, reducer)
-	list, err := parser.parse()
+	lexer := lexer.NewLexer(fileName, content, options.LexerOptions, reducer)
+
+	var list *ast.DefinitionList
+	var err error
+	if options.UseLRParseSource {
+		list, err = lr.ParseSource(lexer, reducer)
+	} else {
+		parser := newSourceParser(lexer, reducer)
+		list, err = parser.parse()
+	}
+
 	return reducer, list, err
 }
