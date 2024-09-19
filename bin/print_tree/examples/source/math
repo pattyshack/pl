@@ -1,0 +1,25 @@
+let one = 1
+
+type Iter trait(
+  func next() Int
+)
+
+type Fib struct(
+  prev Int
+  curr Int
+) implements Iter
+
+func (f &Fact) next() {
+  var prev = f.curr
+  f.curr += f.prev
+  f.prev = prev
+  f.curr
+}
+
+func fact(i Int) Int {
+  if i <= 0 {
+    return one
+  }
+
+  return i * fact(i - 1)
+}
