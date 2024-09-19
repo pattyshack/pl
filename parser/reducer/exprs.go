@@ -196,10 +196,7 @@ func (reducer *Reducer) toBinaryExpr(
 	left Expression,
 	op *lr.TokenValue,
 	right Expression,
-) (
-	Expression,
-	error,
-) {
+) Expression {
 	expr := &BinaryExpr{
 		StartEndPos: NewStartEndPos(left.Loc(), right.End()),
 		Left:        left,
@@ -213,7 +210,7 @@ func (reducer *Reducer) toBinaryExpr(
 	expr.TrailingComment = right.TakeTrailing()
 
 	reducer.BinaryExprs = append(reducer.BinaryExprs, expr)
-	return expr, nil
+	return expr
 }
 
 func (reducer *Reducer) ToBinaryMulExpr(
@@ -224,7 +221,7 @@ func (reducer *Reducer) ToBinaryMulExpr(
 	Expression,
 	error,
 ) {
-	return reducer.toBinaryExpr(left, op, right)
+	return reducer.toBinaryExpr(left, op, right), nil
 }
 
 func (reducer *Reducer) ToBinaryAddExpr(
@@ -235,7 +232,7 @@ func (reducer *Reducer) ToBinaryAddExpr(
 	Expression,
 	error,
 ) {
-	return reducer.toBinaryExpr(left, op, right)
+	return reducer.toBinaryExpr(left, op, right), nil
 }
 
 func (reducer *Reducer) ToBinaryCmpExpr(
@@ -246,7 +243,7 @@ func (reducer *Reducer) ToBinaryCmpExpr(
 	Expression,
 	error,
 ) {
-	return reducer.toBinaryExpr(left, op, right)
+	return reducer.toBinaryExpr(left, op, right), nil
 }
 
 func (reducer *Reducer) ToBinaryAndExpr(
@@ -257,7 +254,7 @@ func (reducer *Reducer) ToBinaryAndExpr(
 	Expression,
 	error,
 ) {
-	return reducer.toBinaryExpr(left, op, right)
+	return reducer.toBinaryExpr(left, op, right), nil
 }
 
 func (reducer *Reducer) ToBinaryOrExpr(
@@ -268,7 +265,7 @@ func (reducer *Reducer) ToBinaryOrExpr(
 	Expression,
 	error,
 ) {
-	return reducer.toBinaryExpr(left, op, right)
+	return reducer.toBinaryExpr(left, op, right), nil
 }
 
 func (reducer *Reducer) ToSendExpr(
@@ -279,7 +276,7 @@ func (reducer *Reducer) ToSendExpr(
 	Expression,
 	error,
 ) {
-	return reducer.toBinaryExpr(receiver, arrow, expr)
+	return reducer.toBinaryExpr(receiver, arrow, expr), nil
 }
 
 func (reducer *Reducer) ToBinaryOpAssignStatement(
@@ -290,7 +287,7 @@ func (reducer *Reducer) ToBinaryOpAssignStatement(
 	Statement,
 	error,
 ) {
-	return reducer.toBinaryExpr(address, op, value)
+	return reducer.toBinaryExpr(address, op, value), nil
 }
 
 func (reducer *Reducer) ToExprAssignStatement(
@@ -301,7 +298,7 @@ func (reducer *Reducer) ToExprAssignStatement(
 	Statement,
 	error,
 ) {
-	return reducer.toBinaryExpr(pattern, assign, value)
+	return reducer.toBinaryExpr(pattern, assign, value), nil
 }
 
 func (reducer *Reducer) ToSequenceExprAssignStatement(
@@ -312,7 +309,7 @@ func (reducer *Reducer) ToSequenceExprAssignStatement(
 	Statement,
 	error,
 ) {
-	return reducer.toBinaryExpr(pattern, assign, value)
+	return reducer.toBinaryExpr(pattern, assign, value), nil
 }
 
 func (reducer *Reducer) DefToGlobalVarDef(
@@ -323,7 +320,7 @@ func (reducer *Reducer) DefToGlobalVarDef(
 	Definition,
 	error,
 ) {
-	return reducer.toBinaryExpr(pattern, assign, value)
+	return reducer.toBinaryExpr(pattern, assign, value), nil
 }
 
 //
@@ -1067,17 +1064,13 @@ func (reducer *Reducer) IteratorToLoopExprBody(
 	switch body := bodyExpr.(type) {
 	case *StatementsExpr:
 		leading := forKW.TakeLeading()
-		assignPattern.PrependToLeading(forKW.TakeTrailing())
-		assignPattern.AppendToTrailing(in.TakeLeading())
-		iterator.PrependToLeading(in.TakeTrailing())
 		trailing := bodyExpr.TakeTrailing()
 
 		loop := &LoopExpr{
-			StartEndPos:   NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
-			LoopKind:      IteratorLoop,
-			AssignPattern: assignPattern,
-			Condition:     iterator,
-			Body:          *body,
+			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			LoopKind:    IteratorLoop,
+			Condition:   reducer.toBinaryExpr(assignPattern, in, iterator),
+			Body:        *body,
 		}
 		loop.LeadingComment = leading
 		loop.TrailingComment = trailing

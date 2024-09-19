@@ -386,7 +386,6 @@ type LoopExpr struct {
 	LabelDecl string
 
 	Init          Statement  // optional. only applicable to traditional-for loop
-	AssignPattern Expression // optional. only applicable to iterator loop
 	Condition     Expression // optional. not applicable to infinite loop
 	Post          Statement  // optional. only applicable to traditional-for loop
 
@@ -405,12 +404,6 @@ func (expr LoopExpr) TreeString(indent string, label string) string {
 
 	if expr.Init != nil {
 		result += "\n" + expr.Init.TreeString(indent+"  ", "Init=")
-	}
-
-	if expr.AssignPattern != nil {
-		result += "\n" + expr.AssignPattern.TreeString(
-			indent+"  ",
-			"AssignPattern=")
 	}
 
 	result += "\n" + expr.Condition.TreeString(indent+"  ", "Condition=")
