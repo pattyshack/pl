@@ -6,7 +6,7 @@ import (
 )
 
 type Reducer struct {
-	ParseErrors []*ParseErrorNode
+	ParseErrors []error
 
 	BoolLiteralExprs    []*BoolLiteralExpr
 	IntLiteralExprs     []*IntLiteralExpr

@@ -11,6 +11,6 @@ func (Reducer *Reducer) ToParseErrorExpr(
 	Expression,
 	error,
 ) {
-	Reducer.ParseErrors = append(Reducer.ParseErrors, pe.ParseErrorNode)
+	Reducer.ParseErrors = append(Reducer.ParseErrors, pe.Errors...)
 	return pe.ParseErrorNode, nil
 }
