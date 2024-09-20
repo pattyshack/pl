@@ -85,6 +85,7 @@ func (reducer *Reducer) ToPackageDef(
 		}
 		def.LeadingComment = pkg.TakeLeading()
 
+		reducer.PackageDefs = append(reducer.PackageDefs, def)
 		return def, nil
 	case *ParseErrorNode:
 		return expr, nil

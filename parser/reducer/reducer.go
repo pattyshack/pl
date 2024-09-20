@@ -38,7 +38,8 @@ type Reducer struct {
 	EnumTypeExprs     []*PropertiesTypeExpr
 	TraitTypeExprs    []*PropertiesTypeExpr
 
-	TypeDefs []*TypeDef
+	PackageDefs []*PackageDef
+	TypeDefs    []*TypeDef
 
 	ImportClauses []*ImportClause
 
