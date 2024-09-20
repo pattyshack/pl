@@ -135,7 +135,7 @@ sequence_statement<Statement> ->
   = unary_op_assign_statement |
   = binary_op_assign_statement
 
-simple_statement<Statement> ->
+statement<Statement> ->
   = unsafe_statement |
 
   = expr_or_improper_expr_struct |
@@ -156,10 +156,8 @@ simple_statement<Statement> ->
   = binary_op_assign_statement |
 
   // NOTE: Only applicable to package_def
-  = import_statement
+  = import_statement |
 
-statement<Statement> ->
-  = simple_statement |
   = branch_statement
 
 branch_statement<Statement> ->
@@ -168,11 +166,11 @@ branch_statement<Statement> ->
   // select_assign_send_bracnh are only applicable to select expression.
   // Post analysis is needed to associate statements to cases (move trailing
   // non-case statements into case's data structure).
-  case_branch: CASE case_patterns COLON trailing_simple_statement |
-  default_branch: DEFAULT COLON trailing_simple_statement
+  case_branch: CASE case_patterns COLON trailing_statement |
+  default_branch: DEFAULT COLON trailing_statement
 
-trailing_simple_statement<StatementsExpr> ->
-  simple_statement |
+trailing_statement<StatementsExpr> ->
+  statement |
   nil:
 
 //

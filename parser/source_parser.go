@@ -133,11 +133,8 @@ func (parser *sourceParser) groupCaseStatements(stmts *ast.StatementsExpr) {
 	newElements := []ast.Statement{}
 	var current *ast.BranchStatement
 	for _, stmt := range stmts.Elements {
-		switch branch := stmt.(type) {
-		case *ast.BranchStatement:
-			current = branch
-			newElements = append(newElements, branch)
-		default:
+		branch, ok := stmt.(*ast.BranchStatement)
+		if !ok {
 			if current != nil {
 				current.Body.Elements = append(current.Body.Elements, stmt)
 				current.EndPos = stmt.End()
@@ -150,6 +147,32 @@ func (parser *sourceParser) groupCaseStatements(stmts *ast.StatementsExpr) {
 					newElements,
 					ast.NewParseErrorNode(stmt.StartEnd(), err))
 			}
+			continue
+		}
+
+		current = branch
+		newElements = append(newElements, branch)
+
+		// Flatten nested case statements
+		for {
+			if len(current.Body.Elements) == 0 {
+				break
+			}
+
+			if len(current.Body.Elements) != 1 {
+				panic("should never happen")
+			}
+
+			nested, ok := current.Body.Elements[0].(*ast.BranchStatement)
+			if !ok {
+				break
+			}
+
+			current.EndPos = nested.Loc()
+			current.Body.Elements = nil
+
+			current = nested
+			newElements = append(newElements, nested)
 		}
 	}
 

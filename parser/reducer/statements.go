@@ -104,7 +104,7 @@ func (reducer *Reducer) LabelledToStatementsExpr(
 	panic(fmt.Sprintf("Unexpected expression: %v", statementsExprOrParseError))
 }
 
-func (reducer *Reducer) SimpleStatementToTrailingSimpleStatement(
+func (reducer *Reducer) StatementToTrailingStatement(
 	stmt Statement,
 ) (
 	*StatementsExpr,
@@ -115,7 +115,7 @@ func (reducer *Reducer) SimpleStatementToTrailingSimpleStatement(
 	return expr, nil
 }
 
-func (reducer *Reducer) NilToTrailingSimpleStatement() (
+func (reducer *Reducer) NilToTrailingStatement() (
 	*StatementsExpr,
 	error,
 ) {
