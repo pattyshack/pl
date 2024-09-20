@@ -399,7 +399,7 @@ func (reducer *Reducer) CaseBranchToBranchStatement(
 	stmt := &BranchStatement{
 		StartEndPos:  NewStartEndPos(caseKW.Loc(), end),
 		CasePatterns: *casePatterns,
-		Body:         *body,
+		Body:         body,
 	}
 	stmt.LeadingComment = leading
 
@@ -432,7 +432,7 @@ func (reducer *Reducer) DefaultBranchToBranchStatement(
 		StartEndPos:  NewStartEndPos(defaultKW.Loc(), end),
 		IsDefault:    true,
 		CasePatterns: *casePatterns,
-		Body:         *body,
+		Body:         body,
 	}
 	stmt.LeadingComment = leading
 

@@ -327,7 +327,7 @@ type SwitchExpr struct {
 
 	LabelDecl string // optional
 	Operand   Expression
-	Branches  StatementsExpr
+	Branches  *StatementsExpr
 }
 
 var _ Expression = &SwitchExpr{}
@@ -350,7 +350,7 @@ type SelectExpr struct {
 	LeadingTrailingComments
 
 	LabelDecl string // optional
-	Branches  StatementsExpr
+	Branches  *StatementsExpr
 }
 
 var _ Expression = &SelectExpr{}
@@ -385,11 +385,11 @@ type LoopExpr struct {
 
 	LabelDecl string
 
-	Init          Statement  // optional. only applicable to traditional-for loop
-	Condition     Expression // optional. not applicable to infinite loop
-	Post          Statement  // optional. only applicable to traditional-for loop
+	Init      Statement  // optional. only applicable to traditional-for loop
+	Condition Expression // optional. not applicable to infinite loop
+	Post      Statement  // optional. only applicable to traditional-for loop
 
-	Body StatementsExpr
+	Body *StatementsExpr
 }
 
 var _ Expression = &LoopExpr{}

@@ -29,7 +29,7 @@ type PackageDef struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	Body StatementsExpr
+	Body *StatementsExpr
 }
 
 var _ Definition = &PackageDef{}

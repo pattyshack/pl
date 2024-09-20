@@ -81,7 +81,7 @@ func (reducer *Reducer) ToPackageDef(
 		body.PrependToLeading(pkg.TakeTrailing())
 		def := &PackageDef{
 			StartEndPos: NewStartEndPos(pkg.Loc(), expr.End()),
-			Body:        *body,
+			Body:        body,
 		}
 		def.LeadingComment = pkg.TakeLeading()
 

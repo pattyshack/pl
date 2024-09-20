@@ -186,7 +186,7 @@ type BranchStatement struct {
 
 	IsDefault    bool
 	CasePatterns ExpressionList
-	Body         StatementsExpr
+	Body         *StatementsExpr
 }
 
 var _ Statement = &BranchStatement{}

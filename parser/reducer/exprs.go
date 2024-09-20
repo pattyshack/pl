@@ -866,7 +866,7 @@ func (reducer *Reducer) ToSwitchExprBody(
 		switchExpr := &SwitchExpr{
 			StartEndPos: NewStartEndPos(switchKW.Loc(), branches.End()),
 			Operand:     operand,
-			Branches:    *branches,
+			Branches:    branches,
 		}
 
 		switchExpr.LeadingComment = switchKW.TakeLeading()
@@ -921,7 +921,7 @@ func (reducer *Reducer) ToSelectExprBody(
 
 		selectExpr := &SelectExpr{
 			StartEndPos: NewStartEndPos(switchKW.Loc(), branches.End()),
-			Branches:    *branches,
+			Branches:    branches,
 		}
 
 		selectExpr.LeadingComment = switchKW.TakeLeading()
@@ -975,7 +975,7 @@ func (reducer *Reducer) InfiniteToLoopExprBody(
 		loop := &LoopExpr{
 			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
 			LoopKind:    InfiniteLoop,
-			Body:        *body,
+			Body:        body,
 		}
 		loop.LeadingComment = leading
 		loop.TrailingComment = trailing
@@ -1007,7 +1007,7 @@ func (reducer *Reducer) DoWhileToLoopExprBody(
 			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
 			LoopKind:    DoWhileLoop,
 			Condition:   condition,
-			Body:        *body,
+			Body:        body,
 		}
 		loop.LeadingComment = leading
 		loop.TrailingComment = trailing
@@ -1038,7 +1038,7 @@ func (reducer *Reducer) WhileToLoopExprBody(
 			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
 			LoopKind:    WhileLoop,
 			Condition:   condition,
-			Body:        *body,
+			Body:        body,
 		}
 		loop.LeadingComment = leading
 		loop.TrailingComment = trailing
@@ -1070,7 +1070,7 @@ func (reducer *Reducer) IteratorToLoopExprBody(
 			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
 			LoopKind:    IteratorLoop,
 			Condition:   reducer.toBinaryExpr(assignPattern, in, iterator),
-			Body:        *body,
+			Body:        body,
 		}
 		loop.LeadingComment = leading
 		loop.TrailingComment = trailing
@@ -1128,7 +1128,7 @@ func (reducer *Reducer) ForToLoopExprBody(
 			Init:        init,
 			Condition:   condition,
 			Post:        post,
-			Body:        *body,
+			Body:        body,
 		}
 		loop.LeadingComment = leading
 		loop.TrailingComment = trailing
