@@ -93,6 +93,39 @@ func (cmd *Command) Setup() {
 			NumExpected: 1,
 			VarArgs:     true,
 		})
+
+	exprCmd = cmd.AddSubcommand("package", "print package")
+	exprCmd.SetCommandFunc(
+		cmd.printPackage,
+		argparse.PositionalArgument{
+			Name:        "files",
+			Description: "list of file name paths",
+			NumExpected: 1,
+			VarArgs:     true,
+		})
+}
+
+func (cmd *Command) printPackage(
+	args []string,
+) error {
+	fmt.Println("Files:")
+	for _, filename := range args {
+		fmt.Println(" ", filename)
+	}
+	fmt.Println("==========================")
+
+	_, list, err := parser.ParsePackage(args, cmd.ParserOptions)
+
+	if err != nil {
+		fmt.Println("Parse error:", err)
+		return err
+	}
+
+	fmt.Println("Tree:")
+	fmt.Println("-----")
+	fmt.Println(list.TreeString("", ""))
+
+	return nil
 }
 
 func (cmd *Command) printFunc(
@@ -100,6 +133,10 @@ func (cmd *Command) printFunc(
 	args []string,
 ) error {
 	cmd.NewReaderFunc = func(fileName string) (io.Reader, error) {
+		fmt.Println("==========================")
+		fmt.Println("File name:", fileName)
+		fmt.Println("==========================")
+
 		content, err := os.ReadFile(fileName)
 		if err != nil {
 			fmt.Println("Error opening file:", err)
@@ -115,10 +152,6 @@ func (cmd *Command) printFunc(
 	}
 
 	for _, fileName := range args {
-		fmt.Println("==========================")
-		fmt.Println("File name:", fileName)
-		fmt.Println("==========================")
-
 		expr, err := parse(fileName)
 		if err != nil {
 			fmt.Println("Parse error:", err)
