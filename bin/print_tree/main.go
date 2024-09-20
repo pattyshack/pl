@@ -10,9 +10,6 @@ import (
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser"
-	"github.com/pattyshack/pl/parser/lexer"
-	"github.com/pattyshack/pl/parser/lr"
-	"github.com/pattyshack/pl/parser/reducer"
 )
 
 type Command struct {
@@ -132,25 +129,6 @@ func (cmd *Command) printFunc(
 	parse func(string) (ast.Node, error),
 	args []string,
 ) error {
-	cmd.NewReaderFunc = func(fileName string) (io.Reader, error) {
-		fmt.Println("==========================")
-		fmt.Println("File name:", fileName)
-		fmt.Println("==========================")
-
-		content, err := os.ReadFile(fileName)
-		if err != nil {
-			fmt.Println("Error opening file:", err)
-			return nil, err
-		}
-
-		fmt.Println("Content:")
-		fmt.Println("--------")
-		fmt.Println(string(content[:len(content)-1]))
-		fmt.Println("++++++++++++++++++++++++++++++++")
-
-		return bytes.NewBuffer(content[:len(content)-1]), nil
-	}
-
 	for _, fileName := range args {
 		expr, err := parse(fileName)
 		if err != nil {
@@ -174,12 +152,8 @@ func (cmd *Command) printExpr(args []string) error {
 			ast.Node,
 			error,
 		) {
-			reducer := reducer.NewReducer()
-			lexer, err := cmd.NewLexer(fileName, reducer)
-			if err != nil {
-				return nil, err
-			}
-			return lr.ParseExpr(lexer, reducer)
+			_, expr, err := parser.ParseExpr(fileName, cmd.ParserOptions)
+			return expr, err
 		},
 		args)
 }
@@ -192,12 +166,8 @@ func (cmd *Command) printTypeExpr(args []string) error {
 			ast.Node,
 			error,
 		) {
-			reducer := reducer.NewReducer()
-			lexer, err := cmd.NewLexer(fileName, reducer)
-			if err != nil {
-				return nil, err
-			}
-			return lr.ParseTypeExpr(lexer, reducer)
+			_, typeExpr, err := parser.ParseTypeExpr(fileName, cmd.ParserOptions)
+			return typeExpr, err
 		},
 		args)
 }
@@ -210,12 +180,8 @@ func (cmd *Command) printStatement(args []string) error {
 			ast.Node,
 			error,
 		) {
-			reducer := reducer.NewReducer()
-			lexer, err := cmd.NewLexer(fileName, reducer)
-			if err != nil {
-				return nil, err
-			}
-			return lr.ParseStatement(lexer, reducer)
+			_, stmt, err := parser.ParseStatement(fileName, cmd.ParserOptions)
+			return stmt, err
 		},
 		args)
 }
@@ -228,12 +194,8 @@ func (cmd *Command) printDefinition(args []string) error {
 			ast.Node,
 			error,
 		) {
-			reducer := reducer.NewReducer()
-			lexer, err := cmd.NewLexer(fileName, reducer)
-			if err != nil {
-				return nil, err
-			}
-			return lr.ParseDefinition(lexer, reducer)
+			_, def, err := parser.ParseDefinition(fileName, cmd.ParserOptions)
+			return def, err
 		},
 		args)
 }
@@ -253,27 +215,15 @@ func (cmd *Command) printSource(args []string) error {
 }
 
 func (cmd *Command) printTokens(args []string) error {
+	cmd.UseBasicLexer = true
 	for _, fileName := range args {
-		fmt.Println("==========================")
-		fmt.Println("File name:", fileName)
-		fmt.Println("==========================")
-
-		content, err := os.ReadFile(fileName)
+		lexer, err := cmd.NewLexer(fileName, nil)
 		if err != nil {
-			fmt.Println("Error opening file:", err)
 			continue
 		}
 
-		fmt.Println("Content:")
-		fmt.Println("--------")
-		fmt.Println(string(content[:len(content)-1]))
-		fmt.Println("++++++++++++++++++++++++++++++++")
 		fmt.Println("Tokens:")
 		fmt.Println("-----")
-
-		buffer := bytes.NewBuffer(content[:len(content)-1])
-
-		lexer := lexer.NewBasicLexer(fileName, buffer, lexer.LexerOptions{})
 		for {
 			token, err := lexer.Next()
 			if err == io.EOF {
@@ -294,6 +244,25 @@ func (cmd *Command) printTokens(args []string) error {
 func main() {
 	cmd := &Command{
 		Command: argparse.CommandLine,
+	}
+
+	cmd.NewReaderFunc = func(fileName string) (io.Reader, error) {
+		fmt.Println("==========================")
+		fmt.Println("File name:", fileName)
+		fmt.Println("==========================")
+
+		content, err := os.ReadFile(fileName)
+		if err != nil {
+			fmt.Println("Error opening file:", err)
+			return nil, err
+		}
+
+		fmt.Println("Content:")
+		fmt.Println("--------")
+		fmt.Println(string(content[:len(content)-1]))
+		fmt.Println("++++++++++++++++++++++++++++++++")
+
+		return bytes.NewBuffer(content[:len(content)-1]), nil
 	}
 
 	cmd.Setup()

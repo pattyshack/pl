@@ -321,7 +321,7 @@ field_var_pattern<Argument> ->
 // NOTE: *_expr_assign_pattern captures identifier and tuple vars, as well as
 // fully evaluated expressions.  Additional post analysis checks are needed to
 // reject invalid usage, depending on the context (e.g., assignment should
-// only allow identifier expressions)
+// only operate on proper address values)
 
 sequence_expr_assign_pattern<Expression> ->
   = sequence_expr |

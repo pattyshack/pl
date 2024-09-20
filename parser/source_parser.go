@@ -31,16 +31,27 @@ func (l bufferLexer) CurrentLocation() lexutil.Location {
 type sourceParser struct {
 	lexer   lr.Lexer
 	reducer *reducerImpl.Reducer
+	ParserOptions
 }
 
 func newSourceParser(
-	lexer lr.Lexer,
-	reducer *reducerImpl.Reducer,
-) *sourceParser {
-	return &sourceParser{
-		lexer:   lexer,
-		reducer: reducer,
+	fileName string,
+	options ParserOptions,
+) (
+	*sourceParser,
+	error,
+) {
+	reducer := reducerImpl.NewReducer()
+	lexer, err := options.NewLexer(fileName, reducer)
+	if err != nil {
+		return nil, err
 	}
+
+	return &sourceParser{
+		lexer:         lexer,
+		reducer:       reducer,
+		ParserOptions: options,
+	}, nil
 }
 
 func (parser *sourceParser) readDefinitionSegment() ([]lr.Token, error) {
@@ -77,7 +88,11 @@ func (parser *sourceParser) readDefinitionSegment() ([]lr.Token, error) {
 	}
 }
 
-func (parser *sourceParser) parse() (*ast.DefinitionList, error) {
+func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
+	if parser.UseLRParseSource {
+		return lr.ParseSource(parser.lexer, parser.reducer)
+	}
+
 	list := ast.NewDefinitionList()
 	for {
 		start := parser.lexer.CurrentLocation()
@@ -113,6 +128,135 @@ func (parser *sourceParser) parse() (*ast.DefinitionList, error) {
 	}
 }
 
+func (parser *sourceParser) parseSource() (
+	*reducerImpl.Reducer,
+	*ast.DefinitionList,
+	error,
+) {
+	source, err := parser._parseSource()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return parser.reducer, source, nil
+}
+
+func (parser *sourceParser) parseExpr() (
+	*reducerImpl.Reducer,
+	ast.Expression,
+	error,
+) {
+	expr, err := lr.ParseExpr(parser.lexer, parser.reducer)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return parser.reducer, expr, nil
+}
+
+func (parser *sourceParser) parseTypeExpr() (
+	*reducerImpl.Reducer,
+	ast.TypeExpression,
+	error,
+) {
+	typeExpr, err := lr.ParseTypeExpr(parser.lexer, parser.reducer)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return parser.reducer, typeExpr, nil
+}
+
+func (parser *sourceParser) parseStatement() (
+	*reducerImpl.Reducer,
+	ast.Statement,
+	error,
+) {
+	stmt, err := lr.ParseStatement(parser.lexer, parser.reducer)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return parser.reducer, stmt, nil
+}
+
+func (parser *sourceParser) parseDefinition() (
+	*reducerImpl.Reducer,
+	ast.Definition,
+	error,
+) {
+	def, err := lr.ParseDefinition(parser.lexer, parser.reducer)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return parser.reducer, def, nil
+}
+
+func ParseExpr(
+	fileName string,
+	options ParserOptions,
+) (
+	*reducerImpl.Reducer,
+	ast.Expression,
+	error,
+) {
+	parser, err := newSourceParser(fileName, options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return parser.parseExpr()
+}
+
+func ParseTypeExpr(
+	fileName string,
+	options ParserOptions,
+) (
+	*reducerImpl.Reducer,
+	ast.TypeExpression,
+	error,
+) {
+	parser, err := newSourceParser(fileName, options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return parser.parseTypeExpr()
+}
+
+func ParseStatement(
+	fileName string,
+	options ParserOptions,
+) (
+	*reducerImpl.Reducer,
+	ast.Statement,
+	error,
+) {
+	parser, err := newSourceParser(fileName, options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return parser.parseStatement()
+}
+
+func ParseDefinition(
+	fileName string,
+	options ParserOptions,
+) (
+	*reducerImpl.Reducer,
+	ast.Definition,
+	error,
+) {
+	parser, err := newSourceParser(fileName, options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return parser.parseDefinition()
+}
+
 func ParseSource(
 	fileName string,
 	options ParserOptions,
@@ -121,19 +265,10 @@ func ParseSource(
 	*ast.DefinitionList,
 	error,
 ) {
-	reducer := reducerImpl.NewReducer()
-	lexer, err := options.NewLexer(fileName, reducer)
+	parser, err := newSourceParser(fileName, options)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	var list *ast.DefinitionList
-	if options.UseLRParseSource {
-		list, err = lr.ParseSource(lexer, reducer)
-	} else {
-		parser := newSourceParser(lexer, reducer)
-		list, err = parser.parse()
-	}
-
-	return reducer, list, err
+	return parser.parseSource()
 }
