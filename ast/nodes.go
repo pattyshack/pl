@@ -7,6 +7,7 @@ import (
 )
 
 type Node interface {
+	StartEnd() StartEndPos
 	Loc() lexutil.Location
 	End() lexutil.Location
 
@@ -184,6 +185,10 @@ func NewStartEndPos(start lexutil.Location, end lexutil.Location) StartEndPos {
 		StartPos: start,
 		EndPos:   end,
 	}
+}
+
+func (sep StartEndPos) StartEnd() StartEndPos {
+	return sep
 }
 
 func (sep StartEndPos) Loc() lexutil.Location {

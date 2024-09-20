@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/pattyshack/gt/lexutil"
@@ -29,8 +30,8 @@ func (l bufferLexer) CurrentLocation() lexutil.Location {
 // newlines or eof.  Note that newlines inside paren/brace scopes are
 // ignored.  Parse errors are returned as part of the definition list.
 type sourceParser struct {
-	lexer   lr.Lexer
-	reducer *reducerImpl.Reducer
+	lexer lr.Lexer
+	*reducerImpl.Reducer
 	ParserOptions
 }
 
@@ -49,7 +50,7 @@ func newSourceParser(
 
 	return &sourceParser{
 		lexer:         lexer,
-		reducer:       reducer,
+		Reducer:       reducer,
 		ParserOptions: options,
 	}, nil
 }
@@ -90,7 +91,7 @@ func (parser *sourceParser) readDefinitionSegment() ([]lr.Token, error) {
 
 func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 	if parser.UseLRParseSource {
-		return lr.ParseSource(parser.lexer, parser.reducer)
+		return lr.ParseSource(parser.lexer, parser)
 	}
 
 	list := ast.NewDefinitionList()
@@ -105,9 +106,9 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 					BufferedReader: lexutil.NewBufferedReaderFromSlice(segment),
 					end:            end,
 				},
-				parser.reducer)
+				parser)
 			if err != nil {
-				parser.reducer.ParseErrors = append(parser.reducer.ParseErrors, err)
+				parser.ParseErrors = append(parser.ParseErrors, err)
 				def = ast.NewParseErrorNode(ast.NewStartEndPos(start, end), err)
 			}
 
@@ -128,6 +129,43 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 	}
 }
 
+func (parser *sourceParser) groupCaseStatements(stmts *ast.StatementsExpr) {
+	newElements := []ast.Statement{}
+	var current *ast.BranchStatement
+	for _, stmt := range stmts.Elements {
+		switch branch := stmt.(type) {
+		case *ast.BranchStatement:
+			current = branch
+			newElements = append(newElements, branch)
+		default:
+			if current != nil {
+				current.Body.Elements = append(current.Body.Elements, stmt)
+				current.EndPos = stmt.End()
+			} else {
+				err := fmt.Errorf(
+					"statement does not belong to any branch: %s",
+					stmt.Loc())
+				parser.ParseErrors = append(parser.ParseErrors, err)
+				newElements = append(
+					newElements,
+					ast.NewParseErrorNode(stmt.StartEnd(), err))
+			}
+		}
+	}
+
+	stmts.Elements = newElements
+}
+
+func (parser *sourceParser) analyze() {
+	for _, expr := range parser.SwitchExprs {
+		parser.groupCaseStatements(expr.Branches)
+	}
+
+	for _, expr := range parser.SelectExprs {
+		parser.groupCaseStatements(expr.Branches)
+	}
+}
+
 func (parser *sourceParser) parseSource() (
 	*reducerImpl.Reducer,
 	*ast.DefinitionList,
@@ -138,7 +176,8 @@ func (parser *sourceParser) parseSource() (
 		return nil, nil, err
 	}
 
-	return parser.reducer, source, nil
+	parser.analyze()
+	return parser.Reducer, source, nil
 }
 
 func (parser *sourceParser) parseExpr() (
@@ -146,12 +185,13 @@ func (parser *sourceParser) parseExpr() (
 	ast.Expression,
 	error,
 ) {
-	expr, err := lr.ParseExpr(parser.lexer, parser.reducer)
+	expr, err := lr.ParseExpr(parser.lexer, parser)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return parser.reducer, expr, nil
+	parser.analyze()
+	return parser.Reducer, expr, nil
 }
 
 func (parser *sourceParser) parseTypeExpr() (
@@ -159,12 +199,13 @@ func (parser *sourceParser) parseTypeExpr() (
 	ast.TypeExpression,
 	error,
 ) {
-	typeExpr, err := lr.ParseTypeExpr(parser.lexer, parser.reducer)
+	typeExpr, err := lr.ParseTypeExpr(parser.lexer, parser)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return parser.reducer, typeExpr, nil
+	parser.analyze()
+	return parser.Reducer, typeExpr, nil
 }
 
 func (parser *sourceParser) parseStatement() (
@@ -172,12 +213,13 @@ func (parser *sourceParser) parseStatement() (
 	ast.Statement,
 	error,
 ) {
-	stmt, err := lr.ParseStatement(parser.lexer, parser.reducer)
+	stmt, err := lr.ParseStatement(parser.lexer, parser)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return parser.reducer, stmt, nil
+	parser.analyze()
+	return parser.Reducer, stmt, nil
 }
 
 func (parser *sourceParser) parseDefinition() (
@@ -185,12 +227,13 @@ func (parser *sourceParser) parseDefinition() (
 	ast.Definition,
 	error,
 ) {
-	def, err := lr.ParseDefinition(parser.lexer, parser.reducer)
+	def, err := lr.ParseDefinition(parser.lexer, parser)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return parser.reducer, def, nil
+	parser.analyze()
+	return parser.Reducer, def, nil
 }
 
 func ParseExpr(

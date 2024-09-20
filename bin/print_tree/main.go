@@ -10,6 +10,7 @@ import (
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser"
+	"github.com/pattyshack/pl/parser/reducer"
 )
 
 type Command struct {
@@ -126,11 +127,11 @@ func (cmd *Command) printPackage(
 }
 
 func (cmd *Command) printFunc(
-	parse func(string) (ast.Node, error),
+	parse func(string) (*reducer.Reducer, ast.Node, error),
 	args []string,
 ) error {
 	for _, fileName := range args {
-		expr, err := parse(fileName)
+		reducer, expr, err := parse(fileName)
 		if err != nil {
 			fmt.Println("Parse error:", err)
 			continue
@@ -139,6 +140,17 @@ func (cmd *Command) printFunc(
 		fmt.Println("Tree:")
 		fmt.Println("-----")
 		fmt.Println(expr.TreeString("", ""))
+
+		if len(reducer.ParseErrors) == 0 {
+			continue
+		}
+
+		fmt.Println("---------------------")
+		fmt.Println("Embedded parse error:")
+		fmt.Println("---------------------")
+		for idx, err := range reducer.ParseErrors {
+			fmt.Printf("error %d: %s\n", idx, err)
+		}
 	}
 
 	return nil
@@ -149,11 +161,11 @@ func (cmd *Command) printExpr(args []string) error {
 		func(
 			fileName string,
 		) (
+			*reducer.Reducer,
 			ast.Node,
 			error,
 		) {
-			_, expr, err := parser.ParseExpr(fileName, cmd.ParserOptions)
-			return expr, err
+			return parser.ParseExpr(fileName, cmd.ParserOptions)
 		},
 		args)
 }
@@ -163,11 +175,11 @@ func (cmd *Command) printTypeExpr(args []string) error {
 		func(
 			fileName string,
 		) (
+			*reducer.Reducer,
 			ast.Node,
 			error,
 		) {
-			_, typeExpr, err := parser.ParseTypeExpr(fileName, cmd.ParserOptions)
-			return typeExpr, err
+			return parser.ParseTypeExpr(fileName, cmd.ParserOptions)
 		},
 		args)
 }
@@ -177,11 +189,11 @@ func (cmd *Command) printStatement(args []string) error {
 		func(
 			fileName string,
 		) (
+			*reducer.Reducer,
 			ast.Node,
 			error,
 		) {
-			_, stmt, err := parser.ParseStatement(fileName, cmd.ParserOptions)
-			return stmt, err
+			return parser.ParseStatement(fileName, cmd.ParserOptions)
 		},
 		args)
 }
@@ -191,11 +203,11 @@ func (cmd *Command) printDefinition(args []string) error {
 		func(
 			fileName string,
 		) (
+			*reducer.Reducer,
 			ast.Node,
 			error,
 		) {
-			_, def, err := parser.ParseDefinition(fileName, cmd.ParserOptions)
-			return def, err
+			return parser.ParseDefinition(fileName, cmd.ParserOptions)
 		},
 		args)
 }
@@ -205,11 +217,11 @@ func (cmd *Command) printSource(args []string) error {
 		func(
 			fileName string,
 		) (
+			*reducer.Reducer,
 			ast.Node,
 			error,
 		) {
-			_, src, err := parser.ParseSource(fileName, cmd.ParserOptions)
-			return src, err
+			return parser.ParseSource(fileName, cmd.ParserOptions)
 		},
 		args)
 }

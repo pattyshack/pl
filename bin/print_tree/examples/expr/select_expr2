@@ -1,0 +1,6 @@
+select {
+case <-sender:
+  fmt.Println("received")
+case receiver <- foo():
+default: fmt.Println("default")
+}
