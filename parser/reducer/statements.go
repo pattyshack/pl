@@ -43,6 +43,7 @@ func (reducer *Reducer) StatementToProperStatementList(
 ) {
 	list := NewStatementsExpr()
 	list.Add(statement)
+	reducer.StatementsExprs = append(reducer.StatementsExprs, list)
 	return list, nil
 }
 
@@ -68,7 +69,9 @@ func (reducer *Reducer) ImproperExplicitToStatementList(
 }
 
 func (reducer *Reducer) NilToStatementList() (*StatementsExpr, error) {
-	return NewStatementsExpr(), nil
+	list := NewStatementsExpr()
+	reducer.StatementsExprs = append(reducer.StatementsExprs, list)
+	return list, nil
 }
 
 func (reducer *Reducer) ToStatements(
@@ -80,7 +83,6 @@ func (reducer *Reducer) ToStatements(
 	error,
 ) {
 	list.ReduceMarkers(lbrace, rbrace)
-	reducer.StatementsExprs = append(reducer.StatementsExprs, list)
 	return list, nil
 }
 
@@ -113,6 +115,7 @@ func (reducer *Reducer) StatementToTrailingStatement(
 ) {
 	expr := NewStatementsExpr()
 	expr.Add(stmt)
+	reducer.StatementsExprs = append(reducer.StatementsExprs, expr)
 	return expr, nil
 }
 
@@ -120,7 +123,9 @@ func (reducer *Reducer) NilToTrailingStatement() (
 	*StatementsExpr,
 	error,
 ) {
-	return NewStatementsExpr(), nil
+	expr := NewStatementsExpr()
+	reducer.StatementsExprs = append(reducer.StatementsExprs, expr)
+	return expr, nil
 }
 
 //
@@ -386,9 +391,8 @@ func (reducer *Reducer) CaseBranchToBranchStatement(
 	error,
 ) {
 	end := colon.End()
-	if body == nil {
-		body = NewStatementsExpr()
-	} else {
+	if len(body.Elements) > 0 {
+		// body.End() is invalid for "nil trailing statement"
 		end = body.End()
 	}
 
@@ -418,9 +422,8 @@ func (reducer *Reducer) DefaultBranchToBranchStatement(
 	casePatterns := NewExpressionList()
 
 	end := colon.End()
-	if body == nil {
-		body = NewStatementsExpr()
-	} else {
+	if len(body.Elements) > 0 {
+		// body.End() is invalid for "nil trailing statement"
 		end = body.End()
 	}
 
