@@ -179,6 +179,29 @@ func (parser *sourceParser) groupCaseStatements(stmts *ast.StatementsExpr) {
 	stmts.Elements = newElements
 }
 
+func (parser *sourceParser) pruneUnreachableStatements(
+	stmts *ast.StatementsExpr,
+) {
+	for idx, stmt := range stmts.Elements {
+		_, ok := stmt.(*ast.JumpStatement)
+		if !ok {
+			continue
+		}
+
+		if idx < len(stmts.Elements)-1 {
+			err := fmt.Errorf(
+				"unreachable statement: %s",
+				stmts.Elements[idx+1].Loc())
+			parser.ParseErrors = append(parser.ParseErrors, err)
+			stmts.Elements[idx+1] = ast.NewParseErrorNode(
+				stmts.Elements[idx+1].StartEnd(),
+				err)
+			stmts.Elements = stmts.Elements[:idx+2]
+			break
+		}
+	}
+}
+
 func (parser *sourceParser) analyze() {
 	for _, expr := range parser.SwitchExprs {
 		parser.groupCaseStatements(expr.Branches)
@@ -186,6 +209,10 @@ func (parser *sourceParser) analyze() {
 
 	for _, expr := range parser.SelectExprs {
 		parser.groupCaseStatements(expr.Branches)
+	}
+
+	for _, stmts := range parser.StatementsExprs {
+		parser.pruneUnreachableStatements(stmts)
 	}
 }
 

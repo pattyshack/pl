@@ -26,6 +26,7 @@ type Reducer struct {
 	SwitchExprs         []*SwitchExpr
 	SelectExprs         []*SelectExpr
 	LoopExprs           []*LoopExpr
+	StatementsExprs     []*StatementsExpr
 
 	SliceTypeExprs    []*SliceTypeExpr
 	ArrayTypeExprs    []*ArrayTypeExpr

@@ -80,6 +80,7 @@ func (reducer *Reducer) ToStatements(
 	error,
 ) {
 	list.ReduceMarkers(lbrace, rbrace)
+	reducer.StatementsExprs = append(reducer.StatementsExprs, list)
 	return list, nil
 }
 
