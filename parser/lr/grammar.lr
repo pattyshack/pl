@@ -138,26 +138,23 @@ sequence_statement<Statement> ->
 statement<Statement> ->
   = unsafe_statement |
 
+  // NOTE: Only applicable to package_def
+  = import_statement |
+
+  // NOTE: The following are only applicable in expression blocks
+
   = expr_or_improper_expr_struct |
-
-  // NOTE: Only applicable in expression blocks
   = jump_statement |
-
   // NOTE: variable declaration without assignment is parsed as an expression.
   //
   // NOTE: package level assign pattern must be a var/let declaration
   = expr_assign_statement |
-
   // NOTE: assignment can only operate on proper address values.  Additional
   // checks are applied during post analysis.
-  //
-  // NOTE: Only applicable in expression block
   = unary_op_assign_statement |
   = binary_op_assign_statement |
 
-  // NOTE: Only applicable to package_def
-  = import_statement |
-
+  // Note: Only applicable to switch / select body
   = branch_statement
 
 branch_statement<Statement> ->
