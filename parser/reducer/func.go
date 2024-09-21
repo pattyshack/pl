@@ -1,12 +1,12 @@
 package reducer
 
 import (
-	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
 
 func (reducer *Reducer) NilToReturnType() (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
 	return nil, nil
@@ -14,19 +14,19 @@ func (reducer *Reducer) NilToReturnType() (
 
 func (reducer *Reducer) toFuncSignature(
 	funcKW *lr.TokenValue,
-	receiver *Parameter, // optional
+	receiver *ast.Parameter, // optional
 	nameToken *lr.TokenValue, // optional
-	genericParameters *GenericParameterList, // optional
-	parameters *ParameterList,
-	returnType TypeExpression,
-) *FuncSignature {
+	genericParameters *ast.GenericParameterList, // optional
+	parameters *ast.ParameterList,
+	returnType ast.TypeExpression,
+) *ast.FuncSignature {
 	leading := funcKW.TakeLeading()
 
-	var params Node = parameters
+	var params ast.Node = parameters
 	if genericParameters != nil {
 		params = genericParameters
 	} else {
-		genericParameters = NewGenericParameterList()
+		genericParameters = ast.NewGenericParameterList()
 	}
 
 	name := ""
@@ -47,7 +47,7 @@ func (reducer *Reducer) toFuncSignature(
 		params.PrependToLeading(funcKW.TakeTrailing())
 	}
 
-	var trailing CommentGroups
+	var trailing ast.CommentGroups
 	end := parameters.End()
 	if returnType != nil {
 		trailing = returnType.TakeTrailing()
@@ -56,8 +56,8 @@ func (reducer *Reducer) toFuncSignature(
 		trailing = parameters.TakeTrailing()
 	}
 
-	sig := &FuncSignature{
-		StartEndPos:       NewStartEndPos(funcKW.Loc(), end),
+	sig := &ast.FuncSignature{
+		StartEndPos:       ast.NewStartEndPos(funcKW.Loc(), end),
 		Receiver:          receiver,
 		Name:              name,
 		GenericParameters: *genericParameters,
@@ -72,13 +72,13 @@ func (reducer *Reducer) toFuncSignature(
 
 func (reducer *Reducer) toFuncDefinition(
 	funcKW *lr.TokenValue,
-	receiver *Parameter,
+	receiver *ast.Parameter,
 	nameToken *lr.TokenValue,
-	genericParameters *GenericParameterList,
-	parameters *ParameterList,
-	returnType TypeExpression,
-	body Expression,
-) *FuncDefinition {
+	genericParameters *ast.GenericParameterList,
+	parameters *ast.ParameterList,
+	returnType ast.TypeExpression,
+	body ast.Expression,
+) *ast.FuncDefinition {
 	sig := reducer.toFuncSignature(
 		funcKW,
 		receiver,
@@ -87,9 +87,9 @@ func (reducer *Reducer) toFuncDefinition(
 		parameters,
 		returnType)
 
-	return &FuncDefinition{
-		StartEndPos: NewStartEndPos(sig.Loc(), body.End()),
-		LeadingTrailingComments: LeadingTrailingComments{
+	return &ast.FuncDefinition{
+		StartEndPos: ast.NewStartEndPos(sig.Loc(), body.End()),
+		LeadingTrailingComments: ast.LeadingTrailingComments{
 			LeadingComment:  sig.TakeLeading(),
 			TrailingComment: body.TakeTrailing(),
 		},
@@ -100,10 +100,10 @@ func (reducer *Reducer) toFuncDefinition(
 
 func (reducer *Reducer) ToFuncTypeExpr(
 	funcKW *lr.TokenValue,
-	parameters *ParameterList,
-	returnType TypeExpression,
+	parameters *ast.ParameterList,
+	returnType ast.TypeExpression,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
 	sig := reducer.toFuncSignature(
@@ -120,10 +120,10 @@ func (reducer *Reducer) ToFuncTypeExpr(
 func (reducer *Reducer) ToMethodSignature(
 	funcKW *lr.TokenValue,
 	name *lr.TokenValue,
-	parameters *ParameterList,
-	returnType TypeExpression,
+	parameters *ast.ParameterList,
+	returnType ast.TypeExpression,
 ) (
-	TypeProperty,
+	ast.TypeProperty,
 	error,
 ) {
 	return reducer.toFuncSignature(
@@ -138,12 +138,12 @@ func (reducer *Reducer) ToMethodSignature(
 func (reducer *Reducer) FuncDefToNamedFuncDef(
 	funcKW *lr.TokenValue,
 	name *lr.TokenValue,
-	genericParameters *GenericParameterList,
-	parameters *ParameterList,
-	returnType TypeExpression,
-	body Expression,
+	genericParameters *ast.GenericParameterList,
+	parameters *ast.ParameterList,
+	returnType ast.TypeExpression,
+	body ast.Expression,
 ) (
-	Definition,
+	ast.Definition,
 	error,
 ) {
 	def := reducer.toFuncDefinition(
@@ -162,14 +162,14 @@ func (reducer *Reducer) FuncDefToNamedFuncDef(
 func (reducer *Reducer) MethodDefToNamedFuncDef(
 	funcKW *lr.TokenValue,
 	lparen *lr.TokenValue,
-	receiver *Parameter,
+	receiver *ast.Parameter,
 	rparen *lr.TokenValue,
 	name *lr.TokenValue,
-	parameters *ParameterList,
-	returnType TypeExpression,
-	body Expression,
+	parameters *ast.ParameterList,
+	returnType ast.TypeExpression,
+	body ast.Expression,
 ) (
-	Definition,
+	ast.Definition,
 	error,
 ) {
 	funcKW.AppendToTrailing(lparen.TakeLeading())
@@ -191,11 +191,11 @@ func (reducer *Reducer) MethodDefToNamedFuncDef(
 
 func (reducer *Reducer) ToAnonymousFuncExpr(
 	funcKW *lr.TokenValue,
-	parameters *ParameterList,
-	returnType TypeExpression,
-	body Expression,
+	parameters *ast.ParameterList,
+	returnType ast.TypeExpression,
+	body ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	def := reducer.toFuncDefinition(

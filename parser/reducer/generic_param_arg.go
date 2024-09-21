@@ -1,7 +1,7 @@
 package reducer
 
 import (
-	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
 
@@ -12,11 +12,11 @@ import (
 func (Reducer) UnconstrainedToGenericParameter(
 	name *lr.TokenValue,
 ) (
-	*GenericParameter,
+	*ast.GenericParameter,
 	error,
 ) {
-	return &GenericParameter{
-		StartEndPos:             NewStartEndPos(name.Loc(), name.End()),
+	return &ast.GenericParameter{
+		StartEndPos:             ast.NewStartEndPos(name.Loc(), name.End()),
 		LeadingTrailingComments: name.LeadingTrailingComments,
 		Name:                    name.Value,
 	}, nil
@@ -24,13 +24,13 @@ func (Reducer) UnconstrainedToGenericParameter(
 
 func (Reducer) ConstrainedToGenericParameter(
 	name *lr.TokenValue,
-	constraint TypeExpression,
+	constraint ast.TypeExpression,
 ) (
-	*GenericParameter,
+	*ast.GenericParameter,
 	error,
 ) {
-	param := &GenericParameter{
-		StartEndPos: NewStartEndPos(name.Loc(), constraint.End()),
+	param := &ast.GenericParameter{
+		StartEndPos: ast.NewStartEndPos(name.Loc(), constraint.End()),
 		Name:        name.Value,
 		Constraint:  constraint,
 	}
@@ -47,10 +47,10 @@ func (Reducer) ConstrainedToGenericParameter(
 
 func (Reducer) GenericToGenericParameters(
 	dollarLbracket *lr.TokenValue,
-	list *GenericParameterList,
+	list *ast.GenericParameterList,
 	rbracket *lr.TokenValue,
 ) (
-	*GenericParameterList,
+	*ast.GenericParameterList,
 	error,
 ) {
 	list.ReduceMarkers(dollarLbracket, rbracket)
@@ -58,18 +58,18 @@ func (Reducer) GenericToGenericParameters(
 }
 
 func (Reducer) NilToGenericParameters() (
-	*GenericParameterList,
+	*ast.GenericParameterList,
 	error,
 ) {
 	return nil, nil
 }
 
 func (Reducer) AddToProperGenericParameterList(
-	list *GenericParameterList,
+	list *ast.GenericParameterList,
 	comma *lr.TokenValue,
-	parameter *GenericParameter,
+	parameter *ast.GenericParameter,
 ) (
-	*GenericParameterList,
+	*ast.GenericParameterList,
 	error,
 ) {
 	list.ReduceAdd(comma, parameter)
@@ -77,21 +77,21 @@ func (Reducer) AddToProperGenericParameterList(
 }
 
 func (Reducer) GenericParameterToProperGenericParameterList(
-	parameter *GenericParameter,
+	parameter *ast.GenericParameter,
 ) (
-	*GenericParameterList,
+	*ast.GenericParameterList,
 	error,
 ) {
-	list := NewGenericParameterList()
+	list := ast.NewGenericParameterList()
 	list.Add(parameter)
 	return list, nil
 }
 
 func (Reducer) ImproperToGenericParameterList(
-	list *GenericParameterList,
+	list *ast.GenericParameterList,
 	comma *lr.TokenValue,
 ) (
-	*GenericParameterList,
+	*ast.GenericParameterList,
 	error,
 ) {
 	list.ReduceImproper(comma)
@@ -99,10 +99,10 @@ func (Reducer) ImproperToGenericParameterList(
 }
 
 func (Reducer) NilToGenericParameterList() (
-	*GenericParameterList,
+	*ast.GenericParameterList,
 	error,
 ) {
-	return NewGenericParameterList(), nil
+	return ast.NewGenericParameterList(), nil
 }
 
 //
@@ -111,10 +111,10 @@ func (Reducer) NilToGenericParameterList() (
 
 func (reducer *Reducer) BindingToGenericArguments(
 	dollarLbracket *lr.TokenValue,
-	list *GenericArgumentList,
+	list *ast.GenericArgumentList,
 	rbracket *lr.TokenValue,
 ) (
-	*GenericArgumentList,
+	*ast.GenericArgumentList,
 	error,
 ) {
 	list.ReduceMarkers(dollarLbracket, rbracket)
@@ -122,18 +122,18 @@ func (reducer *Reducer) BindingToGenericArguments(
 }
 
 func (reducer *Reducer) NilToGenericArguments() (
-	*GenericArgumentList,
+	*ast.GenericArgumentList,
 	error,
 ) {
 	return nil, nil
 }
 
 func (reducer *Reducer) AddToProperGenericArgumentList(
-	list *GenericArgumentList,
+	list *ast.GenericArgumentList,
 	comma *lr.TokenValue,
-	arg TypeExpression,
+	arg ast.TypeExpression,
 ) (
-	*GenericArgumentList,
+	*ast.GenericArgumentList,
 	error,
 ) {
 	list.ReduceAdd(comma, arg)
@@ -141,21 +141,21 @@ func (reducer *Reducer) AddToProperGenericArgumentList(
 }
 
 func (reducer *Reducer) TypeExprToProperGenericArgumentList(
-	arg TypeExpression,
+	arg ast.TypeExpression,
 ) (
-	*GenericArgumentList,
+	*ast.GenericArgumentList,
 	error,
 ) {
-	list := NewGenericArgumentList()
+	list := ast.NewGenericArgumentList()
 	list.Add(arg)
 	return list, nil
 }
 
 func (reducer *Reducer) ImproperToGenericArgumentList(
-	list *GenericArgumentList,
+	list *ast.GenericArgumentList,
 	comma *lr.TokenValue,
 ) (
-	*GenericArgumentList,
+	*ast.GenericArgumentList,
 	error,
 ) {
 	list.ReduceImproper(comma)
@@ -163,8 +163,8 @@ func (reducer *Reducer) ImproperToGenericArgumentList(
 }
 
 func (reducer *Reducer) NilToGenericArgumentList() (
-	*GenericArgumentList,
+	*ast.GenericArgumentList,
 	error,
 ) {
-	return &GenericArgumentList{}, nil
+	return ast.NewGenericArgumentList(), nil
 }

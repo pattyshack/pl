@@ -3,7 +3,7 @@ package reducer
 import (
 	"fmt"
 
-	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
 
@@ -12,11 +12,11 @@ import (
 //
 
 func (reducer *Reducer) AddToProperDefinitions(
-	list *DefinitionList,
+	list *ast.DefinitionList,
 	newlines lr.TokenCount,
-	def Definition,
+	def ast.Definition,
 ) (
-	*DefinitionList,
+	*ast.DefinitionList,
 	error,
 ) {
 	list.ReduceAdd(&lr.TokenValue{}, def)
@@ -24,28 +24,28 @@ func (reducer *Reducer) AddToProperDefinitions(
 }
 
 func (reducer *Reducer) DefinitionToProperDefinitions(
-	def Definition,
+	def ast.Definition,
 ) (
-	*DefinitionList,
+	*ast.DefinitionList,
 	error,
 ) {
-	list := NewDefinitionList()
+	list := ast.NewDefinitionList()
 	list.Add(def)
 	return list, nil
 }
 
 func (reducer *Reducer) ImproperToDefinitions(
-	list *DefinitionList,
+	list *ast.DefinitionList,
 	newlines lr.TokenCount,
 ) (
-	*DefinitionList,
+	*ast.DefinitionList,
 	error,
 ) {
 	return list, nil
 }
 
-func (reducer *Reducer) NilToDefinitions() (*DefinitionList, error) {
-	return NewDefinitionList(), nil
+func (reducer *Reducer) NilToDefinitions() (*ast.DefinitionList, error) {
+	return ast.NewDefinitionList(), nil
 }
 
 //
@@ -55,11 +55,11 @@ func (reducer *Reducer) NilToDefinitions() (*DefinitionList, error) {
 func (reducer *Reducer) ToFloatingComment(
 	comments lr.CommentGroupsTok,
 ) (
-	Definition,
+	ast.Definition,
 	error,
 ) {
-	floating := &FloatingComment{
-		StartEndPos: NewStartEndPos(comments.Loc(), comments.End()),
+	floating := &ast.FloatingComment{
+		StartEndPos: ast.NewStartEndPos(comments.Loc(), comments.End()),
 	}
 	floating.LeadingComment = comments.CommentGroups
 	return floating, nil
@@ -71,23 +71,23 @@ func (reducer *Reducer) ToFloatingComment(
 
 func (reducer *Reducer) ToPackageDef(
 	pkg *lr.TokenValue,
-	expr Expression,
+	expr ast.Expression,
 ) (
-	Definition,
+	ast.Definition,
 	error,
 ) {
 	switch body := expr.(type) {
-	case *StatementsExpr:
+	case *ast.StatementsExpr:
 		body.PrependToLeading(pkg.TakeTrailing())
-		def := &PackageDef{
-			StartEndPos: NewStartEndPos(pkg.Loc(), expr.End()),
+		def := &ast.PackageDef{
+			StartEndPos: ast.NewStartEndPos(pkg.Loc(), expr.End()),
 			Body:        body,
 		}
 		def.LeadingComment = pkg.TakeLeading()
 
 		reducer.PackageDefs = append(reducer.PackageDefs, def)
 		return def, nil
-	case *ParseErrorNode:
+	case *ast.ParseErrorNode:
 		return expr, nil
 	}
 
@@ -101,10 +101,10 @@ func (reducer *Reducer) ToPackageDef(
 func (reducer *Reducer) DefinitionToTypeDef(
 	typeKW *lr.TokenValue,
 	name *lr.TokenValue,
-	genericParameters *GenericParameterList,
-	baseType TypeExpression,
+	genericParameters *ast.GenericParameterList,
+	baseType ast.TypeExpression,
 ) (
-	Definition,
+	ast.Definition,
 	error,
 ) {
 	leading := typeKW.TakeLeading()
@@ -114,14 +114,14 @@ func (reducer *Reducer) DefinitionToTypeDef(
 	if genericParameters != nil {
 		genericParameters.PrependToLeading(name.TakeTrailing())
 	} else {
-		genericParameters = NewGenericParameterList()
+		genericParameters = ast.NewGenericParameterList()
 		baseType.PrependToLeading(name.TakeTrailing())
 	}
 
 	trailing := baseType.TakeTrailing()
 
-	def := &TypeDef{
-		StartEndPos:       NewStartEndPos(typeKW.Loc(), baseType.End()),
+	def := &ast.TypeDef{
+		StartEndPos:       ast.NewStartEndPos(typeKW.Loc(), baseType.End()),
 		Name:              name.Value,
 		GenericParameters: *genericParameters,
 		BaseType:          baseType,
@@ -135,12 +135,12 @@ func (reducer *Reducer) DefinitionToTypeDef(
 func (reducer *Reducer) ConstrainedDefToTypeDef(
 	typeKW *lr.TokenValue,
 	name *lr.TokenValue,
-	genericParameters *GenericParameterList,
-	baseType TypeExpression,
+	genericParameters *ast.GenericParameterList,
+	baseType ast.TypeExpression,
 	implements *lr.TokenValue,
-	constraint TypeExpression,
+	constraint ast.TypeExpression,
 ) (
-	Definition,
+	ast.Definition,
 	error,
 ) {
 	leading := typeKW.TakeLeading()
@@ -150,7 +150,7 @@ func (reducer *Reducer) ConstrainedDefToTypeDef(
 	if genericParameters != nil {
 		genericParameters.PrependToLeading(name.TakeTrailing())
 	} else {
-		genericParameters = NewGenericParameterList()
+		genericParameters = ast.NewGenericParameterList()
 		baseType.PrependToLeading(name.TakeTrailing())
 	}
 
@@ -159,8 +159,8 @@ func (reducer *Reducer) ConstrainedDefToTypeDef(
 
 	trailing := constraint.TakeTrailing()
 
-	def := &TypeDef{
-		StartEndPos:       NewStartEndPos(typeKW.Loc(), constraint.End()),
+	def := &ast.TypeDef{
+		StartEndPos:       ast.NewStartEndPos(typeKW.Loc(), constraint.End()),
 		Name:              name.Value,
 		GenericParameters: *genericParameters,
 		BaseType:          baseType,
@@ -176,9 +176,9 @@ func (reducer *Reducer) AliasToTypeDef(
 	typeKW *lr.TokenValue,
 	name *lr.TokenValue,
 	assign *lr.TokenValue,
-	baseType TypeExpression,
+	baseType ast.TypeExpression,
 ) (
-	Definition,
+	ast.Definition,
 	error,
 ) {
 	leading := typeKW.TakeLeading()
@@ -191,8 +191,8 @@ func (reducer *Reducer) AliasToTypeDef(
 
 	trailing := baseType.TakeTrailing()
 
-	def := &TypeDef{
-		StartEndPos: NewStartEndPos(typeKW.Loc(), baseType.End()),
+	def := &ast.TypeDef{
+		StartEndPos: ast.NewStartEndPos(typeKW.Loc(), baseType.End()),
 		Name:        name.Value,
 		IsAlias:     true,
 		BaseType:    baseType,

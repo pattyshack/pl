@@ -3,7 +3,7 @@ package reducer
 import (
 	"github.com/pattyshack/gt/lexutil"
 
-	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
 
@@ -13,14 +13,14 @@ import (
 
 func (reducer *Reducer) ToSliceTypeExpr(
 	lbracket *lr.TokenValue,
-	value TypeExpression,
+	value ast.TypeExpression,
 	rbracket *lr.TokenValue,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
-	slice := &SliceTypeExpr{
-		StartEndPos: NewStartEndPos(lbracket.Loc(), rbracket.End()),
+	slice := &ast.SliceTypeExpr{
+		StartEndPos: ast.NewStartEndPos(lbracket.Loc(), rbracket.End()),
 		Value:       value,
 	}
 
@@ -39,16 +39,16 @@ func (reducer *Reducer) ToSliceTypeExpr(
 
 func (reducer *Reducer) ToArrayTypeExpr(
 	lbracket *lr.TokenValue,
-	value TypeExpression,
+	value ast.TypeExpression,
 	comma *lr.TokenValue,
 	size *lr.TokenValue,
 	rbracket *lr.TokenValue,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
-	array := &ArrayTypeExpr{
-		StartEndPos: NewStartEndPos(lbracket.Loc(), rbracket.End()),
+	array := &ast.ArrayTypeExpr{
+		StartEndPos: ast.NewStartEndPos(lbracket.Loc(), rbracket.End()),
 		Value:       value,
 		Size:        size,
 	}
@@ -70,16 +70,16 @@ func (reducer *Reducer) ToArrayTypeExpr(
 
 func (reducer *Reducer) ToMapTypeExpr(
 	lbracket *lr.TokenValue,
-	key TypeExpression,
+	key ast.TypeExpression,
 	semicolon *lr.TokenValue,
-	value TypeExpression,
+	value ast.TypeExpression,
 	rbracket *lr.TokenValue,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
-	dict := &MapTypeExpr{
-		StartEndPos: NewStartEndPos(lbracket.Loc(), rbracket.End()),
+	dict := &ast.MapTypeExpr{
+		StartEndPos: ast.NewStartEndPos(lbracket.Loc(), rbracket.End()),
 		Key:         key,
 		Value:       value,
 	}
@@ -102,11 +102,11 @@ func (reducer *Reducer) ToMapTypeExpr(
 func (reducer *Reducer) DotToInferredTypeExpr(
 	dot *lr.TokenValue,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
-	expr := &InferredTypeExpr{
-		StartEndPos:  NewStartEndPos(dot.Loc(), dot.End()),
+	expr := &ast.InferredTypeExpr{
+		StartEndPos:  ast.NewStartEndPos(dot.Loc(), dot.End()),
 		InferMutable: false,
 	}
 	expr.LeadingComment = dot.TakeLeading()
@@ -118,11 +118,11 @@ func (reducer *Reducer) DotToInferredTypeExpr(
 func (reducer *Reducer) UnderscoreToInferredTypeExpr(
 	underscore *lr.TokenValue,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
-	expr := &InferredTypeExpr{
-		StartEndPos:  NewStartEndPos(underscore.Loc(), underscore.End()),
+	expr := &ast.InferredTypeExpr{
+		StartEndPos:  ast.NewStartEndPos(underscore.Loc(), underscore.End()),
 		InferMutable: true,
 	}
 	expr.LeadingComment = underscore.TakeLeading()
@@ -137,21 +137,21 @@ func (reducer *Reducer) UnderscoreToInferredTypeExpr(
 
 func (reducer *Reducer) toNamedTypeExpr(
 	name *lr.TokenValue,
-	genericArguments *GenericArgumentList,
-) *NamedTypeExpr {
+	genericArguments *ast.GenericArgumentList,
+) *ast.NamedTypeExpr {
 	var endPos lexutil.Location
-	var trailing CommentGroups
+	var trailing ast.CommentGroups
 	if genericArguments == nil {
-		genericArguments = &GenericArgumentList{}
+		genericArguments = ast.NewGenericArgumentList()
 		endPos = name.End()
 		trailing = name.TakeTrailing()
 	} else {
 		endPos = genericArguments.End()
 		trailing = genericArguments.TakeTrailing()
 	}
-	named := &NamedTypeExpr{
-		StartEndPos: NewStartEndPos(name.Loc(), endPos),
-		LeadingTrailingComments: LeadingTrailingComments{
+	named := &ast.NamedTypeExpr{
+		StartEndPos: ast.NewStartEndPos(name.Loc(), endPos),
+		LeadingTrailingComments: ast.LeadingTrailingComments{
 			TrailingComment: trailing,
 		},
 		Name:             name,
@@ -164,9 +164,9 @@ func (reducer *Reducer) toNamedTypeExpr(
 
 func (reducer *Reducer) LocalToNamedTypeExpr(
 	name *lr.TokenValue,
-	genericArguments *GenericArgumentList,
+	genericArguments *ast.GenericArgumentList,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
 	named := reducer.toNamedTypeExpr(name, genericArguments)
@@ -178,9 +178,9 @@ func (reducer *Reducer) ExternalToNamedTypeExpr(
 	pkg *lr.TokenValue,
 	dot *lr.TokenValue,
 	name *lr.TokenValue,
-	genericArguments *GenericArgumentList,
+	genericArguments *ast.GenericArgumentList,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
 	name.PrependToLeading(dot.TakeTrailing())
@@ -200,14 +200,14 @@ func (reducer *Reducer) ExternalToNamedTypeExpr(
 
 func (reducer *Reducer) ToPrefixUnaryTypeExpr(
 	op *lr.TokenValue,
-	operand TypeExpression,
+	operand ast.TypeExpression,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
-	expr := &UnaryTypeExpr{
-		StartEndPos: NewStartEndPos(op.Loc(), operand.End()),
-		Op:          UnaryTypeOp(op.Value),
+	expr := &ast.UnaryTypeExpr{
+		StartEndPos: ast.NewStartEndPos(op.Loc(), operand.End()),
+		Op:          ast.UnaryTypeOp(op.Value),
 		Operand:     operand,
 	}
 
@@ -224,17 +224,17 @@ func (reducer *Reducer) ToPrefixUnaryTypeExpr(
 //
 
 func (reducer *Reducer) ToBinaryTypeExpr(
-	left TypeExpression,
+	left ast.TypeExpression,
 	op *lr.TokenValue,
-	right TypeExpression,
+	right ast.TypeExpression,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
-	expr := &BinaryTypeExpr{
-		StartEndPos: NewStartEndPos(left.Loc(), right.End()),
+	expr := &ast.BinaryTypeExpr{
+		StartEndPos: ast.NewStartEndPos(left.Loc(), right.End()),
 		Left:        left,
-		Op:          BinaryTypeOp(op.Value),
+		Op:          ast.BinaryTypeOp(op.Value),
 		Right:       right,
 	}
 
@@ -252,14 +252,14 @@ func (reducer *Reducer) ToBinaryTypeExpr(
 //
 
 func (reducer *Reducer) implicit(
-	kind PropertiesKind,
+	kind ast.PropertiesKind,
 	lparen *lr.TokenValue,
-	properties *TypePropertyList,
+	properties *ast.TypePropertyList,
 	rparen *lr.TokenValue,
-) *PropertiesTypeExpr {
+) *ast.PropertiesTypeExpr {
 	properties.ReduceMarkers(lparen, rparen)
-	expr := &PropertiesTypeExpr{
-		StartEndPos: NewStartEndPos(lparen.Loc(), rparen.End()),
+	expr := &ast.PropertiesTypeExpr{
+		StartEndPos: ast.NewStartEndPos(lparen.Loc(), rparen.End()),
 		Kind:        kind,
 		IsImplicit:  true,
 		Properties:  *properties,
@@ -271,19 +271,19 @@ func (reducer *Reducer) implicit(
 }
 
 func (reducer *Reducer) explicit(
-	kind PropertiesKind,
+	kind ast.PropertiesKind,
 	kw *lr.TokenValue,
 	lparen *lr.TokenValue,
-	properties *TypePropertyList,
+	properties *ast.TypePropertyList,
 	rparen *lr.TokenValue,
-) *PropertiesTypeExpr {
+) *ast.PropertiesTypeExpr {
 	properties.ReduceMarkers(lparen, rparen)
 
 	properties.PrependToLeading(kw.TakeTrailing())
 	trailing := properties.TakeTrailing()
 
-	expr := &PropertiesTypeExpr{
-		StartEndPos: NewStartEndPos(kw.Loc(), rparen.End()),
+	expr := &ast.PropertiesTypeExpr{
+		StartEndPos: ast.NewStartEndPos(kw.Loc(), rparen.End()),
 		Kind:        kind,
 		IsImplicit:  false,
 		Properties:  *properties,
@@ -296,13 +296,13 @@ func (reducer *Reducer) explicit(
 
 func (reducer *Reducer) ToImplicitStructTypeExpr(
 	lparen *lr.TokenValue,
-	properties *TypePropertyList,
+	properties *ast.TypePropertyList,
 	rparen *lr.TokenValue,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
-	expr := reducer.implicit(StructKind, lparen, properties, rparen)
+	expr := reducer.implicit(ast.StructKind, lparen, properties, rparen)
 	reducer.StructTypeExprs = append(reducer.StructTypeExprs, expr)
 	return expr, nil
 }
@@ -310,13 +310,13 @@ func (reducer *Reducer) ToImplicitStructTypeExpr(
 func (reducer *Reducer) ToExplicitStructTypeExpr(
 	structKW *lr.TokenValue,
 	lparen *lr.TokenValue,
-	properties *TypePropertyList,
+	properties *ast.TypePropertyList,
 	rparen *lr.TokenValue,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
-	expr := reducer.explicit(StructKind, structKW, lparen, properties, rparen)
+	expr := reducer.explicit(ast.StructKind, structKW, lparen, properties, rparen)
 	reducer.StructTypeExprs = append(reducer.StructTypeExprs, expr)
 	return expr, nil
 }
@@ -324,26 +324,26 @@ func (reducer *Reducer) ToExplicitStructTypeExpr(
 func (reducer *Reducer) ToTraitTypeExpr(
 	trait *lr.TokenValue,
 	lparen *lr.TokenValue,
-	properties *TypePropertyList,
+	properties *ast.TypePropertyList,
 	rparen *lr.TokenValue,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
-	expr := reducer.explicit(TraitKind, trait, lparen, properties, rparen)
+	expr := reducer.explicit(ast.TraitKind, trait, lparen, properties, rparen)
 	reducer.TraitTypeExprs = append(reducer.TraitTypeExprs, expr)
 	return expr, nil
 }
 
 func (reducer *Reducer) ToImplicitEnumTypeExpr(
 	lparen *lr.TokenValue,
-	properties *TypePropertyList,
+	properties *ast.TypePropertyList,
 	rparen *lr.TokenValue,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
-	expr := reducer.implicit(EnumKind, lparen, properties, rparen)
+	expr := reducer.implicit(ast.EnumKind, lparen, properties, rparen)
 	reducer.EnumTypeExprs = append(reducer.EnumTypeExprs, expr)
 	return expr, nil
 }
@@ -351,13 +351,13 @@ func (reducer *Reducer) ToImplicitEnumTypeExpr(
 func (reducer *Reducer) ToExplicitEnumTypeExpr(
 	enum *lr.TokenValue,
 	lparen *lr.TokenValue,
-	properties *TypePropertyList,
+	properties *ast.TypePropertyList,
 	rparen *lr.TokenValue,
 ) (
-	TypeExpression,
+	ast.TypeExpression,
 	error,
 ) {
-	expr := reducer.explicit(EnumKind, enum, lparen, properties, rparen)
+	expr := reducer.explicit(ast.EnumKind, enum, lparen, properties, rparen)
 	reducer.EnumTypeExprs = append(reducer.EnumTypeExprs, expr)
 	return expr, nil
 }

@@ -1,54 +1,54 @@
 package reducer
 
 import (
-	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
 
 type Reducer struct {
 	ParseErrors []error
 
-	BoolLiteralExprs    []*BoolLiteralExpr
-	IntLiteralExprs     []*IntLiteralExpr
-	FloatLiteralExprs   []*FloatLiteralExpr
-	RuneLiteralExprs    []*RuneLiteralExpr
-	StringLiteralExprs  []*StringLiteralExpr
-	NamedExprs          []*NamedExpr
-	AccessExprs         []*AccessExpr
-	UnaryExprs          []*UnaryExpr
-	BinaryExprs         []*BinaryExpr
-	ImplicitStructExprs []*ImplicitStructExpr
-	CallExprs           []*CallExpr
-	IndexExprs          []*IndexExpr
-	AsExprs             []*AsExpr
-	InitializeExprs     []*InitializeExpr
-	IfExprs             []*IfExpr
-	SwitchExprs         []*SwitchExpr
-	SelectExprs         []*SelectExpr
-	LoopExprs           []*LoopExpr
-	StatementsExprs     []*StatementsExpr
+	BoolLiteralExprs    []*ast.BoolLiteralExpr
+	IntLiteralExprs     []*ast.IntLiteralExpr
+	FloatLiteralExprs   []*ast.FloatLiteralExpr
+	RuneLiteralExprs    []*ast.RuneLiteralExpr
+	StringLiteralExprs  []*ast.StringLiteralExpr
+	NamedExprs          []*ast.NamedExpr
+	AccessExprs         []*ast.AccessExpr
+	UnaryExprs          []*ast.UnaryExpr
+	BinaryExprs         []*ast.BinaryExpr
+	ImplicitStructExprs []*ast.ImplicitStructExpr
+	CallExprs           []*ast.CallExpr
+	IndexExprs          []*ast.IndexExpr
+	AsExprs             []*ast.AsExpr
+	InitializeExprs     []*ast.InitializeExpr
+	IfExprs             []*ast.IfExpr
+	SwitchExprs         []*ast.SwitchExpr
+	SelectExprs         []*ast.SelectExpr
+	LoopExprs           []*ast.LoopExpr
+	StatementsExprs     []*ast.StatementsExpr
 
-	SliceTypeExprs    []*SliceTypeExpr
-	ArrayTypeExprs    []*ArrayTypeExpr
-	MapTypeExprs      []*MapTypeExpr
-	InferredTypeExprs []*InferredTypeExpr
-	NamedTypeExprs    []*NamedTypeExpr
-	UnaryTypeExprs    []*UnaryTypeExpr
-	BinaryTypeExprs   []*BinaryTypeExpr
-	StructTypeExprs   []*PropertiesTypeExpr
-	EnumTypeExprs     []*PropertiesTypeExpr
-	TraitTypeExprs    []*PropertiesTypeExpr
+	SliceTypeExprs    []*ast.SliceTypeExpr
+	ArrayTypeExprs    []*ast.ArrayTypeExpr
+	MapTypeExprs      []*ast.MapTypeExpr
+	InferredTypeExprs []*ast.InferredTypeExpr
+	NamedTypeExprs    []*ast.NamedTypeExpr
+	UnaryTypeExprs    []*ast.UnaryTypeExpr
+	BinaryTypeExprs   []*ast.BinaryTypeExpr
+	StructTypeExprs   []*ast.PropertiesTypeExpr
+	EnumTypeExprs     []*ast.PropertiesTypeExpr
+	TraitTypeExprs    []*ast.PropertiesTypeExpr
 
-	PackageDefs []*PackageDef
-	TypeDefs    []*TypeDef
+	PackageDefs []*ast.PackageDef
+	TypeDefs    []*ast.TypeDef
 
-	ImportClauses []*ImportClause
+	ImportClauses []*ast.ImportClause
 
-	FuncTypeExprs []*FuncSignature
+	FuncTypeExprs []*ast.FuncSignature
 
-	FuncDefinitions    []*FuncDefinition
-	MethodDefinitions  []*FuncDefinition
-	AnonymousFuncExprs []*FuncDefinition
+	FuncDefinitions    []*ast.FuncDefinition
+	MethodDefinitions  []*ast.FuncDefinition
+	AnonymousFuncExprs []*ast.FuncDefinition
 }
 
 var _ lr.Reducer = &Reducer{}

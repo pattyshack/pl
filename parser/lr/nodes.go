@@ -3,7 +3,7 @@ package lr
 import (
 	"fmt"
 
-	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/ast"
 )
 
 const (
@@ -25,20 +25,20 @@ const (
 )
 
 type CommentGroupToken struct {
-	CommentGroup
+	ast.CommentGroup
 }
 
 func (CommentGroupToken) Id() SymbolId { return CommentGroupTokenId }
 
 type CommentGroupsTok struct {
-	CommentGroups
+	ast.CommentGroups
 }
 
 func (CommentGroupsTok) Id() SymbolId { return CommentGroupsToken }
 
 type TokenCount struct {
 	SymbolId
-	StartEndPos
+	ast.StartEndPos
 	Count int
 }
 
@@ -52,8 +52,8 @@ func (s TokenCount) String() string {
 
 type TokenValue struct {
 	SymbolId
-	StartEndPos
-	LeadingTrailingComments
+	ast.StartEndPos
+	ast.LeadingTrailingComments
 
 	// The value string is optional if the value is fully determined by SymbolId.
 	Value string
@@ -79,7 +79,7 @@ func (s TokenValue) TreeString(indent string, label string) string {
 }
 
 type ParseErrorSymbol struct {
-	*ParseErrorNode
+	*ast.ParseErrorNode
 }
 
 func (ParseErrorSymbol) Id() SymbolId {

@@ -1,7 +1,7 @@
 package reducer
 
 import (
-	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
 
@@ -11,33 +11,33 @@ import (
 
 func (reducer *Reducer) InferredToDeclVarPattern(
 	varType *lr.TokenValue,
-	pattern Expression,
+	pattern ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
-	return NewVarPattern(varType, pattern, nil), nil
+	return ast.NewVarPattern(varType, pattern, nil), nil
 }
 
 func (Reducer) TypedToDeclVarPattern(
 	varType *lr.TokenValue,
-	pattern Expression,
-	typeExpr TypeExpression,
+	pattern ast.Expression,
+	typeExpr ast.TypeExpression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
-	return NewVarPattern(varType, pattern, typeExpr), nil
+	return ast.NewVarPattern(varType, pattern, typeExpr), nil
 }
 
 func (Reducer) ToAssignVarPattern(
 	varType *lr.TokenValue,
-	pattern Expression,
+	pattern ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
-	return NewVarPattern(varType, pattern, nil), nil
+	return ast.NewVarPattern(varType, pattern, nil), nil
 }
 
 //
@@ -45,33 +45,33 @@ func (Reducer) ToAssignVarPattern(
 //
 
 func (Reducer) ToCasePatterns(
-	pattern *CaseAssignPattern,
+	pattern *ast.CaseAssignPattern,
 ) (
-	*ExpressionList,
+	*ast.ExpressionList,
 	error,
 ) {
-	list := NewExpressionList()
+	list := ast.NewExpressionList()
 	list.Add(pattern)
 	return list, nil
 }
 
 func (Reducer) SwitchableCasePatternToSwitchableCasePatterns(
-	pattern Expression,
+	pattern ast.Expression,
 ) (
-	*ExpressionList,
+	*ast.ExpressionList,
 	error,
 ) {
-	list := NewExpressionList()
+	list := ast.NewExpressionList()
 	list.Add(pattern)
 	return list, nil
 }
 
 func (Reducer) AddToSwitchableCasePatterns(
-	list *ExpressionList,
+	list *ast.ExpressionList,
 	comma *lr.TokenValue,
-	pattern Expression,
+	pattern ast.Expression,
 ) (
-	*ExpressionList,
+	*ast.ExpressionList,
 	error,
 ) {
 	list.ReduceAdd(comma, pattern)
@@ -83,19 +83,19 @@ func (Reducer) AddToSwitchableCasePatterns(
 //
 
 func (Reducer) ToCaseAssignPattern(
-	assignPattern *ExpressionList,
+	assignPattern *ast.ExpressionList,
 	assign *lr.TokenValue,
-	value Expression,
+	value ast.Expression,
 ) (
-	*CaseAssignPattern,
+	*ast.CaseAssignPattern,
 	error,
 ) {
 	leading := assignPattern.TakeLeading()
 	assignPattern.AppendToTrailing(assign.TakeLeading())
 	value.PrependToLeading(assign.TakeTrailing())
 
-	pattern := &CaseAssignPattern{
-		StartEndPos:   NewStartEndPos(assignPattern.Loc(), value.End()),
+	pattern := &ast.CaseAssignPattern{
+		StartEndPos:   ast.NewStartEndPos(assignPattern.Loc(), value.End()),
 		AssignPattern: *assignPattern,
 		Value:         value,
 	}
@@ -107,9 +107,9 @@ func (Reducer) ToCaseAssignPattern(
 
 func (Reducer) ToCaseAssignExpr(
 	caseKW *lr.TokenValue,
-	pattern *CaseAssignPattern,
+	pattern *ast.CaseAssignPattern,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	pattern.PrependToLeading(caseKW.TakeTrailing())
@@ -124,9 +124,9 @@ func (Reducer) ToCaseAssignExpr(
 func (Reducer) EnumMatchPatternToCaseEnumPattern(
 	dot *lr.TokenValue,
 	enumValue *lr.TokenValue,
-	varPattern Expression,
+	varPattern ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	leading := dot.TakeLeading()
@@ -135,8 +135,8 @@ func (Reducer) EnumMatchPatternToCaseEnumPattern(
 	varPattern.PrependToLeading(enumValue.TakeTrailing())
 	trailing := varPattern.TakeTrailing()
 
-	pattern := &CaseEnumPattern{
-		StartEndPos: NewStartEndPos(dot.Loc(), enumValue.End()),
+	pattern := &ast.CaseEnumPattern{
+		StartEndPos: ast.NewStartEndPos(dot.Loc(), enumValue.End()),
 		EnumValue:   enumValue.Value,
 		VarPattern:  varPattern,
 	}
@@ -149,7 +149,7 @@ func (Reducer) EnumNondataMatchPattenToCaseEnumPattern(
 	dot *lr.TokenValue,
 	enumValue *lr.TokenValue,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	leading := dot.TakeLeading()
@@ -157,8 +157,8 @@ func (Reducer) EnumNondataMatchPattenToCaseEnumPattern(
 	leading.Append(enumValue.TakeLeading())
 	trailing := enumValue.TakeTrailing()
 
-	pattern := &CaseEnumPattern{
-		StartEndPos: NewStartEndPos(dot.Loc(), enumValue.End()),
+	pattern := &ast.CaseEnumPattern{
+		StartEndPos: ast.NewStartEndPos(dot.Loc(), enumValue.End()),
 		EnumValue:   enumValue.Value,
 	}
 	pattern.LeadingComment = leading
@@ -170,9 +170,9 @@ func (Reducer) EnumDeclVarPatternToCaseEnumPattern(
 	varType *lr.TokenValue,
 	dot *lr.TokenValue,
 	enumValue *lr.TokenValue,
-	tuplePattern Expression,
+	tuplePattern ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	leading := varType.TakeLeading()
@@ -181,13 +181,13 @@ func (Reducer) EnumDeclVarPatternToCaseEnumPattern(
 	leading.Append(dot.TakeTrailing())
 	leading.Append(enumValue.TakeTrailing())
 
-	varPattern := NewVarPattern(varType, tuplePattern, nil)
+	varPattern := ast.NewVarPattern(varType, tuplePattern, nil)
 	varPattern.PrependToLeading(enumValue.TakeTrailing())
 
 	trailing := tuplePattern.TakeTrailing()
 
-	pattern := &CaseEnumPattern{
-		StartEndPos: NewStartEndPos(varType.Loc(), enumValue.End()),
+	pattern := &ast.CaseEnumPattern{
+		StartEndPos: ast.NewStartEndPos(varType.Loc(), enumValue.End()),
 		EnumValue:   enumValue.Value,
 		VarPattern:  varPattern,
 	}

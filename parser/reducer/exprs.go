@@ -3,7 +3,7 @@ package reducer
 import (
 	"fmt"
 
-	. "github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
 
@@ -13,48 +13,66 @@ import (
 
 func (reducer *Reducer) TrueToLiteralExpr(
 	value *lr.TokenValue,
-) (Expression, error) {
-	expr := &BoolLiteralExpr{ValuedNode: value}
+) (
+	ast.Expression,
+	error,
+) {
+	expr := &ast.BoolLiteralExpr{ValuedNode: value}
 	reducer.BoolLiteralExprs = append(reducer.BoolLiteralExprs, expr)
 	return expr, nil
 }
 
 func (reducer *Reducer) FalseToLiteralExpr(
 	value *lr.TokenValue,
-) (Expression, error) {
-	expr := &BoolLiteralExpr{ValuedNode: value}
+) (
+	ast.Expression,
+	error,
+) {
+	expr := &ast.BoolLiteralExpr{ValuedNode: value}
 	reducer.BoolLiteralExprs = append(reducer.BoolLiteralExprs, expr)
 	return expr, nil
 }
 
 func (reducer *Reducer) IntegerLiteralToLiteralExpr(
 	value *lr.TokenValue,
-) (Expression, error) {
-	expr := &IntLiteralExpr{ValuedNode: value}
+) (
+	ast.Expression,
+	error,
+) {
+	expr := &ast.IntLiteralExpr{ValuedNode: value}
 	reducer.IntLiteralExprs = append(reducer.IntLiteralExprs, expr)
 	return expr, nil
 }
 
 func (reducer *Reducer) FloatLiteralToLiteralExpr(
 	value *lr.TokenValue,
-) (Expression, error) {
-	expr := &FloatLiteralExpr{ValuedNode: value}
+) (
+	ast.Expression,
+	error,
+) {
+	expr := &ast.FloatLiteralExpr{ValuedNode: value}
 	reducer.FloatLiteralExprs = append(reducer.FloatLiteralExprs, expr)
 	return expr, nil
 }
 
 func (reducer *Reducer) RuneLiteralToLiteralExpr(
 	value *lr.TokenValue,
-) (Expression, error) {
-	expr := &RuneLiteralExpr{ValuedNode: value}
+) (
+	ast.Expression,
+	error,
+) {
+	expr := &ast.RuneLiteralExpr{ValuedNode: value}
 	reducer.RuneLiteralExprs = append(reducer.RuneLiteralExprs, expr)
 	return expr, nil
 }
 
 func (reducer *Reducer) StringLiteralToLiteralExpr(
 	value *lr.TokenValue,
-) (Expression, error) {
-	expr := &StringLiteralExpr{ValuedNode: value}
+) (
+	ast.Expression,
+	error,
+) {
+	expr := &ast.StringLiteralExpr{ValuedNode: value}
 	reducer.StringLiteralExprs = append(reducer.StringLiteralExprs, expr)
 	return expr, nil
 }
@@ -65,16 +83,22 @@ func (reducer *Reducer) StringLiteralToLiteralExpr(
 
 func (reducer *Reducer) IdentifierToNamedExpr(
 	value *lr.TokenValue,
-) (Expression, error) {
-	expr := &NamedExpr{ValuedNode: value}
+) (
+	ast.Expression,
+	error,
+) {
+	expr := &ast.NamedExpr{ValuedNode: value}
 	reducer.NamedExprs = append(reducer.NamedExprs, expr)
 	return expr, nil
 }
 
 func (reducer *Reducer) UnderscoreToNamedExpr(
 	value *lr.TokenValue,
-) (Expression, error) {
-	expr := &NamedExpr{ValuedNode: value}
+) (
+	ast.Expression,
+	error,
+) {
+	expr := &ast.NamedExpr{ValuedNode: value}
 	reducer.NamedExprs = append(reducer.NamedExprs, expr)
 	return expr, nil
 }
@@ -84,15 +108,15 @@ func (reducer *Reducer) UnderscoreToNamedExpr(
 //
 
 func (reducer *Reducer) ToAccessExpr(
-	operand Expression,
+	operand ast.Expression,
 	dot *lr.TokenValue,
 	field *lr.TokenValue,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
-	expr := &AccessExpr{
-		StartEndPos: NewStartEndPos(operand.Loc(), field.End()),
+	expr := &ast.AccessExpr{
+		StartEndPos: ast.NewStartEndPos(operand.Loc(), field.End()),
 		Operand:     operand,
 		Field:       field,
 	}
@@ -111,13 +135,13 @@ func (reducer *Reducer) ToAccessExpr(
 //
 
 func (reducer *Reducer) toPostfixUnaryExpr(
-	operand Expression,
+	operand ast.Expression,
 	op *lr.TokenValue,
-) *UnaryExpr {
-	expr := &UnaryExpr{
-		StartEndPos: NewStartEndPos(operand.Loc(), op.End()),
+) *ast.UnaryExpr {
+	expr := &ast.UnaryExpr{
+		StartEndPos: ast.NewStartEndPos(operand.Loc(), op.End()),
 		IsPrefix:    false,
-		Op:          UnaryOp(op.Value),
+		Op:          ast.UnaryOp(op.Value),
 		Operand:     operand,
 	}
 
@@ -130,10 +154,10 @@ func (reducer *Reducer) toPostfixUnaryExpr(
 }
 
 func (reducer *Reducer) ToPostfixUnaryExpr(
-	operand Expression,
+	operand ast.Expression,
 	op *lr.TokenValue,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	return reducer.toPostfixUnaryExpr(operand, op), nil
@@ -141,12 +165,12 @@ func (reducer *Reducer) ToPostfixUnaryExpr(
 
 func (reducer *Reducer) toPrefixUnaryExpr(
 	op *lr.TokenValue,
-	operand Expression,
-) Expression {
-	expr := &UnaryExpr{
-		StartEndPos: NewStartEndPos(op.Loc(), operand.End()),
+	operand ast.Expression,
+) ast.Expression {
+	expr := &ast.UnaryExpr{
+		StartEndPos: ast.NewStartEndPos(op.Loc(), operand.End()),
 		IsPrefix:    true,
-		Op:          UnaryOp(op.Value),
+		Op:          ast.UnaryOp(op.Value),
 		Operand:     operand,
 	}
 
@@ -160,9 +184,9 @@ func (reducer *Reducer) toPrefixUnaryExpr(
 
 func (reducer *Reducer) ToPrefixUnaryExpr(
 	op *lr.TokenValue,
-	operand Expression,
+	operand ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	return reducer.toPrefixUnaryExpr(op, operand), nil
@@ -170,19 +194,19 @@ func (reducer *Reducer) ToPrefixUnaryExpr(
 
 func (reducer *Reducer) ToRecvExpr(
 	arrow *lr.TokenValue,
-	expr Expression,
+	expr ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	return reducer.toPrefixUnaryExpr(arrow, expr), nil
 }
 
 func (reducer *Reducer) ToUnaryOpAssignStatement(
-	operand Expression,
+	operand ast.Expression,
 	op *lr.TokenValue,
 ) (
-	Statement,
+	ast.Statement,
 	error,
 ) {
 	return reducer.toPostfixUnaryExpr(operand, op), nil
@@ -193,14 +217,14 @@ func (reducer *Reducer) ToUnaryOpAssignStatement(
 //
 
 func (reducer *Reducer) toBinaryExpr(
-	left Expression,
+	left ast.Expression,
 	op *lr.TokenValue,
-	right Expression,
-) Expression {
-	expr := &BinaryExpr{
-		StartEndPos: NewStartEndPos(left.Loc(), right.End()),
+	right ast.Expression,
+) ast.Expression {
+	expr := &ast.BinaryExpr{
+		StartEndPos: ast.NewStartEndPos(left.Loc(), right.End()),
 		Left:        left,
-		Op:          BinaryOp(op.Value),
+		Op:          ast.BinaryOp(op.Value),
 		Right:       right,
 	}
 
@@ -214,110 +238,110 @@ func (reducer *Reducer) toBinaryExpr(
 }
 
 func (reducer *Reducer) ToBinaryMulExpr(
-	left Expression,
+	left ast.Expression,
 	op *lr.TokenValue,
-	right Expression,
+	right ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	return reducer.toBinaryExpr(left, op, right), nil
 }
 
 func (reducer *Reducer) ToBinaryAddExpr(
-	left Expression,
+	left ast.Expression,
 	op *lr.TokenValue,
-	right Expression,
+	right ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	return reducer.toBinaryExpr(left, op, right), nil
 }
 
 func (reducer *Reducer) ToBinaryCmpExpr(
-	left Expression,
+	left ast.Expression,
 	op *lr.TokenValue,
-	right Expression,
+	right ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	return reducer.toBinaryExpr(left, op, right), nil
 }
 
 func (reducer *Reducer) ToBinaryAndExpr(
-	left Expression,
+	left ast.Expression,
 	op *lr.TokenValue,
-	right Expression,
+	right ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	return reducer.toBinaryExpr(left, op, right), nil
 }
 
 func (reducer *Reducer) ToBinaryOrExpr(
-	left Expression,
+	left ast.Expression,
 	op *lr.TokenValue,
-	right Expression,
+	right ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	return reducer.toBinaryExpr(left, op, right), nil
 }
 
 func (reducer *Reducer) ToSendExpr(
-	receiver Expression,
+	receiver ast.Expression,
 	arrow *lr.TokenValue,
-	expr Expression,
+	expr ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	return reducer.toBinaryExpr(receiver, arrow, expr), nil
 }
 
 func (reducer *Reducer) ToBinaryOpAssignStatement(
-	address Expression,
+	address ast.Expression,
 	op *lr.TokenValue,
-	value Expression,
+	value ast.Expression,
 ) (
-	Statement,
+	ast.Statement,
 	error,
 ) {
 	return reducer.toBinaryExpr(address, op, value), nil
 }
 
 func (reducer *Reducer) ToExprAssignStatement(
-	pattern Expression,
+	pattern ast.Expression,
 	assign *lr.TokenValue,
-	value Expression,
+	value ast.Expression,
 ) (
-	Statement,
+	ast.Statement,
 	error,
 ) {
 	return reducer.toBinaryExpr(pattern, assign, value), nil
 }
 
 func (reducer *Reducer) ToSequenceExprAssignStatement(
-	pattern Expression,
+	pattern ast.Expression,
 	assign *lr.TokenValue,
-	value Expression,
+	value ast.Expression,
 ) (
-	Statement,
+	ast.Statement,
 	error,
 ) {
 	return reducer.toBinaryExpr(pattern, assign, value), nil
 }
 
 func (reducer *Reducer) DefToGlobalVarDef(
-	pattern Expression,
+	pattern ast.Expression,
 	assign *lr.TokenValue,
-	value Expression,
+	value ast.Expression,
 ) (
-	Definition,
+	ast.Definition,
 	error,
 ) {
 	return reducer.toBinaryExpr(pattern, assign, value), nil
@@ -329,21 +353,21 @@ func (reducer *Reducer) DefToGlobalVarDef(
 
 func (reducer *Reducer) toImplicitStructExpr(
 	lparen *lr.TokenValue,
-	args *ArgumentList,
+	args *ast.ArgumentList,
 	rparen *lr.TokenValue,
-) *ImplicitStructExpr {
+) *ast.ImplicitStructExpr {
 	args.ReduceMarkers(lparen, rparen)
-	return &ImplicitStructExpr{
+	return &ast.ImplicitStructExpr{
 		ArgumentList: *args,
 	}
 }
 
 func (reducer *Reducer) ToImplicitStructExpr(
 	lparen *lr.TokenValue,
-	args *ArgumentList,
+	args *ast.ArgumentList,
 	rparen *lr.TokenValue,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	expr := reducer.toImplicitStructExpr(lparen, args, rparen)
@@ -352,21 +376,21 @@ func (reducer *Reducer) ToImplicitStructExpr(
 }
 
 func (reducer *Reducer) PairToImproperExprStruct(
-	expr1 Expression,
+	expr1 ast.Expression,
 	comma *lr.TokenValue,
-	expr2 Expression,
+	expr2 ast.Expression,
 ) (
-	*ImplicitStructExpr,
+	*ast.ImplicitStructExpr,
 	error,
 ) {
-	arg1 := NewPositionalArgument(expr1)
-	arg2 := NewPositionalArgument(expr2)
+	arg1 := ast.NewPositionalArgument(expr1)
+	arg2 := ast.NewPositionalArgument(expr2)
 
-	list := NewArgumentList()
+	list := ast.NewArgumentList()
 	list.Add(arg1)
 	list.ReduceAdd(comma, arg2)
 
-	expr := &ImplicitStructExpr{
+	expr := &ast.ImplicitStructExpr{
 		ArgumentList: *list,
 	}
 
@@ -375,34 +399,34 @@ func (reducer *Reducer) PairToImproperExprStruct(
 }
 
 func (reducer *Reducer) AddToImproperExprStruct(
-	structExpr *ImplicitStructExpr,
+	structExpr *ast.ImplicitStructExpr,
 	comma *lr.TokenValue,
-	expr Expression,
+	expr ast.Expression,
 ) (
-	*ImplicitStructExpr,
+	*ast.ImplicitStructExpr,
 	error,
 ) {
-	arg := NewPositionalArgument(expr)
+	arg := ast.NewPositionalArgument(expr)
 	structExpr.ReduceAdd(comma, arg)
 	return structExpr, nil
 }
 
 func (reducer *Reducer) PairToImproperSequenceExprStruct(
-	expr1 Expression,
+	expr1 ast.Expression,
 	comma *lr.TokenValue,
-	expr2 Expression,
+	expr2 ast.Expression,
 ) (
-	*ImplicitStructExpr,
+	*ast.ImplicitStructExpr,
 	error,
 ) {
-	arg1 := NewPositionalArgument(expr1)
-	arg2 := NewPositionalArgument(expr2)
+	arg1 := ast.NewPositionalArgument(expr1)
+	arg2 := ast.NewPositionalArgument(expr2)
 
-	list := NewArgumentList()
+	list := ast.NewArgumentList()
 	list.Add(arg1)
 	list.ReduceAdd(comma, arg2)
 
-	expr := &ImplicitStructExpr{
+	expr := &ast.ImplicitStructExpr{
 		ArgumentList: *list,
 	}
 
@@ -411,24 +435,24 @@ func (reducer *Reducer) PairToImproperSequenceExprStruct(
 }
 
 func (reducer *Reducer) AddToImproperSequenceExprStruct(
-	structExpr *ImplicitStructExpr,
+	structExpr *ast.ImplicitStructExpr,
 	comma *lr.TokenValue,
-	expr Expression,
+	expr ast.Expression,
 ) (
-	*ImplicitStructExpr,
+	*ast.ImplicitStructExpr,
 	error,
 ) {
-	arg := NewPositionalArgument(expr)
+	arg := ast.NewPositionalArgument(expr)
 	structExpr.ReduceAdd(comma, arg)
 	return structExpr, nil
 }
 
 func (reducer *Reducer) ToTuplePattern(
 	lparen *lr.TokenValue,
-	list *ArgumentList,
+	list *ast.ArgumentList,
 	rparen *lr.TokenValue,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	return reducer.toImplicitStructExpr(lparen, list, rparen), nil
@@ -441,133 +465,133 @@ func (reducer *Reducer) ToTuplePattern(
 func (Reducer) UnitUnitPairToColonExpr(
 	colon *lr.TokenValue,
 ) (
-	*ColonExpr,
+	*ast.ColonExpr,
 	error,
 ) {
-	leftArg := &Argument{
-		StartEndPos: NewStartEndPos(colon.Loc(), colon.End()),
-		Kind:        IsImplicitUnitArgument,
+	leftArg := &ast.Argument{
+		StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
+		Kind:        ast.IsImplicitUnitArgument,
 	}
 
-	rightArg := &Argument{
-		StartEndPos: NewStartEndPos(colon.Loc(), colon.End()),
-		Kind:        IsImplicitUnitArgument,
+	rightArg := &ast.Argument{
+		StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
+		Kind:        ast.IsImplicitUnitArgument,
 	}
 	rightArg.LeadingComment = colon.TakeTrailing()
 
-	args := NewNodeList[*Argument]("ColonExpr")
+	args := ast.NewNodeList[*ast.Argument]("ColonExpr")
 	args.Add(leftArg)
 	args.ReduceAdd(colon, rightArg)
 
-	return &ColonExpr{
+	return &ast.ColonExpr{
 		ArgumentList: *args,
 	}, nil
 }
 
 func (Reducer) ExprUnitPairToColonExpr(
-	leftExpr Expression,
+	leftExpr ast.Expression,
 	colon *lr.TokenValue,
 ) (
-	*ColonExpr,
+	*ast.ColonExpr,
 	error,
 ) {
-	leftArg := &Argument{
-		StartEndPos: NewStartEndPos(leftExpr.Loc(), leftExpr.End()),
-		Kind:        PositionalArgument,
+	leftArg := &ast.Argument{
+		StartEndPos: ast.NewStartEndPos(leftExpr.Loc(), leftExpr.End()),
+		Kind:        ast.PositionalArgument,
 		Expr:        leftExpr,
 	}
 	leftArg.LeadingComment = leftExpr.TakeLeading()
 	leftArg.TrailingComment = leftExpr.TakeTrailing()
 
-	rightArg := &Argument{
-		StartEndPos: NewStartEndPos(colon.Loc(), colon.End()),
-		Kind:        IsImplicitUnitArgument,
+	rightArg := &ast.Argument{
+		StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
+		Kind:        ast.IsImplicitUnitArgument,
 	}
 	rightArg.LeadingComment = colon.TakeTrailing()
 
-	args := NewNodeList[*Argument]("ColonExpr")
+	args := ast.NewNodeList[*ast.Argument]("ColonExpr")
 	args.Add(leftArg)
 	args.ReduceAdd(colon, rightArg)
 
-	return &ColonExpr{
+	return &ast.ColonExpr{
 		ArgumentList: *args,
 	}, nil
 }
 
 func (reducer *Reducer) UnitExprPairToColonExpr(
 	colon *lr.TokenValue,
-	rightExpr Expression,
+	rightExpr ast.Expression,
 ) (
-	*ColonExpr,
+	*ast.ColonExpr,
 	error,
 ) {
-	leftArg := &Argument{
-		StartEndPos: NewStartEndPos(colon.Loc(), colon.End()),
-		Kind:        IsImplicitUnitArgument,
+	leftArg := &ast.Argument{
+		StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
+		Kind:        ast.IsImplicitUnitArgument,
 	}
 
-	rightArg := &Argument{
-		StartEndPos: NewStartEndPos(rightExpr.Loc(), rightExpr.End()),
-		Kind:        PositionalArgument,
+	rightArg := &ast.Argument{
+		StartEndPos: ast.NewStartEndPos(rightExpr.Loc(), rightExpr.End()),
+		Kind:        ast.PositionalArgument,
 		Expr:        rightExpr,
 	}
 	rightArg.LeadingComment = rightExpr.TakeLeading()
 	rightArg.TrailingComment = rightExpr.TakeTrailing()
 	rightArg.PrependToLeading(colon.TakeTrailing())
 
-	args := NewNodeList[*Argument]("ColonExpr")
+	args := ast.NewNodeList[*ast.Argument]("ColonExpr")
 	args.Add(leftArg)
 	args.ReduceAdd(colon, rightArg)
 
-	return &ColonExpr{
+	return &ast.ColonExpr{
 		ArgumentList: *args,
 	}, nil
 }
 
 func (reducer *Reducer) ExprExprPairToColonExpr(
-	leftExpr Expression,
+	leftExpr ast.Expression,
 	colon *lr.TokenValue,
-	rightExpr Expression,
+	rightExpr ast.Expression,
 ) (
-	*ColonExpr,
+	*ast.ColonExpr,
 	error,
 ) {
-	leftArg := &Argument{
-		StartEndPos: NewStartEndPos(leftExpr.Loc(), leftExpr.End()),
-		Kind:        PositionalArgument,
+	leftArg := &ast.Argument{
+		StartEndPos: ast.NewStartEndPos(leftExpr.Loc(), leftExpr.End()),
+		Kind:        ast.PositionalArgument,
 		Expr:        leftExpr,
 	}
 	leftArg.LeadingComment = leftExpr.TakeLeading()
 	leftArg.TrailingComment = leftExpr.TakeTrailing()
 
-	rightArg := &Argument{
-		StartEndPos: NewStartEndPos(rightExpr.Loc(), rightExpr.End()),
-		Kind:        PositionalArgument,
+	rightArg := &ast.Argument{
+		StartEndPos: ast.NewStartEndPos(rightExpr.Loc(), rightExpr.End()),
+		Kind:        ast.PositionalArgument,
 		Expr:        rightExpr,
 	}
 	rightArg.LeadingComment = rightExpr.TakeLeading()
 	rightArg.TrailingComment = rightExpr.TakeTrailing()
 	rightArg.PrependToLeading(colon.TakeTrailing())
 
-	args := NewNodeList[*Argument]("ColonExpr")
+	args := ast.NewNodeList[*ast.Argument]("ColonExpr")
 	args.Add(leftArg)
 	args.ReduceAdd(colon, rightArg)
 
-	return &ColonExpr{
+	return &ast.ColonExpr{
 		ArgumentList: *args,
 	}, nil
 }
 
 func (reducer *Reducer) ColonExprUnitTupleToColonExpr(
-	list *ColonExpr,
+	list *ast.ColonExpr,
 	colon *lr.TokenValue,
 ) (
-	*ColonExpr,
+	*ast.ColonExpr,
 	error,
 ) {
-	arg := &Argument{
-		StartEndPos: NewStartEndPos(colon.Loc(), colon.End()),
-		Kind:        IsImplicitUnitArgument,
+	arg := &ast.Argument{
+		StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
+		Kind:        ast.IsImplicitUnitArgument,
 	}
 	arg.LeadingComment = colon.TakeTrailing()
 
@@ -576,16 +600,16 @@ func (reducer *Reducer) ColonExprUnitTupleToColonExpr(
 }
 
 func (reducer *Reducer) ColonExprExprTupleToColonExpr(
-	list *ColonExpr,
+	list *ast.ColonExpr,
 	colon *lr.TokenValue,
-	expr Expression,
+	expr ast.Expression,
 ) (
-	*ColonExpr,
+	*ast.ColonExpr,
 	error,
 ) {
-	arg := &Argument{
-		StartEndPos: NewStartEndPos(expr.Loc(), expr.End()),
-		Kind:        PositionalArgument,
+	arg := &ast.Argument{
+		StartEndPos: ast.NewStartEndPos(expr.Loc(), expr.End()),
+		Kind:        ast.PositionalArgument,
 		Expr:        expr,
 	}
 	arg.LeadingComment = expr.TakeLeading()
@@ -601,24 +625,24 @@ func (reducer *Reducer) ColonExprExprTupleToColonExpr(
 //
 
 func (reducer *Reducer) ToCallExpr(
-	funcExpr Expression,
-	genericArguments *GenericArgumentList,
+	funcExpr ast.Expression,
+	genericArguments *ast.GenericArgumentList,
 	lparen *lr.TokenValue,
-	arguments *ArgumentList,
+	arguments *ast.ArgumentList,
 	rparen *lr.TokenValue,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	if genericArguments == nil {
-		genericArguments = &GenericArgumentList{}
+		genericArguments = ast.NewGenericArgumentList()
 	}
 
 	arguments.ReduceMarkers(lparen, rparen)
 
-	expr := &CallExpr{
-		StartEndPos: NewStartEndPos(funcExpr.Loc(), rparen.End()),
-		LeadingTrailingComments: LeadingTrailingComments{
+	expr := &ast.CallExpr{
+		StartEndPos: ast.NewStartEndPos(funcExpr.Loc(), rparen.End()),
+		LeadingTrailingComments: ast.LeadingTrailingComments{
 			LeadingComment:  funcExpr.TakeLeading(),
 			TrailingComment: arguments.TakeTrailing(),
 		},
@@ -636,20 +660,20 @@ func (reducer *Reducer) ToCallExpr(
 //
 
 func (reducer *Reducer) ToIndexExpr(
-	accessible Expression,
+	accessible ast.Expression,
 	lbracket *lr.TokenValue,
-	index *Argument,
+	index *ast.Argument,
 	rbracket *lr.TokenValue,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	accessible.AppendToTrailing(lbracket.TakeLeading())
 	index.PrependToLeading(lbracket.TakeTrailing())
 	index.AppendToTrailing(rbracket.TakeLeading())
 
-	expr := &IndexExpr{
-		StartEndPos: NewStartEndPos(accessible.Loc(), rbracket.End()),
+	expr := &ast.IndexExpr{
+		StartEndPos: ast.NewStartEndPos(accessible.Loc(), rbracket.End()),
 		Accessible:  accessible,
 		Index:       *index,
 	}
@@ -666,14 +690,14 @@ func (reducer *Reducer) ToIndexExpr(
 //
 
 func (reducer *Reducer) ToAsExpr(
-	accessible Expression,
+	accessible ast.Expression,
 	dot *lr.TokenValue,
 	as *lr.TokenValue,
 	lparen *lr.TokenValue,
-	castType TypeExpression,
+	castType ast.TypeExpression,
 	rparen *lr.TokenValue,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	leading := accessible.TakeLeading()
@@ -687,8 +711,8 @@ func (reducer *Reducer) ToAsExpr(
 	castType.AppendToTrailing(rparen.TakeLeading())
 	trailing := rparen.TakeTrailing()
 
-	expr := &AsExpr{
-		StartEndPos: NewStartEndPos(accessible.Loc(), rparen.End()),
+	expr := &ast.AsExpr{
+		StartEndPos: ast.NewStartEndPos(accessible.Loc(), rparen.End()),
 		Accessible:  accessible,
 		CastType:    castType,
 	}
@@ -703,18 +727,18 @@ func (reducer *Reducer) ToAsExpr(
 //
 
 func (reducer *Reducer) ToInitializeExpr(
-	initializable TypeExpression,
+	initializable ast.TypeExpression,
 	lparen *lr.TokenValue,
-	arguments *ArgumentList,
+	arguments *ast.ArgumentList,
 	rparen *lr.TokenValue,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	arguments.ReduceMarkers(lparen, rparen)
 
-	expr := &InitializeExpr{
-		StartEndPos:   NewStartEndPos(initializable.Loc(), rparen.End()),
+	expr := &ast.InitializeExpr{
+		StartEndPos:   ast.NewStartEndPos(initializable.Loc(), rparen.End()),
 		Initializable: initializable,
 		Arguments:     *arguments,
 	}
@@ -731,9 +755,9 @@ func (reducer *Reducer) ToInitializeExpr(
 //
 
 func (reducer *Reducer) UnlabelledToIfExpr(
-	ifExpr *IfExpr,
+	ifExpr *ast.IfExpr,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	if ifExpr.ElseBranch != nil {
@@ -748,9 +772,9 @@ func (reducer *Reducer) UnlabelledToIfExpr(
 
 func (reducer *Reducer) LabelledToIfExpr(
 	labelDecl *lr.TokenValue,
-	ifExpr *IfExpr,
+	ifExpr *ast.IfExpr,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	reducer.UnlabelledToIfExpr(ifExpr)
@@ -763,11 +787,11 @@ func (reducer *Reducer) LabelledToIfExpr(
 }
 
 func (reducer *Reducer) ElseToIfElseExpr(
-	ifExpr *IfExpr,
+	ifExpr *ast.IfExpr,
 	elseKW *lr.TokenValue,
-	branch Expression,
+	branch ast.Expression,
 ) (
-	*IfExpr,
+	*ast.IfExpr,
 	error,
 ) {
 	last := ifExpr.ConditionBranches[len(ifExpr.ConditionBranches)-1].Branch
@@ -782,13 +806,13 @@ func (reducer *Reducer) ElseToIfElseExpr(
 }
 
 func (reducer *Reducer) ElifToIfElifExpr(
-	ifExpr *IfExpr,
+	ifExpr *ast.IfExpr,
 	elseKW *lr.TokenValue,
 	ifKW *lr.TokenValue,
-	condition Expression,
-	branch Expression,
+	condition ast.Expression,
+	branch ast.Expression,
 ) (
-	*IfExpr,
+	*ast.IfExpr,
 	error,
 ) {
 	last := ifExpr.ConditionBranches[len(ifExpr.ConditionBranches)-1].Branch
@@ -802,23 +826,23 @@ func (reducer *Reducer) ElifToIfElifExpr(
 
 	ifExpr.ConditionBranches = append(
 		ifExpr.ConditionBranches,
-		ConditionBranch{condition, branch})
+		ast.ConditionBranch{condition, branch})
 
 	return ifExpr, nil
 }
 
 func (reducer *Reducer) ToIfOnlyExpr(
 	ifKW *lr.TokenValue,
-	condition Expression,
-	branch Expression,
+	condition ast.Expression,
+	branch ast.Expression,
 ) (
-	*IfExpr,
+	*ast.IfExpr,
 	error,
 ) {
 	condition.PrependToLeading(ifKW.TakeTrailing())
-	expr := &IfExpr{
-		StartEndPos:       NewStartEndPos(ifKW.Loc(), branch.End()),
-		ConditionBranches: []ConditionBranch{{condition, branch}},
+	expr := &ast.IfExpr{
+		StartEndPos:       ast.NewStartEndPos(ifKW.Loc(), branch.End()),
+		ConditionBranches: []ast.ConditionBranch{{condition, branch}},
 	}
 	expr.LeadingComment = ifKW.TakeLeading()
 
@@ -832,19 +856,19 @@ func (reducer *Reducer) ToIfOnlyExpr(
 
 func (reducer *Reducer) LabelledToSwitchExpr(
 	labelDecl *lr.TokenValue,
-	expr Expression,
+	expr ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	switch switchExpr := expr.(type) {
-	case *SwitchExpr:
+	case *ast.SwitchExpr:
 		switchExpr.StartPos = labelDecl.Loc()
 		switchExpr.PrependToLeading(labelDecl.TakeTrailing())
 		switchExpr.PrependToLeading(labelDecl.TakeLeading())
 		switchExpr.LabelDecl = labelDecl.Value
 		return switchExpr, nil
-	case *ParseErrorNode:
+	case *ast.ParseErrorNode:
 		return expr, nil
 	}
 
@@ -853,18 +877,18 @@ func (reducer *Reducer) LabelledToSwitchExpr(
 
 func (reducer *Reducer) ToSwitchExprBody(
 	switchKW *lr.TokenValue,
-	operand Expression,
-	expr Expression,
+	operand ast.Expression,
+	expr ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	switch branches := expr.(type) {
-	case *StatementsExpr:
+	case *ast.StatementsExpr:
 		trailing := branches.TakeTrailing()
 
-		switchExpr := &SwitchExpr{
-			StartEndPos: NewStartEndPos(switchKW.Loc(), branches.End()),
+		switchExpr := &ast.SwitchExpr{
+			StartEndPos: ast.NewStartEndPos(switchKW.Loc(), branches.End()),
 			Operand:     operand,
 			Branches:    branches,
 		}
@@ -875,7 +899,7 @@ func (reducer *Reducer) ToSwitchExprBody(
 
 		reducer.SwitchExprs = append(reducer.SwitchExprs, switchExpr)
 		return switchExpr, nil
-	case *ParseErrorNode:
+	case *ast.ParseErrorNode:
 		return expr, nil
 	}
 
@@ -888,19 +912,19 @@ func (reducer *Reducer) ToSwitchExprBody(
 
 func (reducer *Reducer) LabelledToSelectExpr(
 	labelDecl *lr.TokenValue,
-	expr Expression,
+	expr ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	switch selectExpr := expr.(type) {
-	case *SelectExpr:
+	case *ast.SelectExpr:
 		selectExpr.StartPos = labelDecl.Loc()
 		selectExpr.PrependToLeading(labelDecl.TakeTrailing())
 		selectExpr.PrependToLeading(labelDecl.TakeLeading())
 		selectExpr.LabelDecl = labelDecl.Value
 		return selectExpr, nil
-	case *ParseErrorNode:
+	case *ast.ParseErrorNode:
 		return expr, nil
 	}
 
@@ -909,18 +933,18 @@ func (reducer *Reducer) LabelledToSelectExpr(
 
 func (reducer *Reducer) ToSelectExprBody(
 	switchKW *lr.TokenValue,
-	expr Expression,
+	expr ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	switch branches := expr.(type) {
-	case *StatementsExpr:
+	case *ast.StatementsExpr:
 		branches.PrependToLeading(switchKW.TakeTrailing())
 		trailing := branches.TakeTrailing()
 
-		selectExpr := &SelectExpr{
-			StartEndPos: NewStartEndPos(switchKW.Loc(), branches.End()),
+		selectExpr := &ast.SelectExpr{
+			StartEndPos: ast.NewStartEndPos(switchKW.Loc(), branches.End()),
 			Branches:    branches,
 		}
 
@@ -929,7 +953,7 @@ func (reducer *Reducer) ToSelectExprBody(
 
 		reducer.SelectExprs = append(reducer.SelectExprs, selectExpr)
 		return selectExpr, nil
-	case *ParseErrorNode:
+	case *ast.ParseErrorNode:
 		return expr, nil
 	}
 
@@ -942,19 +966,19 @@ func (reducer *Reducer) ToSelectExprBody(
 
 func (reducer *Reducer) LabelledToLoopExpr(
 	labelDecl *lr.TokenValue,
-	expr Expression,
+	expr ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	switch loop := expr.(type) {
-	case *LoopExpr:
+	case *ast.LoopExpr:
 		loop.StartPos = labelDecl.Loc()
 		loop.PrependToLeading(labelDecl.TakeTrailing())
 		loop.PrependToLeading(labelDecl.TakeLeading())
 		loop.LabelDecl = labelDecl.Value
 		return loop, nil
-	case *ParseErrorNode:
+	case *ast.ParseErrorNode:
 		return expr, nil
 	}
 
@@ -962,26 +986,26 @@ func (reducer *Reducer) LabelledToLoopExpr(
 }
 
 func (reducer *Reducer) InfiniteToLoopExprBody(
-	bodyExpr Expression,
+	bodyExpr ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	switch body := bodyExpr.(type) {
-	case *StatementsExpr:
+	case *ast.StatementsExpr:
 		leading := body.TakeLeading()
 		trailing := body.TakeTrailing()
 
-		loop := &LoopExpr{
-			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
-			LoopKind:    InfiniteLoop,
+		loop := &ast.LoopExpr{
+			StartEndPos: ast.NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			LoopKind:    ast.InfiniteLoop,
 			Body:        body,
 		}
 		loop.LeadingComment = leading
 		loop.TrailingComment = trailing
 
 		return loop, nil
-	case *ParseErrorNode:
+	case *ast.ParseErrorNode:
 		return bodyExpr, nil
 	}
 
@@ -989,23 +1013,23 @@ func (reducer *Reducer) InfiniteToLoopExprBody(
 }
 
 func (reducer *Reducer) DoWhileToLoopExprBody(
-	bodyExpr Expression,
+	bodyExpr ast.Expression,
 	forKW *lr.TokenValue,
-	condition Expression,
+	condition ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	switch body := bodyExpr.(type) {
-	case *StatementsExpr:
+	case *ast.StatementsExpr:
 		leading := body.TakeLeading()
 		body.AppendToTrailing(forKW.TakeLeading())
 		condition.PrependToLeading(forKW.TakeTrailing())
 		trailing := condition.TakeTrailing()
 
-		loop := &LoopExpr{
-			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
-			LoopKind:    DoWhileLoop,
+		loop := &ast.LoopExpr{
+			StartEndPos: ast.NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			LoopKind:    ast.DoWhileLoop,
 			Condition:   condition,
 			Body:        body,
 		}
@@ -1013,7 +1037,7 @@ func (reducer *Reducer) DoWhileToLoopExprBody(
 		loop.TrailingComment = trailing
 
 		return loop, nil
-	case *ParseErrorNode:
+	case *ast.ParseErrorNode:
 		return bodyExpr, nil
 	}
 
@@ -1022,21 +1046,21 @@ func (reducer *Reducer) DoWhileToLoopExprBody(
 
 func (reducer *Reducer) WhileToLoopExprBody(
 	forKW *lr.TokenValue,
-	condition Expression,
-	bodyExpr Expression,
+	condition ast.Expression,
+	bodyExpr ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	switch body := bodyExpr.(type) {
-	case *StatementsExpr:
+	case *ast.StatementsExpr:
 		leading := forKW.TakeLeading()
 		condition.PrependToLeading(forKW.TakeTrailing())
 		trailing := bodyExpr.TakeTrailing()
 
-		loop := &LoopExpr{
-			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
-			LoopKind:    WhileLoop,
+		loop := &ast.LoopExpr{
+			StartEndPos: ast.NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			LoopKind:    ast.WhileLoop,
 			Condition:   condition,
 			Body:        body,
 		}
@@ -1044,7 +1068,7 @@ func (reducer *Reducer) WhileToLoopExprBody(
 		loop.TrailingComment = trailing
 
 		return loop, nil
-	case *ParseErrorNode:
+	case *ast.ParseErrorNode:
 		return bodyExpr, nil
 	}
 
@@ -1053,22 +1077,22 @@ func (reducer *Reducer) WhileToLoopExprBody(
 
 func (reducer *Reducer) IteratorToLoopExprBody(
 	forKW *lr.TokenValue,
-	assignPattern Expression,
+	assignPattern ast.Expression,
 	in *lr.TokenValue,
-	iterator Expression,
-	bodyExpr Expression,
+	iterator ast.Expression,
+	bodyExpr ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	switch body := bodyExpr.(type) {
-	case *StatementsExpr:
+	case *ast.StatementsExpr:
 		leading := forKW.TakeLeading()
 		trailing := bodyExpr.TakeTrailing()
 
-		loop := &LoopExpr{
-			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
-			LoopKind:    IteratorLoop,
+		loop := &ast.LoopExpr{
+			StartEndPos: ast.NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			LoopKind:    ast.IteratorLoop,
 			Condition:   reducer.toBinaryExpr(assignPattern, in, iterator),
 			Body:        body,
 		}
@@ -1076,7 +1100,7 @@ func (reducer *Reducer) IteratorToLoopExprBody(
 		loop.TrailingComment = trailing
 
 		return loop, nil
-	case *ParseErrorNode:
+	case *ast.ParseErrorNode:
 		return bodyExpr, nil
 	}
 
@@ -1085,19 +1109,19 @@ func (reducer *Reducer) IteratorToLoopExprBody(
 
 func (reducer *Reducer) ForToLoopExprBody(
 	forKW *lr.TokenValue,
-	init Statement,
+	init ast.Statement,
 	semicolon1 *lr.TokenValue,
-	condition Expression,
+	condition ast.Expression,
 	semicolon2 *lr.TokenValue,
-	post Statement,
-	bodyExpr Expression,
+	post ast.Statement,
+	bodyExpr ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	switch body := bodyExpr.(type) {
-	case *StatementsExpr:
-		var last Node = body
+	case *ast.StatementsExpr:
+		var last ast.Node = body
 		if post != nil {
 			last = post
 		}
@@ -1122,9 +1146,9 @@ func (reducer *Reducer) ForToLoopExprBody(
 		last.PrependToLeading(forKW.TakeTrailing())
 		trailing := body.TakeTrailing()
 
-		loop := &LoopExpr{
-			StartEndPos: NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
-			LoopKind:    ForLoop,
+		loop := &ast.LoopExpr{
+			StartEndPos: ast.NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
+			LoopKind:    ast.ForLoop,
 			Init:        init,
 			Condition:   condition,
 			Post:        post,
@@ -1134,7 +1158,7 @@ func (reducer *Reducer) ForToLoopExprBody(
 		loop.TrailingComment = trailing
 
 		return loop, nil
-	case *ParseErrorNode:
+	case *ast.ParseErrorNode:
 		return bodyExpr, nil
 	}
 
@@ -1142,14 +1166,14 @@ func (reducer *Reducer) ForToLoopExprBody(
 }
 
 func (reducer *Reducer) NilToOptionalSequenceStatement() (
-	Statement,
+	ast.Statement,
 	error,
 ) {
 	return nil, nil
 }
 
 func (reducer *Reducer) NilToOptionalSequenceExpr() (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	return nil, nil
@@ -1157,18 +1181,18 @@ func (reducer *Reducer) NilToOptionalSequenceExpr() (
 
 func (reducer *Reducer) ToLoopBody(
 	do *lr.TokenValue,
-	expr Expression,
+	expr ast.Expression,
 ) (
-	Expression,
+	ast.Expression,
 	error,
 ) {
 	switch body := expr.(type) {
-	case *StatementsExpr:
+	case *ast.StatementsExpr:
 		body.StartPos = do.Loc()
 		body.PrependToLeading(do.TakeTrailing())
 		body.PrependToLeading(do.TakeLeading())
 		return body, nil
-	case *ParseErrorNode:
+	case *ast.ParseErrorNode:
 		return expr, nil
 	}
 
