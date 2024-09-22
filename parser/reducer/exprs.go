@@ -325,17 +325,6 @@ func (reducer *Reducer) ToExprAssignStatement(
 	return reducer.toBinaryExpr(pattern, assign, value), nil
 }
 
-func (reducer *Reducer) ToSequenceExprAssignStatement(
-	pattern ast.Expression,
-	assign *lr.TokenValue,
-	value ast.Expression,
-) (
-	ast.Statement,
-	error,
-) {
-	return reducer.toBinaryExpr(pattern, assign, value), nil
-}
-
 func (reducer *Reducer) DefToGlobalVarDef(
 	pattern ast.Expression,
 	assign *lr.TokenValue,
@@ -399,42 +388,6 @@ func (reducer *Reducer) PairToImproperExprStruct(
 }
 
 func (reducer *Reducer) AddToImproperExprStruct(
-	structExpr *ast.ImplicitStructExpr,
-	comma *lr.TokenValue,
-	expr ast.Expression,
-) (
-	*ast.ImplicitStructExpr,
-	error,
-) {
-	arg := ast.NewPositionalArgument(expr)
-	structExpr.ReduceAdd(comma, arg)
-	return structExpr, nil
-}
-
-func (reducer *Reducer) PairToImproperSequenceExprStruct(
-	expr1 ast.Expression,
-	comma *lr.TokenValue,
-	expr2 ast.Expression,
-) (
-	*ast.ImplicitStructExpr,
-	error,
-) {
-	arg1 := ast.NewPositionalArgument(expr1)
-	arg2 := ast.NewPositionalArgument(expr2)
-
-	list := ast.NewArgumentList()
-	list.Add(arg1)
-	list.ReduceAdd(comma, arg2)
-
-	expr := &ast.ImplicitStructExpr{
-		ArgumentList: *list,
-	}
-
-	reducer.ImplicitStructExprs = append(reducer.ImplicitStructExprs, expr)
-	return expr, nil
-}
-
-func (reducer *Reducer) AddToImproperSequenceExprStruct(
 	structExpr *ast.ImplicitStructExpr,
 	comma *lr.TokenValue,
 	expr ast.Expression,
