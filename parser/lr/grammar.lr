@@ -90,40 +90,8 @@ global_var_def<Definition> ->
 floating_comment<Definition> -> COMMENT_GROUPS
 
 //
-// Statement block
+// Statement
 //
-
-// IMPORTANT NOTE!!!
-//
-// The grammar is specified in such a way that only the statements rule
-// uses LBRACE and RBRACE.  Hence, we can unconditionally parse a
-// statements when we encounters a LBRACE.
-//
-// This enables the parser to parse the source in piecemeal manner, which
-// enables the parser to collect more parse errors on a single run.
-//
-// Post analysis is needed to ensure statements are valid for the specific
-// context.
-//
-// Note: statements's value type can be either the statements's
-// real value type, i.e., *StatementsExpr, or PARSE_ERROR's value type,
-// i.e., *ParseErrorSymbol
-statements<Expression> -> LBRACE statement_list RBRACE
-
-statements_or_parse_error<Expression> ->
-  = statements |
-  = parse_error_expr
-
-proper_statement_list<StatementsExpr> ->
-  add_implicit: proper_statement_list NEWLINES statement |
-  add_explicit: proper_statement_list SEMICOLON statement |
-  statement
-
-statement_list<StatementsExpr> ->
-  = proper_statement_list |
-  improper_implicit: proper_statement_list NEWLINES |
-  improper_explicit: proper_statement_list SEMICOLON |
-  nil:
 
 // The subset of simple statement that is usable within a traditional style
 // for loop (plus the option to not have any statement).  In particular, the
@@ -365,23 +333,79 @@ case_enum_pattern<Expression> ->
   enum_decl_var_pattern: var_type DOT IDENTIFIER tuple_pattern
 
 //
-// Expressions ================================================================
+// Expressions (in decrasing order precedence) ================================
 //
 
-simple_expr<Expression> ->
-  = send_recv_expr |
-  // NOTE: *_pattern are not a real expression.  Unexpected usage in real
-  // expressions are rejected during type checking.
-  = decl_var_pattern |
-  = assign_var_pattern
-
-expr<Expression> ->
-  = simple_expr |
-  = loop_expr
-
 //
-// If control flow expression
+// Atom expressions
 //
+
+atom_expr<Expression> ->
+  = parse_error_expr |
+  = literal_expr |
+  = named_expr |
+  = anonymous_func_expr |
+  = initialize_expr |
+  = implicit_struct_expr |
+  = statements_expr |
+  = if_expr |
+  = switch_expr |
+  = select_expr
+
+parse_error_expr<Expression> -> PARSE_ERROR
+
+literal_expr<Expression> ->
+  TRUE |
+  FALSE |
+  INTEGER_LITERAL |
+  FLOAT_LITERAL |
+  RUNE_LITERAL |
+  STRING_LITERAL
+
+named_expr<Expression> ->
+  IDENTIFIER |
+  UNDERSCORE
+
+initialize_expr<Expression> -> initializable_type_expr LPAREN arguments RPAREN
+
+implicit_struct_expr<Expression> -> LPAREN arguments RPAREN
+
+statements_expr<Expression> ->
+  = statements |
+  labelled: LABEL_DECL statements_or_parse_error
+
+// IMPORTANT NOTE!!!
+//
+// The grammar is specified in such a way that only the statements rule
+// uses LBRACE and RBRACE.  Hence, we can unconditionally parse a
+// statements when we encounters a LBRACE.
+//
+// This enables the parser to parse the source in piecemeal manner, which
+// enables the parser to collect more parse errors on a single run.
+//
+// Post analysis is needed to ensure statements are valid for the specific
+// context.
+//
+// Note: statements's value type can be either the statements's
+// real value type, i.e., *StatementsExpr, or PARSE_ERROR's value type,
+// i.e., *ParseErrorSymbol
+statements<Expression> -> LBRACE statement_list RBRACE
+
+statements_or_parse_error<Expression> ->
+  = statements |
+  = parse_error_expr
+
+proper_statement_list<StatementsExpr> ->
+  add_implicit: proper_statement_list NEWLINES statement |
+  add_explicit: proper_statement_list SEMICOLON statement |
+  statement
+
+statement_list<StatementsExpr> ->
+  = proper_statement_list |
+  improper_implicit: proper_statement_list NEWLINES |
+  improper_explicit: proper_statement_list SEMICOLON |
+  nil:
+
 
 // NOTE: label is applied to the entire if expression rather than individual
 // branches.
@@ -406,12 +430,8 @@ condition<Expression> ->
 
 case_assign_expr<Expression> -> CASE case_assign_pattern
 
-//
-// Switch control flow expression
-//
-
 // match patterns within the same case must all have identical variable binding
-
+//
 // Allow fallthrough iff the next case have identical (and fewer) variable
 // bindings.
 //
@@ -433,10 +453,6 @@ switch_expr<Expression> ->
 
 switch_expr_body<Expression> -> SWITCH simple_expr statements_or_parse_error
 
-//
-// Select control flow expression
-//
-
 select_expr<Expression> ->
   = select_expr_body |
   labelled: LABEL_DECL select_expr_body
@@ -444,35 +460,24 @@ select_expr<Expression> ->
 select_expr_body<Expression> -> SELECT statements_or_parse_error
 
 //
-// For control flow expression
+// Accessible expressions
 //
 
-// NOTE: Since we use {} for expression grouping, we need the extra DO keyword
-// to help the parser figure out which block is the loop's body.
-loop_expr<Expression> ->
-  = loop_expr_body |
-  labelled: LABEL_DECL loop_expr_body
+accessible_expr<Expression> ->
+  = atom_expr |
+  = access_expr |
+  = call_expr |
+  = index_expr |
+  = as_expr
 
-loop_expr_body<Expression> ->
-  infinite: loop_body |
-  do_while: loop_body FOR simple_expr |
-  while: FOR simple_expr loop_body |
-  iterator: FOR expr_assign_pattern IN simple_expr loop_body |
-  for: FOR optional_simple_statement SEMICOLON optional_simple_expr SEMICOLON optional_simple_statement loop_body
+access_expr<Expression> -> accessible_expr DOT IDENTIFIER
 
-optional_simple_statement<Statement> ->
-  = simple_statement |
-  nil:
+// Note: post analysis need to check to ensure argument either a positional
+// or colon expressions argument.
+index_expr<Expression> -> accessible_expr LBRACKET argument RBRACKET
 
-optional_simple_expr<Expression> ->
-  = simple_expr |
-  nil:
-
-loop_body<Expression> -> DO statements_or_parse_error
-
-//
-// Call expression
-//
+// eqv to golang's "s, ok := expr.(SomeType)".
+as_expr<Expression> -> accessible_expr DOT AS LPAREN type_expr RPAREN
 
 call_expr<Expression> ->
   accessible_expr generic_arguments LPAREN arguments RPAREN
@@ -508,68 +513,22 @@ colon_expr<ColonExpr> ->
   colon_expr_expr_tuple: colon_expr COLON expr
 
 //
-// Simple expressions (in decreasing order precedence)
+// Postfixable expressions
 //
-
-atom_expr<Expression> ->
-  = parse_error_expr |
-  = literal_expr |
-  = named_expr |
-  = anonymous_func_expr |
-  = initialize_expr |
-  = implicit_struct_expr |
-  = statements_expr |
-  = if_expr |
-  = switch_expr |
-  = select_expr
-
-parse_error_expr<Expression> -> PARSE_ERROR
-
-literal_expr<Expression> ->
-  TRUE |
-  FALSE |
-  INTEGER_LITERAL |
-  FLOAT_LITERAL |
-  RUNE_LITERAL |
-  STRING_LITERAL
-
-named_expr<Expression> ->
-  IDENTIFIER |
-  UNDERSCORE
-
-statements_expr<Expression> ->
-  = statements |
-  labelled: LABEL_DECL statements_or_parse_error
-
-initialize_expr<Expression> -> initializable_type_expr LPAREN arguments RPAREN
-
-implicit_struct_expr<Expression> -> LPAREN arguments RPAREN
-
-accessible_expr<Expression> ->
-  = atom_expr |
-  = access_expr |
-  = call_expr |
-  = index_expr |
-  = as_expr
-
-access_expr<Expression> -> accessible_expr DOT IDENTIFIER
-
-// Note: post analysis need to check to ensure argument either a positional
-// or colon expressions argument.
-index_expr<Expression> -> accessible_expr LBRACKET argument RBRACKET
-
-// eqv to golang's "s, ok := expr.(SomeType)".
-as_expr<Expression> -> accessible_expr DOT AS LPAREN type_expr RPAREN
 
 postfixable_expr<Expression> ->
   = accessible_expr |
   = postfix_unary_expr
 
+postfix_unary_expr<Expression> -> accessible_expr postfix_unary_op
+
 postfix_unary_op<Value> ->
   = QUESTION |
   = EXCLAIM
 
-postfix_unary_expr<Expression> -> accessible_expr postfix_unary_op
+//
+// Prefixable expressions
+//
 
 prefixable_expr<Expression> ->
   = postfixable_expr |
@@ -607,6 +566,10 @@ prefix_unary_op<Value> ->
   = ASYNC |
   = DEFER
 
+//
+// Mul expressions
+//
+
 mul_expr<Expression> ->
   = prefixable_expr |
   = binary_mul_expr
@@ -621,6 +584,10 @@ mul_op<Value> ->
   = BIT_LSHIFT |
   = BIT_RSHIFT
 
+//
+// Add expressions
+//
+
 add_expr<Expression> ->
   = mul_expr |
   = binary_add_expr
@@ -632,6 +599,10 @@ add_op<Value> ->
   = SUB |
   = BIT_OR |
   = BIT_XOR
+
+//
+// Cmp expressions
+//
 
 cmp_expr<Expression> ->
   = add_expr |
@@ -647,17 +618,29 @@ cmp_op<Value> ->
   = GREATER |
   = GREATER_OR_EQUAL
 
+//
+// And expressions
+//
+
 and_expr<Expression> ->
   = cmp_expr |
   = binary_and_expr
 
 binary_and_expr<Expression> -> and_expr AND cmp_expr
 
+//
+// Or expressions
+//
+
 or_expr<Expression> ->
   = and_expr |
   = binary_or_expr
 
 binary_or_expr<Expression> -> or_expr OR and_expr
+
+//
+// Send/recv expressions
+//
 
 send_recv_expr<Expression> ->
   = or_expr |
@@ -667,6 +650,48 @@ send_recv_expr<Expression> ->
 send_expr<Expression> -> send_recv_expr ARROW or_expr
 
 recv_expr<Expression> -> ARROW or_expr
+
+//
+// Simple expressions
+//
+
+simple_expr<Expression> ->
+  = send_recv_expr |
+  // NOTE: *_pattern are not a real expression.  Unexpected usage in real
+  // expressions are rejected during type checking.
+  = decl_var_pattern |
+  = assign_var_pattern
+
+//
+// (loop) expressions
+//
+
+expr<Expression> ->
+  = simple_expr |
+  = loop_expr
+
+// NOTE: Since we use {} for expression grouping, we need the extra DO keyword
+// to help the parser figure out which block is the loop's body.
+loop_expr<Expression> ->
+  = loop_expr_body |
+  labelled: LABEL_DECL loop_expr_body
+
+loop_expr_body<Expression> ->
+  infinite: loop_body |
+  do_while: loop_body FOR simple_expr |
+  while: FOR simple_expr loop_body |
+  iterator: FOR expr_assign_pattern IN simple_expr loop_body |
+  for: FOR optional_simple_statement SEMICOLON optional_simple_expr SEMICOLON optional_simple_statement loop_body
+
+optional_simple_statement<Statement> ->
+  = simple_statement |
+  nil:
+
+optional_simple_expr<Expression> ->
+  = simple_expr |
+  nil:
+
+loop_body<Expression> -> DO statements_or_parse_error
 
 //
 // Types ======================================================================
