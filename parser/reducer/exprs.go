@@ -1118,14 +1118,14 @@ func (reducer *Reducer) ForToLoopExprBody(
 	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
 }
 
-func (reducer *Reducer) NilToOptionalSequenceStatement() (
+func (reducer *Reducer) NilToOptionalSimpleStatement() (
 	ast.Statement,
 	error,
 ) {
 	return nil, nil
 }
 
-func (reducer *Reducer) NilToOptionalSequenceExpr() (
+func (reducer *Reducer) NilToOptionalSimpleExpr() (
 	ast.Expression,
 	error,
 ) {

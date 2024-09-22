@@ -128,9 +128,9 @@ statement_list<StatementsExpr> ->
 // The subset of simple statement that is usable within a traditional style
 // for loop (plus the option to not have any statement).  In particular, the
 // subset does not include any branching expressions.
-sequence_statement<Statement> ->
+simple_statement<Statement> ->
   = unsafe_statement |
-  = sequence_expr |
+  = simple_expr |
   = expr_assign_statement |
   = unary_op_assign_statement |
   = binary_op_assign_statement
@@ -141,21 +141,20 @@ statement<Statement> ->
   // NOTE: Only applicable to package_def
   = import_statement |
 
+  // Note: Only applicable to switch / select body
+  = branch_statement |
+
   // NOTE: The following are only applicable in expression blocks
 
   = expr_or_improper_expr_struct |
   = jump_statement |
+
   // NOTE: variable declaration without assignment is parsed as an expression.
-  //
-  // NOTE: package level assign pattern must be a var/let declaration
-  = expr_assign_statement |
   // NOTE: assignment can only operate on proper address values.  Additional
   // checks are applied during post analysis.
+  = expr_assign_statement |
   = unary_op_assign_statement |
-  = binary_op_assign_statement |
-
-  // Note: Only applicable to switch / select body
-  = branch_statement
+  = binary_op_assign_statement
 
 branch_statement<Statement> ->
   // NOTE: case_branch and default_branch are applicable only to switch and
@@ -181,8 +180,8 @@ expr_or_improper_expr_struct<Expression> ->
 // improper in the sense that the expression list is not bounded by '(' and ')'
 
 improper_expr_struct<ImplicitStruct> ->
-  pair: sequence_expr COMMA sequence_expr |
-  add: improper_expr_struct COMMA sequence_expr
+  pair: simple_expr COMMA simple_expr |
+  add: improper_expr_struct COMMA simple_expr
 
 //
 // Unsafe statement
@@ -307,7 +306,7 @@ field_var_pattern<Argument> ->
 // only operate on proper address values)
 
 expr_assign_pattern<Expression> ->
-  = sequence_expr |
+  = simple_expr |
   = improper_expr_struct
 
 case_patterns<ExpressionList> ->
@@ -319,13 +318,13 @@ case_patterns<ExpressionList> ->
 // case_assign_pattern has two distinct semantic usage
 //
 // When used in a select statement, switchable_case_patterns must be an
-// valid assign_pattern and sequence_expr must be either a send_expr or an
+// valid assign_pattern and simple_expr must be either a send_expr or an
 // recv_expr.
 //
-// When used in a if case condition, the sequence_expr is matched against
+// When used in a if case condition, the simple_expr is matched against
 // the switchable_case_patterns.
 case_assign_pattern<CaseAssignPattern> ->
-  switchable_case_patterns ASSIGN sequence_expr
+  switchable_case_patterns ASSIGN simple_expr
 
 switchable_case_patterns<ExpressionList> ->
   switchable_case_pattern |
@@ -369,7 +368,7 @@ case_enum_pattern<Expression> ->
 // Expressions ================================================================
 //
 
-sequence_expr<Expression> ->
+simple_expr<Expression> ->
   = send_recv_expr |
   // NOTE: *_pattern are not a real expression.  Unexpected usage in real
   // expressions are rejected during type checking.
@@ -377,10 +376,7 @@ sequence_expr<Expression> ->
   = assign_var_pattern
 
 expr<Expression> ->
-  = sequence_expr |
-  = if_expr |
-  = switch_expr |
-  = select_expr |
+  = simple_expr |
   = loop_expr
 
 //
@@ -405,7 +401,7 @@ if_only_expr<IfExpr> ->
   IF condition statements_or_parse_error
 
 condition<Expression> ->
-  = sequence_expr |
+  = simple_expr |
   = case_assign_expr
 
 case_assign_expr<Expression> -> CASE case_assign_pattern
@@ -435,7 +431,7 @@ switch_expr<Expression> ->
   = switch_expr_body |
   labelled: LABEL_DECL switch_expr_body
 
-switch_expr_body<Expression> -> SWITCH sequence_expr statements_or_parse_error
+switch_expr_body<Expression> -> SWITCH simple_expr statements_or_parse_error
 
 //
 // Select control flow expression
@@ -453,28 +449,23 @@ select_expr_body<Expression> -> SELECT statements_or_parse_error
 
 // NOTE: Since we use {} for expression grouping, we need the extra DO keyword
 // to help the parser figure out which block is the loop's body.
-//
-// For example, suppose the infinite loop grammar is "FOR body_expr" and
-// the while loop grammar is "FOR sequence_expr body_expr".  Then the while
-// loop can be interpreted as an infinite loop "FOR sequence_expr", followed by
-// an sequence statement "body_expr".
 loop_expr<Expression> ->
   = loop_expr_body |
   labelled: LABEL_DECL loop_expr_body
 
 loop_expr_body<Expression> ->
   infinite: loop_body |
-  do_while: loop_body FOR sequence_expr |
-  while: FOR sequence_expr loop_body |
-  iterator: FOR expr_assign_pattern IN sequence_expr loop_body |
-  for: FOR optional_sequence_statement SEMICOLON optional_sequence_expr SEMICOLON optional_sequence_statement loop_body
+  do_while: loop_body FOR simple_expr |
+  while: FOR simple_expr loop_body |
+  iterator: FOR expr_assign_pattern IN simple_expr loop_body |
+  for: FOR optional_simple_statement SEMICOLON optional_simple_expr SEMICOLON optional_simple_statement loop_body
 
-optional_sequence_statement<Statement> ->
-  = sequence_statement |
+optional_simple_statement<Statement> ->
+  = simple_statement |
   nil:
 
-optional_sequence_expr<Expression> ->
-  = sequence_expr |
+optional_simple_expr<Expression> ->
+  = simple_expr |
   nil:
 
 loop_body<Expression> -> DO statements_or_parse_error
@@ -524,10 +515,13 @@ atom_expr<Expression> ->
   = parse_error_expr |
   = literal_expr |
   = named_expr |
-  = statements_expr |
   = anonymous_func_expr |
   = initialize_expr |
-  = implicit_struct_expr
+  = implicit_struct_expr |
+  = statements_expr |
+  = if_expr |
+  = switch_expr |
+  = select_expr
 
 parse_error_expr<Expression> -> PARSE_ERROR
 
