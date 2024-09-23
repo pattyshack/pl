@@ -103,12 +103,9 @@ simple_statement<Statement> ->
 
   = assignable_expr |
 
-  // NOTE: variable declaration without assignment is parsed as an expression.
   // NOTE: assignment can only operate on proper address values.  Additional
   // checks are applied during post analysis.
-  = expr_assign_statement |
-  = unary_op_assign_statement |
-  = binary_op_assign_statement
+  = expr_assign_statement
 
 statement<Statement> ->
   = simple_statement |
@@ -172,27 +169,6 @@ jump_op<Value> ->
 //
 
 expr_assign_statement<Statement> -> assignable_expr ASSIGN expr
-
-unary_op_assign_statement<Statement> -> simple_expr unary_op_assign
-
-unary_op_assign<Value> ->
-  = ADD_ONE_ASSIGN |
-  = SUB_ONE_ASSIGN
-
-binary_op_assign_statement<Statement> -> simple_expr binary_op_assign expr
-
-binary_op_assign<Value> ->
-  = ADD_ASSIGN |
-  = SUB_ASSIGN |
-  = MUL_ASSIGN |
-  = DIV_ASSIGN |
-  = MOD_ASSIGN |
-  = BIT_NEG_ASSIGN |
-  = BIT_AND_ASSIGN |
-  = BIT_OR_ASSIGN |
-  = BIT_XOR_ASSIGN |
-  = BIT_LSHIFT_ASSIGN |
-  = BIT_RSHIFT_ASSIGN
 
 //
 // Import statement
@@ -509,7 +485,12 @@ postfix_unary_expr<Expression> -> accessible_expr postfix_unary_op
 
 postfix_unary_op<Value> ->
   = QUESTION |
-  = EXCLAIM
+  = EXCLAIM |
+  // NOTE: expr++ and expr-- evaluates to unit and are not generally nestible.
+  // NOTE: expr++ and expr-- can only operate on proper address values.
+  // Additional checks are applied during post analysis.
+  = ADD_ONE_ASSIGN |
+  = SUB_ONE_ASSIGN
 
 //
 // Prefixable expressions
@@ -637,11 +618,37 @@ send_expr<Expression> -> send_recv_expr ARROW or_expr
 recv_expr<Expression> -> ARROW or_expr
 
 //
+// Assign op expressions
+//
+
+// NOTE: assignment can only operate on proper address values.  Additional
+// checks are applied during post analysis.
+assign_op_expr<Expression> ->
+  = send_recv_expr |
+  = binary_assign_op_expr
+
+binary_assign_op_expr<Expression> ->
+  send_recv_expr binary_assign_op send_recv_expr
+
+binary_assign_op<Value> ->
+  = ADD_ASSIGN |
+  = SUB_ASSIGN |
+  = MUL_ASSIGN |
+  = DIV_ASSIGN |
+  = MOD_ASSIGN |
+  = BIT_NEG_ASSIGN |
+  = BIT_AND_ASSIGN |
+  = BIT_OR_ASSIGN |
+  = BIT_XOR_ASSIGN |
+  = BIT_LSHIFT_ASSIGN |
+  = BIT_RSHIFT_ASSIGN
+
+//
 // Simple expressions
 //
 
 simple_expr<Expression> ->
-  = send_recv_expr |
+  = assign_op_expr |
   // NOTE: *_pattern are not a real expression.  Unexpected usage in real
   // expressions are rejected during type checking.
   = decl_var_pattern |

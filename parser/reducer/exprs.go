@@ -202,16 +202,6 @@ func (reducer *Reducer) ToRecvExpr(
 	return reducer.toPrefixUnaryExpr(arrow, expr), nil
 }
 
-func (reducer *Reducer) ToUnaryOpAssignStatement(
-	operand ast.Expression,
-	op *lr.TokenValue,
-) (
-	ast.Statement,
-	error,
-) {
-	return reducer.toPostfixUnaryExpr(operand, op), nil
-}
-
 //
 // BinaryExpr
 //
@@ -303,12 +293,12 @@ func (reducer *Reducer) ToSendExpr(
 	return reducer.toBinaryExpr(receiver, arrow, expr), nil
 }
 
-func (reducer *Reducer) ToBinaryOpAssignStatement(
+func (reducer *Reducer) ToBinaryAssignOpExpr(
 	address ast.Expression,
 	op *lr.TokenValue,
 	value ast.Expression,
 ) (
-	ast.Statement,
+	ast.Expression,
 	error,
 ) {
 	return reducer.toBinaryExpr(address, op, value), nil
