@@ -199,11 +199,6 @@ decl_var_pattern<Expression> ->
   inferred: var_type var_pattern |
   typed: var_type var_pattern type_expr
 
-// Case pattern need to disambiguate between using a variable for pattern
-// matching vs assigning values to variables (This is optional in assign
-// statement since it's unambiguous)
-assign_var_pattern<Expression> -> GREATER var_pattern
-
 var_type<Value> ->
   = VAR |
   = LET
@@ -426,7 +421,16 @@ prefix_unary_op<Value> ->
   // NOTE: call_expr's accessible_expr and its arguments are evaluated
   // immediately. Only the call itself is applicable to the callback_op.
   = ASYNC |
-  = DEFER
+  = DEFER |
+  // NOTE: "assign to", aka unary GREATER, operator is not a real expression.
+  //
+  // This is only used by case pattern, which need to disambiguate between
+  // using an expression for pattern matching vs assigning values to evaluated
+  // expression address (This is optional in assign statement since it's
+  // unambiguous).
+  //
+  // Unexpected usage in real expressions are rejected.
+  = GREATER
 
 //
 // Mul expressions
@@ -552,8 +556,7 @@ simple_expr<Expression> ->
   = loop_expr |
   // NOTE: *_pattern are not a real expression.  Unexpected usage in real
   // expressions are rejected during type checking.
-  = decl_var_pattern |
-  = assign_var_pattern
+  = decl_var_pattern
 
 statements_expr<Expression> ->
   = statements |

@@ -30,16 +30,6 @@ func (Reducer) TypedToDeclVarPattern(
 	return ast.NewVarPattern(varType, pattern, typeExpr), nil
 }
 
-func (Reducer) ToAssignVarPattern(
-	varType *lr.TokenValue,
-	pattern ast.Expression,
-) (
-	ast.Expression,
-	error,
-) {
-	return ast.NewVarPattern(varType, pattern, nil), nil
-}
-
 //
 // ExpressionList
 //
