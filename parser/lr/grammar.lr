@@ -98,13 +98,20 @@ floating_comment<Definition> -> COMMENT_GROUPS
 // subset does not include any branching expressions.
 simple_statement<Statement> ->
   = unsafe_statement |
-  = simple_expr |
+
+  // NOTE: The following are only applicable in expression blocks
+
+  = assignable_expr |
+
+  // NOTE: variable declaration without assignment is parsed as an expression.
+  // NOTE: assignment can only operate on proper address values.  Additional
+  // checks are applied during post analysis.
   = expr_assign_statement |
   = unary_op_assign_statement |
   = binary_op_assign_statement
 
 statement<Statement> ->
-  = unsafe_statement |
+  = simple_statement |
 
   // NOTE: Only applicable to package_def
   = import_statement |
@@ -114,15 +121,11 @@ statement<Statement> ->
 
   // NOTE: The following are only applicable in expression blocks
 
-  = expr |
   = jump_statement |
 
-  // NOTE: variable declaration without assignment is parsed as an expression.
-  // NOTE: assignment can only operate on proper address values.  Additional
-  // checks are applied during post analysis.
-  = expr_assign_statement |
-  = unary_op_assign_statement |
-  = binary_op_assign_statement
+  // NOTE: the assignable_expr clause in simple_statement and loop_expr clause
+  // here together are equivalent to the expr rule
+  = loop_expr
 
 branch_statement<Statement> ->
   // NOTE: case_branch and default_branch are applicable only to switch and
@@ -661,6 +664,8 @@ improper_expr_struct<ImplicitStruct> ->
 // (loop) expressions
 //
 
+// WARNING: all changes to this rule must have corresponding changes to the
+// (simple_)statement rule.
 expr<Expression> ->
   = assignable_expr |
   = loop_expr
