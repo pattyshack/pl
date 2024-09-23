@@ -96,19 +96,8 @@ floating_comment<Definition> -> COMMENT_GROUPS
 // The subset of simple statement that is usable within a traditional style
 // for loop (plus the option to not have any statement).  In particular, the
 // subset does not include any branching expressions.
-simple_statement<Statement> ->
-  = unsafe_statement |
-
-  // NOTE: The following are only applicable in expression blocks
-
-  = assignable_expr |
-
-  // NOTE: assignment can only operate on proper address values.  Additional
-  // checks are applied during post analysis.
-  = expr_assign_statement
-
 statement<Statement> ->
-  = simple_statement |
+  = unsafe_statement |
 
   // NOTE: Only applicable to package_def
   = import_statement |
@@ -118,11 +107,12 @@ statement<Statement> ->
 
   // NOTE: The following are only applicable in expression blocks
 
+  = expr |
   = jump_statement |
 
-  // NOTE: the assignable_expr clause in simple_statement and loop_expr clause
-  // here together are equivalent to the expr rule
-  = loop_expr
+  // NOTE: assignment can only operate on proper address values.  Additional
+  // checks are applied during post analysis.
+  = expr_assign_statement
 
 branch_statement<Statement> ->
   // NOTE: case_branch and default_branch are applicable only to switch and
@@ -671,8 +661,6 @@ improper_expr_struct<ImplicitStruct> ->
 // (loop) expressions
 //
 
-// WARNING: all changes to this rule must have corresponding changes to the
-// (simple_)statement rule.
 expr<Expression> ->
   = assignable_expr |
   = loop_expr
@@ -688,10 +676,10 @@ loop_expr_body<Expression> ->
   do_while: repeat_loop_body FOR simple_expr |
   while: FOR simple_expr for_loop_body |
   iterator: FOR assignable_expr IN simple_expr for_loop_body |
-  for: FOR optional_simple_statement SEMICOLON optional_simple_expr SEMICOLON optional_simple_statement for_loop_body
+  for: FOR optional_statement SEMICOLON optional_simple_expr SEMICOLON optional_statement for_loop_body
 
-optional_simple_statement<Statement> ->
-  = simple_statement |
+optional_statement<Statement> ->
+  = statement |
   nil:
 
 optional_simple_expr<Expression> ->
