@@ -202,6 +202,72 @@ func (parser *sourceParser) pruneUnreachableStatements(
 	}
 }
 
+func (parser *sourceParser) rejectUnexpectedStatements() {
+	pkgBodies := map[*ast.StatementsExpr]struct{}{}
+	for _, pkg := range parser.PackageDefs {
+		pkgBodies[pkg.Body] = struct{}{}
+	}
+
+	branchBodies := map[*ast.StatementsExpr]struct{}{}
+	for _, switchExpr := range parser.SwitchExprs {
+		branchBodies[switchExpr.Branches] = struct{}{}
+	}
+	for _, selectExpr := range parser.SelectExprs {
+		branchBodies[selectExpr.Branches] = struct{}{}
+	}
+
+	for _, stmts := range parser.StatementsExprs {
+		for idx, stmt := range stmts.Elements {
+			switch stmt.(type) {
+			case *ast.UnsafeStatement:
+				// usable by all
+			case *ast.ParseErrorNode:
+				// usable by all
+			case *ast.ImportStatement:
+				_, ok := pkgBodies[stmts]
+				if ok {
+					continue
+				}
+				err := fmt.Errorf("unexpected import statement: %s", stmt.Loc())
+				parser.ParseErrors = append(parser.ParseErrors, err)
+				stmts.Elements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
+
+			case *ast.BranchStatement:
+				_, ok := branchBodies[stmts]
+				if ok {
+					continue
+				}
+				err := fmt.Errorf("unexpected branch statement: %s", stmt.Loc())
+				parser.ParseErrors = append(parser.ParseErrors, err)
+				stmts.Elements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
+
+			case *ast.JumpStatement:
+				_, isPkg := pkgBodies[stmts]
+				_, isBranch := branchBodies[stmts]
+				if !isPkg && !isBranch {
+					continue
+				}
+				err := fmt.Errorf("unexpected jump statement: %s", stmt.Loc())
+				parser.ParseErrors = append(parser.ParseErrors, err)
+				stmts.Elements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
+
+			case ast.Expression:
+				_, isPkg := pkgBodies[stmts]
+				_, isBranch := branchBodies[stmts]
+				if !isPkg && !isBranch {
+					continue
+				}
+				err := fmt.Errorf("unexpected expression statement: %s", stmt.Loc())
+				parser.ParseErrors = append(parser.ParseErrors, err)
+				stmts.Elements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
+
+			default:
+				panic(fmt.Sprintf("unexpected statement type: %v", stmt))
+			}
+		}
+	}
+}
+
 func (parser *sourceParser) analyze() {
 	for _, expr := range parser.SwitchExprs {
 		parser.groupCaseStatements(expr.Branches)
@@ -214,6 +280,8 @@ func (parser *sourceParser) analyze() {
 	for _, stmts := range parser.StatementsExprs {
 		parser.pruneUnreachableStatements(stmts)
 	}
+
+	parser.rejectUnexpectedStatements()
 }
 
 func (parser *sourceParser) parseSource() (

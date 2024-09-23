@@ -1,6 +1,6 @@
 select {
   bad
-case val i = <-sender:
+case var i = <-sender:
   fmt.Println("received")
   fmt.Println(i)
 case receiver <- foo():

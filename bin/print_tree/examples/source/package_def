@@ -1,0 +1,19 @@
+package {
+  import (
+    "fmt"
+    _ "io"
+    . "context"
+    sys "os"
+  )
+
+  1 + 2
+  unsafe<go>"blah"
+
+  case 1:  fmt.Println()
+
+  import "bytes"
+
+  x = y
+
+  return 5
+}

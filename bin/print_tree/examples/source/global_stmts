@@ -1,0 +1,13 @@
+{
+  import "fmt" // invalid
+
+  1 + 2
+
+  case 5: blah  // invalid
+
+  stuff
+
+  break
+
+  unreachable * code
+}
