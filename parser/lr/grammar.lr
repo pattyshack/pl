@@ -158,7 +158,11 @@ jump_op<Value> ->
 // Assignment statements
 //
 
-expr_assign_statement<Statement> -> assignable_expr ASSIGN expr
+// NOTE: expr captures identifier and tuple vars, as well as fully evaluated
+// expressions.  Additional post analysis checks are needed to reject
+// invalid usage, depending on the context (e.g., assignment should only
+// operate on proper address values)
+expr_assign_statement<Statement> -> expr ASSIGN expr
 
 //
 // Import statement
@@ -222,11 +226,6 @@ field_var_pattern<Argument> ->
   positional: var_pattern |
   named_assignment: IDENTIFIER ASSIGN var_pattern |
   skip_pattern: ELLIPSIS
-
-// NOTE: assignable_expr captures identifier and tuple vars, as well as fully
-// evaluated expressions.  Additional post analysis checks are needed to reject
-// invalid usage, depending on the context (e.g., assignment should only
-// operate on proper address values)
 
 case_patterns<ExpressionList> ->
   // In select expr, must verify the list has exactly one recv or send
@@ -297,11 +296,7 @@ atom_expr<Expression> ->
   = named_expr |
   = anonymous_func_expr |
   = initialize_expr |
-  = implicit_struct_expr |
-  = statements_expr |
-  = if_expr |
-  = switch_expr |
-  = select_expr
+  = implicit_struct_expr
 
 parse_error_expr<Expression> -> PARSE_ERROR
 
@@ -639,16 +634,21 @@ binary_assign_op<Value> ->
 
 simple_expr<Expression> ->
   = assign_op_expr |
+  = statements_expr |
+  = if_expr |
+  = switch_expr |
+  = select_expr |
+  = loop_expr |
   // NOTE: *_pattern are not a real expression.  Unexpected usage in real
   // expressions are rejected during type checking.
   = decl_var_pattern |
   = assign_var_pattern
 
 //
-// Assignable expressions
+// expressions
 //
 
-assignable_expr<Expression> ->
+expr<Expression> ->
   = simple_expr |
   = improper_expr_struct
 
@@ -656,14 +656,6 @@ assignable_expr<Expression> ->
 improper_expr_struct<ImplicitStruct> ->
   pair: simple_expr COMMA simple_expr |
   add: improper_expr_struct COMMA simple_expr
-
-//
-// (loop) expressions
-//
-
-expr<Expression> ->
-  = assignable_expr |
-  = loop_expr
 
 // NOTE: Since we use {} for expression grouping, we need the extra DO keyword
 // to help the parser figure out which block is the loop's body.
@@ -675,7 +667,7 @@ loop_expr_body<Expression> ->
   infinite: repeat_loop_body |
   do_while: repeat_loop_body FOR simple_expr |
   while: FOR simple_expr for_loop_body |
-  iterator: FOR assignable_expr IN simple_expr for_loop_body |
+  iterator: FOR expr IN simple_expr for_loop_body |
   for: FOR optional_statement SEMICOLON optional_simple_expr SEMICOLON optional_statement for_loop_body
 
 optional_statement<Statement> ->
