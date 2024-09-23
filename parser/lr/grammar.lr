@@ -114,7 +114,7 @@ statement<Statement> ->
 
   // NOTE: The following are only applicable in expression blocks
 
-  = expr_or_improper_expr_struct |
+  = expr |
   = jump_statement |
 
   // NOTE: variable declaration without assignment is parsed as an expression.
@@ -138,20 +138,6 @@ trailing_statement<StatementsExpr> ->
   nil:
 
 //
-// expression / improper struct statement
-//
-
-expr_or_improper_expr_struct<Expression> ->
-  = expr |
-  = improper_expr_struct
-
-// improper in the sense that the expression list is not bounded by '(' and ')'
-
-improper_expr_struct<ImplicitStruct> ->
-  pair: simple_expr COMMA simple_expr |
-  add: improper_expr_struct COMMA simple_expr
-
-//
 // Unsafe statement
 //
 
@@ -166,9 +152,9 @@ unsafe_statement<UnsafeStatement> ->
 
 jump_statement<Statement> ->
   unlabeled_no_value: jump_op |
-  unlabeled_valued: jump_op expr_or_improper_expr_struct |
+  unlabeled_valued: jump_op expr |
   labeled_no_value: jump_op JUMP_LABEL |
-  labeled_valued: jump_op JUMP_LABEL expr_or_improper_expr_struct |
+  labeled_valued: jump_op JUMP_LABEL expr |
   // Only applicable to switch case block (must be the last statement in the
   // case branch)
   FALLTHROUGH
@@ -182,15 +168,15 @@ jump_op<Value> ->
 // Assignment statements
 //
 
-expr_assign_statement<Statement> -> expr_assign_pattern ASSIGN expr
+expr_assign_statement<Statement> -> assignable_expr ASSIGN expr
 
-unary_op_assign_statement<Statement> -> accessible_expr unary_op_assign
+unary_op_assign_statement<Statement> -> simple_expr unary_op_assign
 
 unary_op_assign<Value> ->
   = ADD_ONE_ASSIGN |
   = SUB_ONE_ASSIGN
 
-binary_op_assign_statement<Statement> -> accessible_expr binary_op_assign expr
+binary_op_assign_statement<Statement> -> simple_expr binary_op_assign expr
 
 binary_op_assign<Value> ->
   = ADD_ASSIGN |
@@ -268,14 +254,10 @@ field_var_pattern<Argument> ->
   named_assignment: IDENTIFIER ASSIGN var_pattern |
   skip_pattern: ELLIPSIS
 
-// NOTE: *_expr_assign_pattern captures identifier and tuple vars, as well as
-// fully evaluated expressions.  Additional post analysis checks are needed to
-// reject invalid usage, depending on the context (e.g., assignment should
-// only operate on proper address values)
-
-expr_assign_pattern<Expression> ->
-  = simple_expr |
-  = improper_expr_struct
+// NOTE: assignable_expr captures identifier and tuple vars, as well as fully
+// evaluated expressions.  Additional post analysis checks are needed to reject
+// invalid usage, depending on the context (e.g., assignment should only
+// operate on proper address values)
 
 case_patterns<ExpressionList> ->
   // In select expr, must verify the list has exactly one recv or send
@@ -319,7 +301,7 @@ switchable_case_patterns<ExpressionList> ->
 //   // ifExprRef refers to the same object.
 // }
 switchable_case_pattern<Expression> ->
-  = expr |
+  = simple_expr |
   = case_enum_pattern
 
 case_enum_pattern<Expression> ->
@@ -492,13 +474,13 @@ arguments<ArgumentList> ->
   nil:
 
 argument<Argument> ->
-  positional: expr |
+  positional: simple_expr |
   colon_expr |
-  named_assignment: IDENTIFIER ASSIGN expr |
+  named_assignment: IDENTIFIER ASSIGN simple_expr |
   // XXX: Under golang-style vararg assignment, the signature f(args ...int)
   // will not accept f(0, 1, x...) where x an int slice.  Maybe relax this into
   // vararg expansion instead?
-  vararg_assignment: expr ELLIPSIS |
+  vararg_assignment: simple_expr ELLIPSIS |
   // NOTE: ... is not a real expression, and is only used for pattern matching.
   // Unexpected usage in real expressions are rejected during type checking.
   skip_pattern: ELLIPSIS
@@ -506,11 +488,11 @@ argument<Argument> ->
 // An (n >= 2)-tuple expression usable only as an argument
 colon_expr<ColonExpr> ->
   unit_unit_pair: COLON |
-  expr_unit_pair: expr COLON |
-  unit_expr_pair: COLON expr |
-  expr_expr_pair: expr COLON expr |
+  expr_unit_pair: simple_expr COLON |
+  unit_expr_pair: COLON simple_expr |
+  expr_expr_pair: simple_expr COLON simple_expr |
   colon_expr_unit_tuple: colon_expr COLON |
-  colon_expr_expr_tuple: colon_expr COLON expr
+  colon_expr_expr_tuple: colon_expr COLON simple_expr
 
 //
 // Postfixable expressions
@@ -663,11 +645,24 @@ simple_expr<Expression> ->
   = assign_var_pattern
 
 //
+// Assignable expressions
+//
+
+assignable_expr<Expression> ->
+  = simple_expr |
+  = improper_expr_struct
+
+// improper in the sense that the expression list is not bounded by '(' and ')'
+improper_expr_struct<ImplicitStruct> ->
+  pair: simple_expr COMMA simple_expr |
+  add: improper_expr_struct COMMA simple_expr
+
+//
 // (loop) expressions
 //
 
 expr<Expression> ->
-  = simple_expr |
+  = assignable_expr |
   = loop_expr
 
 // NOTE: Since we use {} for expression grouping, we need the extra DO keyword
@@ -680,7 +675,7 @@ loop_expr_body<Expression> ->
   infinite: loop_body |
   do_while: loop_body FOR simple_expr |
   while: FOR simple_expr loop_body |
-  iterator: FOR expr_assign_pattern IN simple_expr loop_body |
+  iterator: FOR assignable_expr IN simple_expr loop_body |
   for: FOR optional_simple_statement SEMICOLON optional_simple_expr SEMICOLON optional_simple_statement loop_body
 
 optional_simple_statement<Statement> ->
