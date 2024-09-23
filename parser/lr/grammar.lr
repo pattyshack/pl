@@ -82,7 +82,7 @@ definition<Definition> ->
 // Global variable dependencies must be topologically sortable.
 global_var_def<Definition> ->
   = decl_var_pattern |
-  def: decl_var_pattern ASSIGN expr
+  def: decl_var_pattern ASSIGN returnable_expr
 
 // Free floating comment is not part of any other symbol. This can happen if
 // the source file only has comments, or if there are comments at the end of
@@ -90,7 +90,7 @@ global_var_def<Definition> ->
 floating_comment<Definition> -> COMMENT_GROUPS
 
 //
-// Statement
+// Statement ==================================================================
 //
 
 // The subset of simple statement that is usable within a traditional style
@@ -107,7 +107,7 @@ statement<Statement> ->
 
   // NOTE: The following are only applicable in expression blocks
 
-  = expr |
+  = returnable_expr |
   = jump_statement |
 
   // NOTE: assignment can only operate on proper address values.  Additional
@@ -142,9 +142,9 @@ unsafe_statement<UnsafeStatement> ->
 
 jump_statement<Statement> ->
   unlabeled_no_value: jump_op |
-  unlabeled_valued: jump_op expr |
+  unlabeled_valued: jump_op returnable_expr |
   labeled_no_value: jump_op JUMP_LABEL |
-  labeled_valued: jump_op JUMP_LABEL expr |
+  labeled_valued: jump_op JUMP_LABEL returnable_expr |
   // Only applicable to switch case block (must be the last statement in the
   // case branch)
   FALLTHROUGH
@@ -162,7 +162,7 @@ jump_op<Value> ->
 // expressions.  Additional post analysis checks are needed to reject
 // invalid usage, depending on the context (e.g., assignment should only
 // operate on proper address values)
-assign_statement<Statement> -> expr ASSIGN expr
+assign_statement<Statement> -> returnable_expr ASSIGN returnable_expr
 
 //
 // Import statement
@@ -231,13 +231,13 @@ case_patterns<ExpressionList> ->
 // case_assign_pattern has two distinct semantic usage
 //
 // When used in a select statement, switchable_case_patterns must be an
-// valid assign_pattern and simple_expr must be either a send_expr or an
+// valid assign_pattern and expr must be either a send_expr or an
 // recv_expr.
 //
-// When used in a if case condition, the simple_expr is matched against
+// When used in a if case condition, the expr is matched against
 // the switchable_case_patterns.
 case_assign_pattern<CaseAssignPattern> ->
-  switchable_case_patterns ASSIGN simple_expr
+  switchable_case_patterns ASSIGN expr
 
 switchable_case_patterns<ExpressionList> ->
   switchable_case_pattern |
@@ -264,7 +264,7 @@ switchable_case_patterns<ExpressionList> ->
 //   // ifExprRef refers to the same object.
 // }
 switchable_case_pattern<Expression> ->
-  = simple_expr |
+  = expr |
   = case_enum_pattern
 
 case_enum_pattern<Expression> ->
@@ -344,13 +344,13 @@ arguments<ArgumentList> ->
   nil:
 
 argument<Argument> ->
-  positional: simple_expr |
+  positional: expr |
   colon_expr |
-  named_assignment: IDENTIFIER ASSIGN simple_expr |
+  named_assignment: IDENTIFIER ASSIGN expr |
   // XXX: Under golang-style vararg assignment, the signature f(args ...int)
   // will not accept f(0, 1, x...) where x an int slice.  Maybe relax this into
   // vararg expansion instead?
-  vararg_assignment: simple_expr ELLIPSIS |
+  vararg_assignment: expr ELLIPSIS |
   // NOTE: ... is not a real expression, and is only used for pattern matching.
   // Unexpected usage in real expressions are rejected during type checking.
   skip_pattern: ELLIPSIS
@@ -358,11 +358,11 @@ argument<Argument> ->
 // An (n >= 2)-tuple expression usable only as an argument
 colon_expr<ColonExpr> ->
   unit_unit_pair: COLON |
-  expr_unit_pair: simple_expr COLON |
-  unit_expr_pair: COLON simple_expr |
-  expr_expr_pair: simple_expr COLON simple_expr |
+  expr_unit_pair: expr COLON |
+  unit_expr_pair: COLON expr |
+  expr_expr_pair: expr COLON expr |
   colon_expr_unit_tuple: colon_expr COLON |
-  colon_expr_expr_tuple: colon_expr COLON simple_expr
+  colon_expr_expr_tuple: colon_expr COLON expr
 
 //
 // Postfixable expressions
@@ -547,7 +547,7 @@ binary_assign_op<Value> ->
 // Simple expressions
 //
 
-simple_expr<Expression> ->
+expr<Expression> ->
   = assign_op_expr |
   = statements_expr |
   = if_expr |
@@ -613,7 +613,7 @@ if_only_expr<IfExpr> ->
   IF condition statements_or_parse_error
 
 condition<Expression> ->
-  = simple_expr |
+  = expr |
   = case_assign_expr
 
 case_assign_expr<Expression> -> CASE case_assign_pattern
@@ -639,7 +639,7 @@ switch_expr<Expression> ->
   = switch_expr_body |
   labelled: LABEL_DECL switch_expr_body
 
-switch_expr_body<Expression> -> SWITCH simple_expr statements_or_parse_error
+switch_expr_body<Expression> -> SWITCH expr statements_or_parse_error
 
 select_expr<Expression> ->
   = select_expr_body |
@@ -655,17 +655,17 @@ loop_expr<Expression> ->
 
 loop_expr_body<Expression> ->
   infinite: repeat_loop_body |
-  do_while: repeat_loop_body FOR simple_expr |
-  while: FOR simple_expr for_loop_body |
-  iterator: FOR expr IN simple_expr for_loop_body |
-  for: FOR optional_statement SEMICOLON optional_simple_expr SEMICOLON optional_statement for_loop_body
+  do_while: repeat_loop_body FOR expr |
+  while: FOR expr for_loop_body |
+  iterator: FOR returnable_expr IN expr for_loop_body |
+  for: FOR optional_statement SEMICOLON optional_expr SEMICOLON optional_statement for_loop_body
 
 optional_statement<Statement> ->
   = statement |
   nil:
 
-optional_simple_expr<Expression> ->
-  = simple_expr |
+optional_expr<Expression> ->
+  = expr |
   nil:
 
 repeat_loop_body<Expression> -> REPEAT statements_or_parse_error
@@ -673,17 +673,17 @@ repeat_loop_body<Expression> -> REPEAT statements_or_parse_error
 for_loop_body<Expression> -> DO statements_or_parse_error
 
 //
-// expressions
+// Returnable expressions (This is purely syntactic sugar)
 //
 
-expr<Expression> ->
-  = simple_expr |
+returnable_expr<Expression> ->
+  = expr |
   = improper_expr_struct
 
 // improper in the sense that the expression list is not bounded by '(' and ')'
 improper_expr_struct<ImplicitStruct> ->
-  pair: simple_expr COMMA simple_expr |
-  add: improper_expr_struct COMMA simple_expr
+  pair: expr COMMA expr |
+  add: improper_expr_struct COMMA expr
 
 //
 // Types ======================================================================

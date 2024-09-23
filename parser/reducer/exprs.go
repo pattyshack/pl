@@ -1115,7 +1115,7 @@ func (reducer *Reducer) NilToOptionalStatement() (
 	return nil, nil
 }
 
-func (reducer *Reducer) NilToOptionalSimpleExpr() (
+func (reducer *Reducer) NilToOptionalExpr() (
 	ast.Expression,
 	error,
 ) {

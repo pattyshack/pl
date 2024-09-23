@@ -153,7 +153,7 @@ type DefinitionsReducer interface {
 type GlobalVarDefReducer interface {
 
 	// 85:2: global_var_def -> def: ...
-	DefToGlobalVarDef(DeclVarPattern_ ast.Expression, Assign_ *TokenValue, Expr_ ast.Expression) (ast.Definition, error)
+	DefToGlobalVarDef(DeclVarPattern_ ast.Expression, Assign_ *TokenValue, ReturnableExpr_ ast.Expression) (ast.Definition, error)
 }
 
 type FloatingCommentReducer interface {
@@ -187,13 +187,13 @@ type JumpStatementReducer interface {
 	UnlabeledNoValueToJumpStatement(JumpOp_ *TokenValue) (ast.Statement, error)
 
 	// 145:2: jump_statement -> unlabeled_valued: ...
-	UnlabeledValuedToJumpStatement(JumpOp_ *TokenValue, Expr_ ast.Expression) (ast.Statement, error)
+	UnlabeledValuedToJumpStatement(JumpOp_ *TokenValue, ReturnableExpr_ ast.Expression) (ast.Statement, error)
 
 	// 146:2: jump_statement -> labeled_no_value: ...
 	LabeledNoValueToJumpStatement(JumpOp_ *TokenValue, JumpLabel_ *TokenValue) (ast.Statement, error)
 
 	// 147:2: jump_statement -> labeled_valued: ...
-	LabeledValuedToJumpStatement(JumpOp_ *TokenValue, JumpLabel_ *TokenValue, Expr_ ast.Expression) (ast.Statement, error)
+	LabeledValuedToJumpStatement(JumpOp_ *TokenValue, JumpLabel_ *TokenValue, ReturnableExpr_ ast.Expression) (ast.Statement, error)
 
 	// 150:2: jump_statement -> FALLTHROUGH: ...
 	FallthroughToJumpStatement(Fallthrough_ *TokenValue) (ast.Statement, error)
@@ -201,7 +201,7 @@ type JumpStatementReducer interface {
 
 type AssignStatementReducer interface {
 	// 165:31: assign_statement -> ...
-	ToAssignStatement(Expr_ ast.Expression, Assign_ *TokenValue, Expr_2 ast.Expression) (ast.Statement, error)
+	ToAssignStatement(ReturnableExpr_ ast.Expression, Assign_ *TokenValue, ReturnableExpr_2 ast.Expression) (ast.Statement, error)
 }
 
 type ImportStatementReducer interface {
@@ -292,7 +292,7 @@ type CasePatternsReducer interface {
 
 type CaseAssignPatternReducer interface {
 	// 240:2: case_assign_pattern -> ...
-	ToCaseAssignPattern(SwitchableCasePatterns_ *ast.ExpressionList, Assign_ *TokenValue, SimpleExpr_ ast.Expression) (*ast.CaseAssignPattern, error)
+	ToCaseAssignPattern(SwitchableCasePatterns_ *ast.ExpressionList, Assign_ *TokenValue, Expr_ ast.Expression) (*ast.CaseAssignPattern, error)
 }
 
 type SwitchableCasePatternsReducer interface {
@@ -396,16 +396,16 @@ type ArgumentsReducer interface {
 
 type ArgumentReducer interface {
 	// 347:2: argument -> positional: ...
-	PositionalToArgument(SimpleExpr_ ast.Expression) (*ast.Argument, error)
+	PositionalToArgument(Expr_ ast.Expression) (*ast.Argument, error)
 
 	// 348:2: argument -> colon_expr: ...
 	ColonExprToArgument(ColonExpr_ *ast.ColonExpr) (*ast.Argument, error)
 
 	// 349:2: argument -> named_assignment: ...
-	NamedAssignmentToArgument(Identifier_ *TokenValue, Assign_ *TokenValue, SimpleExpr_ ast.Expression) (*ast.Argument, error)
+	NamedAssignmentToArgument(Identifier_ *TokenValue, Assign_ *TokenValue, Expr_ ast.Expression) (*ast.Argument, error)
 
 	// 353:2: argument -> vararg_assignment: ...
-	VarargAssignmentToArgument(SimpleExpr_ ast.Expression, Ellipsis_ *TokenValue) (*ast.Argument, error)
+	VarargAssignmentToArgument(Expr_ ast.Expression, Ellipsis_ *TokenValue) (*ast.Argument, error)
 
 	// 356:2: argument -> skip_pattern: ...
 	SkipPatternToArgument(Ellipsis_ *TokenValue) (*ast.Argument, error)
@@ -416,19 +416,19 @@ type ColonExprReducer interface {
 	UnitUnitPairToColonExpr(Colon_ *TokenValue) (*ast.ColonExpr, error)
 
 	// 361:2: colon_expr -> expr_unit_pair: ...
-	ExprUnitPairToColonExpr(SimpleExpr_ ast.Expression, Colon_ *TokenValue) (*ast.ColonExpr, error)
+	ExprUnitPairToColonExpr(Expr_ ast.Expression, Colon_ *TokenValue) (*ast.ColonExpr, error)
 
 	// 362:2: colon_expr -> unit_expr_pair: ...
-	UnitExprPairToColonExpr(Colon_ *TokenValue, SimpleExpr_ ast.Expression) (*ast.ColonExpr, error)
+	UnitExprPairToColonExpr(Colon_ *TokenValue, Expr_ ast.Expression) (*ast.ColonExpr, error)
 
 	// 363:2: colon_expr -> expr_expr_pair: ...
-	ExprExprPairToColonExpr(SimpleExpr_ ast.Expression, Colon_ *TokenValue, SimpleExpr_2 ast.Expression) (*ast.ColonExpr, error)
+	ExprExprPairToColonExpr(Expr_ ast.Expression, Colon_ *TokenValue, Expr_2 ast.Expression) (*ast.ColonExpr, error)
 
 	// 364:2: colon_expr -> colon_expr_unit_tuple: ...
 	ColonExprUnitTupleToColonExpr(ColonExpr_ *ast.ColonExpr, Colon_ *TokenValue) (*ast.ColonExpr, error)
 
 	// 365:2: colon_expr -> colon_expr_expr_tuple: ...
-	ColonExprExprTupleToColonExpr(ColonExpr_ *ast.ColonExpr, Colon_ *TokenValue, SimpleExpr_ ast.Expression) (*ast.ColonExpr, error)
+	ColonExprExprTupleToColonExpr(ColonExpr_ *ast.ColonExpr, Colon_ *TokenValue, Expr_ ast.Expression) (*ast.ColonExpr, error)
 }
 
 type PostfixUnaryExprReducer interface {
@@ -553,7 +553,7 @@ type SwitchExprReducer interface {
 
 type SwitchExprBodyReducer interface {
 	// 642:32: switch_expr_body -> ...
-	ToSwitchExprBody(Switch_ *TokenValue, SimpleExpr_ ast.Expression, StatementsOrParseError_ ast.Expression) (ast.Expression, error)
+	ToSwitchExprBody(Switch_ *TokenValue, Expr_ ast.Expression, StatementsOrParseError_ ast.Expression) (ast.Expression, error)
 }
 
 type SelectExprReducer interface {
@@ -578,16 +578,16 @@ type LoopExprBodyReducer interface {
 	InfiniteToLoopExprBody(RepeatLoopBody_ ast.Expression) (ast.Expression, error)
 
 	// 658:2: loop_expr_body -> do_while: ...
-	DoWhileToLoopExprBody(RepeatLoopBody_ ast.Expression, For_ *TokenValue, SimpleExpr_ ast.Expression) (ast.Expression, error)
+	DoWhileToLoopExprBody(RepeatLoopBody_ ast.Expression, For_ *TokenValue, Expr_ ast.Expression) (ast.Expression, error)
 
 	// 659:2: loop_expr_body -> while: ...
-	WhileToLoopExprBody(For_ *TokenValue, SimpleExpr_ ast.Expression, ForLoopBody_ ast.Expression) (ast.Expression, error)
+	WhileToLoopExprBody(For_ *TokenValue, Expr_ ast.Expression, ForLoopBody_ ast.Expression) (ast.Expression, error)
 
 	// 660:2: loop_expr_body -> iterator: ...
-	IteratorToLoopExprBody(For_ *TokenValue, Expr_ ast.Expression, In_ *TokenValue, SimpleExpr_ ast.Expression, ForLoopBody_ ast.Expression) (ast.Expression, error)
+	IteratorToLoopExprBody(For_ *TokenValue, ReturnableExpr_ ast.Expression, In_ *TokenValue, Expr_ ast.Expression, ForLoopBody_ ast.Expression) (ast.Expression, error)
 
 	// 661:2: loop_expr_body -> for: ...
-	ForToLoopExprBody(For_ *TokenValue, OptionalStatement_ ast.Statement, Semicolon_ *TokenValue, OptionalSimpleExpr_ ast.Expression, Semicolon_2 *TokenValue, OptionalStatement_2 ast.Statement, ForLoopBody_ ast.Expression) (ast.Expression, error)
+	ForToLoopExprBody(For_ *TokenValue, OptionalStatement_ ast.Statement, Semicolon_ *TokenValue, OptionalExpr_ ast.Expression, Semicolon_2 *TokenValue, OptionalStatement_2 ast.Statement, ForLoopBody_ ast.Expression) (ast.Expression, error)
 }
 
 type OptionalStatementReducer interface {
@@ -596,10 +596,10 @@ type OptionalStatementReducer interface {
 	NilToOptionalStatement() (ast.Statement, error)
 }
 
-type OptionalSimpleExprReducer interface {
+type OptionalExprReducer interface {
 
-	// 669:2: optional_simple_expr -> nil: ...
-	NilToOptionalSimpleExpr() (ast.Expression, error)
+	// 669:2: optional_expr -> nil: ...
+	NilToOptionalExpr() (ast.Expression, error)
 }
 
 type RepeatLoopBodyReducer interface {
@@ -614,10 +614,10 @@ type ForLoopBodyReducer interface {
 
 type ImproperExprStructReducer interface {
 	// 685:2: improper_expr_struct -> pair: ...
-	PairToImproperExprStruct(SimpleExpr_ ast.Expression, Comma_ *TokenValue, SimpleExpr_2 ast.Expression) (*ast.ImplicitStructExpr, error)
+	PairToImproperExprStruct(Expr_ ast.Expression, Comma_ *TokenValue, Expr_2 ast.Expression) (*ast.ImplicitStructExpr, error)
 
 	// 686:2: improper_expr_struct -> add: ...
-	AddToImproperExprStruct(ImproperExprStruct_ *ast.ImplicitStructExpr, Comma_ *TokenValue, SimpleExpr_ ast.Expression) (*ast.ImplicitStructExpr, error)
+	AddToImproperExprStruct(ImproperExprStruct_ *ast.ImplicitStructExpr, Comma_ *TokenValue, Expr_ ast.Expression) (*ast.ImplicitStructExpr, error)
 }
 
 type SliceTypeExprReducer interface {
@@ -1027,7 +1027,7 @@ type Reducer interface {
 	LoopExprReducer
 	LoopExprBodyReducer
 	OptionalStatementReducer
-	OptionalSimpleExprReducer
+	OptionalExprReducer
 	RepeatLoopBodyReducer
 	ForLoopBodyReducer
 	ImproperExprStructReducer
@@ -1223,11 +1223,11 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State106:
 		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
 	case _State107:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
-	case _State108:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
-	case _State109:
 		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+	case _State108:
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+	case _State109:
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
 	case _State110:
 		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
 	case _State113:
@@ -1259,9 +1259,9 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State143:
 		return []SymbolId{IdentifierToken}
 	case _State144:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
-	case _State146:
 		return []SymbolId{LbraceToken, ParseErrorToken}
+	case _State146:
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
 	case _State147:
 		return []SymbolId{RparenToken}
 	case _State149:
@@ -1313,9 +1313,9 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State207:
 		return []SymbolId{LparenToken}
 	case _State208:
-		return []SymbolId{DoToken}
-	case _State209:
 		return []SymbolId{SemicolonToken}
+	case _State209:
+		return []SymbolId{DoToken}
 	case _State213:
 		return []SymbolId{RbracketToken, AddToken, SubToken, MulToken}
 	case _State214:
@@ -1894,8 +1894,8 @@ func (i SymbolId) String() string {
 		return "binary_assign_op_expr"
 	case BinaryAssignOpType:
 		return "binary_assign_op"
-	case SimpleExprType:
-		return "simple_expr"
+	case ExprType:
+		return "expr"
 	case StatementsExprType:
 		return "statements_expr"
 	case StatementsType:
@@ -1932,14 +1932,14 @@ func (i SymbolId) String() string {
 		return "loop_expr_body"
 	case OptionalStatementType:
 		return "optional_statement"
-	case OptionalSimpleExprType:
-		return "optional_simple_expr"
+	case OptionalExprType:
+		return "optional_expr"
 	case RepeatLoopBodyType:
 		return "repeat_loop_body"
 	case ForLoopBodyType:
 		return "for_loop_body"
-	case ExprType:
-		return "expr"
+	case ReturnableExprType:
+		return "returnable_expr"
 	case ImproperExprStructType:
 		return "improper_expr_struct"
 	case InitializableTypeExprType:
@@ -2122,7 +2122,7 @@ const (
 	AssignOpExprType                     = SymbolId(413)
 	BinaryAssignOpExprType               = SymbolId(414)
 	BinaryAssignOpType                   = SymbolId(415)
-	SimpleExprType                       = SymbolId(416)
+	ExprType                             = SymbolId(416)
 	StatementsExprType                   = SymbolId(417)
 	StatementsType                       = SymbolId(418)
 	StatementsOrParseErrorType           = SymbolId(419)
@@ -2141,10 +2141,10 @@ const (
 	LoopExprType                         = SymbolId(432)
 	LoopExprBodyType                     = SymbolId(433)
 	OptionalStatementType                = SymbolId(434)
-	OptionalSimpleExprType               = SymbolId(435)
+	OptionalExprType                     = SymbolId(435)
 	RepeatLoopBodyType                   = SymbolId(436)
 	ForLoopBodyType                      = SymbolId(437)
-	ExprType                             = SymbolId(438)
+	ReturnableExprType                   = SymbolId(438)
 	ImproperExprStructType               = SymbolId(439)
 	InitializableTypeExprType            = SymbolId(440)
 	SliceTypeExprType                    = SymbolId(441)
@@ -2245,7 +2245,7 @@ const (
 	_ReduceUnsafeStatementToStatement                                   = _ReduceType(16)
 	_ReduceImportStatementToStatement                                   = _ReduceType(17)
 	_ReduceBranchStatementToStatement                                   = _ReduceType(18)
-	_ReduceExprToStatement                                              = _ReduceType(19)
+	_ReduceReturnableExprToStatement                                    = _ReduceType(19)
 	_ReduceJumpStatementToStatement                                     = _ReduceType(20)
 	_ReduceAssignStatementToStatement                                   = _ReduceType(21)
 	_ReduceCaseBranchToBranchStatement                                  = _ReduceType(22)
@@ -2293,7 +2293,7 @@ const (
 	_ReduceToCaseAssignPattern                                          = _ReduceType(64)
 	_ReduceSwitchableCasePatternToSwitchableCasePatterns                = _ReduceType(65)
 	_ReduceAddToSwitchableCasePatterns                                  = _ReduceType(66)
-	_ReduceSimpleExprToSwitchableCasePattern                            = _ReduceType(67)
+	_ReduceExprToSwitchableCasePattern                                  = _ReduceType(67)
 	_ReduceCaseEnumPatternToSwitchableCasePattern                       = _ReduceType(68)
 	_ReduceEnumMatchPatternToCaseEnumPattern                            = _ReduceType(69)
 	_ReduceEnumNondataMatchPattenToCaseEnumPattern                      = _ReduceType(70)
@@ -2408,13 +2408,13 @@ const (
 	_ReduceBitXorAssignToBinaryAssignOp                                 = _ReduceType(179)
 	_ReduceBitLshiftAssignToBinaryAssignOp                              = _ReduceType(180)
 	_ReduceBitRshiftAssignToBinaryAssignOp                              = _ReduceType(181)
-	_ReduceAssignOpExprToSimpleExpr                                     = _ReduceType(182)
-	_ReduceStatementsExprToSimpleExpr                                   = _ReduceType(183)
-	_ReduceIfExprToSimpleExpr                                           = _ReduceType(184)
-	_ReduceSwitchExprToSimpleExpr                                       = _ReduceType(185)
-	_ReduceSelectExprToSimpleExpr                                       = _ReduceType(186)
-	_ReduceLoopExprToSimpleExpr                                         = _ReduceType(187)
-	_ReduceDeclVarPatternToSimpleExpr                                   = _ReduceType(188)
+	_ReduceAssignOpExprToExpr                                           = _ReduceType(182)
+	_ReduceStatementsExprToExpr                                         = _ReduceType(183)
+	_ReduceIfExprToExpr                                                 = _ReduceType(184)
+	_ReduceSwitchExprToExpr                                             = _ReduceType(185)
+	_ReduceSelectExprToExpr                                             = _ReduceType(186)
+	_ReduceLoopExprToExpr                                               = _ReduceType(187)
+	_ReduceDeclVarPatternToExpr                                         = _ReduceType(188)
 	_ReduceStatementsToStatementsExpr                                   = _ReduceType(189)
 	_ReduceLabelledToStatementsExpr                                     = _ReduceType(190)
 	_ReduceToStatements                                                 = _ReduceType(191)
@@ -2434,7 +2434,7 @@ const (
 	_ReduceIfOnlyExprToIfElifExpr                                       = _ReduceType(205)
 	_ReduceElifToIfElifExpr                                             = _ReduceType(206)
 	_ReduceToIfOnlyExpr                                                 = _ReduceType(207)
-	_ReduceSimpleExprToCondition                                        = _ReduceType(208)
+	_ReduceExprToCondition                                              = _ReduceType(208)
 	_ReduceCaseAssignExprToCondition                                    = _ReduceType(209)
 	_ReduceToCaseAssignExpr                                             = _ReduceType(210)
 	_ReduceSwitchExprBodyToSwitchExpr                                   = _ReduceType(211)
@@ -2452,12 +2452,12 @@ const (
 	_ReduceForToLoopExprBody                                            = _ReduceType(223)
 	_ReduceStatementToOptionalStatement                                 = _ReduceType(224)
 	_ReduceNilToOptionalStatement                                       = _ReduceType(225)
-	_ReduceSimpleExprToOptionalSimpleExpr                               = _ReduceType(226)
-	_ReduceNilToOptionalSimpleExpr                                      = _ReduceType(227)
+	_ReduceExprToOptionalExpr                                           = _ReduceType(226)
+	_ReduceNilToOptionalExpr                                            = _ReduceType(227)
 	_ReduceToRepeatLoopBody                                             = _ReduceType(228)
 	_ReduceToForLoopBody                                                = _ReduceType(229)
-	_ReduceSimpleExprToExpr                                             = _ReduceType(230)
-	_ReduceImproperExprStructToExpr                                     = _ReduceType(231)
+	_ReduceExprToReturnableExpr                                         = _ReduceType(230)
+	_ReduceImproperExprStructToReturnableExpr                           = _ReduceType(231)
 	_ReducePairToImproperExprStruct                                     = _ReduceType(232)
 	_ReduceAddToImproperExprStruct                                      = _ReduceType(233)
 	_ReduceExplicitStructTypeExprToInitializableTypeExpr                = _ReduceType(234)
@@ -2619,8 +2619,8 @@ func (i _ReduceType) String() string {
 		return "ImportStatementToStatement"
 	case _ReduceBranchStatementToStatement:
 		return "BranchStatementToStatement"
-	case _ReduceExprToStatement:
-		return "ExprToStatement"
+	case _ReduceReturnableExprToStatement:
+		return "ReturnableExprToStatement"
 	case _ReduceJumpStatementToStatement:
 		return "JumpStatementToStatement"
 	case _ReduceAssignStatementToStatement:
@@ -2715,8 +2715,8 @@ func (i _ReduceType) String() string {
 		return "SwitchableCasePatternToSwitchableCasePatterns"
 	case _ReduceAddToSwitchableCasePatterns:
 		return "AddToSwitchableCasePatterns"
-	case _ReduceSimpleExprToSwitchableCasePattern:
-		return "SimpleExprToSwitchableCasePattern"
+	case _ReduceExprToSwitchableCasePattern:
+		return "ExprToSwitchableCasePattern"
 	case _ReduceCaseEnumPatternToSwitchableCasePattern:
 		return "CaseEnumPatternToSwitchableCasePattern"
 	case _ReduceEnumMatchPatternToCaseEnumPattern:
@@ -2945,20 +2945,20 @@ func (i _ReduceType) String() string {
 		return "BitLshiftAssignToBinaryAssignOp"
 	case _ReduceBitRshiftAssignToBinaryAssignOp:
 		return "BitRshiftAssignToBinaryAssignOp"
-	case _ReduceAssignOpExprToSimpleExpr:
-		return "AssignOpExprToSimpleExpr"
-	case _ReduceStatementsExprToSimpleExpr:
-		return "StatementsExprToSimpleExpr"
-	case _ReduceIfExprToSimpleExpr:
-		return "IfExprToSimpleExpr"
-	case _ReduceSwitchExprToSimpleExpr:
-		return "SwitchExprToSimpleExpr"
-	case _ReduceSelectExprToSimpleExpr:
-		return "SelectExprToSimpleExpr"
-	case _ReduceLoopExprToSimpleExpr:
-		return "LoopExprToSimpleExpr"
-	case _ReduceDeclVarPatternToSimpleExpr:
-		return "DeclVarPatternToSimpleExpr"
+	case _ReduceAssignOpExprToExpr:
+		return "AssignOpExprToExpr"
+	case _ReduceStatementsExprToExpr:
+		return "StatementsExprToExpr"
+	case _ReduceIfExprToExpr:
+		return "IfExprToExpr"
+	case _ReduceSwitchExprToExpr:
+		return "SwitchExprToExpr"
+	case _ReduceSelectExprToExpr:
+		return "SelectExprToExpr"
+	case _ReduceLoopExprToExpr:
+		return "LoopExprToExpr"
+	case _ReduceDeclVarPatternToExpr:
+		return "DeclVarPatternToExpr"
 	case _ReduceStatementsToStatementsExpr:
 		return "StatementsToStatementsExpr"
 	case _ReduceLabelledToStatementsExpr:
@@ -2997,8 +2997,8 @@ func (i _ReduceType) String() string {
 		return "ElifToIfElifExpr"
 	case _ReduceToIfOnlyExpr:
 		return "ToIfOnlyExpr"
-	case _ReduceSimpleExprToCondition:
-		return "SimpleExprToCondition"
+	case _ReduceExprToCondition:
+		return "ExprToCondition"
 	case _ReduceCaseAssignExprToCondition:
 		return "CaseAssignExprToCondition"
 	case _ReduceToCaseAssignExpr:
@@ -3033,18 +3033,18 @@ func (i _ReduceType) String() string {
 		return "StatementToOptionalStatement"
 	case _ReduceNilToOptionalStatement:
 		return "NilToOptionalStatement"
-	case _ReduceSimpleExprToOptionalSimpleExpr:
-		return "SimpleExprToOptionalSimpleExpr"
-	case _ReduceNilToOptionalSimpleExpr:
-		return "NilToOptionalSimpleExpr"
+	case _ReduceExprToOptionalExpr:
+		return "ExprToOptionalExpr"
+	case _ReduceNilToOptionalExpr:
+		return "NilToOptionalExpr"
 	case _ReduceToRepeatLoopBody:
 		return "ToRepeatLoopBody"
 	case _ReduceToForLoopBody:
 		return "ToForLoopBody"
-	case _ReduceSimpleExprToExpr:
-		return "SimpleExprToExpr"
-	case _ReduceImproperExprStructToExpr:
-		return "ImproperExprStructToExpr"
+	case _ReduceExprToReturnableExpr:
+		return "ExprToReturnableExpr"
+	case _ReduceImproperExprStructToReturnableExpr:
+		return "ImproperExprStructToReturnableExpr"
 	case _ReducePairToImproperExprStruct:
 		return "PairToImproperExprStruct"
 	case _ReduceAddToImproperExprStruct:
@@ -3689,7 +3689,7 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case DeclVarPatternType, VarPatternType, TuplePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, SimpleExprType, StatementsExprType, StatementsType, StatementsOrParseErrorType, IfExprType, ConditionType, CaseAssignExprType, SwitchExprType, SwitchExprBodyType, SelectExprType, SelectExprBodyType, LoopExprType, LoopExprBodyType, OptionalSimpleExprType, RepeatLoopBodyType, ForLoopBodyType, ExprType, AnonymousFuncExprType:
+	case DeclVarPatternType, VarPatternType, TuplePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, StatementsType, StatementsOrParseErrorType, IfExprType, ConditionType, CaseAssignExprType, SwitchExprType, SwitchExprBodyType, SelectExprType, SelectExprBodyType, LoopExprType, LoopExprBodyType, OptionalExprType, RepeatLoopBodyType, ForLoopBodyType, ReturnableExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
 		if ok {
 			return loc.Loc()
@@ -3836,7 +3836,7 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case DeclVarPatternType, VarPatternType, TuplePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, SimpleExprType, StatementsExprType, StatementsType, StatementsOrParseErrorType, IfExprType, ConditionType, CaseAssignExprType, SwitchExprType, SwitchExprBodyType, SelectExprType, SelectExprBodyType, LoopExprType, LoopExprBodyType, OptionalSimpleExprType, RepeatLoopBodyType, ForLoopBodyType, ExprType, AnonymousFuncExprType:
+	case DeclVarPatternType, VarPatternType, TuplePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, StatementsType, StatementsOrParseErrorType, IfExprType, ConditionType, CaseAssignExprType, SwitchExprType, SwitchExprBodyType, SelectExprType, SelectExprBodyType, LoopExprType, LoopExprBodyType, OptionalExprType, RepeatLoopBodyType, ForLoopBodyType, ReturnableExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
 		if ok {
 			return loc.End()
@@ -4120,7 +4120,7 @@ func (act *_Action) ReduceSymbol(
 		//line grammar.lr:106:4
 		symbol.Statement = args[0].Statement
 		err = nil
-	case _ReduceExprToStatement:
+	case _ReduceReturnableExprToStatement:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = StatementType
@@ -4384,7 +4384,7 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = SwitchableCasePatternsType
 		symbol.ExpressionList, err = reducer.AddToSwitchableCasePatterns(args[0].ExpressionList, args[1].Value, args[2].Expression)
-	case _ReduceSimpleExprToSwitchableCasePattern:
+	case _ReduceExprToSwitchableCasePattern:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SwitchableCasePatternType
@@ -5101,52 +5101,52 @@ func (act *_Action) ReduceSymbol(
 		//line grammar.lr:544:4
 		symbol.Value = args[0].Value
 		err = nil
-	case _ReduceAssignOpExprToSimpleExpr:
+	case _ReduceAssignOpExprToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = SimpleExprType
+		symbol.SymbolId_ = ExprType
 		//line grammar.lr:551:4
 		symbol.Expression = args[0].Expression
 		err = nil
-	case _ReduceStatementsExprToSimpleExpr:
+	case _ReduceStatementsExprToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = SimpleExprType
+		symbol.SymbolId_ = ExprType
 		//line grammar.lr:552:4
 		symbol.Expression = args[0].Expression
 		err = nil
-	case _ReduceIfExprToSimpleExpr:
+	case _ReduceIfExprToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = SimpleExprType
+		symbol.SymbolId_ = ExprType
 		//line grammar.lr:553:4
 		symbol.Expression = args[0].Expression
 		err = nil
-	case _ReduceSwitchExprToSimpleExpr:
+	case _ReduceSwitchExprToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = SimpleExprType
+		symbol.SymbolId_ = ExprType
 		//line grammar.lr:554:4
 		symbol.Expression = args[0].Expression
 		err = nil
-	case _ReduceSelectExprToSimpleExpr:
+	case _ReduceSelectExprToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = SimpleExprType
+		symbol.SymbolId_ = ExprType
 		//line grammar.lr:555:4
 		symbol.Expression = args[0].Expression
 		err = nil
-	case _ReduceLoopExprToSimpleExpr:
+	case _ReduceLoopExprToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = SimpleExprType
+		symbol.SymbolId_ = ExprType
 		//line grammar.lr:556:4
 		symbol.Expression = args[0].Expression
 		err = nil
-	case _ReduceDeclVarPatternToSimpleExpr:
+	case _ReduceDeclVarPatternToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = SimpleExprType
+		symbol.SymbolId_ = ExprType
 		//line grammar.lr:559:4
 		symbol.Expression = args[0].Expression
 		err = nil
@@ -5255,7 +5255,7 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = IfOnlyExprType
 		symbol.IfExpr, err = reducer.ToIfOnlyExpr(args[0].Value, args[1].Expression, args[2].Expression)
-	case _ReduceSimpleExprToCondition:
+	case _ReduceExprToCondition:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ConditionType
@@ -5355,16 +5355,16 @@ func (act *_Action) ReduceSymbol(
 	case _ReduceNilToOptionalStatement:
 		symbol.SymbolId_ = OptionalStatementType
 		symbol.Statement, err = reducer.NilToOptionalStatement()
-	case _ReduceSimpleExprToOptionalSimpleExpr:
+	case _ReduceExprToOptionalExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = OptionalSimpleExprType
+		symbol.SymbolId_ = OptionalExprType
 		//line grammar.lr:668:4
 		symbol.Expression = args[0].Expression
 		err = nil
-	case _ReduceNilToOptionalSimpleExpr:
-		symbol.SymbolId_ = OptionalSimpleExprType
-		symbol.Expression, err = reducer.NilToOptionalSimpleExpr()
+	case _ReduceNilToOptionalExpr:
+		symbol.SymbolId_ = OptionalExprType
+		symbol.Expression, err = reducer.NilToOptionalExpr()
 	case _ReduceToRepeatLoopBody:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
@@ -5375,17 +5375,17 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ForLoopBodyType
 		symbol.Expression, err = reducer.ToForLoopBody(args[0].Value, args[1].Expression)
-	case _ReduceSimpleExprToExpr:
+	case _ReduceExprToReturnableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = ExprType
+		symbol.SymbolId_ = ReturnableExprType
 		//line grammar.lr:680:4
 		symbol.Expression = args[0].Expression
 		err = nil
-	case _ReduceImproperExprStructToExpr:
+	case _ReduceImproperExprStructToReturnableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = ExprType
+		symbol.SymbolId_ = ReturnableExprType
 		//line grammar.lr:681:4
 		symbol.Expression = args[0].ImplicitStruct
 		err = nil
@@ -6224,15 +6224,15 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State39, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
-		case ExprType:
-			return _Action{_ShiftAction, _State39, 0}, true
+		case ReturnableExprType:
+			return _Action{_ShiftAction, _State48, 0}, true
 		case ImproperExprStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
 		case InitializableTypeExprType:
@@ -6294,7 +6294,7 @@ func (_ActionTableType) Get(
 		case ImportStatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -6338,29 +6338,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -6417,17 +6417,13 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State10, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
-		case ExprType:
-			return _Action{_ShiftAction, _State10, 0}, true
-		case ImproperExprStructType:
-			return _Action{_ShiftAction, _State41, 0}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAction, _State42, 0}, true
 		case IntegerLiteralToken:
@@ -6469,7 +6465,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -6513,29 +6509,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -6721,9 +6717,9 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State39, 0}, true
 		case ProperStatementListType:
 			return _Action{_ShiftAction, _State58, 0}, true
 		case StatementListType:
@@ -6732,8 +6728,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
-		case ExprType:
-			return _Action{_ShiftAction, _State39, 0}, true
+		case ReturnableExprType:
+			return _Action{_ShiftAction, _State48, 0}, true
 		case ImproperExprStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
 		case InitializableTypeExprType:
@@ -6797,7 +6793,7 @@ func (_ActionTableType) Get(
 		case ImportStatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -6841,29 +6837,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -7087,7 +7083,7 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -7133,7 +7129,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case CaseAssignPatternType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToCasePatterns}, true
 		case SwitchableCasePatternType:
@@ -7183,31 +7179,31 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSimpleExprToSwitchableCasePattern}, true
+		case ExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceExprToSwitchableCasePattern}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -7279,17 +7275,17 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
-			return _Action{_ShiftAction, _State73, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State71, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case OptionalStatementType:
 			return _Action{_ShiftAction, _State72, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
-		case ExprType:
-			return _Action{_ShiftAction, _State71, 0}, true
+		case ReturnableExprType:
+			return _Action{_ShiftAction, _State73, 0}, true
 		case ImproperExprStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
 		case InitializableTypeExprType:
@@ -7353,7 +7349,7 @@ func (_ActionTableType) Get(
 		case ImportStatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -7397,29 +7393,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -7488,7 +7484,7 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case ConditionType:
@@ -7536,7 +7532,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -7580,17 +7576,17 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSimpleExprToCondition}, true
+		case ExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceExprToCondition}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
@@ -7598,15 +7594,15 @@ func (_ActionTableType) Get(
 		case CaseAssignExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceCaseAssignExprToCondition}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -7774,7 +7770,7 @@ func (_ActionTableType) Get(
 		case AccessibleExprType:
 			return _Action{_ShiftAction, _State35, 0}, true
 		case ProperArgumentsType:
-			return _Action{_ShiftAction, _State87, 0}, true
+			return _Action{_ShiftAction, _State88, 0}, true
 		case ArgumentsType:
 			return _Action{_ShiftAction, _State85, 0}, true
 		case ColonExprType:
@@ -7792,9 +7788,9 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
-			return _Action{_ShiftAction, _State88, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State87, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -7840,7 +7836,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -7886,29 +7882,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -7999,8 +7995,8 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
+			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
 			return _Action{_ShiftAction, _State90, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
@@ -8047,7 +8043,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -8091,29 +8087,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -8204,11 +8200,11 @@ func (_ActionTableType) Get(
 		}
 	case _State39:
 		switch symbolId {
-		case AssignToken:
+		case CommaToken:
 			return _Action{_ShiftAction, _State99, 0}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceExprToStatement}, true
+			return _Action{_ReduceAction, 0, _ReduceExprToReturnableExpr}, true
 		}
 	case _State40:
 		switch symbolId {
@@ -8224,7 +8220,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State101, 0}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceImproperExprStructToExpr}, true
+			return _Action{_ReduceAction, 0, _ReduceImproperExprStructToReturnableExpr}, true
 		}
 	case _State42:
 		switch symbolId {
@@ -8276,9 +8272,9 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State39, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -8326,7 +8322,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -8370,32 +8366,32 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
-		case ExprType:
+		case ReturnableExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabeledValuedToJumpStatement}, true
 		case SliceTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
@@ -8538,10 +8534,18 @@ func (_ActionTableType) Get(
 		}
 	case _State48:
 		switch symbolId {
-		case ArrowToken:
+		case AssignToken:
 			return _Action{_ShiftAction, _State107, 0}, true
-		case BinaryAssignOpType:
+
+		default:
+			return _Action{_ReduceAction, 0, _ReduceReturnableExprToStatement}, true
+		}
+	case _State49:
+		switch symbolId {
+		case ArrowToken:
 			return _Action{_ShiftAction, _State108, 0}, true
+		case BinaryAssignOpType:
+			return _Action{_ShiftAction, _State109, 0}, true
 		case AddAssignToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAddAssignToBinaryAssignOp}, true
 		case SubAssignToken:
@@ -8567,14 +8571,6 @@ func (_ActionTableType) Get(
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceSendRecvExprToAssignOpExpr}, true
-		}
-	case _State49:
-		switch symbolId {
-		case CommaToken:
-			return _Action{_ShiftAction, _State109, 0}, true
-
-		default:
-			return _Action{_ReduceAction, 0, _ReduceSimpleExprToExpr}, true
 		}
 	case _State50:
 		switch symbolId {
@@ -8849,9 +8845,9 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State39, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -8899,7 +8895,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -8943,32 +8939,32 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
-		case ExprType:
+		case ReturnableExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDefToGlobalVarDef}, true
 		case SliceTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
@@ -9216,15 +9212,15 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State39, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
-		case ExprType:
-			return _Action{_ShiftAction, _State39, 0}, true
+		case ReturnableExprType:
+			return _Action{_ShiftAction, _State48, 0}, true
 		case ImproperExprStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
 		case InitializableTypeExprType:
@@ -9290,7 +9286,7 @@ func (_ActionTableType) Get(
 		case ImportStatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -9334,29 +9330,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -9375,13 +9371,15 @@ func (_ActionTableType) Get(
 		}
 	case _State71:
 		switch symbolId {
-		case InToken:
+		case DoToken:
 			return _Action{_ShiftAction, _State144, 0}, true
-		case AssignToken:
+		case CommaToken:
 			return _Action{_ShiftAction, _State99, 0}, true
+		case ForLoopBodyType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceWhileToLoopExprBody}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceExprToStatement}, true
+			return _Action{_ReduceAction, 0, _ReduceExprToReturnableExpr}, true
 		}
 	case _State72:
 		switch symbolId {
@@ -9390,15 +9388,13 @@ func (_ActionTableType) Get(
 		}
 	case _State73:
 		switch symbolId {
-		case DoToken:
+		case InToken:
 			return _Action{_ShiftAction, _State146, 0}, true
-		case CommaToken:
-			return _Action{_ShiftAction, _State109, 0}, true
-		case ForLoopBodyType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceWhileToLoopExprBody}, true
+		case AssignToken:
+			return _Action{_ShiftAction, _State107, 0}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceSimpleExprToExpr}, true
+			return _Action{_ReduceAction, 0, _ReduceReturnableExprToStatement}, true
 		}
 	case _State74:
 		switch symbolId {
@@ -9533,7 +9529,7 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -9579,7 +9575,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case CaseAssignPatternType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToCaseAssignExpr}, true
 		case SwitchableCasePatternType:
@@ -9629,31 +9625,31 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSimpleExprToSwitchableCasePattern}, true
+		case ExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceExprToSwitchableCasePattern}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -9772,7 +9768,7 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -9818,7 +9814,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -9862,31 +9858,31 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
+		case ExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnitExprPairToColonExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -9926,21 +9922,21 @@ func (_ActionTableType) Get(
 		}
 	case _State87:
 		switch symbolId {
-		case CommaToken:
-			return _Action{_ShiftAction, _State157, 0}, true
-
-		default:
-			return _Action{_ReduceAction, 0, _ReduceProperArgumentsToArguments}, true
-		}
-	case _State88:
-		switch symbolId {
 		case ColonToken:
-			return _Action{_ShiftAction, _State158, 0}, true
+			return _Action{_ShiftAction, _State157, 0}, true
 		case EllipsisToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceVarargAssignmentToArgument}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReducePositionalToArgument}, true
+		}
+	case _State88:
+		switch symbolId {
+		case CommaToken:
+			return _Action{_ShiftAction, _State158, 0}, true
+
+		default:
+			return _Action{_ReduceAction, 0, _ReduceProperArgumentsToArguments}, true
 		}
 	case _State89:
 		switch symbolId {
@@ -10178,9 +10174,9 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
-			return _Action{_ShiftAction, _State88, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State87, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -10226,7 +10222,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -10270,29 +10266,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -10645,15 +10641,11 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
-		case ImproperExprStructType:
-			return _Action{_ShiftAction, _State41, 0}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAction, _State42, 0}, true
 		case IntegerLiteralToken:
@@ -10695,7 +10687,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -10739,33 +10731,33 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
+		case ExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePairToImproperExprStruct}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
-		case ExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceToAssignStatement}, true
 		case SliceTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
 		case ArrayTypeExprType:
@@ -10835,7 +10827,7 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -10881,7 +10873,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -10925,31 +10917,31 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
+		case ExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToImproperExprStruct}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -10998,7 +10990,7 @@ func (_ActionTableType) Get(
 		case AccessibleExprType:
 			return _Action{_ShiftAction, _State35, 0}, true
 		case ProperArgumentsType:
-			return _Action{_ShiftAction, _State87, 0}, true
+			return _Action{_ShiftAction, _State88, 0}, true
 		case ArgumentsType:
 			return _Action{_ShiftAction, _State172, 0}, true
 		case ColonExprType:
@@ -11016,9 +11008,9 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
-			return _Action{_ShiftAction, _State88, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State87, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -11064,7 +11056,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -11110,29 +11102,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -11192,9 +11184,9 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State39, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -11242,7 +11234,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -11286,32 +11278,32 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
-		case ExprType:
+		case ReturnableExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLabeledValuedToJumpStatement}, true
 		case SliceTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
@@ -11564,7 +11556,7 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -11610,7 +11602,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -11654,31 +11646,31 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
+		case ExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDoWhileToLoopExprBody}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -11693,6 +11685,181 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAnonymousFuncExprToAtomExpr}, true
 		}
 	case _State107:
+		switch symbolId {
+		case IfToken:
+			return _Action{_ShiftAction, _State25, 0}, true
+		case SwitchToken:
+			return _Action{_ShiftAction, _State33, 0}, true
+		case RepeatToken:
+			return _Action{_ShiftAction, _State30, 0}, true
+		case ForToken:
+			return _Action{_ShiftAction, _State23, 0}, true
+		case SelectToken:
+			return _Action{_ShiftAction, _State31, 0}, true
+		case StructToken:
+			return _Action{_ShiftAction, _State32, 0}, true
+		case FuncToken:
+			return _Action{_ShiftAction, _State24, 0}, true
+		case LabelDeclToken:
+			return _Action{_ShiftAction, _State27, 0}, true
+		case LbraceToken:
+			return _Action{_ShiftAction, _State14, 0}, true
+		case LparenToken:
+			return _Action{_ShiftAction, _State29, 0}, true
+		case LbracketToken:
+			return _Action{_ShiftAction, _State28, 0}, true
+		case ArrowToken:
+			return _Action{_ShiftAction, _State20, 0}, true
+		case VarTypeType:
+			return _Action{_ShiftAction, _State19, 0}, true
+		case AccessibleExprType:
+			return _Action{_ShiftAction, _State35, 0}, true
+		case PrefixUnaryOpType:
+			return _Action{_ShiftAction, _State46, 0}, true
+		case MulExprType:
+			return _Action{_ShiftAction, _State44, 0}, true
+		case AddExprType:
+			return _Action{_ShiftAction, _State36, 0}, true
+		case CmpExprType:
+			return _Action{_ShiftAction, _State38, 0}, true
+		case AndExprType:
+			return _Action{_ShiftAction, _State37, 0}, true
+		case OrExprType:
+			return _Action{_ShiftAction, _State45, 0}, true
+		case SendRecvExprType:
+			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State39, 0}, true
+		case IfElifExprType:
+			return _Action{_ShiftAction, _State40, 0}, true
+		case RepeatLoopBodyType:
+			return _Action{_ShiftAction, _State47, 0}, true
+		case ImproperExprStructType:
+			return _Action{_ShiftAction, _State41, 0}, true
+		case InitializableTypeExprType:
+			return _Action{_ShiftAction, _State42, 0}, true
+		case IntegerLiteralToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIntegerLiteralToLiteralExpr}, true
+		case FloatLiteralToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFloatLiteralToLiteralExpr}, true
+		case RuneLiteralToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceRuneLiteralToLiteralExpr}, true
+		case StringLiteralToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStringLiteralToLiteralExpr}, true
+		case IdentifierToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIdentifierToNamedExpr}, true
+		case UnderscoreToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToNamedExpr}, true
+		case TrueToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTrueToLiteralExpr}, true
+		case FalseToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFalseToLiteralExpr}, true
+		case AsyncToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
+		case DeferToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
+		case VarToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceVarToVarType}, true
+		case LetToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
+		case NotToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case SubToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
+		case MulToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
+		case BitNegToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
+		case BitAndToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case GreaterToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
+		case ParseErrorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
+		case DeclVarPatternType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
+		case AtomExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
+		case ParseErrorExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceParseErrorExprToAtomExpr}, true
+		case LiteralExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLiteralExprToAtomExpr}, true
+		case NamedExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceNamedExprToAtomExpr}, true
+		case InitializeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializeExprToAtomExpr}, true
+		case ImplicitStructExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceImplicitStructExprToAtomExpr}, true
+		case AccessExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAccessExprToAccessibleExpr}, true
+		case IndexExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIndexExprToAccessibleExpr}, true
+		case AsExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAsExprToAccessibleExpr}, true
+		case CallExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceCallExprToAccessibleExpr}, true
+		case PostfixableExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePostfixableExprToPrefixableExpr}, true
+		case PostfixUnaryExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePostfixUnaryExprToPostfixableExpr}, true
+		case PrefixableExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixableExprToMulExpr}, true
+		case PrefixUnaryExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixUnaryExprToPrefixableExpr}, true
+		case BinaryMulExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryMulExprToMulExpr}, true
+		case BinaryAddExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAddExprToAddExpr}, true
+		case BinaryCmpExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryCmpExprToCmpExpr}, true
+		case BinaryAndExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAndExprToAndExpr}, true
+		case BinaryOrExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryOrExprToOrExpr}, true
+		case SendExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSendExprToSendRecvExpr}, true
+		case RecvExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
+		case AssignOpExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
+		case BinaryAssignOpExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
+		case StatementsExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
+		case StatementsType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
+		case IfExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
+		case IfElseExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
+		case IfOnlyExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
+		case SwitchExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
+		case SwitchExprBodyType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
+		case SelectExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
+		case SelectExprBodyType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
+		case LoopExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
+		case LoopExprBodyType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
+		case ReturnableExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceToAssignStatement}, true
+		case SliceTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
+		case ArrayTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceArrayTypeExprToInitializableTypeExpr}, true
+		case MapTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceMapTypeExprToInitializableTypeExpr}, true
+		case ExplicitStructTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceExplicitStructTypeExprToInitializableTypeExpr}, true
+		case AnonymousFuncExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAnonymousFuncExprToAtomExpr}, true
+		}
+	case _State108:
 		switch symbolId {
 		case StructToken:
 			return _Action{_ShiftAction, _State32, 0}, true
@@ -11801,7 +11968,7 @@ func (_ActionTableType) Get(
 		case AnonymousFuncExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAnonymousFuncExprToAtomExpr}, true
 		}
-	case _State108:
+	case _State109:
 		switch symbolId {
 		case StructToken:
 			return _Action{_ShiftAction, _State32, 0}, true
@@ -11907,177 +12074,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSendExprToSendRecvExpr}, true
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
-		case SliceTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
-		case ArrayTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceArrayTypeExprToInitializableTypeExpr}, true
-		case MapTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceMapTypeExprToInitializableTypeExpr}, true
-		case ExplicitStructTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceExplicitStructTypeExprToInitializableTypeExpr}, true
-		case AnonymousFuncExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAnonymousFuncExprToAtomExpr}, true
-		}
-	case _State109:
-		switch symbolId {
-		case IfToken:
-			return _Action{_ShiftAction, _State25, 0}, true
-		case SwitchToken:
-			return _Action{_ShiftAction, _State33, 0}, true
-		case RepeatToken:
-			return _Action{_ShiftAction, _State30, 0}, true
-		case ForToken:
-			return _Action{_ShiftAction, _State23, 0}, true
-		case SelectToken:
-			return _Action{_ShiftAction, _State31, 0}, true
-		case StructToken:
-			return _Action{_ShiftAction, _State32, 0}, true
-		case FuncToken:
-			return _Action{_ShiftAction, _State24, 0}, true
-		case LabelDeclToken:
-			return _Action{_ShiftAction, _State27, 0}, true
-		case LbraceToken:
-			return _Action{_ShiftAction, _State14, 0}, true
-		case LparenToken:
-			return _Action{_ShiftAction, _State29, 0}, true
-		case LbracketToken:
-			return _Action{_ShiftAction, _State28, 0}, true
-		case ArrowToken:
-			return _Action{_ShiftAction, _State20, 0}, true
-		case VarTypeType:
-			return _Action{_ShiftAction, _State19, 0}, true
-		case AccessibleExprType:
-			return _Action{_ShiftAction, _State35, 0}, true
-		case PrefixUnaryOpType:
-			return _Action{_ShiftAction, _State46, 0}, true
-		case MulExprType:
-			return _Action{_ShiftAction, _State44, 0}, true
-		case AddExprType:
-			return _Action{_ShiftAction, _State36, 0}, true
-		case CmpExprType:
-			return _Action{_ShiftAction, _State38, 0}, true
-		case AndExprType:
-			return _Action{_ShiftAction, _State37, 0}, true
-		case OrExprType:
-			return _Action{_ShiftAction, _State45, 0}, true
-		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case IfElifExprType:
-			return _Action{_ShiftAction, _State40, 0}, true
-		case RepeatLoopBodyType:
-			return _Action{_ShiftAction, _State47, 0}, true
-		case InitializableTypeExprType:
-			return _Action{_ShiftAction, _State42, 0}, true
-		case IntegerLiteralToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIntegerLiteralToLiteralExpr}, true
-		case FloatLiteralToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFloatLiteralToLiteralExpr}, true
-		case RuneLiteralToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceRuneLiteralToLiteralExpr}, true
-		case StringLiteralToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStringLiteralToLiteralExpr}, true
-		case IdentifierToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIdentifierToNamedExpr}, true
-		case UnderscoreToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToNamedExpr}, true
-		case TrueToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceTrueToLiteralExpr}, true
-		case FalseToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFalseToLiteralExpr}, true
-		case AsyncToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
-		case DeferToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
-		case VarToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceVarToVarType}, true
-		case LetToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
-		case NotToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
-		case SubToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
-		case MulToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
-		case BitAndToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
-		case GreaterToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
-		case ParseErrorToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
-		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
-		case AtomExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
-		case ParseErrorExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceParseErrorExprToAtomExpr}, true
-		case LiteralExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLiteralExprToAtomExpr}, true
-		case NamedExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceNamedExprToAtomExpr}, true
-		case InitializeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializeExprToAtomExpr}, true
-		case ImplicitStructExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceImplicitStructExprToAtomExpr}, true
-		case AccessExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAccessExprToAccessibleExpr}, true
-		case IndexExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIndexExprToAccessibleExpr}, true
-		case AsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAsExprToAccessibleExpr}, true
-		case CallExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceCallExprToAccessibleExpr}, true
-		case PostfixableExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePostfixableExprToPrefixableExpr}, true
-		case PostfixUnaryExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePostfixUnaryExprToPostfixableExpr}, true
-		case PrefixableExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixableExprToMulExpr}, true
-		case PrefixUnaryExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixUnaryExprToPrefixableExpr}, true
-		case BinaryMulExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryMulExprToMulExpr}, true
-		case BinaryAddExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAddExprToAddExpr}, true
-		case BinaryCmpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryCmpExprToCmpExpr}, true
-		case BinaryAndExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAndExprToAndExpr}, true
-		case BinaryOrExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryOrExprToOrExpr}, true
-		case SendExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSendExprToSendRecvExpr}, true
-		case RecvExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
-		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
-		case BinaryAssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePairToImproperExprStruct}, true
-		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
-		case StatementsType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
-		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
-		case IfElseExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
-		case IfOnlyExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
-		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
-		case SwitchExprBodyType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
-		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
-		case SelectExprBodyType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
-		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
-		case LoopExprBodyType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
 		case ArrayTypeExprType:
@@ -12969,15 +12965,15 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State39, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
-		case ExprType:
-			return _Action{_ShiftAction, _State39, 0}, true
+		case ReturnableExprType:
+			return _Action{_ShiftAction, _State48, 0}, true
 		case ImproperExprStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
 		case InitializableTypeExprType:
@@ -13041,7 +13037,7 @@ func (_ActionTableType) Get(
 		case ImportStatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -13085,29 +13081,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -13177,15 +13173,15 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State39, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
-		case ExprType:
-			return _Action{_ShiftAction, _State39, 0}, true
+		case ReturnableExprType:
+			return _Action{_ShiftAction, _State48, 0}, true
 		case ImproperExprStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
 		case InitializableTypeExprType:
@@ -13249,7 +13245,7 @@ func (_ActionTableType) Get(
 		case ImportStatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -13293,29 +13289,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -13564,15 +13560,15 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State39, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
-		case ExprType:
-			return _Action{_ShiftAction, _State39, 0}, true
+		case ReturnableExprType:
+			return _Action{_ShiftAction, _State48, 0}, true
 		case ImproperExprStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
 		case InitializableTypeExprType:
@@ -13638,7 +13634,7 @@ func (_ActionTableType) Get(
 		case ImportStatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -13682,29 +13678,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -13764,7 +13760,7 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -13810,7 +13806,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -13854,31 +13850,31 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
+		case ExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToCaseAssignPattern}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -13937,7 +13933,7 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -13983,7 +13979,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case SwitchableCasePatternType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToSwitchableCasePatterns}, true
 		case CaseEnumPatternType:
@@ -14031,31 +14027,31 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSimpleExprToSwitchableCasePattern}, true
+		case ExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceExprToSwitchableCasePattern}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -14076,174 +14072,16 @@ func (_ActionTableType) Get(
 		}
 	case _State144:
 		switch symbolId {
-		case IfToken:
-			return _Action{_ShiftAction, _State25, 0}, true
-		case SwitchToken:
-			return _Action{_ShiftAction, _State33, 0}, true
-		case RepeatToken:
-			return _Action{_ShiftAction, _State30, 0}, true
-		case ForToken:
-			return _Action{_ShiftAction, _State23, 0}, true
-		case SelectToken:
-			return _Action{_ShiftAction, _State31, 0}, true
-		case StructToken:
-			return _Action{_ShiftAction, _State32, 0}, true
-		case FuncToken:
-			return _Action{_ShiftAction, _State24, 0}, true
-		case LabelDeclToken:
-			return _Action{_ShiftAction, _State27, 0}, true
 		case LbraceToken:
 			return _Action{_ShiftAction, _State14, 0}, true
-		case LparenToken:
-			return _Action{_ShiftAction, _State29, 0}, true
-		case LbracketToken:
-			return _Action{_ShiftAction, _State28, 0}, true
-		case ArrowToken:
-			return _Action{_ShiftAction, _State20, 0}, true
-		case VarTypeType:
-			return _Action{_ShiftAction, _State19, 0}, true
-		case AccessibleExprType:
-			return _Action{_ShiftAction, _State35, 0}, true
-		case PrefixUnaryOpType:
-			return _Action{_ShiftAction, _State46, 0}, true
-		case MulExprType:
-			return _Action{_ShiftAction, _State44, 0}, true
-		case AddExprType:
-			return _Action{_ShiftAction, _State36, 0}, true
-		case CmpExprType:
-			return _Action{_ShiftAction, _State38, 0}, true
-		case AndExprType:
-			return _Action{_ShiftAction, _State37, 0}, true
-		case OrExprType:
-			return _Action{_ShiftAction, _State45, 0}, true
-		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
-			return _Action{_ShiftAction, _State208, 0}, true
-		case IfElifExprType:
-			return _Action{_ShiftAction, _State40, 0}, true
-		case RepeatLoopBodyType:
-			return _Action{_ShiftAction, _State47, 0}, true
-		case InitializableTypeExprType:
-			return _Action{_ShiftAction, _State42, 0}, true
-		case IntegerLiteralToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIntegerLiteralToLiteralExpr}, true
-		case FloatLiteralToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFloatLiteralToLiteralExpr}, true
-		case RuneLiteralToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceRuneLiteralToLiteralExpr}, true
-		case StringLiteralToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStringLiteralToLiteralExpr}, true
-		case IdentifierToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIdentifierToNamedExpr}, true
-		case UnderscoreToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToNamedExpr}, true
-		case TrueToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceTrueToLiteralExpr}, true
-		case FalseToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFalseToLiteralExpr}, true
-		case AsyncToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
-		case DeferToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
-		case VarToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceVarToVarType}, true
-		case LetToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
-		case NotToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
-		case SubToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
-		case MulToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
-		case BitAndToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
-		case GreaterToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
-		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
-		case AtomExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceParseErrorExprToAtomExpr}, true
-		case LiteralExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLiteralExprToAtomExpr}, true
-		case NamedExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceNamedExprToAtomExpr}, true
-		case InitializeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializeExprToAtomExpr}, true
-		case ImplicitStructExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceImplicitStructExprToAtomExpr}, true
-		case AccessExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAccessExprToAccessibleExpr}, true
-		case IndexExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIndexExprToAccessibleExpr}, true
-		case AsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAsExprToAccessibleExpr}, true
-		case CallExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceCallExprToAccessibleExpr}, true
-		case PostfixableExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePostfixableExprToPrefixableExpr}, true
-		case PostfixUnaryExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePostfixUnaryExprToPostfixableExpr}, true
-		case PrefixableExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixableExprToMulExpr}, true
-		case PrefixUnaryExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixUnaryExprToPrefixableExpr}, true
-		case BinaryMulExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryMulExprToMulExpr}, true
-		case BinaryAddExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAddExprToAddExpr}, true
-		case BinaryCmpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryCmpExprToCmpExpr}, true
-		case BinaryAndExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAndExprToAndExpr}, true
-		case BinaryOrExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryOrExprToOrExpr}, true
-		case SendExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSendExprToSendRecvExpr}, true
-		case RecvExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
-		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
-		case BinaryAssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceParseErrorExprToStatementsOrParseError}, true
 		case StatementsType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
-		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
-		case IfElseExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
-		case IfOnlyExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
-		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
-		case SwitchExprBodyType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
-		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
-		case SelectExprBodyType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
-		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
-		case LoopExprBodyType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
-		case SliceTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
-		case ArrayTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceArrayTypeExprToInitializableTypeExpr}, true
-		case MapTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceMapTypeExprToInitializableTypeExpr}, true
-		case ExplicitStructTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceExplicitStructTypeExprToInitializableTypeExpr}, true
-		case AnonymousFuncExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAnonymousFuncExprToAtomExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsOrParseError}, true
+		case StatementsOrParseErrorType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceToForLoopBody}, true
 		}
 	case _State145:
 		switch symbolId {
@@ -14288,11 +14126,11 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
-		case OptionalSimpleExprType:
-			return _Action{_ShiftAction, _State209, 0}, true
+		case OptionalExprType:
+			return _Action{_ShiftAction, _State208, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
 		case InitializableTypeExprType:
@@ -14336,7 +14174,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -14380,31 +14218,31 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSimpleExprToOptionalSimpleExpr}, true
+		case ExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceExprToOptionalExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -14419,20 +14257,178 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAnonymousFuncExprToAtomExpr}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceNilToOptionalSimpleExpr}, true
+			return _Action{_ReduceAction, 0, _ReduceNilToOptionalExpr}, true
 		}
 	case _State146:
 		switch symbolId {
+		case IfToken:
+			return _Action{_ShiftAction, _State25, 0}, true
+		case SwitchToken:
+			return _Action{_ShiftAction, _State33, 0}, true
+		case RepeatToken:
+			return _Action{_ShiftAction, _State30, 0}, true
+		case ForToken:
+			return _Action{_ShiftAction, _State23, 0}, true
+		case SelectToken:
+			return _Action{_ShiftAction, _State31, 0}, true
+		case StructToken:
+			return _Action{_ShiftAction, _State32, 0}, true
+		case FuncToken:
+			return _Action{_ShiftAction, _State24, 0}, true
+		case LabelDeclToken:
+			return _Action{_ShiftAction, _State27, 0}, true
 		case LbraceToken:
 			return _Action{_ShiftAction, _State14, 0}, true
+		case LparenToken:
+			return _Action{_ShiftAction, _State29, 0}, true
+		case LbracketToken:
+			return _Action{_ShiftAction, _State28, 0}, true
+		case ArrowToken:
+			return _Action{_ShiftAction, _State20, 0}, true
+		case VarTypeType:
+			return _Action{_ShiftAction, _State19, 0}, true
+		case AccessibleExprType:
+			return _Action{_ShiftAction, _State35, 0}, true
+		case PrefixUnaryOpType:
+			return _Action{_ShiftAction, _State46, 0}, true
+		case MulExprType:
+			return _Action{_ShiftAction, _State44, 0}, true
+		case AddExprType:
+			return _Action{_ShiftAction, _State36, 0}, true
+		case CmpExprType:
+			return _Action{_ShiftAction, _State38, 0}, true
+		case AndExprType:
+			return _Action{_ShiftAction, _State37, 0}, true
+		case OrExprType:
+			return _Action{_ShiftAction, _State45, 0}, true
+		case SendRecvExprType:
+			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State209, 0}, true
+		case IfElifExprType:
+			return _Action{_ShiftAction, _State40, 0}, true
+		case RepeatLoopBodyType:
+			return _Action{_ShiftAction, _State47, 0}, true
+		case InitializableTypeExprType:
+			return _Action{_ShiftAction, _State42, 0}, true
+		case IntegerLiteralToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIntegerLiteralToLiteralExpr}, true
+		case FloatLiteralToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFloatLiteralToLiteralExpr}, true
+		case RuneLiteralToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceRuneLiteralToLiteralExpr}, true
+		case StringLiteralToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStringLiteralToLiteralExpr}, true
+		case IdentifierToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIdentifierToNamedExpr}, true
+		case UnderscoreToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToNamedExpr}, true
+		case TrueToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTrueToLiteralExpr}, true
+		case FalseToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFalseToLiteralExpr}, true
+		case AsyncToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
+		case DeferToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
+		case VarToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceVarToVarType}, true
+		case LetToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
+		case NotToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case SubToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
+		case MulToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
+		case BitNegToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
+		case BitAndToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case GreaterToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
+		case DeclVarPatternType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
+		case AtomExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceParseErrorExprToStatementsOrParseError}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceParseErrorExprToAtomExpr}, true
+		case LiteralExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLiteralExprToAtomExpr}, true
+		case NamedExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceNamedExprToAtomExpr}, true
+		case InitializeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializeExprToAtomExpr}, true
+		case ImplicitStructExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceImplicitStructExprToAtomExpr}, true
+		case AccessExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAccessExprToAccessibleExpr}, true
+		case IndexExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIndexExprToAccessibleExpr}, true
+		case AsExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAsExprToAccessibleExpr}, true
+		case CallExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceCallExprToAccessibleExpr}, true
+		case PostfixableExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePostfixableExprToPrefixableExpr}, true
+		case PostfixUnaryExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePostfixUnaryExprToPostfixableExpr}, true
+		case PrefixableExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixableExprToMulExpr}, true
+		case PrefixUnaryExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixUnaryExprToPrefixableExpr}, true
+		case BinaryMulExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryMulExprToMulExpr}, true
+		case BinaryAddExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAddExprToAddExpr}, true
+		case BinaryCmpExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryCmpExprToCmpExpr}, true
+		case BinaryAndExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAndExprToAndExpr}, true
+		case BinaryOrExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryOrExprToOrExpr}, true
+		case SendExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSendExprToSendRecvExpr}, true
+		case RecvExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
+		case AssignOpExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
+		case BinaryAssignOpExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
+		case StatementsExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsOrParseError}, true
-		case StatementsOrParseErrorType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceToForLoopBody}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
+		case IfExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
+		case IfElseExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
+		case IfOnlyExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
+		case SwitchExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
+		case SwitchExprBodyType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
+		case SelectExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
+		case SelectExprBodyType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
+		case LoopExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
+		case LoopExprBodyType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
+		case SliceTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
+		case ArrayTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceArrayTypeExprToInitializableTypeExpr}, true
+		case MapTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceMapTypeExprToInitializableTypeExpr}, true
+		case ExplicitStructTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceExplicitStructTypeExprToInitializableTypeExpr}, true
+		case AnonymousFuncExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAnonymousFuncExprToAtomExpr}, true
 		}
 	case _State147:
 		switch symbolId {
@@ -14597,7 +14593,7 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -14643,7 +14639,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -14687,31 +14683,31 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
+		case ExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNamedAssignmentToArgument}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -14768,7 +14764,7 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -14814,7 +14810,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -14858,31 +14854,31 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
+		case ExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceColonExprExprTupleToColonExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -14900,6 +14896,180 @@ func (_ActionTableType) Get(
 			return _Action{_ReduceAction, 0, _ReduceColonExprUnitTupleToColonExpr}, true
 		}
 	case _State157:
+		switch symbolId {
+		case IfToken:
+			return _Action{_ShiftAction, _State25, 0}, true
+		case SwitchToken:
+			return _Action{_ShiftAction, _State33, 0}, true
+		case RepeatToken:
+			return _Action{_ShiftAction, _State30, 0}, true
+		case ForToken:
+			return _Action{_ShiftAction, _State23, 0}, true
+		case SelectToken:
+			return _Action{_ShiftAction, _State31, 0}, true
+		case StructToken:
+			return _Action{_ShiftAction, _State32, 0}, true
+		case FuncToken:
+			return _Action{_ShiftAction, _State24, 0}, true
+		case LabelDeclToken:
+			return _Action{_ShiftAction, _State27, 0}, true
+		case LbraceToken:
+			return _Action{_ShiftAction, _State14, 0}, true
+		case LparenToken:
+			return _Action{_ShiftAction, _State29, 0}, true
+		case LbracketToken:
+			return _Action{_ShiftAction, _State28, 0}, true
+		case ArrowToken:
+			return _Action{_ShiftAction, _State20, 0}, true
+		case VarTypeType:
+			return _Action{_ShiftAction, _State19, 0}, true
+		case AccessibleExprType:
+			return _Action{_ShiftAction, _State35, 0}, true
+		case PrefixUnaryOpType:
+			return _Action{_ShiftAction, _State46, 0}, true
+		case MulExprType:
+			return _Action{_ShiftAction, _State44, 0}, true
+		case AddExprType:
+			return _Action{_ShiftAction, _State36, 0}, true
+		case CmpExprType:
+			return _Action{_ShiftAction, _State38, 0}, true
+		case AndExprType:
+			return _Action{_ShiftAction, _State37, 0}, true
+		case OrExprType:
+			return _Action{_ShiftAction, _State45, 0}, true
+		case SendRecvExprType:
+			return _Action{_ShiftAction, _State49, 0}, true
+		case IfElifExprType:
+			return _Action{_ShiftAction, _State40, 0}, true
+		case RepeatLoopBodyType:
+			return _Action{_ShiftAction, _State47, 0}, true
+		case InitializableTypeExprType:
+			return _Action{_ShiftAction, _State42, 0}, true
+		case IntegerLiteralToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIntegerLiteralToLiteralExpr}, true
+		case FloatLiteralToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFloatLiteralToLiteralExpr}, true
+		case RuneLiteralToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceRuneLiteralToLiteralExpr}, true
+		case StringLiteralToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStringLiteralToLiteralExpr}, true
+		case IdentifierToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIdentifierToNamedExpr}, true
+		case UnderscoreToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToNamedExpr}, true
+		case TrueToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTrueToLiteralExpr}, true
+		case FalseToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFalseToLiteralExpr}, true
+		case AsyncToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
+		case DeferToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
+		case VarToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceVarToVarType}, true
+		case LetToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
+		case NotToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case SubToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
+		case MulToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
+		case BitNegToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
+		case BitAndToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case GreaterToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
+		case ParseErrorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
+		case DeclVarPatternType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
+		case AtomExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
+		case ParseErrorExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceParseErrorExprToAtomExpr}, true
+		case LiteralExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLiteralExprToAtomExpr}, true
+		case NamedExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceNamedExprToAtomExpr}, true
+		case InitializeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializeExprToAtomExpr}, true
+		case ImplicitStructExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceImplicitStructExprToAtomExpr}, true
+		case AccessExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAccessExprToAccessibleExpr}, true
+		case IndexExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIndexExprToAccessibleExpr}, true
+		case AsExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAsExprToAccessibleExpr}, true
+		case CallExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceCallExprToAccessibleExpr}, true
+		case PostfixableExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePostfixableExprToPrefixableExpr}, true
+		case PostfixUnaryExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePostfixUnaryExprToPostfixableExpr}, true
+		case PrefixableExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixableExprToMulExpr}, true
+		case PrefixUnaryExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixUnaryExprToPrefixableExpr}, true
+		case BinaryMulExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryMulExprToMulExpr}, true
+		case BinaryAddExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAddExprToAddExpr}, true
+		case BinaryCmpExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryCmpExprToCmpExpr}, true
+		case BinaryAndExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAndExprToAndExpr}, true
+		case BinaryOrExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryOrExprToOrExpr}, true
+		case SendExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSendExprToSendRecvExpr}, true
+		case RecvExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
+		case AssignOpExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
+		case BinaryAssignOpExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
+		case ExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceExprExprPairToColonExpr}, true
+		case StatementsExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
+		case StatementsType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
+		case IfExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
+		case IfElseExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
+		case IfOnlyExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
+		case SwitchExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
+		case SwitchExprBodyType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
+		case SelectExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
+		case SelectExprBodyType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
+		case LoopExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
+		case LoopExprBodyType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
+		case SliceTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
+		case ArrayTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceArrayTypeExprToInitializableTypeExpr}, true
+		case MapTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceMapTypeExprToInitializableTypeExpr}, true
+		case ExplicitStructTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceExplicitStructTypeExprToInitializableTypeExpr}, true
+		case AnonymousFuncExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAnonymousFuncExprToAtomExpr}, true
+
+		default:
+			return _Action{_ReduceAction, 0, _ReduceExprUnitPairToColonExpr}, true
+		}
+	case _State158:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State84, 0}, true
@@ -14948,9 +15118,9 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
-			return _Action{_ShiftAction, _State88, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State87, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -14996,7 +15166,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -15042,29 +15212,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -15080,180 +15250,6 @@ func (_ActionTableType) Get(
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceImproperToArguments}, true
-		}
-	case _State158:
-		switch symbolId {
-		case IfToken:
-			return _Action{_ShiftAction, _State25, 0}, true
-		case SwitchToken:
-			return _Action{_ShiftAction, _State33, 0}, true
-		case RepeatToken:
-			return _Action{_ShiftAction, _State30, 0}, true
-		case ForToken:
-			return _Action{_ShiftAction, _State23, 0}, true
-		case SelectToken:
-			return _Action{_ShiftAction, _State31, 0}, true
-		case StructToken:
-			return _Action{_ShiftAction, _State32, 0}, true
-		case FuncToken:
-			return _Action{_ShiftAction, _State24, 0}, true
-		case LabelDeclToken:
-			return _Action{_ShiftAction, _State27, 0}, true
-		case LbraceToken:
-			return _Action{_ShiftAction, _State14, 0}, true
-		case LparenToken:
-			return _Action{_ShiftAction, _State29, 0}, true
-		case LbracketToken:
-			return _Action{_ShiftAction, _State28, 0}, true
-		case ArrowToken:
-			return _Action{_ShiftAction, _State20, 0}, true
-		case VarTypeType:
-			return _Action{_ShiftAction, _State19, 0}, true
-		case AccessibleExprType:
-			return _Action{_ShiftAction, _State35, 0}, true
-		case PrefixUnaryOpType:
-			return _Action{_ShiftAction, _State46, 0}, true
-		case MulExprType:
-			return _Action{_ShiftAction, _State44, 0}, true
-		case AddExprType:
-			return _Action{_ShiftAction, _State36, 0}, true
-		case CmpExprType:
-			return _Action{_ShiftAction, _State38, 0}, true
-		case AndExprType:
-			return _Action{_ShiftAction, _State37, 0}, true
-		case OrExprType:
-			return _Action{_ShiftAction, _State45, 0}, true
-		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case IfElifExprType:
-			return _Action{_ShiftAction, _State40, 0}, true
-		case RepeatLoopBodyType:
-			return _Action{_ShiftAction, _State47, 0}, true
-		case InitializableTypeExprType:
-			return _Action{_ShiftAction, _State42, 0}, true
-		case IntegerLiteralToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIntegerLiteralToLiteralExpr}, true
-		case FloatLiteralToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFloatLiteralToLiteralExpr}, true
-		case RuneLiteralToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceRuneLiteralToLiteralExpr}, true
-		case StringLiteralToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStringLiteralToLiteralExpr}, true
-		case IdentifierToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIdentifierToNamedExpr}, true
-		case UnderscoreToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToNamedExpr}, true
-		case TrueToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceTrueToLiteralExpr}, true
-		case FalseToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFalseToLiteralExpr}, true
-		case AsyncToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
-		case DeferToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
-		case VarToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceVarToVarType}, true
-		case LetToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
-		case NotToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
-		case SubToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
-		case MulToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
-		case BitAndToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
-		case GreaterToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
-		case ParseErrorToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
-		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
-		case AtomExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
-		case ParseErrorExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceParseErrorExprToAtomExpr}, true
-		case LiteralExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLiteralExprToAtomExpr}, true
-		case NamedExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceNamedExprToAtomExpr}, true
-		case InitializeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializeExprToAtomExpr}, true
-		case ImplicitStructExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceImplicitStructExprToAtomExpr}, true
-		case AccessExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAccessExprToAccessibleExpr}, true
-		case IndexExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIndexExprToAccessibleExpr}, true
-		case AsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAsExprToAccessibleExpr}, true
-		case CallExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceCallExprToAccessibleExpr}, true
-		case PostfixableExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePostfixableExprToPrefixableExpr}, true
-		case PostfixUnaryExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePostfixUnaryExprToPostfixableExpr}, true
-		case PrefixableExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixableExprToMulExpr}, true
-		case PrefixUnaryExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixUnaryExprToPrefixableExpr}, true
-		case BinaryMulExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryMulExprToMulExpr}, true
-		case BinaryAddExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAddExprToAddExpr}, true
-		case BinaryCmpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryCmpExprToCmpExpr}, true
-		case BinaryAndExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAndExprToAndExpr}, true
-		case BinaryOrExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryOrExprToOrExpr}, true
-		case SendExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSendExprToSendRecvExpr}, true
-		case RecvExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
-		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
-		case BinaryAssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceExprExprPairToColonExpr}, true
-		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
-		case StatementsType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
-		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
-		case IfElseExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
-		case IfOnlyExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
-		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
-		case SwitchExprBodyType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
-		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
-		case SelectExprBodyType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
-		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
-		case LoopExprBodyType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
-		case SliceTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
-		case ArrayTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceArrayTypeExprToInitializableTypeExpr}, true
-		case MapTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceMapTypeExprToInitializableTypeExpr}, true
-		case ExplicitStructTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceExplicitStructTypeExprToInitializableTypeExpr}, true
-		case AnonymousFuncExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAnonymousFuncExprToAtomExpr}, true
-
-		default:
-			return _Action{_ReduceAction, 0, _ReduceExprUnitPairToColonExpr}, true
 		}
 	case _State159:
 		switch symbolId {
@@ -15347,7 +15343,7 @@ func (_ActionTableType) Get(
 		case AccessibleExprType:
 			return _Action{_ShiftAction, _State35, 0}, true
 		case ProperArgumentsType:
-			return _Action{_ShiftAction, _State87, 0}, true
+			return _Action{_ShiftAction, _State88, 0}, true
 		case ArgumentsType:
 			return _Action{_ShiftAction, _State220, 0}, true
 		case ColonExprType:
@@ -15365,9 +15361,9 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
-			return _Action{_ShiftAction, _State88, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State87, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -15413,7 +15409,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -15459,29 +15455,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -15599,7 +15595,7 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
+			return _Action{_ShiftAction, _State49, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case ConditionType:
@@ -15647,7 +15643,7 @@ func (_ActionTableType) Get(
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -15691,17 +15687,17 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
-		case SimpleExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSimpleExprToCondition}, true
+		case ExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceExprToCondition}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
@@ -15709,15 +15705,15 @@ func (_ActionTableType) Get(
 		case CaseAssignExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceCaseAssignExprToCondition}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -15755,7 +15751,7 @@ func (_ActionTableType) Get(
 	case _State175:
 		switch symbolId {
 		case ArrowToken:
-			return _Action{_ShiftAction, _State107, 0}, true
+			return _Action{_ShiftAction, _State108, 0}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceToBinaryAssignOpExpr}, true
@@ -16725,15 +16721,15 @@ func (_ActionTableType) Get(
 		}
 	case _State208:
 		switch symbolId {
-		case DoToken:
-			return _Action{_ShiftAction, _State146, 0}, true
-		case ForLoopBodyType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIteratorToLoopExprBody}, true
+		case SemicolonToken:
+			return _Action{_ShiftAction, _State236, 0}, true
 		}
 	case _State209:
 		switch symbolId {
-		case SemicolonToken:
-			return _Action{_ShiftAction, _State236, 0}, true
+		case DoToken:
+			return _Action{_ShiftAction, _State144, 0}, true
+		case ForLoopBodyType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIteratorToLoopExprBody}, true
 		}
 	case _State210:
 		switch symbolId {
@@ -17792,17 +17788,17 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State48, 0}, true
-		case SimpleExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
+		case ExprType:
+			return _Action{_ShiftAction, _State39, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case OptionalStatementType:
 			return _Action{_ShiftAction, _State241, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
-		case ExprType:
-			return _Action{_ShiftAction, _State39, 0}, true
+		case ReturnableExprType:
+			return _Action{_ShiftAction, _State48, 0}, true
 		case ImproperExprStructType:
 			return _Action{_ShiftAction, _State41, 0}, true
 		case InitializableTypeExprType:
@@ -17866,7 +17862,7 @@ func (_ActionTableType) Get(
 		case ImportStatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
 		case DeclVarPatternType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomExprToAccessibleExpr}, true
 		case ParseErrorExprType:
@@ -17910,29 +17906,29 @@ func (_ActionTableType) Get(
 		case RecvExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRecvExprToSendRecvExpr}, true
 		case AssignOpExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignOpExprToExpr}, true
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case StatementsExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsToStatementsExpr}, true
 		case IfExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIfExprToExpr}, true
 		case IfElseExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
 		case SwitchExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprBodyToSwitchExpr}, true
 		case SelectExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprToExpr}, true
 		case SelectExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSelectExprBodyToSelectExpr}, true
 		case LoopExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToSimpleExpr}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprToExpr}, true
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case SliceTypeExprType:
@@ -18061,7 +18057,7 @@ func (_ActionTableType) Get(
 	case _State241:
 		switch symbolId {
 		case DoToken:
-			return _Action{_ShiftAction, _State146, 0}, true
+			return _Action{_ShiftAction, _State144, 0}, true
 		case ForLoopBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceForToLoopExprBody}, true
 		}
@@ -18178,7 +18174,7 @@ Parser Debug States:
       jump_statement -> [statement]
       assign_statement -> [statement]
       import_statement -> [statement]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -18200,18 +18196,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -18245,11 +18241,11 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 49
+      send_recv_expr -> State 49
+      expr -> State 39
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
-      expr -> State 39
+      returnable_expr -> State 48
       improper_expr_struct -> State 41
       initializable_type_expr -> State 42
 
@@ -18278,7 +18274,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -18300,18 +18296,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -18339,12 +18335,10 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 49
+      send_recv_expr -> State 49
+      expr -> State 10
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
-      expr -> State 10
-      improper_expr_struct -> State 41
       initializable_type_expr -> State 42
 
   State 5:
@@ -18508,7 +18502,7 @@ Parser Debug States:
       jump_statement -> [statement]
       assign_statement -> [statement]
       import_statement -> [statement]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -18530,18 +18524,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -18574,13 +18568,13 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 49
+      send_recv_expr -> State 49
+      expr -> State 39
       proper_statement_list -> State 58
       statement_list -> State 59
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
-      expr -> State 39
+      returnable_expr -> State 48
       improper_expr_struct -> State 41
       initializable_type_expr -> State 42
 
@@ -18612,7 +18606,7 @@ Parser Debug States:
   State 17:
     Kernel Items:
       global_var_def: decl_var_pattern., *
-      global_var_def: decl_var_pattern.ASSIGN expr
+      global_var_def: decl_var_pattern.ASSIGN returnable_expr
     Reduce:
       * -> [global_var_def]
     ShiftAndReduce:
@@ -18733,7 +18727,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       case_assign_pattern -> [case_patterns]
       switchable_case_pattern -> [switchable_case_patterns]
       case_enum_pattern -> [switchable_case_pattern]
@@ -18758,19 +18752,19 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [switchable_case_pattern]
-      statements_expr -> [simple_expr]
+      expr -> [switchable_case_pattern]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -18801,7 +18795,7 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
+      send_recv_expr -> State 49
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -18818,9 +18812,9 @@ Parser Debug States:
 
   State 23:
     Kernel Items:
-      loop_expr_body: FOR.simple_expr for_loop_body
-      loop_expr_body: FOR.expr IN simple_expr for_loop_body
-      loop_expr_body: FOR.optional_statement SEMICOLON optional_simple_expr SEMICOLON optional_statement for_loop_body
+      loop_expr_body: FOR.expr for_loop_body
+      loop_expr_body: FOR.returnable_expr IN expr for_loop_body
+      loop_expr_body: FOR.optional_statement SEMICOLON optional_expr SEMICOLON optional_statement for_loop_body
     Reduce:
       * -> [optional_statement]
     ShiftAndReduce:
@@ -18853,7 +18847,7 @@ Parser Debug States:
       jump_statement -> [statement]
       assign_statement -> [statement]
       import_statement -> [statement]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -18875,18 +18869,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -18919,12 +18913,12 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 73
+      send_recv_expr -> State 49
+      expr -> State 71
       if_elif_expr -> State 40
       optional_statement -> State 72
       repeat_loop_body -> State 47
-      expr -> State 71
+      returnable_expr -> State 73
       improper_expr_struct -> State 41
       initializable_type_expr -> State 42
 
@@ -18964,7 +18958,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -18986,20 +18980,20 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [condition]
-      statements_expr -> [simple_expr]
+      expr -> [condition]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
       case_assign_expr -> [condition]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -19028,7 +19022,7 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
+      send_recv_expr -> State 49
       if_elif_expr -> State 40
       condition -> State 77
       repeat_loop_body -> State 47
@@ -19145,7 +19139,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -19168,18 +19162,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -19203,7 +19197,7 @@ Parser Debug States:
       ARROW -> State 20
       var_type -> State 19
       accessible_expr -> State 35
-      proper_arguments -> State 87
+      proper_arguments -> State 88
       arguments -> State 85
       colon_expr -> State 86
       prefix_unary_op -> State 46
@@ -19212,8 +19206,8 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 88
+      send_recv_expr -> State 49
+      expr -> State 87
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -19256,7 +19250,7 @@ Parser Debug States:
 
   State 33:
     Kernel Items:
-      switch_expr_body: SWITCH.simple_expr statements_or_parse_error
+      switch_expr_body: SWITCH.expr statements_or_parse_error
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -19279,7 +19273,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -19301,18 +19295,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -19340,8 +19334,8 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 90
+      send_recv_expr -> State 49
+      expr -> State 90
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -19422,14 +19416,14 @@ Parser Debug States:
 
   State 39:
     Kernel Items:
-      statement: expr., *
-      assign_statement: expr.ASSIGN expr
+      returnable_expr: expr., *
+      improper_expr_struct: expr.COMMA expr
     Reduce:
-      * -> [statement]
+      * -> [returnable_expr]
     ShiftAndReduce:
       (nil)
     Goto:
-      ASSIGN -> State 99
+      COMMA -> State 99
 
   State 40:
     Kernel Items:
@@ -19445,10 +19439,10 @@ Parser Debug States:
 
   State 41:
     Kernel Items:
-      expr: improper_expr_struct., *
-      improper_expr_struct: improper_expr_struct.COMMA simple_expr
+      returnable_expr: improper_expr_struct., *
+      improper_expr_struct: improper_expr_struct.COMMA expr
     Reduce:
-      * -> [expr]
+      * -> [returnable_expr]
     ShiftAndReduce:
       (nil)
     Goto:
@@ -19467,9 +19461,9 @@ Parser Debug States:
   State 43:
     Kernel Items:
       jump_statement: jump_op., *
-      jump_statement: jump_op.expr
+      jump_statement: jump_op.returnable_expr
       jump_statement: jump_op.JUMP_LABEL
-      jump_statement: jump_op.JUMP_LABEL expr
+      jump_statement: jump_op.JUMP_LABEL returnable_expr
     Reduce:
       * -> [jump_statement]
     ShiftAndReduce:
@@ -19492,7 +19486,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -19514,20 +19508,20 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
-      expr -> [jump_statement]
+      returnable_expr -> [jump_statement]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
       map_type_expr -> [initializable_type_expr]
@@ -19555,8 +19549,8 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 49
+      send_recv_expr -> State 49
+      expr -> State 39
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       improper_expr_struct -> State 41
@@ -19643,7 +19637,7 @@ Parser Debug States:
   State 47:
     Kernel Items:
       loop_expr_body: repeat_loop_body., *
-      loop_expr_body: repeat_loop_body.FOR simple_expr
+      loop_expr_body: repeat_loop_body.FOR expr
     Reduce:
       * -> [loop_expr_body]
     ShiftAndReduce:
@@ -19652,6 +19646,17 @@ Parser Debug States:
       FOR -> State 106
 
   State 48:
+    Kernel Items:
+      statement: returnable_expr., *
+      assign_statement: returnable_expr.ASSIGN returnable_expr
+    Reduce:
+      * -> [statement]
+    ShiftAndReduce:
+      (nil)
+    Goto:
+      ASSIGN -> State 107
+
+  State 49:
     Kernel Items:
       send_expr: send_recv_expr.ARROW or_expr
       assign_op_expr: send_recv_expr., *
@@ -19671,19 +19676,8 @@ Parser Debug States:
       BIT_LSHIFT_ASSIGN -> [binary_assign_op]
       BIT_RSHIFT_ASSIGN -> [binary_assign_op]
     Goto:
-      ARROW -> State 107
-      binary_assign_op -> State 108
-
-  State 49:
-    Kernel Items:
-      expr: simple_expr., *
-      improper_expr_struct: simple_expr.COMMA simple_expr
-    Reduce:
-      * -> [expr]
-    ShiftAndReduce:
-      (nil)
-    Goto:
-      COMMA -> State 109
+      ARROW -> State 108
+      binary_assign_op -> State 109
 
   State 50:
     Kernel Items:
@@ -19881,7 +19875,7 @@ Parser Debug States:
 
   State 61:
     Kernel Items:
-      global_var_def: decl_var_pattern ASSIGN.expr
+      global_var_def: decl_var_pattern ASSIGN.returnable_expr
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -19904,7 +19898,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -19926,20 +19920,20 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
-      expr -> [global_var_def]
+      returnable_expr -> [global_var_def]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
       map_type_expr -> [initializable_type_expr]
@@ -19966,8 +19960,8 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 49
+      send_recv_expr -> State 49
+      expr -> State 39
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       improper_expr_struct -> State 41
@@ -20095,7 +20089,7 @@ Parser Debug States:
   State 68:
     Kernel Items:
       case_patterns: switchable_case_patterns., *
-      case_assign_pattern: switchable_case_patterns.ASSIGN simple_expr
+      case_assign_pattern: switchable_case_patterns.ASSIGN expr
       switchable_case_patterns: switchable_case_patterns.COMMA switchable_case_pattern
     Reduce:
       * -> [case_patterns]
@@ -20158,7 +20152,7 @@ Parser Debug States:
       jump_statement -> [statement]
       assign_statement -> [statement]
       import_statement -> [statement]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -20180,18 +20174,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -20224,30 +20218,30 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 49
+      send_recv_expr -> State 49
+      expr -> State 39
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
-      expr -> State 39
+      returnable_expr -> State 48
       improper_expr_struct -> State 41
       initializable_type_expr -> State 42
 
   State 71:
     Kernel Items:
-      statement: expr., *
-      assign_statement: expr.ASSIGN expr
-      loop_expr_body: FOR expr.IN simple_expr for_loop_body
+      loop_expr_body: FOR expr.for_loop_body
+      returnable_expr: expr., *
+      improper_expr_struct: expr.COMMA expr
     Reduce:
-      * -> [statement]
+      * -> [returnable_expr]
     ShiftAndReduce:
-      (nil)
+      for_loop_body -> [loop_expr_body]
     Goto:
-      IN -> State 144
-      ASSIGN -> State 99
+      DO -> State 144
+      COMMA -> State 99
 
   State 72:
     Kernel Items:
-      loop_expr_body: FOR optional_statement.SEMICOLON optional_simple_expr SEMICOLON optional_statement for_loop_body
+      loop_expr_body: FOR optional_statement.SEMICOLON optional_expr SEMICOLON optional_statement for_loop_body
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -20257,16 +20251,16 @@ Parser Debug States:
 
   State 73:
     Kernel Items:
-      loop_expr_body: FOR simple_expr.for_loop_body
-      expr: simple_expr., *
-      improper_expr_struct: simple_expr.COMMA simple_expr
+      statement: returnable_expr., *
+      assign_statement: returnable_expr.ASSIGN returnable_expr
+      loop_expr_body: FOR returnable_expr.IN expr for_loop_body
     Reduce:
-      * -> [expr]
+      * -> [statement]
     ShiftAndReduce:
-      for_loop_body -> [loop_expr_body]
+      (nil)
     Goto:
-      DO -> State 146
-      COMMA -> State 109
+      IN -> State 146
+      ASSIGN -> State 107
 
   State 74:
     Kernel Items:
@@ -20346,7 +20340,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       case_assign_pattern -> [case_assign_expr]
       switchable_case_pattern -> [switchable_case_patterns]
       case_enum_pattern -> [switchable_case_pattern]
@@ -20371,19 +20365,19 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [switchable_case_pattern]
-      statements_expr -> [simple_expr]
+      expr -> [switchable_case_pattern]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -20413,7 +20407,7 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
+      send_recv_expr -> State 49
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -20497,7 +20491,7 @@ Parser Debug States:
   State 83:
     Kernel Items:
       colon_expr: COLON., *
-      colon_expr: COLON.simple_expr
+      colon_expr: COLON.expr
     Reduce:
       * -> [colon_expr]
     ShiftAndReduce:
@@ -20520,7 +20514,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -20542,19 +20536,19 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [colon_expr]
-      statements_expr -> [simple_expr]
+      expr -> [colon_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -20582,7 +20576,7 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
+      send_recv_expr -> State 49
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -20590,7 +20584,7 @@ Parser Debug States:
   State 84:
     Kernel Items:
       named_expr: IDENTIFIER., *
-      argument: IDENTIFIER.ASSIGN simple_expr
+      argument: IDENTIFIER.ASSIGN expr
     Reduce:
       * -> [named_expr]
     ShiftAndReduce:
@@ -20612,7 +20606,7 @@ Parser Debug States:
     Kernel Items:
       argument: colon_expr., *
       colon_expr: colon_expr.COLON
-      colon_expr: colon_expr.COLON simple_expr
+      colon_expr: colon_expr.COLON expr
     Reduce:
       * -> [argument]
     ShiftAndReduce:
@@ -20622,6 +20616,19 @@ Parser Debug States:
 
   State 87:
     Kernel Items:
+      argument: expr., *
+      argument: expr.ELLIPSIS
+      colon_expr: expr.COLON
+      colon_expr: expr.COLON expr
+    Reduce:
+      * -> [argument]
+    ShiftAndReduce:
+      ELLIPSIS -> [argument]
+    Goto:
+      COLON -> State 157
+
+  State 88:
+    Kernel Items:
       proper_arguments: proper_arguments.COMMA argument
       arguments: proper_arguments., *
       arguments: proper_arguments.COMMA
@@ -20630,20 +20637,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      COMMA -> State 157
-
-  State 88:
-    Kernel Items:
-      argument: simple_expr., *
-      argument: simple_expr.ELLIPSIS
-      colon_expr: simple_expr.COLON
-      colon_expr: simple_expr.COLON simple_expr
-    Reduce:
-      * -> [argument]
-    ShiftAndReduce:
-      ELLIPSIS -> [argument]
-    Goto:
-      COLON -> State 158
+      COMMA -> State 158
 
   State 89:
     Kernel Items:
@@ -20695,7 +20689,7 @@ Parser Debug States:
 
   State 90:
     Kernel Items:
-      switch_expr_body: SWITCH simple_expr.statements_or_parse_error
+      switch_expr_body: SWITCH expr.statements_or_parse_error
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -20794,7 +20788,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -20816,18 +20810,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -20859,8 +20853,8 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 88
+      send_recv_expr -> State 49
+      expr -> State 87
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -21042,7 +21036,7 @@ Parser Debug States:
 
   State 99:
     Kernel Items:
-      assign_statement: expr ASSIGN.expr
+      improper_expr_struct: expr COMMA.expr
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -21065,7 +21059,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -21087,20 +21081,20 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      expr -> [improper_expr_struct]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
-      expr -> [assign_statement]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
       map_type_expr -> [initializable_type_expr]
@@ -21127,11 +21121,9 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 49
+      send_recv_expr -> State 49
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
-      improper_expr_struct -> State 41
       initializable_type_expr -> State 42
 
   State 100:
@@ -21151,7 +21143,7 @@ Parser Debug States:
 
   State 101:
     Kernel Items:
-      improper_expr_struct: improper_expr_struct COMMA.simple_expr
+      improper_expr_struct: improper_expr_struct COMMA.expr
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -21174,7 +21166,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -21196,19 +21188,19 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [improper_expr_struct]
-      statements_expr -> [simple_expr]
+      expr -> [improper_expr_struct]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -21236,7 +21228,7 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
+      send_recv_expr -> State 49
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -21266,7 +21258,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -21289,18 +21281,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -21324,7 +21316,7 @@ Parser Debug States:
       ARROW -> State 20
       var_type -> State 19
       accessible_expr -> State 35
-      proper_arguments -> State 87
+      proper_arguments -> State 88
       arguments -> State 172
       colon_expr -> State 86
       prefix_unary_op -> State 46
@@ -21333,8 +21325,8 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 88
+      send_recv_expr -> State 49
+      expr -> State 87
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -21342,7 +21334,7 @@ Parser Debug States:
   State 103:
     Kernel Items:
       jump_statement: jump_op JUMP_LABEL., *
-      jump_statement: jump_op JUMP_LABEL.expr
+      jump_statement: jump_op JUMP_LABEL.returnable_expr
     Reduce:
       * -> [jump_statement]
     ShiftAndReduce:
@@ -21365,7 +21357,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -21387,20 +21379,20 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
-      expr -> [jump_statement]
+      returnable_expr -> [jump_statement]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
       map_type_expr -> [initializable_type_expr]
@@ -21427,8 +21419,8 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 49
+      send_recv_expr -> State 49
+      expr -> State 39
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       improper_expr_struct -> State 41
@@ -21546,7 +21538,7 @@ Parser Debug States:
 
   State 106:
     Kernel Items:
-      loop_expr_body: repeat_loop_body FOR.simple_expr
+      loop_expr_body: repeat_loop_body FOR.expr
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -21569,7 +21561,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -21591,19 +21583,19 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [loop_expr_body]
-      statements_expr -> [simple_expr]
+      expr -> [loop_expr_body]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -21631,12 +21623,106 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
+      send_recv_expr -> State 49
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
 
   State 107:
+    Kernel Items:
+      assign_statement: returnable_expr ASSIGN.returnable_expr
+    Reduce:
+      (nil)
+    ShiftAndReduce:
+      INTEGER_LITERAL -> [literal_expr]
+      FLOAT_LITERAL -> [literal_expr]
+      RUNE_LITERAL -> [literal_expr]
+      STRING_LITERAL -> [literal_expr]
+      IDENTIFIER -> [named_expr]
+      UNDERSCORE -> [named_expr]
+      TRUE -> [literal_expr]
+      FALSE -> [literal_expr]
+      ASYNC -> [prefix_unary_op]
+      DEFER -> [prefix_unary_op]
+      VAR -> [var_type]
+      LET -> [var_type]
+      NOT -> [prefix_unary_op]
+      SUB -> [prefix_unary_op]
+      MUL -> [prefix_unary_op]
+      BIT_NEG -> [prefix_unary_op]
+      BIT_AND -> [prefix_unary_op]
+      GREATER -> [prefix_unary_op]
+      PARSE_ERROR -> [parse_error_expr]
+      decl_var_pattern -> [expr]
+      atom_expr -> [accessible_expr]
+      parse_error_expr -> [atom_expr]
+      literal_expr -> [atom_expr]
+      named_expr -> [atom_expr]
+      initialize_expr -> [atom_expr]
+      implicit_struct_expr -> [atom_expr]
+      access_expr -> [accessible_expr]
+      index_expr -> [accessible_expr]
+      as_expr -> [accessible_expr]
+      call_expr -> [accessible_expr]
+      postfixable_expr -> [prefixable_expr]
+      postfix_unary_expr -> [postfixable_expr]
+      prefixable_expr -> [mul_expr]
+      prefix_unary_expr -> [prefixable_expr]
+      binary_mul_expr -> [mul_expr]
+      binary_add_expr -> [add_expr]
+      binary_cmp_expr -> [cmp_expr]
+      binary_and_expr -> [and_expr]
+      binary_or_expr -> [or_expr]
+      send_expr -> [send_recv_expr]
+      recv_expr -> [send_recv_expr]
+      assign_op_expr -> [expr]
+      binary_assign_op_expr -> [assign_op_expr]
+      statements_expr -> [expr]
+      statements -> [statements_expr]
+      if_expr -> [expr]
+      if_else_expr -> [if_expr]
+      if_only_expr -> [if_elif_expr]
+      switch_expr -> [expr]
+      switch_expr_body -> [switch_expr]
+      select_expr -> [expr]
+      select_expr_body -> [select_expr]
+      loop_expr -> [expr]
+      loop_expr_body -> [loop_expr]
+      returnable_expr -> [assign_statement]
+      slice_type_expr -> [initializable_type_expr]
+      array_type_expr -> [initializable_type_expr]
+      map_type_expr -> [initializable_type_expr]
+      explicit_struct_type_expr -> [initializable_type_expr]
+      anonymous_func_expr -> [atom_expr]
+    Goto:
+      IF -> State 25
+      SWITCH -> State 33
+      REPEAT -> State 30
+      FOR -> State 23
+      SELECT -> State 31
+      STRUCT -> State 32
+      FUNC -> State 24
+      LABEL_DECL -> State 27
+      LBRACE -> State 14
+      LPAREN -> State 29
+      LBRACKET -> State 28
+      ARROW -> State 20
+      var_type -> State 19
+      accessible_expr -> State 35
+      prefix_unary_op -> State 46
+      mul_expr -> State 44
+      add_expr -> State 36
+      cmp_expr -> State 38
+      and_expr -> State 37
+      or_expr -> State 45
+      send_recv_expr -> State 49
+      expr -> State 39
+      if_elif_expr -> State 40
+      repeat_loop_body -> State 47
+      improper_expr_struct -> State 41
+      initializable_type_expr -> State 42
+
+  State 108:
     Kernel Items:
       send_expr: send_recv_expr ARROW.or_expr
     Reduce:
@@ -21697,7 +21783,7 @@ Parser Debug States:
       or_expr -> State 174
       initializable_type_expr -> State 42
 
-  State 108:
+  State 109:
     Kernel Items:
       binary_assign_op_expr: send_recv_expr binary_assign_op.send_recv_expr
     Reduce:
@@ -21760,98 +21846,6 @@ Parser Debug States:
       and_expr -> State 37
       or_expr -> State 45
       send_recv_expr -> State 175
-      initializable_type_expr -> State 42
-
-  State 109:
-    Kernel Items:
-      improper_expr_struct: simple_expr COMMA.simple_expr
-    Reduce:
-      (nil)
-    ShiftAndReduce:
-      INTEGER_LITERAL -> [literal_expr]
-      FLOAT_LITERAL -> [literal_expr]
-      RUNE_LITERAL -> [literal_expr]
-      STRING_LITERAL -> [literal_expr]
-      IDENTIFIER -> [named_expr]
-      UNDERSCORE -> [named_expr]
-      TRUE -> [literal_expr]
-      FALSE -> [literal_expr]
-      ASYNC -> [prefix_unary_op]
-      DEFER -> [prefix_unary_op]
-      VAR -> [var_type]
-      LET -> [var_type]
-      NOT -> [prefix_unary_op]
-      SUB -> [prefix_unary_op]
-      MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
-      BIT_AND -> [prefix_unary_op]
-      GREATER -> [prefix_unary_op]
-      PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
-      atom_expr -> [accessible_expr]
-      parse_error_expr -> [atom_expr]
-      literal_expr -> [atom_expr]
-      named_expr -> [atom_expr]
-      initialize_expr -> [atom_expr]
-      implicit_struct_expr -> [atom_expr]
-      access_expr -> [accessible_expr]
-      index_expr -> [accessible_expr]
-      as_expr -> [accessible_expr]
-      call_expr -> [accessible_expr]
-      postfixable_expr -> [prefixable_expr]
-      postfix_unary_expr -> [postfixable_expr]
-      prefixable_expr -> [mul_expr]
-      prefix_unary_expr -> [prefixable_expr]
-      binary_mul_expr -> [mul_expr]
-      binary_add_expr -> [add_expr]
-      binary_cmp_expr -> [cmp_expr]
-      binary_and_expr -> [and_expr]
-      binary_or_expr -> [or_expr]
-      send_expr -> [send_recv_expr]
-      recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
-      binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [improper_expr_struct]
-      statements_expr -> [simple_expr]
-      statements -> [statements_expr]
-      if_expr -> [simple_expr]
-      if_else_expr -> [if_expr]
-      if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
-      switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
-      select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
-      loop_expr_body -> [loop_expr]
-      slice_type_expr -> [initializable_type_expr]
-      array_type_expr -> [initializable_type_expr]
-      map_type_expr -> [initializable_type_expr]
-      explicit_struct_type_expr -> [initializable_type_expr]
-      anonymous_func_expr -> [atom_expr]
-    Goto:
-      IF -> State 25
-      SWITCH -> State 33
-      REPEAT -> State 30
-      FOR -> State 23
-      SELECT -> State 31
-      STRUCT -> State 32
-      FUNC -> State 24
-      LABEL_DECL -> State 27
-      LBRACE -> State 14
-      LPAREN -> State 29
-      LBRACKET -> State 28
-      ARROW -> State 20
-      var_type -> State 19
-      accessible_expr -> State 35
-      prefix_unary_op -> State 46
-      mul_expr -> State 44
-      add_expr -> State 36
-      cmp_expr -> State 38
-      and_expr -> State 37
-      or_expr -> State 45
-      send_recv_expr -> State 48
-      if_elif_expr -> State 40
-      repeat_loop_body -> State 47
       initializable_type_expr -> State 42
 
   State 110:
@@ -22446,7 +22440,7 @@ Parser Debug States:
       jump_statement -> [statement]
       assign_statement -> [statement]
       import_statement -> [statement]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -22468,18 +22462,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -22512,11 +22506,11 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 49
+      send_recv_expr -> State 49
+      expr -> State 39
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
-      expr -> State 39
+      returnable_expr -> State 48
       improper_expr_struct -> State 41
       initializable_type_expr -> State 42
 
@@ -22556,7 +22550,7 @@ Parser Debug States:
       jump_statement -> [statement]
       assign_statement -> [statement]
       import_statement -> [statement]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -22578,18 +22572,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -22622,11 +22616,11 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 49
+      send_recv_expr -> State 49
+      expr -> State 39
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
-      expr -> State 39
+      returnable_expr -> State 48
       improper_expr_struct -> State 41
       initializable_type_expr -> State 42
 
@@ -22804,7 +22798,7 @@ Parser Debug States:
       jump_statement -> [statement]
       assign_statement -> [statement]
       import_statement -> [statement]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -22826,18 +22820,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -22870,17 +22864,17 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 49
+      send_recv_expr -> State 49
+      expr -> State 39
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
-      expr -> State 39
+      returnable_expr -> State 48
       improper_expr_struct -> State 41
       initializable_type_expr -> State 42
 
   State 141:
     Kernel Items:
-      case_assign_pattern: switchable_case_patterns ASSIGN.simple_expr
+      case_assign_pattern: switchable_case_patterns ASSIGN.expr
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -22903,7 +22897,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -22925,19 +22919,19 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [case_assign_pattern]
-      statements_expr -> [simple_expr]
+      expr -> [case_assign_pattern]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -22965,7 +22959,7 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
+      send_recv_expr -> State 49
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -22995,7 +22989,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       switchable_case_pattern -> [switchable_case_patterns]
       case_enum_pattern -> [switchable_case_pattern]
       atom_expr -> [accessible_expr]
@@ -23019,19 +23013,19 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [switchable_case_pattern]
-      statements_expr -> [simple_expr]
+      expr -> [switchable_case_pattern]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -23060,7 +23054,7 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
+      send_recv_expr -> State 49
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -23077,191 +23071,6 @@ Parser Debug States:
 
   State 144:
     Kernel Items:
-      loop_expr_body: FOR expr IN.simple_expr for_loop_body
-    Reduce:
-      (nil)
-    ShiftAndReduce:
-      INTEGER_LITERAL -> [literal_expr]
-      FLOAT_LITERAL -> [literal_expr]
-      RUNE_LITERAL -> [literal_expr]
-      STRING_LITERAL -> [literal_expr]
-      IDENTIFIER -> [named_expr]
-      UNDERSCORE -> [named_expr]
-      TRUE -> [literal_expr]
-      FALSE -> [literal_expr]
-      ASYNC -> [prefix_unary_op]
-      DEFER -> [prefix_unary_op]
-      VAR -> [var_type]
-      LET -> [var_type]
-      NOT -> [prefix_unary_op]
-      SUB -> [prefix_unary_op]
-      MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
-      BIT_AND -> [prefix_unary_op]
-      GREATER -> [prefix_unary_op]
-      PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
-      atom_expr -> [accessible_expr]
-      parse_error_expr -> [atom_expr]
-      literal_expr -> [atom_expr]
-      named_expr -> [atom_expr]
-      initialize_expr -> [atom_expr]
-      implicit_struct_expr -> [atom_expr]
-      access_expr -> [accessible_expr]
-      index_expr -> [accessible_expr]
-      as_expr -> [accessible_expr]
-      call_expr -> [accessible_expr]
-      postfixable_expr -> [prefixable_expr]
-      postfix_unary_expr -> [postfixable_expr]
-      prefixable_expr -> [mul_expr]
-      prefix_unary_expr -> [prefixable_expr]
-      binary_mul_expr -> [mul_expr]
-      binary_add_expr -> [add_expr]
-      binary_cmp_expr -> [cmp_expr]
-      binary_and_expr -> [and_expr]
-      binary_or_expr -> [or_expr]
-      send_expr -> [send_recv_expr]
-      recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
-      binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
-      statements -> [statements_expr]
-      if_expr -> [simple_expr]
-      if_else_expr -> [if_expr]
-      if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
-      switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
-      select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
-      loop_expr_body -> [loop_expr]
-      slice_type_expr -> [initializable_type_expr]
-      array_type_expr -> [initializable_type_expr]
-      map_type_expr -> [initializable_type_expr]
-      explicit_struct_type_expr -> [initializable_type_expr]
-      anonymous_func_expr -> [atom_expr]
-    Goto:
-      IF -> State 25
-      SWITCH -> State 33
-      REPEAT -> State 30
-      FOR -> State 23
-      SELECT -> State 31
-      STRUCT -> State 32
-      FUNC -> State 24
-      LABEL_DECL -> State 27
-      LBRACE -> State 14
-      LPAREN -> State 29
-      LBRACKET -> State 28
-      ARROW -> State 20
-      var_type -> State 19
-      accessible_expr -> State 35
-      prefix_unary_op -> State 46
-      mul_expr -> State 44
-      add_expr -> State 36
-      cmp_expr -> State 38
-      and_expr -> State 37
-      or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 208
-      if_elif_expr -> State 40
-      repeat_loop_body -> State 47
-      initializable_type_expr -> State 42
-
-  State 145:
-    Kernel Items:
-      loop_expr_body: FOR optional_statement SEMICOLON.optional_simple_expr SEMICOLON optional_statement for_loop_body
-    Reduce:
-      * -> [optional_simple_expr]
-    ShiftAndReduce:
-      INTEGER_LITERAL -> [literal_expr]
-      FLOAT_LITERAL -> [literal_expr]
-      RUNE_LITERAL -> [literal_expr]
-      STRING_LITERAL -> [literal_expr]
-      IDENTIFIER -> [named_expr]
-      UNDERSCORE -> [named_expr]
-      TRUE -> [literal_expr]
-      FALSE -> [literal_expr]
-      ASYNC -> [prefix_unary_op]
-      DEFER -> [prefix_unary_op]
-      VAR -> [var_type]
-      LET -> [var_type]
-      NOT -> [prefix_unary_op]
-      SUB -> [prefix_unary_op]
-      MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
-      BIT_AND -> [prefix_unary_op]
-      GREATER -> [prefix_unary_op]
-      PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
-      atom_expr -> [accessible_expr]
-      parse_error_expr -> [atom_expr]
-      literal_expr -> [atom_expr]
-      named_expr -> [atom_expr]
-      initialize_expr -> [atom_expr]
-      implicit_struct_expr -> [atom_expr]
-      access_expr -> [accessible_expr]
-      index_expr -> [accessible_expr]
-      as_expr -> [accessible_expr]
-      call_expr -> [accessible_expr]
-      postfixable_expr -> [prefixable_expr]
-      postfix_unary_expr -> [postfixable_expr]
-      prefixable_expr -> [mul_expr]
-      prefix_unary_expr -> [prefixable_expr]
-      binary_mul_expr -> [mul_expr]
-      binary_add_expr -> [add_expr]
-      binary_cmp_expr -> [cmp_expr]
-      binary_and_expr -> [and_expr]
-      binary_or_expr -> [or_expr]
-      send_expr -> [send_recv_expr]
-      recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
-      binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [optional_simple_expr]
-      statements_expr -> [simple_expr]
-      statements -> [statements_expr]
-      if_expr -> [simple_expr]
-      if_else_expr -> [if_expr]
-      if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
-      switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
-      select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
-      loop_expr_body -> [loop_expr]
-      slice_type_expr -> [initializable_type_expr]
-      array_type_expr -> [initializable_type_expr]
-      map_type_expr -> [initializable_type_expr]
-      explicit_struct_type_expr -> [initializable_type_expr]
-      anonymous_func_expr -> [atom_expr]
-    Goto:
-      IF -> State 25
-      SWITCH -> State 33
-      REPEAT -> State 30
-      FOR -> State 23
-      SELECT -> State 31
-      STRUCT -> State 32
-      FUNC -> State 24
-      LABEL_DECL -> State 27
-      LBRACE -> State 14
-      LPAREN -> State 29
-      LBRACKET -> State 28
-      ARROW -> State 20
-      var_type -> State 19
-      accessible_expr -> State 35
-      prefix_unary_op -> State 46
-      mul_expr -> State 44
-      add_expr -> State 36
-      cmp_expr -> State 38
-      and_expr -> State 37
-      or_expr -> State 45
-      send_recv_expr -> State 48
-      if_elif_expr -> State 40
-      optional_simple_expr -> State 209
-      repeat_loop_body -> State 47
-      initializable_type_expr -> State 42
-
-  State 146:
-    Kernel Items:
       for_loop_body: DO.statements_or_parse_error
     Reduce:
       (nil)
@@ -23272,6 +23081,191 @@ Parser Debug States:
       statements_or_parse_error -> [for_loop_body]
     Goto:
       LBRACE -> State 14
+
+  State 145:
+    Kernel Items:
+      loop_expr_body: FOR optional_statement SEMICOLON.optional_expr SEMICOLON optional_statement for_loop_body
+    Reduce:
+      * -> [optional_expr]
+    ShiftAndReduce:
+      INTEGER_LITERAL -> [literal_expr]
+      FLOAT_LITERAL -> [literal_expr]
+      RUNE_LITERAL -> [literal_expr]
+      STRING_LITERAL -> [literal_expr]
+      IDENTIFIER -> [named_expr]
+      UNDERSCORE -> [named_expr]
+      TRUE -> [literal_expr]
+      FALSE -> [literal_expr]
+      ASYNC -> [prefix_unary_op]
+      DEFER -> [prefix_unary_op]
+      VAR -> [var_type]
+      LET -> [var_type]
+      NOT -> [prefix_unary_op]
+      SUB -> [prefix_unary_op]
+      MUL -> [prefix_unary_op]
+      BIT_NEG -> [prefix_unary_op]
+      BIT_AND -> [prefix_unary_op]
+      GREATER -> [prefix_unary_op]
+      PARSE_ERROR -> [parse_error_expr]
+      decl_var_pattern -> [expr]
+      atom_expr -> [accessible_expr]
+      parse_error_expr -> [atom_expr]
+      literal_expr -> [atom_expr]
+      named_expr -> [atom_expr]
+      initialize_expr -> [atom_expr]
+      implicit_struct_expr -> [atom_expr]
+      access_expr -> [accessible_expr]
+      index_expr -> [accessible_expr]
+      as_expr -> [accessible_expr]
+      call_expr -> [accessible_expr]
+      postfixable_expr -> [prefixable_expr]
+      postfix_unary_expr -> [postfixable_expr]
+      prefixable_expr -> [mul_expr]
+      prefix_unary_expr -> [prefixable_expr]
+      binary_mul_expr -> [mul_expr]
+      binary_add_expr -> [add_expr]
+      binary_cmp_expr -> [cmp_expr]
+      binary_and_expr -> [and_expr]
+      binary_or_expr -> [or_expr]
+      send_expr -> [send_recv_expr]
+      recv_expr -> [send_recv_expr]
+      assign_op_expr -> [expr]
+      binary_assign_op_expr -> [assign_op_expr]
+      expr -> [optional_expr]
+      statements_expr -> [expr]
+      statements -> [statements_expr]
+      if_expr -> [expr]
+      if_else_expr -> [if_expr]
+      if_only_expr -> [if_elif_expr]
+      switch_expr -> [expr]
+      switch_expr_body -> [switch_expr]
+      select_expr -> [expr]
+      select_expr_body -> [select_expr]
+      loop_expr -> [expr]
+      loop_expr_body -> [loop_expr]
+      slice_type_expr -> [initializable_type_expr]
+      array_type_expr -> [initializable_type_expr]
+      map_type_expr -> [initializable_type_expr]
+      explicit_struct_type_expr -> [initializable_type_expr]
+      anonymous_func_expr -> [atom_expr]
+    Goto:
+      IF -> State 25
+      SWITCH -> State 33
+      REPEAT -> State 30
+      FOR -> State 23
+      SELECT -> State 31
+      STRUCT -> State 32
+      FUNC -> State 24
+      LABEL_DECL -> State 27
+      LBRACE -> State 14
+      LPAREN -> State 29
+      LBRACKET -> State 28
+      ARROW -> State 20
+      var_type -> State 19
+      accessible_expr -> State 35
+      prefix_unary_op -> State 46
+      mul_expr -> State 44
+      add_expr -> State 36
+      cmp_expr -> State 38
+      and_expr -> State 37
+      or_expr -> State 45
+      send_recv_expr -> State 49
+      if_elif_expr -> State 40
+      optional_expr -> State 208
+      repeat_loop_body -> State 47
+      initializable_type_expr -> State 42
+
+  State 146:
+    Kernel Items:
+      loop_expr_body: FOR returnable_expr IN.expr for_loop_body
+    Reduce:
+      (nil)
+    ShiftAndReduce:
+      INTEGER_LITERAL -> [literal_expr]
+      FLOAT_LITERAL -> [literal_expr]
+      RUNE_LITERAL -> [literal_expr]
+      STRING_LITERAL -> [literal_expr]
+      IDENTIFIER -> [named_expr]
+      UNDERSCORE -> [named_expr]
+      TRUE -> [literal_expr]
+      FALSE -> [literal_expr]
+      ASYNC -> [prefix_unary_op]
+      DEFER -> [prefix_unary_op]
+      VAR -> [var_type]
+      LET -> [var_type]
+      NOT -> [prefix_unary_op]
+      SUB -> [prefix_unary_op]
+      MUL -> [prefix_unary_op]
+      BIT_NEG -> [prefix_unary_op]
+      BIT_AND -> [prefix_unary_op]
+      GREATER -> [prefix_unary_op]
+      PARSE_ERROR -> [parse_error_expr]
+      decl_var_pattern -> [expr]
+      atom_expr -> [accessible_expr]
+      parse_error_expr -> [atom_expr]
+      literal_expr -> [atom_expr]
+      named_expr -> [atom_expr]
+      initialize_expr -> [atom_expr]
+      implicit_struct_expr -> [atom_expr]
+      access_expr -> [accessible_expr]
+      index_expr -> [accessible_expr]
+      as_expr -> [accessible_expr]
+      call_expr -> [accessible_expr]
+      postfixable_expr -> [prefixable_expr]
+      postfix_unary_expr -> [postfixable_expr]
+      prefixable_expr -> [mul_expr]
+      prefix_unary_expr -> [prefixable_expr]
+      binary_mul_expr -> [mul_expr]
+      binary_add_expr -> [add_expr]
+      binary_cmp_expr -> [cmp_expr]
+      binary_and_expr -> [and_expr]
+      binary_or_expr -> [or_expr]
+      send_expr -> [send_recv_expr]
+      recv_expr -> [send_recv_expr]
+      assign_op_expr -> [expr]
+      binary_assign_op_expr -> [assign_op_expr]
+      statements_expr -> [expr]
+      statements -> [statements_expr]
+      if_expr -> [expr]
+      if_else_expr -> [if_expr]
+      if_only_expr -> [if_elif_expr]
+      switch_expr -> [expr]
+      switch_expr_body -> [switch_expr]
+      select_expr -> [expr]
+      select_expr_body -> [select_expr]
+      loop_expr -> [expr]
+      loop_expr_body -> [loop_expr]
+      slice_type_expr -> [initializable_type_expr]
+      array_type_expr -> [initializable_type_expr]
+      map_type_expr -> [initializable_type_expr]
+      explicit_struct_type_expr -> [initializable_type_expr]
+      anonymous_func_expr -> [atom_expr]
+    Goto:
+      IF -> State 25
+      SWITCH -> State 33
+      REPEAT -> State 30
+      FOR -> State 23
+      SELECT -> State 31
+      STRUCT -> State 32
+      FUNC -> State 24
+      LABEL_DECL -> State 27
+      LBRACE -> State 14
+      LPAREN -> State 29
+      LBRACKET -> State 28
+      ARROW -> State 20
+      var_type -> State 19
+      accessible_expr -> State 35
+      prefix_unary_op -> State 46
+      mul_expr -> State 44
+      add_expr -> State 36
+      cmp_expr -> State 38
+      and_expr -> State 37
+      or_expr -> State 45
+      send_recv_expr -> State 49
+      expr -> State 209
+      if_elif_expr -> State 40
+      repeat_loop_body -> State 47
+      initializable_type_expr -> State 42
 
   State 147:
     Kernel Items:
@@ -23310,7 +23304,7 @@ Parser Debug States:
 
   State 150:
     Kernel Items:
-      case_assign_pattern: switchable_case_patterns.ASSIGN simple_expr
+      case_assign_pattern: switchable_case_patterns.ASSIGN expr
       switchable_case_patterns: switchable_case_patterns.COMMA switchable_case_pattern
     Reduce:
       (nil)
@@ -23397,7 +23391,7 @@ Parser Debug States:
 
   State 155:
     Kernel Items:
-      argument: IDENTIFIER ASSIGN.simple_expr
+      argument: IDENTIFIER ASSIGN.expr
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -23420,7 +23414,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -23442,19 +23436,19 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [argument]
-      statements_expr -> [simple_expr]
+      expr -> [argument]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -23482,7 +23476,7 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
+      send_recv_expr -> State 49
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -23490,7 +23484,7 @@ Parser Debug States:
   State 156:
     Kernel Items:
       colon_expr: colon_expr COLON., *
-      colon_expr: colon_expr COLON.simple_expr
+      colon_expr: colon_expr COLON.expr
     Reduce:
       * -> [colon_expr]
     ShiftAndReduce:
@@ -23513,7 +23507,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -23535,19 +23529,19 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [colon_expr]
-      statements_expr -> [simple_expr]
+      expr -> [colon_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -23575,12 +23569,105 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
+      send_recv_expr -> State 49
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
 
   State 157:
+    Kernel Items:
+      colon_expr: expr COLON., *
+      colon_expr: expr COLON.expr
+    Reduce:
+      * -> [colon_expr]
+    ShiftAndReduce:
+      INTEGER_LITERAL -> [literal_expr]
+      FLOAT_LITERAL -> [literal_expr]
+      RUNE_LITERAL -> [literal_expr]
+      STRING_LITERAL -> [literal_expr]
+      IDENTIFIER -> [named_expr]
+      UNDERSCORE -> [named_expr]
+      TRUE -> [literal_expr]
+      FALSE -> [literal_expr]
+      ASYNC -> [prefix_unary_op]
+      DEFER -> [prefix_unary_op]
+      VAR -> [var_type]
+      LET -> [var_type]
+      NOT -> [prefix_unary_op]
+      SUB -> [prefix_unary_op]
+      MUL -> [prefix_unary_op]
+      BIT_NEG -> [prefix_unary_op]
+      BIT_AND -> [prefix_unary_op]
+      GREATER -> [prefix_unary_op]
+      PARSE_ERROR -> [parse_error_expr]
+      decl_var_pattern -> [expr]
+      atom_expr -> [accessible_expr]
+      parse_error_expr -> [atom_expr]
+      literal_expr -> [atom_expr]
+      named_expr -> [atom_expr]
+      initialize_expr -> [atom_expr]
+      implicit_struct_expr -> [atom_expr]
+      access_expr -> [accessible_expr]
+      index_expr -> [accessible_expr]
+      as_expr -> [accessible_expr]
+      call_expr -> [accessible_expr]
+      postfixable_expr -> [prefixable_expr]
+      postfix_unary_expr -> [postfixable_expr]
+      prefixable_expr -> [mul_expr]
+      prefix_unary_expr -> [prefixable_expr]
+      binary_mul_expr -> [mul_expr]
+      binary_add_expr -> [add_expr]
+      binary_cmp_expr -> [cmp_expr]
+      binary_and_expr -> [and_expr]
+      binary_or_expr -> [or_expr]
+      send_expr -> [send_recv_expr]
+      recv_expr -> [send_recv_expr]
+      assign_op_expr -> [expr]
+      binary_assign_op_expr -> [assign_op_expr]
+      expr -> [colon_expr]
+      statements_expr -> [expr]
+      statements -> [statements_expr]
+      if_expr -> [expr]
+      if_else_expr -> [if_expr]
+      if_only_expr -> [if_elif_expr]
+      switch_expr -> [expr]
+      switch_expr_body -> [switch_expr]
+      select_expr -> [expr]
+      select_expr_body -> [select_expr]
+      loop_expr -> [expr]
+      loop_expr_body -> [loop_expr]
+      slice_type_expr -> [initializable_type_expr]
+      array_type_expr -> [initializable_type_expr]
+      map_type_expr -> [initializable_type_expr]
+      explicit_struct_type_expr -> [initializable_type_expr]
+      anonymous_func_expr -> [atom_expr]
+    Goto:
+      IF -> State 25
+      SWITCH -> State 33
+      REPEAT -> State 30
+      FOR -> State 23
+      SELECT -> State 31
+      STRUCT -> State 32
+      FUNC -> State 24
+      LABEL_DECL -> State 27
+      LBRACE -> State 14
+      LPAREN -> State 29
+      LBRACKET -> State 28
+      ARROW -> State 20
+      var_type -> State 19
+      accessible_expr -> State 35
+      prefix_unary_op -> State 46
+      mul_expr -> State 44
+      add_expr -> State 36
+      cmp_expr -> State 38
+      and_expr -> State 37
+      or_expr -> State 45
+      send_recv_expr -> State 49
+      if_elif_expr -> State 40
+      repeat_loop_body -> State 47
+      initializable_type_expr -> State 42
+
+  State 158:
     Kernel Items:
       proper_arguments: proper_arguments COMMA.argument
       arguments: proper_arguments COMMA., *
@@ -23606,7 +23693,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -23629,18 +23716,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -23671,101 +23758,8 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 88
-      if_elif_expr -> State 40
-      repeat_loop_body -> State 47
-      initializable_type_expr -> State 42
-
-  State 158:
-    Kernel Items:
-      colon_expr: simple_expr COLON., *
-      colon_expr: simple_expr COLON.simple_expr
-    Reduce:
-      * -> [colon_expr]
-    ShiftAndReduce:
-      INTEGER_LITERAL -> [literal_expr]
-      FLOAT_LITERAL -> [literal_expr]
-      RUNE_LITERAL -> [literal_expr]
-      STRING_LITERAL -> [literal_expr]
-      IDENTIFIER -> [named_expr]
-      UNDERSCORE -> [named_expr]
-      TRUE -> [literal_expr]
-      FALSE -> [literal_expr]
-      ASYNC -> [prefix_unary_op]
-      DEFER -> [prefix_unary_op]
-      VAR -> [var_type]
-      LET -> [var_type]
-      NOT -> [prefix_unary_op]
-      SUB -> [prefix_unary_op]
-      MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
-      BIT_AND -> [prefix_unary_op]
-      GREATER -> [prefix_unary_op]
-      PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
-      atom_expr -> [accessible_expr]
-      parse_error_expr -> [atom_expr]
-      literal_expr -> [atom_expr]
-      named_expr -> [atom_expr]
-      initialize_expr -> [atom_expr]
-      implicit_struct_expr -> [atom_expr]
-      access_expr -> [accessible_expr]
-      index_expr -> [accessible_expr]
-      as_expr -> [accessible_expr]
-      call_expr -> [accessible_expr]
-      postfixable_expr -> [prefixable_expr]
-      postfix_unary_expr -> [postfixable_expr]
-      prefixable_expr -> [mul_expr]
-      prefix_unary_expr -> [prefixable_expr]
-      binary_mul_expr -> [mul_expr]
-      binary_add_expr -> [add_expr]
-      binary_cmp_expr -> [cmp_expr]
-      binary_and_expr -> [and_expr]
-      binary_or_expr -> [or_expr]
-      send_expr -> [send_recv_expr]
-      recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
-      binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [colon_expr]
-      statements_expr -> [simple_expr]
-      statements -> [statements_expr]
-      if_expr -> [simple_expr]
-      if_else_expr -> [if_expr]
-      if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
-      switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
-      select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
-      loop_expr_body -> [loop_expr]
-      slice_type_expr -> [initializable_type_expr]
-      array_type_expr -> [initializable_type_expr]
-      map_type_expr -> [initializable_type_expr]
-      explicit_struct_type_expr -> [initializable_type_expr]
-      anonymous_func_expr -> [atom_expr]
-    Goto:
-      IF -> State 25
-      SWITCH -> State 33
-      REPEAT -> State 30
-      FOR -> State 23
-      SELECT -> State 31
-      STRUCT -> State 32
-      FUNC -> State 24
-      LABEL_DECL -> State 27
-      LBRACE -> State 14
-      LPAREN -> State 29
-      LBRACKET -> State 28
-      ARROW -> State 20
-      var_type -> State 19
-      accessible_expr -> State 35
-      prefix_unary_op -> State 46
-      mul_expr -> State 44
-      add_expr -> State 36
-      cmp_expr -> State 38
-      and_expr -> State 37
-      or_expr -> State 45
-      send_recv_expr -> State 48
+      send_recv_expr -> State 49
+      expr -> State 87
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -23885,7 +23879,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -23908,18 +23902,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -23943,7 +23937,7 @@ Parser Debug States:
       ARROW -> State 20
       var_type -> State 19
       accessible_expr -> State 35
-      proper_arguments -> State 87
+      proper_arguments -> State 88
       arguments -> State 220
       colon_expr -> State 86
       prefix_unary_op -> State 46
@@ -23952,8 +23946,8 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 88
+      send_recv_expr -> State 49
+      expr -> State 87
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -24029,7 +24023,7 @@ Parser Debug States:
       BIT_AND -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -24051,20 +24045,20 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      simple_expr -> [condition]
-      statements_expr -> [simple_expr]
+      expr -> [condition]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
       case_assign_expr -> [condition]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -24093,7 +24087,7 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
+      send_recv_expr -> State 49
       if_elif_expr -> State 40
       condition -> State 221
       repeat_loop_body -> State 47
@@ -24140,7 +24134,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      ARROW -> State 107
+      ARROW -> State 108
 
   State 176:
     Kernel Items:
@@ -24843,23 +24837,23 @@ Parser Debug States:
 
   State 208:
     Kernel Items:
-      loop_expr_body: FOR expr IN simple_expr.for_loop_body
-    Reduce:
-      (nil)
-    ShiftAndReduce:
-      for_loop_body -> [loop_expr_body]
-    Goto:
-      DO -> State 146
-
-  State 209:
-    Kernel Items:
-      loop_expr_body: FOR optional_statement SEMICOLON optional_simple_expr.SEMICOLON optional_statement for_loop_body
+      loop_expr_body: FOR optional_statement SEMICOLON optional_expr.SEMICOLON optional_statement for_loop_body
     Reduce:
       (nil)
     ShiftAndReduce:
       (nil)
     Goto:
       SEMICOLON -> State 236
+
+  State 209:
+    Kernel Items:
+      loop_expr_body: FOR returnable_expr IN expr.for_loop_body
+    Reduce:
+      (nil)
+    ShiftAndReduce:
+      for_loop_body -> [loop_expr_body]
+    Goto:
+      DO -> State 144
 
   State 210:
     Kernel Items:
@@ -25531,7 +25525,7 @@ Parser Debug States:
 
   State 236:
     Kernel Items:
-      loop_expr_body: FOR optional_statement SEMICOLON optional_simple_expr SEMICOLON.optional_statement for_loop_body
+      loop_expr_body: FOR optional_statement SEMICOLON optional_expr SEMICOLON.optional_statement for_loop_body
     Reduce:
       * -> [optional_statement]
     ShiftAndReduce:
@@ -25564,7 +25558,7 @@ Parser Debug States:
       jump_statement -> [statement]
       assign_statement -> [statement]
       import_statement -> [statement]
-      decl_var_pattern -> [simple_expr]
+      decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
       literal_expr -> [atom_expr]
@@ -25586,18 +25580,18 @@ Parser Debug States:
       binary_or_expr -> [or_expr]
       send_expr -> [send_recv_expr]
       recv_expr -> [send_recv_expr]
-      assign_op_expr -> [simple_expr]
+      assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      statements_expr -> [simple_expr]
+      statements_expr -> [expr]
       statements -> [statements_expr]
-      if_expr -> [simple_expr]
+      if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      switch_expr -> [simple_expr]
+      switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
-      select_expr -> [simple_expr]
+      select_expr -> [expr]
       select_expr_body -> [select_expr]
-      loop_expr -> [simple_expr]
+      loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -25630,12 +25624,12 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 48
-      simple_expr -> State 49
+      send_recv_expr -> State 49
+      expr -> State 39
       if_elif_expr -> State 40
       optional_statement -> State 241
       repeat_loop_body -> State 47
-      expr -> State 39
+      returnable_expr -> State 48
       improper_expr_struct -> State 41
       initializable_type_expr -> State 42
 
@@ -25720,13 +25714,13 @@ Parser Debug States:
 
   State 241:
     Kernel Items:
-      loop_expr_body: FOR optional_statement SEMICOLON optional_simple_expr SEMICOLON optional_statement.for_loop_body
+      loop_expr_body: FOR optional_statement SEMICOLON optional_expr SEMICOLON optional_statement.for_loop_body
     Reduce:
       (nil)
     ShiftAndReduce:
       for_loop_body -> [loop_expr_body]
     Goto:
-      DO -> State 146
+      DO -> State 144
 
   State 242:
     Kernel Items:
@@ -25742,12 +25736,12 @@ Parser Debug States:
       LBRACE -> State 14
 
 Number of states: 242
-Number of shift actions: 1688
+Number of shift actions: 1686
 Number of reduce actions: 123
 Number of shift-and-reduce actions: 3768
 Number of shift/reduce conflicts: 0
 Number of reduce/reduce conflicts: 0
-Number of unoptimized states: 9276
-Number of unoptimized shift actions: 99297
-Number of unoptimized reduce actions: 91852
+Number of unoptimized states: 9529
+Number of unoptimized shift actions: 102372
+Number of unoptimized reduce actions: 95072
 */
