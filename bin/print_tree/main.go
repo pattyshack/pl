@@ -269,12 +269,16 @@ func main() {
 			return nil, err
 		}
 
+		if len(content) > 0 && content[len(content)-1] == '\n' {
+			content = content[:len(content)-1]
+		}
+
 		fmt.Println("Content:")
 		fmt.Println("--------")
-		fmt.Println(string(content[:len(content)-1]))
+		fmt.Println(string(content))
 		fmt.Println("++++++++++++++++++++++++++++++++")
 
-		return bytes.NewBuffer(content[:len(content)-1]), nil
+		return bytes.NewBuffer(content), nil
 	}
 
 	cmd.Setup()
