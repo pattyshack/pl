@@ -19,7 +19,7 @@
 
 %token<Value> TRUE FALSE
 
-%token<Value> IF ELSE SWITCH CASE DEFAULT FOR DO IN SELECT
+%token<Value> IF ELSE SWITCH CASE DEFAULT REPEAT FOR DO IN SELECT
 %token<Value> RETURN BREAK CONTINUE FALLTHROUGH
 
 %token<Value> PACKAGE IMPORT
@@ -684,11 +684,11 @@ loop_expr<Expression> ->
   labelled: LABEL_DECL loop_expr_body
 
 loop_expr_body<Expression> ->
-  infinite: loop_body |
-  do_while: loop_body FOR simple_expr |
-  while: FOR simple_expr loop_body |
-  iterator: FOR assignable_expr IN simple_expr loop_body |
-  for: FOR optional_simple_statement SEMICOLON optional_simple_expr SEMICOLON optional_simple_statement loop_body
+  infinite: repeat_loop_body |
+  do_while: repeat_loop_body FOR simple_expr |
+  while: FOR simple_expr for_loop_body |
+  iterator: FOR assignable_expr IN simple_expr for_loop_body |
+  for: FOR optional_simple_statement SEMICOLON optional_simple_expr SEMICOLON optional_simple_statement for_loop_body
 
 optional_simple_statement<Statement> ->
   = simple_statement |
@@ -698,7 +698,9 @@ optional_simple_expr<Expression> ->
   = simple_expr |
   nil:
 
-loop_body<Expression> -> DO statements_or_parse_error
+repeat_loop_body<Expression> -> REPEAT statements_or_parse_error
+
+for_loop_body<Expression> -> DO statements_or_parse_error
 
 //
 // Types ======================================================================

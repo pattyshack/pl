@@ -1122,22 +1122,39 @@ func (reducer *Reducer) NilToOptionalSimpleExpr() (
 	return nil, nil
 }
 
-func (reducer *Reducer) ToLoopBody(
+func (reducer *Reducer) toLoopBody(
+	kw *lr.TokenValue,
+	expr ast.Expression,
+) ast.Expression {
+	switch body := expr.(type) {
+	case *ast.StatementsExpr:
+		body.StartPos = kw.Loc()
+		body.PrependToLeading(kw.TakeTrailing())
+		body.PrependToLeading(kw.TakeLeading())
+		return body
+	case *ast.ParseErrorNode:
+		return expr
+	}
+
+	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+}
+
+func (reducer *Reducer) ToRepeatLoopBody(
+	repeat *lr.TokenValue,
+	expr ast.Expression,
+) (
+	ast.Expression,
+	error,
+) {
+	return reducer.toLoopBody(repeat, expr), nil
+}
+
+func (reducer *Reducer) ToForLoopBody(
 	do *lr.TokenValue,
 	expr ast.Expression,
 ) (
 	ast.Expression,
 	error,
 ) {
-	switch body := expr.(type) {
-	case *ast.StatementsExpr:
-		body.StartPos = do.Loc()
-		body.PrependToLeading(do.TakeTrailing())
-		body.PrependToLeading(do.TakeLeading())
-		return body, nil
-	case *ast.ParseErrorNode:
-		return expr, nil
-	}
-
-	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+	return reducer.toLoopBody(do, expr), nil
 }
