@@ -304,7 +304,7 @@ func (reducer *Reducer) ToBinaryAssignOpExpr(
 	return reducer.toBinaryExpr(address, op, value), nil
 }
 
-func (reducer *Reducer) ToExprAssignStatement(
+func (reducer *Reducer) ToAssignStatement(
 	pattern ast.Expression,
 	assign *lr.TokenValue,
 	value ast.Expression,

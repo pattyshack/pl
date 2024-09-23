@@ -112,7 +112,7 @@ statement<Statement> ->
 
   // NOTE: assignment can only operate on proper address values.  Additional
   // checks are applied during post analysis.
-  = expr_assign_statement
+  = assign_statement
 
 branch_statement<Statement> ->
   // NOTE: case_branch and default_branch are applicable only to switch and
@@ -162,7 +162,7 @@ jump_op<Value> ->
 // expressions.  Additional post analysis checks are needed to reject
 // invalid usage, depending on the context (e.g., assignment should only
 // operate on proper address values)
-expr_assign_statement<Statement> -> expr ASSIGN expr
+assign_statement<Statement> -> expr ASSIGN expr
 
 //
 // Import statement
@@ -315,95 +315,6 @@ named_expr<Expression> ->
 initialize_expr<Expression> -> initializable_type_expr LPAREN arguments RPAREN
 
 implicit_struct_expr<Expression> -> LPAREN arguments RPAREN
-
-statements_expr<Expression> ->
-  = statements |
-  labelled: LABEL_DECL statements_or_parse_error
-
-// IMPORTANT NOTE!!!
-//
-// The grammar is specified in such a way that only the statements rule
-// uses LBRACE and RBRACE.  Hence, we can unconditionally parse a
-// statements when we encounters a LBRACE.
-//
-// This enables the parser to parse the source in piecemeal manner, which
-// enables the parser to collect more parse errors on a single run.
-//
-// Post analysis is needed to ensure statements are valid for the specific
-// context.
-//
-// Note: statements's value type can be either the statements's
-// real value type, i.e., *StatementsExpr, or PARSE_ERROR's value type,
-// i.e., *ParseErrorSymbol
-statements<Expression> -> LBRACE statement_list RBRACE
-
-statements_or_parse_error<Expression> ->
-  = statements |
-  = parse_error_expr
-
-proper_statement_list<StatementsExpr> ->
-  add_implicit: proper_statement_list NEWLINES statement |
-  add_explicit: proper_statement_list SEMICOLON statement |
-  statement
-
-statement_list<StatementsExpr> ->
-  = proper_statement_list |
-  improper_implicit: proper_statement_list NEWLINES |
-  improper_explicit: proper_statement_list SEMICOLON |
-  nil:
-
-
-// NOTE: label is applied to the entire if expression rather than individual
-// branches.
-if_expr<Expression> ->
-  unlabelled: if_else_expr |
-  labelled: LABEL_DECL if_else_expr
-
-if_else_expr<IfExpr> ->
-  = if_elif_expr |
-  else: if_elif_expr ELSE statements_or_parse_error
-
-if_elif_expr<IfExpr> ->
-  = if_only_expr |
-  elif: if_elif_expr ELSE IF condition statements_or_parse_error
-
-if_only_expr<IfExpr> ->
-  IF condition statements_or_parse_error
-
-condition<Expression> ->
-  = simple_expr |
-  = case_assign_expr
-
-case_assign_expr<Expression> -> CASE case_assign_pattern
-
-// match patterns within the same case must all have identical variable binding
-//
-// Allow fallthrough iff the next case have identical (and fewer) variable
-// bindings.
-//
-// e.g., OK.  y is binded to the same value
-// switch val {
-// case var (x, y): fallthrough
-// case (_, var y): // do something
-// }
-//
-// e.g., Not ok.  y != z
-// switch val {
-// case var (x, y): fallthrough
-// case (_, var z): // do something
-// }
-
-switch_expr<Expression> ->
-  = switch_expr_body |
-  labelled: LABEL_DECL switch_expr_body
-
-switch_expr_body<Expression> -> SWITCH simple_expr statements_or_parse_error
-
-select_expr<Expression> ->
-  = select_expr_body |
-  labelled: LABEL_DECL select_expr_body
-
-select_expr_body<Expression> -> SELECT statements_or_parse_error
 
 //
 // Accessible expressions
@@ -644,18 +555,94 @@ simple_expr<Expression> ->
   = decl_var_pattern |
   = assign_var_pattern
 
-//
-// expressions
-//
+statements_expr<Expression> ->
+  = statements |
+  labelled: LABEL_DECL statements_or_parse_error
 
-expr<Expression> ->
+// IMPORTANT NOTE!!!
+//
+// The grammar is specified in such a way that only the statements rule
+// uses LBRACE and RBRACE.  Hence, we can unconditionally parse a
+// statements when we encounters a LBRACE.
+//
+// This enables the parser to parse the source in piecemeal manner, which
+// enables the parser to collect more parse errors on a single run.
+//
+// Post analysis is needed to ensure statements are valid for the specific
+// context.
+//
+// Note: statements's value type can be either the statements's
+// real value type, i.e., *StatementsExpr, or PARSE_ERROR's value type,
+// i.e., *ParseErrorSymbol
+statements<Expression> -> LBRACE statement_list RBRACE
+
+statements_or_parse_error<Expression> ->
+  = statements |
+  = parse_error_expr
+
+proper_statement_list<StatementsExpr> ->
+  add_implicit: proper_statement_list NEWLINES statement |
+  add_explicit: proper_statement_list SEMICOLON statement |
+  statement
+
+statement_list<StatementsExpr> ->
+  = proper_statement_list |
+  improper_implicit: proper_statement_list NEWLINES |
+  improper_explicit: proper_statement_list SEMICOLON |
+  nil:
+
+
+// NOTE: label is applied to the entire if expression rather than individual
+// branches.
+if_expr<Expression> ->
+  unlabelled: if_else_expr |
+  labelled: LABEL_DECL if_else_expr
+
+if_else_expr<IfExpr> ->
+  = if_elif_expr |
+  else: if_elif_expr ELSE statements_or_parse_error
+
+if_elif_expr<IfExpr> ->
+  = if_only_expr |
+  elif: if_elif_expr ELSE IF condition statements_or_parse_error
+
+if_only_expr<IfExpr> ->
+  IF condition statements_or_parse_error
+
+condition<Expression> ->
   = simple_expr |
-  = improper_expr_struct
+  = case_assign_expr
 
-// improper in the sense that the expression list is not bounded by '(' and ')'
-improper_expr_struct<ImplicitStruct> ->
-  pair: simple_expr COMMA simple_expr |
-  add: improper_expr_struct COMMA simple_expr
+case_assign_expr<Expression> -> CASE case_assign_pattern
+
+// match patterns within the same case must all have identical variable binding
+//
+// Allow fallthrough iff the next case have identical (and fewer) variable
+// bindings.
+//
+// e.g., OK.  y is binded to the same value
+// switch val {
+// case var (x, y): fallthrough
+// case (_, var y): // do something
+// }
+//
+// e.g., Not ok.  y != z
+// switch val {
+// case var (x, y): fallthrough
+// case (_, var z): // do something
+// }
+
+switch_expr<Expression> ->
+  = switch_expr_body |
+  labelled: LABEL_DECL switch_expr_body
+
+switch_expr_body<Expression> -> SWITCH simple_expr statements_or_parse_error
+
+select_expr<Expression> ->
+  = select_expr_body |
+  labelled: LABEL_DECL select_expr_body
+
+select_expr_body<Expression> -> SELECT statements_or_parse_error
 
 // NOTE: Since we use {} for expression grouping, we need the extra DO keyword
 // to help the parser figure out which block is the loop's body.
@@ -681,6 +668,19 @@ optional_simple_expr<Expression> ->
 repeat_loop_body<Expression> -> REPEAT statements_or_parse_error
 
 for_loop_body<Expression> -> DO statements_or_parse_error
+
+//
+// expressions
+//
+
+expr<Expression> ->
+  = simple_expr |
+  = improper_expr_struct
+
+// improper in the sense that the expression list is not bounded by '(' and ')'
+improper_expr_struct<ImplicitStruct> ->
+  pair: simple_expr COMMA simple_expr |
+  add: improper_expr_struct COMMA simple_expr
 
 //
 // Types ======================================================================
