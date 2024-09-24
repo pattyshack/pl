@@ -337,7 +337,9 @@ func (reducer *Reducer) toImplicitStructExpr(
 ) *ast.ImplicitStructExpr {
 	args.ReduceMarkers(lparen, rparen)
 	return &ast.ImplicitStructExpr{
-		ArgumentList: *args,
+		StartEndPos:             args.StartEndPos,
+		LeadingTrailingComments: args.LeadingTrailingComments,
+		Arguments:               args.Elements,
 	}
 }
 
@@ -370,7 +372,9 @@ func (reducer *Reducer) PairToImproperExprStruct(
 	list.ReduceAdd(comma, arg2)
 
 	expr := &ast.ImplicitStructExpr{
-		ArgumentList: *list,
+		StartEndPos: list.StartEndPos,
+		Arguments:   list.Elements,
+		IsImproper:  true,
 	}
 
 	reducer.ImplicitStructExprs = append(reducer.ImplicitStructExprs, expr)
@@ -385,8 +389,12 @@ func (reducer *Reducer) AddToImproperExprStruct(
 	*ast.ImplicitStructExpr,
 	error,
 ) {
-	arg := ast.NewPositionalArgument(expr)
-	structExpr.ReduceAdd(comma, arg)
+
+	list := &ast.NodeList[*ast.Argument]{Elements: structExpr.Arguments}
+	list.ReduceAdd(comma, ast.NewPositionalArgument(expr))
+
+	structExpr.EndPos = expr.End()
+	structExpr.Arguments = list.Elements
 	return structExpr, nil
 }
 
@@ -420,14 +428,14 @@ func (Reducer) UnitUnitPairToColonExpr(
 		StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
 		Kind:        ast.IsImplicitUnitArgument,
 	}
-	rightArg.LeadingComment = colon.TakeTrailing()
 
-	args := ast.NewNodeList[*ast.Argument]("ColonExpr")
+	args := ast.NodeList[*ast.Argument]{}
 	args.Add(leftArg)
 	args.ReduceAdd(colon, rightArg)
 
 	return &ast.ColonExpr{
-		ArgumentList: *args,
+		StartEndPos: args.StartEndPos,
+		Arguments:   args.Elements,
 	}, nil
 }
 
@@ -450,14 +458,14 @@ func (Reducer) ExprUnitPairToColonExpr(
 		StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
 		Kind:        ast.IsImplicitUnitArgument,
 	}
-	rightArg.LeadingComment = colon.TakeTrailing()
 
-	args := ast.NewNodeList[*ast.Argument]("ColonExpr")
+	args := ast.NodeList[*ast.Argument]{}
 	args.Add(leftArg)
 	args.ReduceAdd(colon, rightArg)
 
 	return &ast.ColonExpr{
-		ArgumentList: *args,
+		StartEndPos: args.StartEndPos,
+		Arguments:   args.Elements,
 	}, nil
 }
 
@@ -480,14 +488,14 @@ func (reducer *Reducer) UnitExprPairToColonExpr(
 	}
 	rightArg.LeadingComment = rightExpr.TakeLeading()
 	rightArg.TrailingComment = rightExpr.TakeTrailing()
-	rightArg.PrependToLeading(colon.TakeTrailing())
 
-	args := ast.NewNodeList[*ast.Argument]("ColonExpr")
+	args := ast.NodeList[*ast.Argument]{}
 	args.Add(leftArg)
 	args.ReduceAdd(colon, rightArg)
 
 	return &ast.ColonExpr{
-		ArgumentList: *args,
+		StartEndPos: args.StartEndPos,
+		Arguments:   args.Elements,
 	}, nil
 }
 
@@ -514,42 +522,47 @@ func (reducer *Reducer) ExprExprPairToColonExpr(
 	}
 	rightArg.LeadingComment = rightExpr.TakeLeading()
 	rightArg.TrailingComment = rightExpr.TakeTrailing()
-	rightArg.PrependToLeading(colon.TakeTrailing())
 
-	args := ast.NewNodeList[*ast.Argument]("ColonExpr")
+	args := ast.NodeList[*ast.Argument]{}
 	args.Add(leftArg)
 	args.ReduceAdd(colon, rightArg)
 
 	return &ast.ColonExpr{
-		ArgumentList: *args,
+		StartEndPos: args.StartEndPos,
+		Arguments:   args.Elements,
 	}, nil
 }
 
 func (reducer *Reducer) ColonExprUnitTupleToColonExpr(
-	list *ast.ColonExpr,
+	colonExpr *ast.ColonExpr,
 	colon *lr.TokenValue,
 ) (
 	*ast.ColonExpr,
 	error,
 ) {
+	list := ast.NodeList[*ast.Argument]{Elements: colonExpr.Arguments}
 	arg := &ast.Argument{
 		StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
 		Kind:        ast.IsImplicitUnitArgument,
 	}
-	arg.LeadingComment = colon.TakeTrailing()
 
 	list.ReduceAdd(colon, arg)
-	return list, nil
+
+	colonExpr.EndPos = colon.End()
+	colonExpr.Arguments = list.Elements
+	return colonExpr, nil
 }
 
 func (reducer *Reducer) ColonExprExprTupleToColonExpr(
-	list *ast.ColonExpr,
+	colonExpr *ast.ColonExpr,
 	colon *lr.TokenValue,
 	expr ast.Expression,
 ) (
 	*ast.ColonExpr,
 	error,
 ) {
+	list := ast.NodeList[*ast.Argument]{Elements: colonExpr.Arguments}
+
 	arg := &ast.Argument{
 		StartEndPos: ast.NewStartEndPos(expr.Loc(), expr.End()),
 		Kind:        ast.PositionalArgument,
@@ -557,10 +570,12 @@ func (reducer *Reducer) ColonExprExprTupleToColonExpr(
 	}
 	arg.LeadingComment = expr.TakeLeading()
 	arg.TrailingComment = expr.TakeTrailing()
-	arg.PrependToLeading(colon.TakeTrailing())
 
 	list.ReduceAdd(colon, arg)
-	return list, nil
+
+	colonExpr.EndPos = expr.End()
+	colonExpr.Arguments = list.Elements
+	return colonExpr, nil
 }
 
 //
@@ -569,7 +584,7 @@ func (reducer *Reducer) ColonExprExprTupleToColonExpr(
 
 func (reducer *Reducer) ToCallExpr(
 	funcExpr ast.Expression,
-	genericArguments *ast.GenericArgumentList,
+	genericArguments *ast.TypeExpressionList,
 	lparen *lr.TokenValue,
 	arguments *ast.ArgumentList,
 	rparen *lr.TokenValue,
@@ -577,22 +592,29 @@ func (reducer *Reducer) ToCallExpr(
 	ast.Expression,
 	error,
 ) {
-	if genericArguments == nil {
-		genericArguments = ast.NewGenericArgumentList()
+	leading := funcExpr.TakeLeading()
+
+	var generics []ast.TypeExpression
+	if genericArguments != nil {
+		generics = genericArguments.Elements
+
+		funcExpr.AppendToTrailing(genericArguments.TakeLeading())
+		funcExpr.AppendToTrailing(genericArguments.MiddleComment)
+		funcExpr.AppendToTrailing(genericArguments.TakeTrailing())
 	}
 
 	arguments.ReduceMarkers(lparen, rparen)
+	funcExpr.AppendToTrailing(arguments.TakeLeading())
+	trailing := arguments.TakeTrailing()
 
 	expr := &ast.CallExpr{
-		StartEndPos: ast.NewStartEndPos(funcExpr.Loc(), rparen.End()),
-		LeadingTrailingComments: ast.LeadingTrailingComments{
-			LeadingComment:  funcExpr.TakeLeading(),
-			TrailingComment: arguments.TakeTrailing(),
-		},
+		StartEndPos:      ast.NewStartEndPos(funcExpr.Loc(), rparen.End()),
 		FuncExpr:         funcExpr,
-		GenericArguments: *genericArguments,
-		Arguments:        *arguments,
+		GenericArguments: generics,
+		Arguments:        arguments.Elements,
 	}
+	expr.LeadingComment = leading
+	expr.TrailingComment = trailing
 
 	reducer.CallExprs = append(reducer.CallExprs, expr)
 	return expr, nil
@@ -680,14 +702,19 @@ func (reducer *Reducer) ToInitializeExpr(
 ) {
 	arguments.ReduceMarkers(lparen, rparen)
 
+	initializable.AppendToTrailing(arguments.TakeLeading())
+	initializable.AppendToTrailing(arguments.MiddleComment)
+
+	trailing := arguments.TakeTrailing()
+
 	expr := &ast.InitializeExpr{
 		StartEndPos:   ast.NewStartEndPos(initializable.Loc(), rparen.End()),
 		Initializable: initializable,
-		Arguments:     *arguments,
+		Arguments:     arguments.Elements,
 	}
 
-	expr.LeadingComment = expr.Initializable.TakeLeading()
-	expr.TrailingComment = expr.Arguments.TakeTrailing()
+	expr.LeadingComment = initializable.TakeLeading()
+	expr.TrailingComment = trailing
 
 	reducer.InitializeExprs = append(reducer.InitializeExprs, expr)
 	return expr, nil

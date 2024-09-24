@@ -111,10 +111,10 @@ func (Reducer) NilToGenericParameterList() (
 
 func (reducer *Reducer) BindingToGenericArguments(
 	dollarLbracket *lr.TokenValue,
-	list *ast.GenericArgumentList,
+	list *ast.TypeExpressionList,
 	rbracket *lr.TokenValue,
 ) (
-	*ast.GenericArgumentList,
+	*ast.TypeExpressionList,
 	error,
 ) {
 	list.ReduceMarkers(dollarLbracket, rbracket)
@@ -122,18 +122,18 @@ func (reducer *Reducer) BindingToGenericArguments(
 }
 
 func (reducer *Reducer) NilToGenericArguments() (
-	*ast.GenericArgumentList,
+	*ast.TypeExpressionList,
 	error,
 ) {
 	return nil, nil
 }
 
 func (reducer *Reducer) AddToProperGenericArgumentList(
-	list *ast.GenericArgumentList,
+	list *ast.TypeExpressionList,
 	comma *lr.TokenValue,
 	arg ast.TypeExpression,
 ) (
-	*ast.GenericArgumentList,
+	*ast.TypeExpressionList,
 	error,
 ) {
 	list.ReduceAdd(comma, arg)
@@ -143,19 +143,19 @@ func (reducer *Reducer) AddToProperGenericArgumentList(
 func (reducer *Reducer) TypeExprToProperGenericArgumentList(
 	arg ast.TypeExpression,
 ) (
-	*ast.GenericArgumentList,
+	*ast.TypeExpressionList,
 	error,
 ) {
-	list := ast.NewGenericArgumentList()
+	list := ast.NewTypeExpressionList()
 	list.Add(arg)
 	return list, nil
 }
 
 func (reducer *Reducer) ImproperToGenericArgumentList(
-	list *ast.GenericArgumentList,
+	list *ast.TypeExpressionList,
 	comma *lr.TokenValue,
 ) (
-	*ast.GenericArgumentList,
+	*ast.TypeExpressionList,
 	error,
 ) {
 	list.ReduceImproper(comma)
@@ -163,8 +163,8 @@ func (reducer *Reducer) ImproperToGenericArgumentList(
 }
 
 func (reducer *Reducer) NilToGenericArgumentList() (
-	*ast.GenericArgumentList,
+	*ast.TypeExpressionList,
 	error,
 ) {
-	return ast.NewGenericArgumentList(), nil
+	return ast.NewTypeExpressionList(), nil
 }

@@ -4,6 +4,36 @@ import (
 	"fmt"
 )
 
+func elementsTreeString[T Node](
+	list []T,
+	indent string,
+	elementType string,
+) string {
+	result := ""
+	for idx, element := range list {
+		result += "\n" + element.TreeString(
+			indent,
+			fmt.Sprintf("%s%d=", elementType, idx))
+	}
+	return result
+}
+
+func ListTreeString[T Node](
+	list []T,
+	indent string,
+	label string,
+	elementType string,
+) string {
+	result := fmt.Sprintf("%s%s[%sList:", indent, label, elementType)
+	if len(list) == 0 {
+		return result + "]"
+	}
+
+	result += elementsTreeString(list, indent+"  ", elementType)
+	result += "\n" + indent + "]"
+	return result
+}
+
 type NodeList[T Node] struct {
 	StartEndPos
 
@@ -14,36 +44,6 @@ type NodeList[T Node] struct {
 	MiddleComment CommentGroups
 
 	Elements []T
-
-	// Only used for TreeString() / String()
-	ListType string
-}
-
-func (list NodeList[T]) ElementsString(indent string) string {
-	result := ""
-	for idx, element := range list.Elements {
-		result += "\n" + element.TreeString(
-			indent,
-			fmt.Sprintf("Element%d=", idx))
-	}
-	return result
-}
-
-func (list NodeList[T]) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[%s:", indent, label, list.ListType)
-	if len(list.Elements) == 0 {
-		return result + "]"
-	}
-
-	result += list.ElementsString(indent + "  ")
-	result += "\n" + indent + "]"
-	return result
-}
-
-func NewNodeList[T Node](listType string) *NodeList[T] {
-	return &NodeList[T]{
-		ListType: listType,
-	}
 }
 
 func (list *NodeList[T]) Add(element T) {
@@ -92,7 +92,7 @@ func (list *NodeList[T]) ReduceMarkers(start ValuedNode, end ValuedNode) {
 type DefinitionList = NodeList[Definition]
 
 func NewDefinitionList() *DefinitionList {
-	return NewNodeList[Definition]("DefinitionList")
+	return &NodeList[Definition]{}
 }
 
 //
@@ -102,7 +102,7 @@ func NewDefinitionList() *DefinitionList {
 type ExpressionList = NodeList[Expression]
 
 func NewExpressionList() *ExpressionList {
-	return NewNodeList[Expression]("ExpressionList")
+	return &NodeList[Expression]{}
 }
 
 //
@@ -112,17 +112,27 @@ func NewExpressionList() *ExpressionList {
 type TypePropertyList = NodeList[TypeProperty]
 
 func NewTypePropertyList() *TypePropertyList {
-	return NewNodeList[TypeProperty]("TypePropertyList")
+	return &NodeList[TypeProperty]{}
 }
 
 //
-// GenericArgumentList
+// TypeExpressionList
 //
 
-type GenericArgumentList = NodeList[TypeExpression]
+type TypeExpressionList = NodeList[TypeExpression]
 
-func NewGenericArgumentList() *GenericArgumentList {
-	return NewNodeList[TypeExpression]("GenericArgumentList")
+func NewTypeExpressionList() *TypeExpressionList {
+	return &NodeList[TypeExpression]{}
+}
+
+//
+// StatementList
+//
+
+type StatementList = NodeList[Statement]
+
+func NewStatementList() *StatementList {
+	return &NodeList[Statement]{}
 }
 
 //
@@ -132,7 +142,7 @@ func NewGenericArgumentList() *GenericArgumentList {
 type ParameterList = NodeList[*Parameter]
 
 func NewParameterList() *ParameterList {
-	return NewNodeList[*Parameter]("ParameterList")
+	return &NodeList[*Parameter]{}
 }
 
 //
@@ -142,7 +152,7 @@ func NewParameterList() *ParameterList {
 type ArgumentList = NodeList[*Argument]
 
 func NewArgumentList() *ArgumentList {
-	return NewNodeList[*Argument]("ArgumentList")
+	return &NodeList[*Argument]{}
 }
 
 //
@@ -152,5 +162,15 @@ func NewArgumentList() *ArgumentList {
 type GenericParameterList = NodeList[*GenericParameter]
 
 func NewGenericParameterList() *GenericParameterList {
-	return NewNodeList[*GenericParameter]("GenericParameterList")
+	return &NodeList[*GenericParameter]{}
+}
+
+//
+// ImportClauseList
+//
+
+type ImportClauseList = NodeList[*ImportClause]
+
+func NewImportClauseList() *ImportClauseList {
+	return &NodeList[*ImportClause]{}
 }

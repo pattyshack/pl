@@ -147,7 +147,10 @@ func (expr BinaryExpr) TreeString(indent string, label string) string {
 
 type ImplicitStructExpr struct {
 	IsExpr
-	ArgumentList
+	StartEndPos
+	LeadingTrailingComments
+
+	Arguments []*Argument
 
 	// An improper struct is the a comma separated list of expressions without
 	// left/right paren.  e.g., return 1, 2, 3
@@ -160,7 +163,11 @@ func (expr *ImplicitStructExpr) TreeString(indent string, label string) string {
 		indent,
 		label,
 		expr.IsImproper)
-	result += expr.ArgumentList.TreeString(indent+"  ", "")
+	if len(expr.Arguments) == 0 {
+		return result + "]"
+	}
+
+	result += elementsTreeString(expr.Arguments, indent+"  ", "Argument")
 	result += "\n" + indent + "]\n"
 	return result
 }
@@ -171,7 +178,23 @@ func (expr *ImplicitStructExpr) TreeString(indent string, label string) string {
 
 type ColonExpr struct {
 	IsExpr
-	ArgumentList
+	StartEndPos
+	LeadingTrailingComments
+
+	Arguments []*Argument
+}
+
+var _ Expression = &ColonExpr{}
+
+func (expr ColonExpr) TreeString(indent string, label string) string {
+	result := fmt.Sprintf("%s%s[ColonExpr\n", indent, label)
+	result += ListTreeString(
+		expr.Arguments,
+		indent+"  ",
+		"Arguments=",
+		"Argument")
+	result += "\n" + indent + "]"
+	return result
 }
 
 //
@@ -184,8 +207,8 @@ type CallExpr struct {
 	LeadingTrailingComments
 
 	FuncExpr         Expression
-	GenericArguments GenericArgumentList
-	Arguments        ArgumentList
+	GenericArguments []TypeExpression
+	Arguments        []*Argument
 }
 
 var _ Expression = &CallExpr{}
@@ -193,11 +216,19 @@ var _ Expression = &CallExpr{}
 func (expr CallExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[CallExpr\n", indent, label)
 	result += expr.FuncExpr.TreeString(indent+"  ", "FuncExpr=") + "\n"
-	if len(expr.GenericArguments.Elements) > 0 {
-		result += expr.GenericArguments.TreeString(indent+"  ", "GenericArguments=")
+	if len(expr.GenericArguments) > 0 {
+		result += ListTreeString(
+			expr.GenericArguments,
+			indent+"  ",
+			"GenericArguments=",
+			"GenericArgument")
 		result += "\n"
 	}
-	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
+	result += ListTreeString(
+		expr.Arguments,
+		indent+"  ",
+		"Arguments=",
+		"Argument")
 	result += "\n" + indent + "]"
 
 	return result
@@ -257,13 +288,17 @@ type InitializeExpr struct {
 	LeadingTrailingComments
 
 	Initializable TypeExpression
-	Arguments     ArgumentList
+	Arguments     []*Argument
 }
 
 func (expr InitializeExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[InitializeExpr:\n", indent, label)
 	result += expr.Initializable.TreeString(indent+"  ", "Initialiable=") + "\n"
-	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
+	result += ListTreeString(
+		expr.Arguments,
+		indent+"  ",
+		"Arguments=",
+		"Argument")
 	result += "\n" + indent + "]"
 	return result
 }

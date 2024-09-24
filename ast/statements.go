@@ -11,13 +11,11 @@ import (
 
 type StatementsExpr struct {
 	IsExpr
+	StartEndPos
+	LeadingTrailingComments
 
-	LabelDecl string // optional
-	NodeList[Statement]
-}
-
-func NewStatementsExpr() *StatementsExpr {
-	return &StatementsExpr{}
+	LabelDecl  string // optional
+	Statements []Statement
 }
 
 func (expr StatementsExpr) TreeString(indent string, label string) string {
@@ -26,11 +24,11 @@ func (expr StatementsExpr) TreeString(indent string, label string) string {
 		indent,
 		label,
 		expr.LabelDecl)
-	if len(expr.Elements) == 0 {
+	if len(expr.Statements) == 0 {
 		return result + "]"
 	}
 
-	result += expr.ElementsString(indent + "  ")
+	result += elementsTreeString(expr.Statements, indent+"  ", "Statement")
 	result += "\n" + indent + "]"
 	return result
 }
@@ -64,15 +62,19 @@ func (clause ImportClause) TreeString(indent string, label string) string {
 
 type ImportStatement struct {
 	IsStmt
-	NodeList[*ImportClause]
+	StartEndPos
+	LeadingTrailingComments
+
+	ImportClauses []*ImportClause
 }
 
 var _ Statement = &ImportStatement{}
 
-func NewImportStatement() *ImportStatement {
-	return &ImportStatement{
-		NodeList: *NewNodeList[*ImportClause]("ImportStatement"),
-	}
+func (stmt ImportStatement) TreeString(indent string, label string) string {
+	result := fmt.Sprintf("%s%s[ImportStatement:", indent, label)
+	result += elementsTreeString(stmt.ImportClauses, indent+"  ", "ImportClause")
+	result += "\n" + indent + "]"
+	return result
 }
 
 //
@@ -192,7 +194,7 @@ type BranchStatement struct {
 	LeadingTrailingComments
 
 	IsDefault    bool
-	CasePatterns ExpressionList
+	CasePatterns []Expression
 	Body         *StatementsExpr
 }
 
@@ -200,16 +202,20 @@ var _ Statement = &BranchStatement{}
 
 func (stmt BranchStatement) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
-		"%s%s[BranchStatement: IsDefault=%v\n",
+		"%s%s[BranchStatement: IsDefault=%v",
 		indent,
 		label,
 		stmt.IsDefault)
 
 	if !stmt.IsDefault {
-		result += stmt.CasePatterns.TreeString(indent+"  ", "CasePatterns=") + "\n"
+		result += "\n" + ListTreeString(
+			stmt.CasePatterns,
+			indent+"  ",
+			"CasePatterns=",
+			"Pattern")
 	}
 
-	result += stmt.Body.TreeString(indent+"  ", "Body=")
+	result += "\n" + stmt.Body.TreeString(indent+"  ", "Body=")
 
 	result += "\n" + indent + "]"
 	return result

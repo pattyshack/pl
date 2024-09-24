@@ -8,15 +8,15 @@ import (
 )
 
 //
-// StatementsExpr
+// StatementsExpr / StatementList
 //
 
 func (reducer *Reducer) AddImplicitToProperStatementList(
-	statements *ast.StatementsExpr,
+	statements *ast.StatementList,
 	newlines lr.TokenCount,
 	statement ast.Statement,
 ) (
-	*ast.StatementsExpr,
+	*ast.StatementList,
 	error,
 ) {
 	statements.ReduceAdd(&lr.TokenValue{}, statement)
@@ -24,11 +24,11 @@ func (reducer *Reducer) AddImplicitToProperStatementList(
 }
 
 func (reducer *Reducer) AddExplicitToProperStatementList(
-	statements *ast.StatementsExpr,
+	statements *ast.StatementList,
 	semicolon *lr.TokenValue,
 	statement ast.Statement,
 ) (
-	*ast.StatementsExpr,
+	*ast.StatementList,
 	error,
 ) {
 	statements.ReduceAdd(semicolon, statement)
@@ -38,52 +38,59 @@ func (reducer *Reducer) AddExplicitToProperStatementList(
 func (reducer *Reducer) StatementToProperStatementList(
 	statement ast.Statement,
 ) (
-	*ast.StatementsExpr,
+	*ast.StatementList,
 	error,
 ) {
-	list := ast.NewStatementsExpr()
+	list := ast.NewStatementList()
 	list.Add(statement)
-	reducer.StatementsExprs = append(reducer.StatementsExprs, list)
 	return list, nil
 }
 
 func (reducer *Reducer) ImproperImplicitToStatementList(
-	statements *ast.StatementsExpr,
+	statements *ast.StatementList,
 	newlines lr.TokenCount,
 ) (
-	*ast.StatementsExpr,
+	*ast.StatementList,
 	error,
 ) {
 	return statements, nil
 }
 
 func (reducer *Reducer) ImproperExplicitToStatementList(
-	statements *ast.StatementsExpr,
+	statements *ast.StatementList,
 	semicolon *lr.TokenValue,
 ) (
-	*ast.StatementsExpr,
+	*ast.StatementList,
 	error,
 ) {
 	statements.ReduceImproper(semicolon)
 	return statements, nil
 }
 
-func (reducer *Reducer) NilToStatementList() (*ast.StatementsExpr, error) {
-	list := ast.NewStatementsExpr()
-	reducer.StatementsExprs = append(reducer.StatementsExprs, list)
+func (reducer *Reducer) NilToStatementList() (*ast.StatementList, error) {
+	list := ast.NewStatementList()
 	return list, nil
 }
 
 func (reducer *Reducer) ToStatements(
 	lbrace *lr.TokenValue,
-	list *ast.StatementsExpr,
+	list *ast.StatementList,
 	rbrace *lr.TokenValue,
 ) (
 	ast.Expression,
 	error,
 ) {
 	list.ReduceMarkers(lbrace, rbrace)
-	return list, nil
+
+	expr := &ast.StatementsExpr{
+		StartEndPos:             list.StartEndPos,
+		LeadingTrailingComments: list.LeadingTrailingComments,
+		Statements:              list.Elements,
+	}
+	expr.LeadingComment.Append(list.MiddleComment)
+
+	reducer.StatementsExprs = append(reducer.StatementsExprs, expr)
+	return expr, nil
 }
 
 func (reducer *Reducer) LabelledToStatementsExpr(
@@ -113,8 +120,11 @@ func (reducer *Reducer) StatementToTrailingStatement(
 	*ast.StatementsExpr,
 	error,
 ) {
-	expr := ast.NewStatementsExpr()
-	expr.Add(stmt)
+	expr := &ast.StatementsExpr{
+		StartEndPos: stmt.StartEnd(),
+		Statements:  []ast.Statement{stmt},
+	}
+
 	reducer.StatementsExprs = append(reducer.StatementsExprs, expr)
 	return expr, nil
 }
@@ -123,7 +133,7 @@ func (reducer *Reducer) NilToTrailingStatement() (
 	*ast.StatementsExpr,
 	error,
 ) {
-	expr := ast.NewStatementsExpr()
+	expr := &ast.StatementsExpr{}
 	reducer.StatementsExprs = append(reducer.StatementsExprs, expr)
 	return expr, nil
 }
@@ -210,86 +220,100 @@ func (reducer *Reducer) SingleToImportStatement(
 	ast.Statement,
 	error,
 ) {
-	stmt := ast.NewImportStatement()
-	stmt.Add(importClause)
+	leading := importKW.TakeLeading()
+	leading.Append(importKW.TakeTrailing())
+	trailing := importClause.TakeTrailing()
 
-	stmt.StartPos = importKW.Loc()
-	stmt.PrependToLeading(importKW.TakeTrailing())
-	stmt.PrependToLeading(importKW.TakeLeading())
+	stmt := &ast.ImportStatement{
+		StartEndPos:   ast.NewStartEndPos(importKW.Loc(), importClause.End()),
+		ImportClauses: []*ast.ImportClause{importClause},
+	}
+	stmt.LeadingComment = leading
+	stmt.TrailingComment = trailing
+
 	return stmt, nil
 }
 
 func (reducer *Reducer) MultipleToImportStatement(
 	importKW *lr.TokenValue,
 	lparen *lr.TokenValue,
-	stmt *ast.ImportStatement,
+	clauses *ast.ImportClauseList,
 	rparen *lr.TokenValue,
 ) (
 	ast.Statement,
 	error,
 ) {
-	stmt.ReduceMarkers(lparen, rparen)
+	clauses.ReduceMarkers(lparen, rparen)
 
-	stmt.StartPos = importKW.Loc()
-	stmt.PrependToLeading(importKW.TakeTrailing())
-	stmt.PrependToLeading(importKW.TakeLeading())
+	leading := importKW.TakeLeading()
+	leading.Append(importKW.TakeTrailing())
+	leading.Append(clauses.TakeLeading())
+	trailing := clauses.TakeTrailing()
+
+	stmt := &ast.ImportStatement{
+		StartEndPos:   ast.NewStartEndPos(importKW.Loc(), clauses.End()),
+		ImportClauses: clauses.Elements,
+	}
+	stmt.LeadingComment = leading
+	stmt.TrailingComment = trailing
+
 	return stmt, nil
 }
 
 func (reducer *Reducer) AddImplicitToProperImportClauses(
-	stmt *ast.ImportStatement,
+	clauses *ast.ImportClauseList,
 	newlines lr.TokenCount,
 	importClause *ast.ImportClause,
 ) (
-	*ast.ImportStatement,
+	*ast.ImportClauseList,
 	error,
 ) {
-	stmt.ReduceAdd(&lr.TokenValue{}, importClause)
-	return stmt, nil
+	clauses.ReduceAdd(&lr.TokenValue{}, importClause)
+	return clauses, nil
 }
 
 func (reducer *Reducer) AddExplicitToProperImportClauses(
-	stmt *ast.ImportStatement,
+	clauses *ast.ImportClauseList,
 	comma *lr.TokenValue,
 	importClause *ast.ImportClause,
 ) (
-	*ast.ImportStatement,
+	*ast.ImportClauseList,
 	error,
 ) {
-	stmt.ReduceAdd(comma, importClause)
-	return stmt, nil
+	clauses.ReduceAdd(comma, importClause)
+	return clauses, nil
 }
 
 func (reducer *Reducer) ImportClauseToProperImportClauses(
 	importClause *ast.ImportClause,
 ) (
-	*ast.ImportStatement,
+	*ast.ImportClauseList,
 	error,
 ) {
-	stmt := ast.NewImportStatement()
-	stmt.Add(importClause)
-	return stmt, nil
+	clauses := ast.NewImportClauseList()
+	clauses.Add(importClause)
+	return clauses, nil
 }
 
 func (reducer *Reducer) ImplicitToImportClauses(
-	stmt *ast.ImportStatement,
+	clauses *ast.ImportClauseList,
 	newlines lr.TokenCount,
 ) (
-	*ast.ImportStatement,
+	*ast.ImportClauseList,
 	error,
 ) {
-	return stmt, nil
+	return clauses, nil
 }
 
 func (reducer *Reducer) ExplicitToImportClauses(
-	stmt *ast.ImportStatement,
+	clauses *ast.ImportClauseList,
 	comma *lr.TokenValue,
 ) (
-	*ast.ImportStatement,
+	*ast.ImportClauseList,
 	error,
 ) {
-	stmt.ReduceImproper(comma)
-	return stmt, nil
+	clauses.ReduceImproper(comma)
+	return clauses, nil
 }
 
 //
@@ -392,19 +416,23 @@ func (reducer *Reducer) CaseBranchToBranchStatement(
 	error,
 ) {
 	end := colon.End()
-	if len(body.Elements) > 0 {
-		// body.End() is invalid for "nil trailing statement"
+	if len(body.Statements) > 0 {
 		end = body.End()
+	} else {
+		body.StartEndPos = colon.StartEnd()
 	}
 
 	leading := caseKW.TakeLeading()
-	casePatterns.PrependToLeading(caseKW.TakeTrailing())
-	casePatterns.AppendToTrailing(colon.TakeLeading())
+	leading.Append(caseKW.TakeTrailing())
+	leading.Append(casePatterns.TakeLeading())
+
 	body.PrependToLeading(colon.TakeTrailing())
+	body.PrependToLeading(colon.TakeLeading())
+	body.PrependToLeading(casePatterns.TakeTrailing())
 
 	stmt := &ast.BranchStatement{
 		StartEndPos:  ast.NewStartEndPos(caseKW.Loc(), end),
-		CasePatterns: *casePatterns,
+		CasePatterns: casePatterns.Elements,
 		Body:         body,
 	}
 	stmt.LeadingComment = leading
@@ -420,23 +448,23 @@ func (reducer *Reducer) DefaultBranchToBranchStatement(
 	ast.Statement,
 	error,
 ) {
-	casePatterns := ast.NewExpressionList()
-
 	end := colon.End()
-	if len(body.Elements) > 0 {
-		// body.End() is invalid for "nil trailing statement"
+	if len(body.Statements) > 0 {
 		end = body.End()
+	} else {
+		body.StartEndPos = colon.StartEnd()
 	}
 
 	leading := defaultKW.TakeLeading()
-	casePatterns.PrependToLeading(defaultKW.TakeTrailing())
-	casePatterns.AppendToTrailing(colon.TakeLeading())
+	leading.Append(defaultKW.TakeTrailing())
+
 	body.PrependToLeading(colon.TakeTrailing())
+	body.PrependToLeading(colon.TakeLeading())
 
 	stmt := &ast.BranchStatement{
 		StartEndPos:  ast.NewStartEndPos(defaultKW.Loc(), end),
 		IsDefault:    true,
-		CasePatterns: *casePatterns,
+		CasePatterns: nil,
 		Body:         body,
 	}
 	stmt.LeadingComment = leading

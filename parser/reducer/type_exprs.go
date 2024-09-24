@@ -1,8 +1,6 @@
 package reducer
 
 import (
-	"github.com/pattyshack/gt/lexutil"
-
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
@@ -137,26 +135,33 @@ func (reducer *Reducer) UnderscoreToInferredTypeExpr(
 
 func (reducer *Reducer) toNamedTypeExpr(
 	name *lr.TokenValue,
-	genericArguments *ast.GenericArgumentList,
+	genericArguments *ast.TypeExpressionList,
 ) *ast.NamedTypeExpr {
-	var endPos lexutil.Location
-	var trailing ast.CommentGroups
-	if genericArguments == nil {
-		genericArguments = ast.NewGenericArgumentList()
-		endPos = name.End()
-		trailing = name.TakeTrailing()
-	} else {
-		endPos = genericArguments.End()
+	leading := name.TakeLeading()
+	trailing := name.TakeTrailing()
+	end := name.EndPos
+
+	var args []ast.TypeExpression
+	if genericArguments != nil {
+		args = genericArguments.Elements
+
+		leading.Append(trailing)
+		leading.Append(genericArguments.TakeLeading())
+
 		trailing = genericArguments.TakeTrailing()
+
+		if len(genericArguments.MiddleComment.Groups) > 0 {
+			trailing.Prepend(genericArguments.MiddleComment)
+		}
 	}
+
 	named := &ast.NamedTypeExpr{
-		StartEndPos: ast.NewStartEndPos(name.Loc(), endPos),
-		LeadingTrailingComments: ast.LeadingTrailingComments{
-			TrailingComment: trailing,
-		},
-		Name:             name,
-		GenericArguments: *genericArguments,
+		StartEndPos:      ast.NewStartEndPos(name.Loc(), end),
+		Name:             name.Value,
+		GenericArguments: args,
 	}
+	named.LeadingComment = leading
+	named.TrailingComment = trailing
 
 	reducer.NamedTypeExprs = append(reducer.NamedTypeExprs, named)
 	return named
@@ -164,7 +169,7 @@ func (reducer *Reducer) toNamedTypeExpr(
 
 func (reducer *Reducer) LocalToNamedTypeExpr(
 	name *lr.TokenValue,
-	genericArguments *ast.GenericArgumentList,
+	genericArguments *ast.TypeExpressionList,
 ) (
 	ast.TypeExpression,
 	error,
@@ -178,7 +183,7 @@ func (reducer *Reducer) ExternalToNamedTypeExpr(
 	pkg *lr.TokenValue,
 	dot *lr.TokenValue,
 	name *lr.TokenValue,
-	genericArguments *ast.GenericArgumentList,
+	genericArguments *ast.TypeExpressionList,
 ) (
 	ast.TypeExpression,
 	error,
@@ -258,14 +263,18 @@ func (reducer *Reducer) implicit(
 	rparen *lr.TokenValue,
 ) *ast.PropertiesTypeExpr {
 	properties.ReduceMarkers(lparen, rparen)
+
+	leading := properties.TakeLeading()
+	trailing := properties.TakeTrailing()
+
 	expr := &ast.PropertiesTypeExpr{
 		StartEndPos: ast.NewStartEndPos(lparen.Loc(), rparen.End()),
 		Kind:        kind,
 		IsImplicit:  true,
-		Properties:  *properties,
+		Properties:  properties.Elements,
 	}
-	expr.LeadingComment = properties.TakeLeading()
-	expr.TrailingComment = properties.TakeTrailing()
+	expr.LeadingComment = leading
+	expr.TrailingComment = trailing
 
 	return expr
 }
@@ -279,16 +288,18 @@ func (reducer *Reducer) explicit(
 ) *ast.PropertiesTypeExpr {
 	properties.ReduceMarkers(lparen, rparen)
 
-	properties.PrependToLeading(kw.TakeTrailing())
+	leading := kw.TakeLeading()
+	leading.Append(kw.TakeTrailing())
+	leading.Append(properties.TakeLeading())
 	trailing := properties.TakeTrailing()
 
 	expr := &ast.PropertiesTypeExpr{
 		StartEndPos: ast.NewStartEndPos(kw.Loc(), rparen.End()),
 		Kind:        kind,
 		IsImplicit:  false,
-		Properties:  *properties,
+		Properties:  properties.Elements,
 	}
-	expr.LeadingComment = kw.TakeLeading()
+	expr.LeadingComment = leading
 	expr.TrailingComment = trailing
 
 	return expr

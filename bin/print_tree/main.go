@@ -121,25 +121,32 @@ func (cmd *Command) printPackage(
 
 	fmt.Println("Tree:")
 	fmt.Println("-----")
-	fmt.Println(list.TreeString("", ""))
+	fmt.Println(ast.ListTreeString(list.Elements, "", "", "Definition"))
 
 	return nil
 }
 
 func (cmd *Command) printFunc(
-	parse func(string) (*reducer.Reducer, ast.Node, error),
+	parse func(string) (*reducer.Reducer, interface{}, error),
 	args []string,
 ) error {
 	for _, fileName := range args {
-		reducer, expr, err := parse(fileName)
+		reducer, result, err := parse(fileName)
 		if err != nil {
 			fmt.Println("Parse error:", err)
 			continue
 		}
 
-		fmt.Println("Tree:")
+		fmt.Println("Parsed:")
 		fmt.Println("-----")
-		fmt.Println(expr.TreeString("", ""))
+		switch value := result.(type) {
+		case ast.Node:
+			fmt.Println(value.TreeString("", ""))
+		case *ast.DefinitionList:
+			ast.ListTreeString(value.Elements, "", "", "Definition")
+		default:
+			panic(fmt.Sprintf("unexpected value: %v", result))
+		}
 
 		if len(reducer.ParseErrors) == 0 {
 			continue
@@ -162,7 +169,7 @@ func (cmd *Command) printExpr(args []string) error {
 			fileName string,
 		) (
 			*reducer.Reducer,
-			ast.Node,
+			interface{},
 			error,
 		) {
 			return parser.ParseExpr(fileName, cmd.ParserOptions)
@@ -176,7 +183,7 @@ func (cmd *Command) printTypeExpr(args []string) error {
 			fileName string,
 		) (
 			*reducer.Reducer,
-			ast.Node,
+			interface{},
 			error,
 		) {
 			return parser.ParseTypeExpr(fileName, cmd.ParserOptions)
@@ -190,7 +197,7 @@ func (cmd *Command) printStatement(args []string) error {
 			fileName string,
 		) (
 			*reducer.Reducer,
-			ast.Node,
+			interface{},
 			error,
 		) {
 			return parser.ParseStatement(fileName, cmd.ParserOptions)
@@ -204,7 +211,7 @@ func (cmd *Command) printDefinition(args []string) error {
 			fileName string,
 		) (
 			*reducer.Reducer,
-			ast.Node,
+			interface{},
 			error,
 		) {
 			return parser.ParseDefinition(fileName, cmd.ParserOptions)
@@ -218,7 +225,7 @@ func (cmd *Command) printSource(args []string) error {
 			fileName string,
 		) (
 			*reducer.Reducer,
-			ast.Node,
+			interface{},
 			error,
 		) {
 			return parser.ParseSource(fileName, cmd.ParserOptions)

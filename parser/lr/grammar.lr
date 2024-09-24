@@ -172,12 +172,12 @@ import_statement<Statement> ->
   single: IMPORT import_clause |
   multiple: IMPORT LPAREN import_clauses RPAREN
 
-proper_import_clauses<ImportStatement> ->
+proper_import_clauses<ImportClauseList> ->
   add_implicit: proper_import_clauses NEWLINES import_clause |
   add_explicit: proper_import_clauses COMMA import_clause |
   import_clause
 
-import_clauses<ImportStatement> ->
+import_clauses<ImportClauseList> ->
   = proper_import_clauses |
   implicit: proper_import_clauses NEWLINES |
   explicit: proper_import_clauses COMMA
@@ -583,12 +583,12 @@ statements_or_parse_error<Expression> ->
   = statements |
   = parse_error_expr
 
-proper_statement_list<StatementsExpr> ->
+proper_statement_list<StatementList> ->
   add_implicit: proper_statement_list NEWLINES statement |
   add_explicit: proper_statement_list SEMICOLON statement |
   statement
 
-statement_list<StatementsExpr> ->
+statement_list<StatementList> ->
   = proper_statement_list |
   improper_implicit: proper_statement_list NEWLINES |
   improper_explicit: proper_statement_list SEMICOLON |
@@ -787,15 +787,15 @@ generic_parameter_list<GenericParameterList> ->
   improper: proper_generic_parameter_list COMMA |
   nil:
 
-generic_arguments<GenericArgumentList> ->
+generic_arguments<TypeExpressionList> ->
   binding: DOLLAR_LBRACKET generic_argument_list RBRACKET |
   nil:
 
-proper_generic_argument_list<GenericArgumentList> ->
+proper_generic_argument_list<TypeExpressionList> ->
   add: proper_generic_argument_list COMMA type_expr |
   type_expr
 
-generic_argument_list<GenericArgumentList> ->
+generic_argument_list<TypeExpressionList> ->
   = proper_generic_argument_list |
   improper: proper_generic_argument_list COMMA |
   nil:
@@ -995,8 +995,9 @@ go:
     TypeExpression: "github.com/pattyshack/pl/ast.TypeExpression"
     GenericParameter: "*github.com/pattyshack/pl/ast.GenericParameter"
     GenericParameterList: "*github.com/pattyshack/pl/ast.GenericParameterList"
-    GenericArgumentList: "*github.com/pattyshack/pl/ast.GenericArgumentList"
+    TypeExpressionList: "*github.com/pattyshack/pl/ast.TypeExpressionList"
     Statement: "github.com/pattyshack/pl/ast.Statement"
+    StatementList: "*github.com/pattyshack/pl/ast.StatementList"
     StatementsExpr: "*github.com/pattyshack/pl/ast.StatementsExpr"
     Definition: "github.com/pattyshack/pl/ast.Definition"
     Definitions: "*github.com/pattyshack/pl/ast.DefinitionList"
@@ -1004,7 +1005,7 @@ go:
     TypeProperties: "*github.com/pattyshack/pl/ast.TypePropertyList"
     FieldDef: "*github.com/pattyshack/pl/ast.FieldDef"
     ImportClause: "*github.com/pattyshack/pl/ast.ImportClause"
-    ImportStatement: "*github.com/pattyshack/pl/ast.ImportStatement"
+    ImportClauseList: "*github.com/pattyshack/pl/ast.ImportClauseList"
     ImplicitStruct: "*github.com/pattyshack/pl/ast.ImplicitStructExpr"
     UnsafeStatement: "*github.com/pattyshack/pl/ast.UnsafeStatement"
     CaseAssignPattern: "*github.com/pattyshack/pl/ast.CaseAssignPattern"

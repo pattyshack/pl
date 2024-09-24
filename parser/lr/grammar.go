@@ -209,27 +209,27 @@ type ImportStatementReducer interface {
 	SingleToImportStatement(Import_ *TokenValue, ImportClause_ *ast.ImportClause) (ast.Statement, error)
 
 	// 173:2: import_statement -> multiple: ...
-	MultipleToImportStatement(Import_ *TokenValue, Lparen_ *TokenValue, ImportClauses_ *ast.ImportStatement, Rparen_ *TokenValue) (ast.Statement, error)
+	MultipleToImportStatement(Import_ *TokenValue, Lparen_ *TokenValue, ImportClauses_ *ast.ImportClauseList, Rparen_ *TokenValue) (ast.Statement, error)
 }
 
 type ProperImportClausesReducer interface {
 	// 176:2: proper_import_clauses -> add_implicit: ...
-	AddImplicitToProperImportClauses(ProperImportClauses_ *ast.ImportStatement, Newlines_ TokenCount, ImportClause_ *ast.ImportClause) (*ast.ImportStatement, error)
+	AddImplicitToProperImportClauses(ProperImportClauses_ *ast.ImportClauseList, Newlines_ TokenCount, ImportClause_ *ast.ImportClause) (*ast.ImportClauseList, error)
 
 	// 177:2: proper_import_clauses -> add_explicit: ...
-	AddExplicitToProperImportClauses(ProperImportClauses_ *ast.ImportStatement, Comma_ *TokenValue, ImportClause_ *ast.ImportClause) (*ast.ImportStatement, error)
+	AddExplicitToProperImportClauses(ProperImportClauses_ *ast.ImportClauseList, Comma_ *TokenValue, ImportClause_ *ast.ImportClause) (*ast.ImportClauseList, error)
 
 	// 178:2: proper_import_clauses -> import_clause: ...
-	ImportClauseToProperImportClauses(ImportClause_ *ast.ImportClause) (*ast.ImportStatement, error)
+	ImportClauseToProperImportClauses(ImportClause_ *ast.ImportClause) (*ast.ImportClauseList, error)
 }
 
 type ImportClausesReducer interface {
 
 	// 182:2: import_clauses -> implicit: ...
-	ImplicitToImportClauses(ProperImportClauses_ *ast.ImportStatement, Newlines_ TokenCount) (*ast.ImportStatement, error)
+	ImplicitToImportClauses(ProperImportClauses_ *ast.ImportClauseList, Newlines_ TokenCount) (*ast.ImportClauseList, error)
 
 	// 183:2: import_clauses -> explicit: ...
-	ExplicitToImportClauses(ProperImportClauses_ *ast.ImportStatement, Comma_ *TokenValue) (*ast.ImportStatement, error)
+	ExplicitToImportClauses(ProperImportClauses_ *ast.ImportClauseList, Comma_ *TokenValue) (*ast.ImportClauseList, error)
 }
 
 type ImportClauseReducer interface {
@@ -374,7 +374,7 @@ type AsExprReducer interface {
 
 type CallExprReducer interface {
 	// 335:2: call_expr -> ...
-	ToCallExpr(AccessibleExpr_ ast.Expression, GenericArguments_ *ast.GenericArgumentList, Lparen_ *TokenValue, Arguments_ *ast.ArgumentList, Rparen_ *TokenValue) (ast.Expression, error)
+	ToCallExpr(AccessibleExpr_ ast.Expression, GenericArguments_ *ast.TypeExpressionList, Lparen_ *TokenValue, Arguments_ *ast.ArgumentList, Rparen_ *TokenValue) (ast.Expression, error)
 }
 
 type ProperArgumentsReducer interface {
@@ -489,30 +489,30 @@ type StatementsExprReducer interface {
 
 type StatementsReducer interface {
 	// 580:26: statements -> ...
-	ToStatements(Lbrace_ *TokenValue, StatementList_ *ast.StatementsExpr, Rbrace_ *TokenValue) (ast.Expression, error)
+	ToStatements(Lbrace_ *TokenValue, StatementList_ *ast.StatementList, Rbrace_ *TokenValue) (ast.Expression, error)
 }
 
 type ProperStatementListReducer interface {
 	// 587:2: proper_statement_list -> add_implicit: ...
-	AddImplicitToProperStatementList(ProperStatementList_ *ast.StatementsExpr, Newlines_ TokenCount, Statement_ ast.Statement) (*ast.StatementsExpr, error)
+	AddImplicitToProperStatementList(ProperStatementList_ *ast.StatementList, Newlines_ TokenCount, Statement_ ast.Statement) (*ast.StatementList, error)
 
 	// 588:2: proper_statement_list -> add_explicit: ...
-	AddExplicitToProperStatementList(ProperStatementList_ *ast.StatementsExpr, Semicolon_ *TokenValue, Statement_ ast.Statement) (*ast.StatementsExpr, error)
+	AddExplicitToProperStatementList(ProperStatementList_ *ast.StatementList, Semicolon_ *TokenValue, Statement_ ast.Statement) (*ast.StatementList, error)
 
 	// 589:2: proper_statement_list -> statement: ...
-	StatementToProperStatementList(Statement_ ast.Statement) (*ast.StatementsExpr, error)
+	StatementToProperStatementList(Statement_ ast.Statement) (*ast.StatementList, error)
 }
 
 type StatementListReducer interface {
 
 	// 593:2: statement_list -> improper_implicit: ...
-	ImproperImplicitToStatementList(ProperStatementList_ *ast.StatementsExpr, Newlines_ TokenCount) (*ast.StatementsExpr, error)
+	ImproperImplicitToStatementList(ProperStatementList_ *ast.StatementList, Newlines_ TokenCount) (*ast.StatementList, error)
 
 	// 594:2: statement_list -> improper_explicit: ...
-	ImproperExplicitToStatementList(ProperStatementList_ *ast.StatementsExpr, Semicolon_ *TokenValue) (*ast.StatementsExpr, error)
+	ImproperExplicitToStatementList(ProperStatementList_ *ast.StatementList, Semicolon_ *TokenValue) (*ast.StatementList, error)
 
 	// 595:2: statement_list -> nil: ...
-	NilToStatementList() (*ast.StatementsExpr, error)
+	NilToStatementList() (*ast.StatementList, error)
 }
 
 type IfExprReducer interface {
@@ -637,10 +637,10 @@ type MapTypeExprReducer interface {
 
 type NamedTypeExprReducer interface {
 	// 720:2: named_type_expr -> local: ...
-	LocalToNamedTypeExpr(Identifier_ *TokenValue, GenericArguments_ *ast.GenericArgumentList) (ast.TypeExpression, error)
+	LocalToNamedTypeExpr(Identifier_ *TokenValue, GenericArguments_ *ast.TypeExpressionList) (ast.TypeExpression, error)
 
 	// 721:2: named_type_expr -> external: ...
-	ExternalToNamedTypeExpr(Identifier_ *TokenValue, Dot_ *TokenValue, Identifier_2 *TokenValue, GenericArguments_ *ast.GenericArgumentList) (ast.TypeExpression, error)
+	ExternalToNamedTypeExpr(Identifier_ *TokenValue, Dot_ *TokenValue, Identifier_2 *TokenValue, GenericArguments_ *ast.TypeExpressionList) (ast.TypeExpression, error)
 }
 
 type InferredTypeExprReducer interface {
@@ -707,27 +707,27 @@ type GenericParameterListReducer interface {
 
 type GenericArgumentsReducer interface {
 	// 791:2: generic_arguments -> binding: ...
-	BindingToGenericArguments(DollarLbracket_ *TokenValue, GenericArgumentList_ *ast.GenericArgumentList, Rbracket_ *TokenValue) (*ast.GenericArgumentList, error)
+	BindingToGenericArguments(DollarLbracket_ *TokenValue, GenericArgumentList_ *ast.TypeExpressionList, Rbracket_ *TokenValue) (*ast.TypeExpressionList, error)
 
 	// 792:2: generic_arguments -> nil: ...
-	NilToGenericArguments() (*ast.GenericArgumentList, error)
+	NilToGenericArguments() (*ast.TypeExpressionList, error)
 }
 
 type ProperGenericArgumentListReducer interface {
 	// 795:2: proper_generic_argument_list -> add: ...
-	AddToProperGenericArgumentList(ProperGenericArgumentList_ *ast.GenericArgumentList, Comma_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.GenericArgumentList, error)
+	AddToProperGenericArgumentList(ProperGenericArgumentList_ *ast.TypeExpressionList, Comma_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.TypeExpressionList, error)
 
 	// 796:2: proper_generic_argument_list -> type_expr: ...
-	TypeExprToProperGenericArgumentList(TypeExpr_ ast.TypeExpression) (*ast.GenericArgumentList, error)
+	TypeExprToProperGenericArgumentList(TypeExpr_ ast.TypeExpression) (*ast.TypeExpressionList, error)
 }
 
 type GenericArgumentListReducer interface {
 
 	// 800:2: generic_argument_list -> improper: ...
-	ImproperToGenericArgumentList(ProperGenericArgumentList_ *ast.GenericArgumentList, Comma_ *TokenValue) (*ast.GenericArgumentList, error)
+	ImproperToGenericArgumentList(ProperGenericArgumentList_ *ast.TypeExpressionList, Comma_ *TokenValue) (*ast.TypeExpressionList, error)
 
 	// 801:2: generic_argument_list -> nil: ...
-	NilToGenericArgumentList() (*ast.GenericArgumentList, error)
+	NilToGenericArgumentList() (*ast.TypeExpressionList, error)
 }
 
 type FieldDefReducer interface {
@@ -3559,19 +3559,20 @@ type Symbol struct {
 	Expression           ast.Expression
 	ExpressionList       *ast.ExpressionList
 	FieldDef             *ast.FieldDef
-	GenericArgumentList  *ast.GenericArgumentList
 	GenericParameter     *ast.GenericParameter
 	GenericParameterList *ast.GenericParameterList
 	IfExpr               *ast.IfExpr
 	ImplicitStruct       *ast.ImplicitStructExpr
 	ImportClause         *ast.ImportClause
-	ImportStatement      *ast.ImportStatement
+	ImportClauseList     *ast.ImportClauseList
 	Parameter            *ast.Parameter
 	Parameters           *ast.ParameterList
 	ParseError           ParseErrorSymbol
 	Statement            ast.Statement
+	StatementList        *ast.StatementList
 	StatementsExpr       *ast.StatementsExpr
 	TypeExpression       ast.TypeExpression
+	TypeExpressionList   *ast.TypeExpressionList
 	TypeProperties       *ast.TypePropertyList
 	TypeProperty         ast.TypeProperty
 	UnsafeStatement      *ast.UnsafeStatement
@@ -3704,11 +3705,6 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case GenericArgumentsType, ProperGenericArgumentListType, GenericArgumentListType:
-		loc, ok := interface{}(s.GenericArgumentList).(locator)
-		if ok {
-			return loc.Loc()
-		}
 	case GenericParameterType:
 		loc, ok := interface{}(s.GenericParameter).(locator)
 		if ok {
@@ -3735,7 +3731,7 @@ func (s *Symbol) Loc() Location {
 			return loc.Loc()
 		}
 	case ProperImportClausesType, ImportClausesType:
-		loc, ok := interface{}(s.ImportStatement).(locator)
+		loc, ok := interface{}(s.ImportClauseList).(locator)
 		if ok {
 			return loc.Loc()
 		}
@@ -3759,13 +3755,23 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case TrailingStatementType, ProperStatementListType, StatementListType:
+	case ProperStatementListType, StatementListType:
+		loc, ok := interface{}(s.StatementList).(locator)
+		if ok {
+			return loc.Loc()
+		}
+	case TrailingStatementType:
 		loc, ok := interface{}(s.StatementsExpr).(locator)
 		if ok {
 			return loc.Loc()
 		}
 	case InitializableTypeExprType, SliceTypeExprType, ArrayTypeExprType, MapTypeExprType, AtomTypeExprType, NamedTypeExprType, InferredTypeExprType, ReturnableTypeExprType, PrefixUnaryTypeExprType, TypeExprType, BinaryTypeExprType, ImplicitStructTypeExprType, ExplicitStructTypeExprType, TraitTypeExprType, ImplicitEnumTypeExprType, ExplicitEnumTypeExprType, ReturnTypeType, FuncTypeExprType:
 		loc, ok := interface{}(s.TypeExpression).(locator)
+		if ok {
+			return loc.Loc()
+		}
+	case GenericArgumentsType, ProperGenericArgumentListType, GenericArgumentListType:
+		loc, ok := interface{}(s.TypeExpressionList).(locator)
 		if ok {
 			return loc.Loc()
 		}
@@ -3851,11 +3857,6 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case GenericArgumentsType, ProperGenericArgumentListType, GenericArgumentListType:
-		loc, ok := interface{}(s.GenericArgumentList).(locator)
-		if ok {
-			return loc.End()
-		}
 	case GenericParameterType:
 		loc, ok := interface{}(s.GenericParameter).(locator)
 		if ok {
@@ -3882,7 +3883,7 @@ func (s *Symbol) End() Location {
 			return loc.End()
 		}
 	case ProperImportClausesType, ImportClausesType:
-		loc, ok := interface{}(s.ImportStatement).(locator)
+		loc, ok := interface{}(s.ImportClauseList).(locator)
 		if ok {
 			return loc.End()
 		}
@@ -3906,13 +3907,23 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case TrailingStatementType, ProperStatementListType, StatementListType:
+	case ProperStatementListType, StatementListType:
+		loc, ok := interface{}(s.StatementList).(locator)
+		if ok {
+			return loc.End()
+		}
+	case TrailingStatementType:
 		loc, ok := interface{}(s.StatementsExpr).(locator)
 		if ok {
 			return loc.End()
 		}
 	case InitializableTypeExprType, SliceTypeExprType, ArrayTypeExprType, MapTypeExprType, AtomTypeExprType, NamedTypeExprType, InferredTypeExprType, ReturnableTypeExprType, PrefixUnaryTypeExprType, TypeExprType, BinaryTypeExprType, ImplicitStructTypeExprType, ExplicitStructTypeExprType, TraitTypeExprType, ImplicitEnumTypeExprType, ExplicitEnumTypeExprType, ReturnTypeType, FuncTypeExprType:
 		loc, ok := interface{}(s.TypeExpression).(locator)
+		if ok {
+			return loc.End()
+		}
+	case GenericArgumentsType, ProperGenericArgumentListType, GenericArgumentListType:
+		loc, ok := interface{}(s.TypeExpressionList).(locator)
 		if ok {
 			return loc.End()
 		}
@@ -4224,39 +4235,39 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = ImportStatementType
-		symbol.Statement, err = reducer.MultipleToImportStatement(args[0].Value, args[1].Value, args[2].ImportStatement, args[3].Value)
+		symbol.Statement, err = reducer.MultipleToImportStatement(args[0].Value, args[1].Value, args[2].ImportClauseList, args[3].Value)
 	case _ReduceAddImplicitToProperImportClauses:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ProperImportClausesType
-		symbol.ImportStatement, err = reducer.AddImplicitToProperImportClauses(args[0].ImportStatement, args[1].Count, args[2].ImportClause)
+		symbol.ImportClauseList, err = reducer.AddImplicitToProperImportClauses(args[0].ImportClauseList, args[1].Count, args[2].ImportClause)
 	case _ReduceAddExplicitToProperImportClauses:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ProperImportClausesType
-		symbol.ImportStatement, err = reducer.AddExplicitToProperImportClauses(args[0].ImportStatement, args[1].Value, args[2].ImportClause)
+		symbol.ImportClauseList, err = reducer.AddExplicitToProperImportClauses(args[0].ImportClauseList, args[1].Value, args[2].ImportClause)
 	case _ReduceImportClauseToProperImportClauses:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ProperImportClausesType
-		symbol.ImportStatement, err = reducer.ImportClauseToProperImportClauses(args[0].ImportClause)
+		symbol.ImportClauseList, err = reducer.ImportClauseToProperImportClauses(args[0].ImportClause)
 	case _ReduceProperImportClausesToImportClauses:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ImportClausesType
 		//line grammar.lr:181:4
-		symbol.ImportStatement = args[0].ImportStatement
+		symbol.ImportClauseList = args[0].ImportClauseList
 		err = nil
 	case _ReduceImplicitToImportClauses:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ImportClausesType
-		symbol.ImportStatement, err = reducer.ImplicitToImportClauses(args[0].ImportStatement, args[1].Count)
+		symbol.ImportClauseList, err = reducer.ImplicitToImportClauses(args[0].ImportClauseList, args[1].Count)
 	case _ReduceExplicitToImportClauses:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ImportClausesType
-		symbol.ImportStatement, err = reducer.ExplicitToImportClauses(args[0].ImportStatement, args[1].Value)
+		symbol.ImportClauseList, err = reducer.ExplicitToImportClauses(args[0].ImportClauseList, args[1].Value)
 	case _ReduceStringLiteralToImportClause:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -4564,7 +4575,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-5:]
 		stack = stack[:len(stack)-5]
 		symbol.SymbolId_ = CallExprType
-		symbol.Expression, err = reducer.ToCallExpr(args[0].Expression, args[1].GenericArgumentList, args[2].Value, args[3].ArgumentList, args[4].Value)
+		symbol.Expression, err = reducer.ToCallExpr(args[0].Expression, args[1].TypeExpressionList, args[2].Value, args[3].ArgumentList, args[4].Value)
 	case _ReduceAddToProperArguments:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -5166,7 +5177,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = StatementsType
-		symbol.Expression, err = reducer.ToStatements(args[0].Value, args[1].StatementsExpr, args[2].Value)
+		symbol.Expression, err = reducer.ToStatements(args[0].Value, args[1].StatementList, args[2].Value)
 	case _ReduceStatementsToStatementsOrParseError:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -5185,37 +5196,37 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ProperStatementListType
-		symbol.StatementsExpr, err = reducer.AddImplicitToProperStatementList(args[0].StatementsExpr, args[1].Count, args[2].Statement)
+		symbol.StatementList, err = reducer.AddImplicitToProperStatementList(args[0].StatementList, args[1].Count, args[2].Statement)
 	case _ReduceAddExplicitToProperStatementList:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ProperStatementListType
-		symbol.StatementsExpr, err = reducer.AddExplicitToProperStatementList(args[0].StatementsExpr, args[1].Value, args[2].Statement)
+		symbol.StatementList, err = reducer.AddExplicitToProperStatementList(args[0].StatementList, args[1].Value, args[2].Statement)
 	case _ReduceStatementToProperStatementList:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ProperStatementListType
-		symbol.StatementsExpr, err = reducer.StatementToProperStatementList(args[0].Statement)
+		symbol.StatementList, err = reducer.StatementToProperStatementList(args[0].Statement)
 	case _ReduceProperStatementListToStatementList:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = StatementListType
 		//line grammar.lr:592:4
-		symbol.StatementsExpr = args[0].StatementsExpr
+		symbol.StatementList = args[0].StatementList
 		err = nil
 	case _ReduceImproperImplicitToStatementList:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = StatementListType
-		symbol.StatementsExpr, err = reducer.ImproperImplicitToStatementList(args[0].StatementsExpr, args[1].Count)
+		symbol.StatementList, err = reducer.ImproperImplicitToStatementList(args[0].StatementList, args[1].Count)
 	case _ReduceImproperExplicitToStatementList:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = StatementListType
-		symbol.StatementsExpr, err = reducer.ImproperExplicitToStatementList(args[0].StatementsExpr, args[1].Value)
+		symbol.StatementList, err = reducer.ImproperExplicitToStatementList(args[0].StatementList, args[1].Value)
 	case _ReduceNilToStatementList:
 		symbol.SymbolId_ = StatementListType
-		symbol.StatementsExpr, err = reducer.NilToStatementList()
+		symbol.StatementList, err = reducer.NilToStatementList()
 	case _ReduceUnlabelledToIfExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -5502,12 +5513,12 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = NamedTypeExprType
-		symbol.TypeExpression, err = reducer.LocalToNamedTypeExpr(args[0].Value, args[1].GenericArgumentList)
+		symbol.TypeExpression, err = reducer.LocalToNamedTypeExpr(args[0].Value, args[1].TypeExpressionList)
 	case _ReduceExternalToNamedTypeExpr:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = NamedTypeExprType
-		symbol.TypeExpression, err = reducer.ExternalToNamedTypeExpr(args[0].Value, args[1].Value, args[2].Value, args[3].GenericArgumentList)
+		symbol.TypeExpression, err = reducer.ExternalToNamedTypeExpr(args[0].Value, args[1].Value, args[2].Value, args[3].TypeExpressionList)
 	case _ReduceDotToInferredTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -5674,35 +5685,35 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = GenericArgumentsType
-		symbol.GenericArgumentList, err = reducer.BindingToGenericArguments(args[0].Value, args[1].GenericArgumentList, args[2].Value)
+		symbol.TypeExpressionList, err = reducer.BindingToGenericArguments(args[0].Value, args[1].TypeExpressionList, args[2].Value)
 	case _ReduceNilToGenericArguments:
 		symbol.SymbolId_ = GenericArgumentsType
-		symbol.GenericArgumentList, err = reducer.NilToGenericArguments()
+		symbol.TypeExpressionList, err = reducer.NilToGenericArguments()
 	case _ReduceAddToProperGenericArgumentList:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ProperGenericArgumentListType
-		symbol.GenericArgumentList, err = reducer.AddToProperGenericArgumentList(args[0].GenericArgumentList, args[1].Value, args[2].TypeExpression)
+		symbol.TypeExpressionList, err = reducer.AddToProperGenericArgumentList(args[0].TypeExpressionList, args[1].Value, args[2].TypeExpression)
 	case _ReduceTypeExprToProperGenericArgumentList:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ProperGenericArgumentListType
-		symbol.GenericArgumentList, err = reducer.TypeExprToProperGenericArgumentList(args[0].TypeExpression)
+		symbol.TypeExpressionList, err = reducer.TypeExprToProperGenericArgumentList(args[0].TypeExpression)
 	case _ReduceProperGenericArgumentListToGenericArgumentList:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = GenericArgumentListType
 		//line grammar.lr:799:4
-		symbol.GenericArgumentList = args[0].GenericArgumentList
+		symbol.TypeExpressionList = args[0].TypeExpressionList
 		err = nil
 	case _ReduceImproperToGenericArgumentList:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = GenericArgumentListType
-		symbol.GenericArgumentList, err = reducer.ImproperToGenericArgumentList(args[0].GenericArgumentList, args[1].Value)
+		symbol.TypeExpressionList, err = reducer.ImproperToGenericArgumentList(args[0].TypeExpressionList, args[1].Value)
 	case _ReduceNilToGenericArgumentList:
 		symbol.SymbolId_ = GenericArgumentListType
-		symbol.GenericArgumentList, err = reducer.NilToGenericArgumentList()
+		symbol.TypeExpressionList, err = reducer.NilToGenericArgumentList()
 	case _ReduceNamedToFieldDef:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]

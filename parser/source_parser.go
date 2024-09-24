@@ -130,73 +130,73 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 }
 
 func (parser *sourceParser) groupCaseStatements(stmts *ast.StatementsExpr) {
-	newElements := []ast.Statement{}
+	newStatements := []ast.Statement{}
 	var current *ast.BranchStatement
-	for _, stmt := range stmts.Elements {
+	for _, stmt := range stmts.Statements {
 		branch, ok := stmt.(*ast.BranchStatement)
 		if !ok {
 			if current != nil {
-				current.Body.Elements = append(current.Body.Elements, stmt)
+				current.Body.Statements = append(current.Body.Statements, stmt)
 				current.EndPos = stmt.End()
 			} else {
 				err := fmt.Errorf(
 					"statement does not belong to any branch: %s",
 					stmt.Loc())
 				parser.ParseErrors = append(parser.ParseErrors, err)
-				newElements = append(
-					newElements,
+				newStatements = append(
+					newStatements,
 					ast.NewParseErrorNode(stmt.StartEnd(), err))
 			}
 			continue
 		}
 
 		current = branch
-		newElements = append(newElements, branch)
+		newStatements = append(newStatements, branch)
 
 		// Flatten nested case statements
 		for {
-			if len(current.Body.Elements) == 0 {
+			if len(current.Body.Statements) == 0 {
 				break
 			}
 
-			if len(current.Body.Elements) != 1 {
+			if len(current.Body.Statements) != 1 {
 				panic("should never happen")
 			}
 
-			nested, ok := current.Body.Elements[0].(*ast.BranchStatement)
+			nested, ok := current.Body.Statements[0].(*ast.BranchStatement)
 			if !ok {
 				break
 			}
 
 			current.EndPos = nested.Loc()
-			current.Body.Elements = nil
+			current.Body.Statements = nil
 
 			current = nested
-			newElements = append(newElements, nested)
+			newStatements = append(newStatements, nested)
 		}
 	}
 
-	stmts.Elements = newElements
+	stmts.Statements = newStatements
 }
 
 func (parser *sourceParser) pruneUnreachableStatements(
 	stmts *ast.StatementsExpr,
 ) {
-	for idx, stmt := range stmts.Elements {
+	for idx, stmt := range stmts.Statements {
 		_, ok := stmt.(*ast.JumpStatement)
 		if !ok {
 			continue
 		}
 
-		if idx < len(stmts.Elements)-1 {
+		if idx < len(stmts.Statements)-1 {
 			err := fmt.Errorf(
 				"unreachable statement: %s",
-				stmts.Elements[idx+1].Loc())
+				stmts.Statements[idx+1].Loc())
 			parser.ParseErrors = append(parser.ParseErrors, err)
-			stmts.Elements[idx+1] = ast.NewParseErrorNode(
-				stmts.Elements[idx+1].StartEnd(),
+			stmts.Statements[idx+1] = ast.NewParseErrorNode(
+				stmts.Statements[idx+1].StartEnd(),
 				err)
-			stmts.Elements = stmts.Elements[:idx+2]
+			stmts.Statements = stmts.Statements[:idx+2]
 			break
 		}
 	}
@@ -218,7 +218,7 @@ func (parser *sourceParser) rejectUnexpectedStatements() {
 
 	caseBodies := map[*ast.StatementsExpr]struct{}{}
 	for stmts, _ := range branchBodies {
-		for _, stmt := range stmts.Elements {
+		for _, stmt := range stmts.Statements {
 			switch branch := stmt.(type) {
 			case *ast.BranchStatement:
 				caseBodies[branch.Body] = struct{}{}
@@ -227,7 +227,7 @@ func (parser *sourceParser) rejectUnexpectedStatements() {
 	}
 
 	for _, stmts := range parser.StatementsExprs {
-		for idx, stmt := range stmts.Elements {
+		for idx, stmt := range stmts.Statements {
 			switch casted := stmt.(type) {
 			case *ast.UnsafeStatement:
 				// usable by all
@@ -240,7 +240,7 @@ func (parser *sourceParser) rejectUnexpectedStatements() {
 				}
 				err := fmt.Errorf("unexpected import statement: %s", stmt.Loc())
 				parser.ParseErrors = append(parser.ParseErrors, err)
-				stmts.Elements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
+				stmts.Statements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
 
 			case *ast.BranchStatement:
 				_, ok := branchBodies[stmts]
@@ -249,7 +249,7 @@ func (parser *sourceParser) rejectUnexpectedStatements() {
 				}
 				err := fmt.Errorf("unexpected branch statement: %s", stmt.Loc())
 				parser.ParseErrors = append(parser.ParseErrors, err)
-				stmts.Elements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
+				stmts.Statements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
 
 			case *ast.JumpStatement:
 				_, isPkg := pkgBodies[stmts]
@@ -257,7 +257,7 @@ func (parser *sourceParser) rejectUnexpectedStatements() {
 				if isPkg || isBranch {
 					err := fmt.Errorf("unexpected jump statement: %s", stmt.Loc())
 					parser.ParseErrors = append(parser.ParseErrors, err)
-					stmts.Elements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
+					stmts.Statements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
 					continue
 				}
 
@@ -268,7 +268,7 @@ func (parser *sourceParser) rejectUnexpectedStatements() {
 							"unexpected fallthrough statement: %s",
 							stmt.Loc())
 						parser.ParseErrors = append(parser.ParseErrors, err)
-						stmts.Elements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
+						stmts.Statements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
 					}
 				}
 			case ast.Expression:
@@ -279,7 +279,7 @@ func (parser *sourceParser) rejectUnexpectedStatements() {
 				}
 				err := fmt.Errorf("unexpected expression statement: %s", stmt.Loc())
 				parser.ParseErrors = append(parser.ParseErrors, err)
-				stmts.Elements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
+				stmts.Statements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
 
 			default:
 				panic(fmt.Sprintf("unexpected statement type: %v", stmt))

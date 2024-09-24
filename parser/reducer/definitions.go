@@ -111,11 +111,16 @@ func (reducer *Reducer) DefinitionToTypeDef(
 	leading.Append(typeKW.TakeTrailing())
 	leading.Append(name.TakeLeading())
 
+	var params []*ast.GenericParameter
 	if genericParameters != nil {
-		genericParameters.PrependToLeading(name.TakeTrailing())
-	} else {
-		genericParameters = ast.NewGenericParameterList()
-		baseType.PrependToLeading(name.TakeTrailing())
+		params = genericParameters.Elements
+
+		leading.Append(genericParameters.TakeLeading())
+
+		baseType.PrependToLeading(genericParameters.TakeTrailing())
+		if len(genericParameters.MiddleComment.Groups) > 0 {
+			baseType.PrependToLeading(genericParameters.MiddleComment)
+		}
 	}
 
 	trailing := baseType.TakeTrailing()
@@ -123,7 +128,7 @@ func (reducer *Reducer) DefinitionToTypeDef(
 	def := &ast.TypeDef{
 		StartEndPos:       ast.NewStartEndPos(typeKW.Loc(), baseType.End()),
 		Name:              name.Value,
-		GenericParameters: *genericParameters,
+		GenericParameters: params,
 		BaseType:          baseType,
 	}
 	def.LeadingComment = leading
@@ -147,11 +152,16 @@ func (reducer *Reducer) ConstrainedDefToTypeDef(
 	leading.Append(typeKW.TakeTrailing())
 	leading.Append(name.TakeLeading())
 
+	var params []*ast.GenericParameter
 	if genericParameters != nil {
-		genericParameters.PrependToLeading(name.TakeTrailing())
-	} else {
-		genericParameters = ast.NewGenericParameterList()
-		baseType.PrependToLeading(name.TakeTrailing())
+		params = genericParameters.Elements
+
+		leading.Append(genericParameters.TakeLeading())
+
+		baseType.PrependToLeading(genericParameters.TakeTrailing())
+		if len(genericParameters.MiddleComment.Groups) > 0 {
+			baseType.PrependToLeading(genericParameters.MiddleComment)
+		}
 	}
 
 	baseType.AppendToTrailing(implements.TakeLeading())
@@ -162,7 +172,7 @@ func (reducer *Reducer) ConstrainedDefToTypeDef(
 	def := &ast.TypeDef{
 		StartEndPos:       ast.NewStartEndPos(typeKW.Loc(), constraint.End()),
 		Name:              name.Value,
-		GenericParameters: *genericParameters,
+		GenericParameters: params,
 		BaseType:          baseType,
 		Constraint:        constraint,
 	}

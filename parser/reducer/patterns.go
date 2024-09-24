@@ -73,24 +73,28 @@ func (Reducer) AddToSwitchableCasePatterns(
 //
 
 func (Reducer) ToCaseAssignPattern(
-	assignPattern *ast.ExpressionList,
+	assignPatterns *ast.ExpressionList,
 	assign *lr.TokenValue,
 	value ast.Expression,
 ) (
 	*ast.CaseAssignPattern,
 	error,
 ) {
-	leading := assignPattern.TakeLeading()
-	assignPattern.AppendToTrailing(assign.TakeLeading())
+	leading := assignPatterns.TakeLeading()
+
 	value.PrependToLeading(assign.TakeTrailing())
+	value.PrependToLeading(assign.TakeLeading())
+	value.PrependToLeading(assignPatterns.TakeTrailing())
+
+	trailing := value.TakeTrailing()
 
 	pattern := &ast.CaseAssignPattern{
-		StartEndPos:   ast.NewStartEndPos(assignPattern.Loc(), value.End()),
-		AssignPattern: *assignPattern,
+		StartEndPos:   ast.NewStartEndPos(assignPatterns.Loc(), value.End()),
+		AssignPattern: assignPatterns.Elements,
 		Value:         value,
 	}
 	pattern.LeadingComment = leading
-	pattern.TrailingComment = value.TakeTrailing()
+	pattern.TrailingComment = trailing
 
 	return pattern, nil
 }

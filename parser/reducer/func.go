@@ -22,46 +22,46 @@ func (reducer *Reducer) toFuncSignature(
 ) *ast.FuncSignature {
 	leading := funcKW.TakeLeading()
 
-	var params ast.Node = parameters
-	if genericParameters != nil {
-		params = genericParameters
-	} else {
-		genericParameters = ast.NewGenericParameterList()
+	if receiver != nil {
+		leading.Append(receiver.TakeLeading())
+		leading.Append(receiver.TakeTrailing())
 	}
 
 	name := ""
 	if nameToken != nil {
 		name = nameToken.Value
-		params.PrependToLeading(nameToken.TakeTrailing())
-
-		if receiver != nil {
-			receiver.AppendToTrailing(nameToken.TakeLeading())
-		} else {
-			funcKW.AppendToTrailing(nameToken.TakeLeading())
-		}
+		leading.Append(nameToken.TakeLeading())
+		leading.Append(nameToken.TakeTrailing())
 	}
 
-	if receiver != nil {
-		receiver.PrependToLeading(funcKW.TakeTrailing())
-	} else {
-		params.PrependToLeading(funcKW.TakeTrailing())
+	var generics []*ast.GenericParameter
+	if genericParameters != nil {
+		generics = genericParameters.Elements
+
+		leading.Append(genericParameters.TakeLeading())
+		leading.Append(genericParameters.MiddleComment)
+		leading.Append(genericParameters.TakeTrailing())
 	}
 
-	var trailing ast.CommentGroups
+	leading.Append(parameters.TakeLeading())
+	leading.Append(parameters.MiddleComment)
+
+	trailing := parameters.TakeTrailing()
+
 	end := parameters.End()
 	if returnType != nil {
-		trailing = returnType.TakeTrailing()
 		end = returnType.End()
-	} else {
-		trailing = parameters.TakeTrailing()
+
+		trailing.Append(returnType.TakeLeading())
+		trailing.Append(returnType.TakeTrailing())
 	}
 
 	sig := &ast.FuncSignature{
 		StartEndPos:       ast.NewStartEndPos(funcKW.Loc(), end),
 		Receiver:          receiver,
 		Name:              name,
-		GenericParameters: *genericParameters,
-		Parameters:        *parameters,
+		GenericParameters: generics,
+		Parameters:        parameters.Elements,
 		ReturnType:        returnType,
 	}
 	sig.LeadingComment = leading
