@@ -7,7 +7,7 @@
 
   stuff
 
-  break
+  fallthrough
 
   unreachable * code
 }

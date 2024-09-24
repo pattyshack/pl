@@ -81,6 +81,13 @@ func NewImportStatement() *ImportStatement {
 
 type JumpOp string
 
+const (
+	FallthroughOp = JumpOp("fallthrough")
+	ReturnOp      = JumpOp("return")
+	ContinueOp    = JumpOp("continue")
+	BreakOp       = JumpOp("break")
+)
+
 type JumpStatement struct {
 	IsStmt
 	StartEndPos

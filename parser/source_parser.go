@@ -216,9 +216,19 @@ func (parser *sourceParser) rejectUnexpectedStatements() {
 		branchBodies[selectExpr.Branches] = struct{}{}
 	}
 
+	caseBodies := map[*ast.StatementsExpr]struct{}{}
+	for stmts, _ := range branchBodies {
+		for _, stmt := range stmts.Elements {
+			switch branch := stmt.(type) {
+			case *ast.BranchStatement:
+				caseBodies[branch.Body] = struct{}{}
+			}
+		}
+	}
+
 	for _, stmts := range parser.StatementsExprs {
 		for idx, stmt := range stmts.Elements {
-			switch stmt.(type) {
+			switch casted := stmt.(type) {
 			case *ast.UnsafeStatement:
 				// usable by all
 			case *ast.ParseErrorNode:
@@ -244,13 +254,23 @@ func (parser *sourceParser) rejectUnexpectedStatements() {
 			case *ast.JumpStatement:
 				_, isPkg := pkgBodies[stmts]
 				_, isBranch := branchBodies[stmts]
-				if !isPkg && !isBranch {
+				if isPkg || isBranch {
+					err := fmt.Errorf("unexpected jump statement: %s", stmt.Loc())
+					parser.ParseErrors = append(parser.ParseErrors, err)
+					stmts.Elements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
 					continue
 				}
-				err := fmt.Errorf("unexpected jump statement: %s", stmt.Loc())
-				parser.ParseErrors = append(parser.ParseErrors, err)
-				stmts.Elements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
 
+				if casted.Op == ast.FallthroughOp {
+					_, ok := caseBodies[stmts]
+					if !ok {
+						err := fmt.Errorf(
+							"unexpected fallthrough statement: %s",
+							stmt.Loc())
+						parser.ParseErrors = append(parser.ParseErrors, err)
+						stmts.Elements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
+					}
+				}
 			case ast.Expression:
 				_, isPkg := pkgBodies[stmts]
 				_, isBranch := branchBodies[stmts]
