@@ -288,6 +288,47 @@ func (parser *sourceParser) rejectUnexpectedStatements() {
 	}
 }
 
+func (parser *sourceParser) rejectUnexpectedArguments() {
+	for _, indexExpr := range parser.IndexExprs {
+		switch indexExpr.Index.Kind {
+		case ast.PositionalArgument, ast.ColonExprArgument:
+			// ok
+		default:
+			err := fmt.Errorf(
+				"unexpected %s argument: %s",
+				indexExpr.Index.Kind,
+				indexExpr.Index.Loc())
+			parser.ParseErrors = append(parser.ParseErrors, err)
+			indexExpr.Index = ast.NewPositionalArgument(
+				ast.NewParseErrorNode(indexExpr.Index.StartEnd(), err))
+		}
+	}
+
+	for _, callExpr := range parser.CallExprs {
+		for idx, arg := range callExpr.Arguments {
+			if arg.Kind == ast.SkipPatternArgument {
+				err := fmt.Errorf("unexpected %s argument: %s", arg.Kind, arg.Loc())
+				parser.ParseErrors = append(parser.ParseErrors, err)
+				callExpr.Arguments[idx] = ast.NewPositionalArgument(
+					ast.NewParseErrorNode(arg.StartEnd(), err))
+			}
+		}
+	}
+
+	for _, initExpr := range parser.InitializeExprs {
+		for idx, arg := range initExpr.Arguments {
+			if arg.Kind == ast.SkipPatternArgument {
+				err := fmt.Errorf("unexpected %s argument: %s", arg.Kind, arg.Loc())
+				parser.ParseErrors = append(parser.ParseErrors, err)
+				initExpr.Arguments[idx] = ast.NewPositionalArgument(
+					ast.NewParseErrorNode(arg.StartEnd(), err))
+			}
+		}
+	}
+
+	// TODO: reject skip pattern in implicit struct if the struct is not a pattern
+}
+
 func (parser *sourceParser) analyze() {
 	for _, expr := range parser.SwitchExprs {
 		parser.groupCaseStatements(expr.Branches)
@@ -302,6 +343,7 @@ func (parser *sourceParser) analyze() {
 	}
 
 	parser.rejectUnexpectedStatements()
+	parser.rejectUnexpectedArguments()
 }
 
 func (parser *sourceParser) parseSource() (

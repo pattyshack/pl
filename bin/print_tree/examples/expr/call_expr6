@@ -1,0 +1,1 @@
+foo(positional, named=expr, varargs..., colon:expr, ..., 1)
