@@ -262,7 +262,7 @@ type IndexExpr struct {
 	LeadingTrailingComments
 
 	Accessible Expression
-	Index      Argument
+	Index      *Argument
 }
 
 func (expr IndexExpr) TreeString(indent string, label string) string {

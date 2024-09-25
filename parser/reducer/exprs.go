@@ -673,7 +673,7 @@ func (reducer *Reducer) ToIndexExpr(
 	expr := &ast.IndexExpr{
 		StartEndPos: ast.NewStartEndPos(accessible.Loc(), rbracket.End()),
 		Accessible:  accessible,
-		Index:       *index,
+		Index:       index,
 	}
 
 	expr.LeadingComment = accessible.TakeLeading()
