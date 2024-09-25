@@ -176,12 +176,9 @@ func (s *RawLexerSuite) TestModTokens(t *testing.T) {
 	s.lex(t, "+%=-", lr.AddToken, lr.ModAssignToken, lr.SubToken)
 }
 
-func (s *RawLexerSuite) TestBitNegTokens(t *testing.T) {
-	s.lex(t, "~", lr.BitNegToken)
-	s.lex(t, "+~-", lr.AddToken, lr.BitNegToken, lr.SubToken)
-
-	s.lex(t, "~=", lr.BitNegAssignToken)
-	s.lex(t, "+~=-", lr.AddToken, lr.BitNegAssignToken, lr.SubToken)
+func (s *RawLexerSuite) TestTildeTokens(t *testing.T) {
+	s.lex(t, "~", lr.TildeToken)
+	s.lex(t, "+~-", lr.AddToken, lr.TildeToken, lr.SubToken)
 
 	s.lex(t, "~~", lr.TildeTildeToken)
 	s.lex(t, "+~~-", lr.AddToken, lr.TildeTildeToken, lr.SubToken)

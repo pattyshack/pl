@@ -267,15 +267,12 @@ func (lexer *RawLexer) peekNextToken() (lr.SymbolId, string, error) {
 		return lr.ModToken, "%", nil
 	case '~':
 		if len(peeked) > 1 {
-			if peeked[1] == '=' {
-				return lr.BitNegAssignToken, "~=", nil
-
-			} else if peeked[1] == '~' {
+			if peeked[1] == '~' {
 				return lr.TildeTildeToken, "~~", nil
 			}
 		}
 
-		return lr.BitNegToken, "~", nil
+		return lr.TildeToken, "~", nil
 	case '&':
 		if len(peeked) > 1 && peeked[1] == '=' {
 			return lr.BitAndAssignToken, "&=", nil

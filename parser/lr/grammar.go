@@ -69,17 +69,17 @@ const (
 	ExclaimToken         = SymbolId(310)
 	DollarLbracketToken  = SymbolId(311)
 	EllipsisToken        = SymbolId(312)
-	TildeTildeToken      = SymbolId(313)
-	AssignToken          = SymbolId(314)
-	ArrowToken           = SymbolId(315)
-	AddAssignToken       = SymbolId(316)
-	SubAssignToken       = SymbolId(317)
-	MulAssignToken       = SymbolId(318)
-	DivAssignToken       = SymbolId(319)
-	ModAssignToken       = SymbolId(320)
-	AddOneAssignToken    = SymbolId(321)
-	SubOneAssignToken    = SymbolId(322)
-	BitNegAssignToken    = SymbolId(323)
+	TildeToken           = SymbolId(313)
+	TildeTildeToken      = SymbolId(314)
+	AssignToken          = SymbolId(315)
+	ArrowToken           = SymbolId(316)
+	AddAssignToken       = SymbolId(317)
+	SubAssignToken       = SymbolId(318)
+	MulAssignToken       = SymbolId(319)
+	DivAssignToken       = SymbolId(320)
+	ModAssignToken       = SymbolId(321)
+	AddOneAssignToken    = SymbolId(322)
+	SubOneAssignToken    = SymbolId(323)
 	BitAndAssignToken    = SymbolId(324)
 	BitOrAssignToken     = SymbolId(325)
 	BitXorAssignToken    = SymbolId(326)
@@ -90,19 +90,18 @@ const (
 	MulToken             = SymbolId(331)
 	DivToken             = SymbolId(332)
 	ModToken             = SymbolId(333)
-	BitNegToken          = SymbolId(334)
-	BitAndToken          = SymbolId(335)
-	BitXorToken          = SymbolId(336)
-	BitOrToken           = SymbolId(337)
-	BitLshiftToken       = SymbolId(338)
-	BitRshiftToken       = SymbolId(339)
-	EqualToken           = SymbolId(340)
-	NotEqualToken        = SymbolId(341)
-	LessToken            = SymbolId(342)
-	LessOrEqualToken     = SymbolId(343)
-	GreaterToken         = SymbolId(344)
-	GreaterOrEqualToken  = SymbolId(345)
-	ParseErrorToken      = SymbolId(346)
+	BitAndToken          = SymbolId(334)
+	BitXorToken          = SymbolId(335)
+	BitOrToken           = SymbolId(336)
+	BitLshiftToken       = SymbolId(337)
+	BitRshiftToken       = SymbolId(338)
+	EqualToken           = SymbolId(339)
+	NotEqualToken        = SymbolId(340)
+	LessToken            = SymbolId(341)
+	LessOrEqualToken     = SymbolId(342)
+	GreaterToken         = SymbolId(343)
+	GreaterOrEqualToken  = SymbolId(344)
+	ParseErrorToken      = SymbolId(345)
 )
 
 type Location = lexutil.Location
@@ -442,42 +441,42 @@ type PrefixUnaryExprReducer interface {
 }
 
 type BinaryMulExprReducer interface {
-	// 443:31: binary_mul_expr -> ...
+	// 444:31: binary_mul_expr -> ...
 	ToBinaryMulExpr(MulExpr_ ast.Expression, MulOp_ *TokenValue, PrefixableExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryAddExprReducer interface {
-	// 461:31: binary_add_expr -> ...
+	// 462:31: binary_add_expr -> ...
 	ToBinaryAddExpr(AddExpr_ ast.Expression, AddOp_ *TokenValue, MulExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryCmpExprReducer interface {
-	// 477:31: binary_cmp_expr -> ...
+	// 478:31: binary_cmp_expr -> ...
 	ToBinaryCmpExpr(CmpExpr_ ast.Expression, CmpOp_ *TokenValue, AddExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryAndExprReducer interface {
-	// 495:31: binary_and_expr -> ...
+	// 496:31: binary_and_expr -> ...
 	ToBinaryAndExpr(AndExpr_ ast.Expression, And_ *TokenValue, CmpExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryOrExprReducer interface {
-	// 505:30: binary_or_expr -> ...
+	// 506:30: binary_or_expr -> ...
 	ToBinaryOrExpr(OrExpr_ ast.Expression, Or_ *TokenValue, AndExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type SendExprReducer interface {
-	// 516:25: send_expr -> ...
+	// 517:25: send_expr -> ...
 	ToSendExpr(SendRecvExpr_ ast.Expression, Arrow_ *TokenValue, OrExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type RecvExprReducer interface {
-	// 518:25: recv_expr -> ...
+	// 519:25: recv_expr -> ...
 	ToRecvExpr(Arrow_ *TokenValue, OrExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryAssignOpExprReducer interface {
-	// 531:2: binary_assign_op_expr -> ...
+	// 532:2: binary_assign_op_expr -> ...
 	ToBinaryAssignOpExpr(SendRecvExpr_ ast.Expression, BinaryAssignOp_ *TokenValue, SendRecvExpr_2 ast.Expression) (ast.Expression, error)
 }
 
@@ -1097,11 +1096,11 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State2:
 		return []SymbolId{CommentGroupsToken, PackageToken, TypeToken, FuncToken, VarToken, LetToken, LbraceToken, ParseErrorToken}
 	case _State3:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, CaseToken, DefaultToken, RepeatToken, ForToken, SelectToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, ImportToken, UnsafeToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, CaseToken, DefaultToken, RepeatToken, ForToken, SelectToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, ImportToken, UnsafeToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State4:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State5:
-		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State6:
 		return []SymbolId{LbraceToken}
 	case _State7:
@@ -1125,21 +1124,21 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State19:
 		return []SymbolId{IdentifierToken, UnderscoreToken, LparenToken}
 	case _State20:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State21:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, DotToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, DotToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State22:
 		return []SymbolId{ColonToken}
 	case _State24:
 		return []SymbolId{LparenToken}
 	case _State25:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, CaseToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, CaseToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State26:
 		return []SymbolId{StringLiteralToken, IdentifierToken, UnderscoreToken, LparenToken, DotToken}
 	case _State27:
 		return []SymbolId{IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, LbraceToken, ParseErrorToken}
 	case _State28:
-		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State30:
 		return []SymbolId{LbraceToken, ParseErrorToken}
 	case _State31:
@@ -1147,13 +1146,13 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State32:
 		return []SymbolId{LparenToken}
 	case _State33:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State34:
 		return []SymbolId{LessToken}
 	case _State42:
 		return []SymbolId{LparenToken}
 	case _State46:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State50:
 		return []SymbolId{LparenToken}
 	case _State51:
@@ -1161,13 +1160,13 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State54:
 		return []SymbolId{LparenToken}
 	case _State55:
-		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State57:
 		return []SymbolId{IdentifierToken, UnderscoreToken}
 	case _State59:
 		return []SymbolId{RbraceToken}
 	case _State61:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State63:
 		return []SymbolId{IdentifierToken, UnderscoreToken, LparenToken, EllipsisToken}
 	case _State66:
@@ -1179,7 +1178,7 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State72:
 		return []SymbolId{SemicolonToken}
 	case _State76:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, DotToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, DotToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State77:
 		return []SymbolId{LbraceToken, ParseErrorToken}
 	case _State78:
@@ -1201,39 +1200,39 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State93:
 		return []SymbolId{IdentifierToken, AsToken}
 	case _State94:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ColonToken, EllipsisToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ColonToken, EllipsisToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State95:
 		return []SymbolId{LparenToken}
 	case _State96:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State97:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State98:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State99:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State100:
 		return []SymbolId{IfToken, LbraceToken, ParseErrorToken}
 	case _State101:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State104:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State105:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State106:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State107:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State108:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State109:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State110:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State113:
 		return []SymbolId{IdentifierToken}
 	case _State114:
-		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State115:
 		return []SymbolId{IdentifierToken, LparenToken}
 	case _State118:
@@ -1241,27 +1240,27 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State119:
 		return []SymbolId{RparenToken}
 	case _State125:
-		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State127:
 		return []SymbolId{LparenToken}
 	case _State130:
 		return []SymbolId{RparenToken}
 	case _State133:
-		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State134:
-		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State136:
 		return []SymbolId{RparenToken}
 	case _State141:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State142:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, DotToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, DotToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State143:
 		return []SymbolId{IdentifierToken}
 	case _State144:
 		return []SymbolId{LbraceToken, ParseErrorToken}
 	case _State146:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State147:
 		return []SymbolId{RparenToken}
 	case _State149:
@@ -1271,11 +1270,11 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State151:
 		return []SymbolId{RparenToken}
 	case _State153:
-		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State154:
 		return []SymbolId{IntegerLiteralToken}
 	case _State155:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State159:
 		return []SymbolId{RparenToken}
 	case _State161:
@@ -1287,7 +1286,7 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State166:
 		return []SymbolId{RbracketToken}
 	case _State171:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, CaseToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, SubToken, MulToken, BitNegToken, BitAndToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, CaseToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State172:
 		return []SymbolId{RparenToken}
 	case _State176:
@@ -1299,9 +1298,9 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State186:
 		return []SymbolId{LparenToken}
 	case _State190:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State192:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State193:
 		return []SymbolId{RparenToken}
 	case _State195:
@@ -1323,23 +1322,23 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State217:
 		return []SymbolId{StringLiteralToken}
 	case _State219:
-		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State220:
 		return []SymbolId{RparenToken}
 	case _State221:
 		return []SymbolId{LbraceToken, ParseErrorToken}
 	case _State223:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State224:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State225:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State231:
 		return []SymbolId{LbraceToken, ParseErrorToken}
 	case _State234:
 		return []SymbolId{LparenToken}
 	case _State235:
-		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeTildeToken, BitNegToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State238:
 		return []SymbolId{RparenToken, AddToken, SubToken, MulToken}
 	case _State241:
@@ -1688,6 +1687,8 @@ func (i SymbolId) String() string {
 		return "DOLLAR_LBRACKET"
 	case EllipsisToken:
 		return "ELLIPSIS"
+	case TildeToken:
+		return "TILDE"
 	case TildeTildeToken:
 		return "TILDE_TILDE"
 	case AssignToken:
@@ -1708,8 +1709,6 @@ func (i SymbolId) String() string {
 		return "ADD_ONE_ASSIGN"
 	case SubOneAssignToken:
 		return "SUB_ONE_ASSIGN"
-	case BitNegAssignToken:
-		return "BIT_NEG_ASSIGN"
 	case BitAndAssignToken:
 		return "BIT_AND_ASSIGN"
 	case BitOrAssignToken:
@@ -1730,8 +1729,6 @@ func (i SymbolId) String() string {
 		return "DIV"
 	case ModToken:
 		return "MOD"
-	case BitNegToken:
-		return "BIT_NEG"
 	case BitAndToken:
 		return "BIT_AND"
 	case BitXorToken:
@@ -2053,150 +2050,150 @@ const (
 	_EndMarker      = SymbolId(0)
 	_WildcardMarker = SymbolId(-1)
 
-	SourceType                           = SymbolId(347)
-	ProperDefinitionsType                = SymbolId(348)
-	DefinitionsType                      = SymbolId(349)
-	DefinitionType                       = SymbolId(350)
-	GlobalVarDefType                     = SymbolId(351)
-	FloatingCommentType                  = SymbolId(352)
-	StatementType                        = SymbolId(353)
-	BranchStatementType                  = SymbolId(354)
-	TrailingStatementType                = SymbolId(355)
-	UnsafeStatementType                  = SymbolId(356)
-	JumpStatementType                    = SymbolId(357)
-	JumpOpType                           = SymbolId(358)
-	AssignStatementType                  = SymbolId(359)
-	ImportStatementType                  = SymbolId(360)
-	ProperImportClausesType              = SymbolId(361)
-	ImportClausesType                    = SymbolId(362)
-	ImportClauseType                     = SymbolId(363)
-	DeclVarPatternType                   = SymbolId(364)
-	VarTypeType                          = SymbolId(365)
-	VarPatternType                       = SymbolId(366)
-	TuplePatternType                     = SymbolId(367)
-	ProperFieldVarPatternsType           = SymbolId(368)
-	FieldVarPatternsType                 = SymbolId(369)
-	FieldVarPatternType                  = SymbolId(370)
-	CasePatternsType                     = SymbolId(371)
-	CaseAssignPatternType                = SymbolId(372)
-	SwitchableCasePatternsType           = SymbolId(373)
-	SwitchableCasePatternType            = SymbolId(374)
-	CaseEnumPatternType                  = SymbolId(375)
-	AtomExprType                         = SymbolId(376)
-	ParseErrorExprType                   = SymbolId(377)
-	LiteralExprType                      = SymbolId(378)
-	NamedExprType                        = SymbolId(379)
-	InitializeExprType                   = SymbolId(380)
-	ImplicitStructExprType               = SymbolId(381)
-	AccessibleExprType                   = SymbolId(382)
-	AccessExprType                       = SymbolId(383)
-	IndexExprType                        = SymbolId(384)
-	AsExprType                           = SymbolId(385)
-	CallExprType                         = SymbolId(386)
-	ProperArgumentsType                  = SymbolId(387)
-	ArgumentsType                        = SymbolId(388)
-	ArgumentType                         = SymbolId(389)
-	ColonExprType                        = SymbolId(390)
-	PostfixableExprType                  = SymbolId(391)
-	PostfixUnaryExprType                 = SymbolId(392)
-	PostfixUnaryOpType                   = SymbolId(393)
-	PrefixableExprType                   = SymbolId(394)
-	PrefixUnaryExprType                  = SymbolId(395)
-	PrefixUnaryOpType                    = SymbolId(396)
-	MulExprType                          = SymbolId(397)
-	BinaryMulExprType                    = SymbolId(398)
-	MulOpType                            = SymbolId(399)
-	AddExprType                          = SymbolId(400)
-	BinaryAddExprType                    = SymbolId(401)
-	AddOpType                            = SymbolId(402)
-	CmpExprType                          = SymbolId(403)
-	BinaryCmpExprType                    = SymbolId(404)
-	CmpOpType                            = SymbolId(405)
-	AndExprType                          = SymbolId(406)
-	BinaryAndExprType                    = SymbolId(407)
-	OrExprType                           = SymbolId(408)
-	BinaryOrExprType                     = SymbolId(409)
-	SendRecvExprType                     = SymbolId(410)
-	SendExprType                         = SymbolId(411)
-	RecvExprType                         = SymbolId(412)
-	AssignOpExprType                     = SymbolId(413)
-	BinaryAssignOpExprType               = SymbolId(414)
-	BinaryAssignOpType                   = SymbolId(415)
-	ExprType                             = SymbolId(416)
-	StatementsExprType                   = SymbolId(417)
-	StatementsType                       = SymbolId(418)
-	StatementsOrParseErrorType           = SymbolId(419)
-	ProperStatementListType              = SymbolId(420)
-	StatementListType                    = SymbolId(421)
-	IfExprType                           = SymbolId(422)
-	IfElseExprType                       = SymbolId(423)
-	IfElifExprType                       = SymbolId(424)
-	IfOnlyExprType                       = SymbolId(425)
-	ConditionType                        = SymbolId(426)
-	CaseAssignExprType                   = SymbolId(427)
-	SwitchExprType                       = SymbolId(428)
-	SwitchExprBodyType                   = SymbolId(429)
-	SelectExprType                       = SymbolId(430)
-	SelectExprBodyType                   = SymbolId(431)
-	LoopExprType                         = SymbolId(432)
-	LoopExprBodyType                     = SymbolId(433)
-	OptionalStatementType                = SymbolId(434)
-	OptionalExprType                     = SymbolId(435)
-	RepeatLoopBodyType                   = SymbolId(436)
-	ForLoopBodyType                      = SymbolId(437)
-	ReturnableExprType                   = SymbolId(438)
-	ImproperExprStructType               = SymbolId(439)
-	InitializableTypeExprType            = SymbolId(440)
-	SliceTypeExprType                    = SymbolId(441)
-	ArrayTypeExprType                    = SymbolId(442)
-	MapTypeExprType                      = SymbolId(443)
-	AtomTypeExprType                     = SymbolId(444)
-	NamedTypeExprType                    = SymbolId(445)
-	InferredTypeExprType                 = SymbolId(446)
-	ReturnableTypeExprType               = SymbolId(447)
-	PrefixUnaryTypeExprType              = SymbolId(448)
-	PrefixUnaryTypeOpType                = SymbolId(449)
-	TypeExprType                         = SymbolId(450)
-	BinaryTypeExprType                   = SymbolId(451)
-	BinaryTypeOpType                     = SymbolId(452)
-	TypeDefType                          = SymbolId(453)
-	GenericParameterType                 = SymbolId(454)
-	GenericParametersType                = SymbolId(455)
-	ProperGenericParameterListType       = SymbolId(456)
-	GenericParameterListType             = SymbolId(457)
-	GenericArgumentsType                 = SymbolId(458)
-	ProperGenericArgumentListType        = SymbolId(459)
-	GenericArgumentListType              = SymbolId(460)
-	FieldDefType                         = SymbolId(461)
-	TypePropertyType                     = SymbolId(462)
-	ProperImplicitTypePropertiesType     = SymbolId(463)
-	ImplicitTypePropertiesType           = SymbolId(464)
-	ImplicitStructTypeExprType           = SymbolId(465)
-	ProperExplicitTypePropertiesType     = SymbolId(466)
-	ExplicitTypePropertiesType           = SymbolId(467)
-	ExplicitStructTypeExprType           = SymbolId(468)
-	TraitTypeExprType                    = SymbolId(469)
-	ProperImplicitEnumTypePropertiesType = SymbolId(470)
-	ImplicitEnumTypePropertiesType       = SymbolId(471)
-	ImplicitEnumTypeExprType             = SymbolId(472)
-	ProperExplicitEnumTypePropertiesType = SymbolId(473)
-	ExplicitEnumTypePropertiesType       = SymbolId(474)
-	ExplicitEnumTypeExprType             = SymbolId(475)
-	ReturnTypeType                       = SymbolId(476)
-	ProperParameterDefType               = SymbolId(477)
-	ParameterDeclType                    = SymbolId(478)
-	ParameterDefType                     = SymbolId(479)
-	ProperParameterDeclListType          = SymbolId(480)
-	ParameterDeclListType                = SymbolId(481)
-	ParameterDeclsType                   = SymbolId(482)
-	ProperParameterDefListType           = SymbolId(483)
-	ParameterDefListType                 = SymbolId(484)
-	ParameterDefsType                    = SymbolId(485)
-	FuncTypeExprType                     = SymbolId(486)
-	MethodSignatureType                  = SymbolId(487)
-	NamedFuncDefType                     = SymbolId(488)
-	AnonymousFuncExprType                = SymbolId(489)
-	PackageDefType                       = SymbolId(490)
+	SourceType                           = SymbolId(346)
+	ProperDefinitionsType                = SymbolId(347)
+	DefinitionsType                      = SymbolId(348)
+	DefinitionType                       = SymbolId(349)
+	GlobalVarDefType                     = SymbolId(350)
+	FloatingCommentType                  = SymbolId(351)
+	StatementType                        = SymbolId(352)
+	BranchStatementType                  = SymbolId(353)
+	TrailingStatementType                = SymbolId(354)
+	UnsafeStatementType                  = SymbolId(355)
+	JumpStatementType                    = SymbolId(356)
+	JumpOpType                           = SymbolId(357)
+	AssignStatementType                  = SymbolId(358)
+	ImportStatementType                  = SymbolId(359)
+	ProperImportClausesType              = SymbolId(360)
+	ImportClausesType                    = SymbolId(361)
+	ImportClauseType                     = SymbolId(362)
+	DeclVarPatternType                   = SymbolId(363)
+	VarTypeType                          = SymbolId(364)
+	VarPatternType                       = SymbolId(365)
+	TuplePatternType                     = SymbolId(366)
+	ProperFieldVarPatternsType           = SymbolId(367)
+	FieldVarPatternsType                 = SymbolId(368)
+	FieldVarPatternType                  = SymbolId(369)
+	CasePatternsType                     = SymbolId(370)
+	CaseAssignPatternType                = SymbolId(371)
+	SwitchableCasePatternsType           = SymbolId(372)
+	SwitchableCasePatternType            = SymbolId(373)
+	CaseEnumPatternType                  = SymbolId(374)
+	AtomExprType                         = SymbolId(375)
+	ParseErrorExprType                   = SymbolId(376)
+	LiteralExprType                      = SymbolId(377)
+	NamedExprType                        = SymbolId(378)
+	InitializeExprType                   = SymbolId(379)
+	ImplicitStructExprType               = SymbolId(380)
+	AccessibleExprType                   = SymbolId(381)
+	AccessExprType                       = SymbolId(382)
+	IndexExprType                        = SymbolId(383)
+	AsExprType                           = SymbolId(384)
+	CallExprType                         = SymbolId(385)
+	ProperArgumentsType                  = SymbolId(386)
+	ArgumentsType                        = SymbolId(387)
+	ArgumentType                         = SymbolId(388)
+	ColonExprType                        = SymbolId(389)
+	PostfixableExprType                  = SymbolId(390)
+	PostfixUnaryExprType                 = SymbolId(391)
+	PostfixUnaryOpType                   = SymbolId(392)
+	PrefixableExprType                   = SymbolId(393)
+	PrefixUnaryExprType                  = SymbolId(394)
+	PrefixUnaryOpType                    = SymbolId(395)
+	MulExprType                          = SymbolId(396)
+	BinaryMulExprType                    = SymbolId(397)
+	MulOpType                            = SymbolId(398)
+	AddExprType                          = SymbolId(399)
+	BinaryAddExprType                    = SymbolId(400)
+	AddOpType                            = SymbolId(401)
+	CmpExprType                          = SymbolId(402)
+	BinaryCmpExprType                    = SymbolId(403)
+	CmpOpType                            = SymbolId(404)
+	AndExprType                          = SymbolId(405)
+	BinaryAndExprType                    = SymbolId(406)
+	OrExprType                           = SymbolId(407)
+	BinaryOrExprType                     = SymbolId(408)
+	SendRecvExprType                     = SymbolId(409)
+	SendExprType                         = SymbolId(410)
+	RecvExprType                         = SymbolId(411)
+	AssignOpExprType                     = SymbolId(412)
+	BinaryAssignOpExprType               = SymbolId(413)
+	BinaryAssignOpType                   = SymbolId(414)
+	ExprType                             = SymbolId(415)
+	StatementsExprType                   = SymbolId(416)
+	StatementsType                       = SymbolId(417)
+	StatementsOrParseErrorType           = SymbolId(418)
+	ProperStatementListType              = SymbolId(419)
+	StatementListType                    = SymbolId(420)
+	IfExprType                           = SymbolId(421)
+	IfElseExprType                       = SymbolId(422)
+	IfElifExprType                       = SymbolId(423)
+	IfOnlyExprType                       = SymbolId(424)
+	ConditionType                        = SymbolId(425)
+	CaseAssignExprType                   = SymbolId(426)
+	SwitchExprType                       = SymbolId(427)
+	SwitchExprBodyType                   = SymbolId(428)
+	SelectExprType                       = SymbolId(429)
+	SelectExprBodyType                   = SymbolId(430)
+	LoopExprType                         = SymbolId(431)
+	LoopExprBodyType                     = SymbolId(432)
+	OptionalStatementType                = SymbolId(433)
+	OptionalExprType                     = SymbolId(434)
+	RepeatLoopBodyType                   = SymbolId(435)
+	ForLoopBodyType                      = SymbolId(436)
+	ReturnableExprType                   = SymbolId(437)
+	ImproperExprStructType               = SymbolId(438)
+	InitializableTypeExprType            = SymbolId(439)
+	SliceTypeExprType                    = SymbolId(440)
+	ArrayTypeExprType                    = SymbolId(441)
+	MapTypeExprType                      = SymbolId(442)
+	AtomTypeExprType                     = SymbolId(443)
+	NamedTypeExprType                    = SymbolId(444)
+	InferredTypeExprType                 = SymbolId(445)
+	ReturnableTypeExprType               = SymbolId(446)
+	PrefixUnaryTypeExprType              = SymbolId(447)
+	PrefixUnaryTypeOpType                = SymbolId(448)
+	TypeExprType                         = SymbolId(449)
+	BinaryTypeExprType                   = SymbolId(450)
+	BinaryTypeOpType                     = SymbolId(451)
+	TypeDefType                          = SymbolId(452)
+	GenericParameterType                 = SymbolId(453)
+	GenericParametersType                = SymbolId(454)
+	ProperGenericParameterListType       = SymbolId(455)
+	GenericParameterListType             = SymbolId(456)
+	GenericArgumentsType                 = SymbolId(457)
+	ProperGenericArgumentListType        = SymbolId(458)
+	GenericArgumentListType              = SymbolId(459)
+	FieldDefType                         = SymbolId(460)
+	TypePropertyType                     = SymbolId(461)
+	ProperImplicitTypePropertiesType     = SymbolId(462)
+	ImplicitTypePropertiesType           = SymbolId(463)
+	ImplicitStructTypeExprType           = SymbolId(464)
+	ProperExplicitTypePropertiesType     = SymbolId(465)
+	ExplicitTypePropertiesType           = SymbolId(466)
+	ExplicitStructTypeExprType           = SymbolId(467)
+	TraitTypeExprType                    = SymbolId(468)
+	ProperImplicitEnumTypePropertiesType = SymbolId(469)
+	ImplicitEnumTypePropertiesType       = SymbolId(470)
+	ImplicitEnumTypeExprType             = SymbolId(471)
+	ProperExplicitEnumTypePropertiesType = SymbolId(472)
+	ExplicitEnumTypePropertiesType       = SymbolId(473)
+	ExplicitEnumTypeExprType             = SymbolId(474)
+	ReturnTypeType                       = SymbolId(475)
+	ProperParameterDefType               = SymbolId(476)
+	ParameterDeclType                    = SymbolId(477)
+	ParameterDefType                     = SymbolId(478)
+	ProperParameterDeclListType          = SymbolId(479)
+	ParameterDeclListType                = SymbolId(480)
+	ParameterDeclsType                   = SymbolId(481)
+	ProperParameterDefListType           = SymbolId(482)
+	ParameterDefListType                 = SymbolId(483)
+	ParameterDefsType                    = SymbolId(484)
+	FuncTypeExprType                     = SymbolId(485)
+	MethodSignatureType                  = SymbolId(486)
+	NamedFuncDefType                     = SymbolId(487)
+	AnonymousFuncExprType                = SymbolId(488)
+	PackageDefType                       = SymbolId(489)
 )
 
 type _ActionType int
@@ -2351,58 +2348,58 @@ const (
 	_ReducePrefixUnaryExprToPrefixableExpr                              = _ReduceType(122)
 	_ReduceToPrefixUnaryExpr                                            = _ReduceType(123)
 	_ReduceNotToPrefixUnaryOp                                           = _ReduceType(124)
-	_ReduceBitNegToPrefixUnaryOp                                        = _ReduceType(125)
-	_ReduceSubToPrefixUnaryOp                                           = _ReduceType(126)
-	_ReduceMulToPrefixUnaryOp                                           = _ReduceType(127)
-	_ReduceBitAndToPrefixUnaryOp                                        = _ReduceType(128)
-	_ReduceAsyncToPrefixUnaryOp                                         = _ReduceType(129)
-	_ReduceDeferToPrefixUnaryOp                                         = _ReduceType(130)
-	_ReduceGreaterToPrefixUnaryOp                                       = _ReduceType(131)
-	_ReducePrefixableExprToMulExpr                                      = _ReduceType(132)
-	_ReduceBinaryMulExprToMulExpr                                       = _ReduceType(133)
-	_ReduceToBinaryMulExpr                                              = _ReduceType(134)
-	_ReduceMulToMulOp                                                   = _ReduceType(135)
-	_ReduceDivToMulOp                                                   = _ReduceType(136)
-	_ReduceModToMulOp                                                   = _ReduceType(137)
-	_ReduceBitAndToMulOp                                                = _ReduceType(138)
-	_ReduceBitLshiftToMulOp                                             = _ReduceType(139)
-	_ReduceBitRshiftToMulOp                                             = _ReduceType(140)
-	_ReduceMulExprToAddExpr                                             = _ReduceType(141)
-	_ReduceBinaryAddExprToAddExpr                                       = _ReduceType(142)
-	_ReduceToBinaryAddExpr                                              = _ReduceType(143)
-	_ReduceAddToAddOp                                                   = _ReduceType(144)
-	_ReduceSubToAddOp                                                   = _ReduceType(145)
-	_ReduceBitOrToAddOp                                                 = _ReduceType(146)
-	_ReduceBitXorToAddOp                                                = _ReduceType(147)
-	_ReduceAddExprToCmpExpr                                             = _ReduceType(148)
-	_ReduceBinaryCmpExprToCmpExpr                                       = _ReduceType(149)
-	_ReduceToBinaryCmpExpr                                              = _ReduceType(150)
-	_ReduceEqualToCmpOp                                                 = _ReduceType(151)
-	_ReduceNotEqualToCmpOp                                              = _ReduceType(152)
-	_ReduceLessToCmpOp                                                  = _ReduceType(153)
-	_ReduceLessOrEqualToCmpOp                                           = _ReduceType(154)
-	_ReduceGreaterToCmpOp                                               = _ReduceType(155)
-	_ReduceGreaterOrEqualToCmpOp                                        = _ReduceType(156)
-	_ReduceCmpExprToAndExpr                                             = _ReduceType(157)
-	_ReduceBinaryAndExprToAndExpr                                       = _ReduceType(158)
-	_ReduceToBinaryAndExpr                                              = _ReduceType(159)
-	_ReduceAndExprToOrExpr                                              = _ReduceType(160)
-	_ReduceBinaryOrExprToOrExpr                                         = _ReduceType(161)
-	_ReduceToBinaryOrExpr                                               = _ReduceType(162)
-	_ReduceOrExprToSendRecvExpr                                         = _ReduceType(163)
-	_ReduceSendExprToSendRecvExpr                                       = _ReduceType(164)
-	_ReduceRecvExprToSendRecvExpr                                       = _ReduceType(165)
-	_ReduceToSendExpr                                                   = _ReduceType(166)
-	_ReduceToRecvExpr                                                   = _ReduceType(167)
-	_ReduceSendRecvExprToAssignOpExpr                                   = _ReduceType(168)
-	_ReduceBinaryAssignOpExprToAssignOpExpr                             = _ReduceType(169)
-	_ReduceToBinaryAssignOpExpr                                         = _ReduceType(170)
-	_ReduceAddAssignToBinaryAssignOp                                    = _ReduceType(171)
-	_ReduceSubAssignToBinaryAssignOp                                    = _ReduceType(172)
-	_ReduceMulAssignToBinaryAssignOp                                    = _ReduceType(173)
-	_ReduceDivAssignToBinaryAssignOp                                    = _ReduceType(174)
-	_ReduceModAssignToBinaryAssignOp                                    = _ReduceType(175)
-	_ReduceBitNegAssignToBinaryAssignOp                                 = _ReduceType(176)
+	_ReduceBitXorToPrefixUnaryOp                                        = _ReduceType(125)
+	_ReduceAddToPrefixUnaryOp                                           = _ReduceType(126)
+	_ReduceSubToPrefixUnaryOp                                           = _ReduceType(127)
+	_ReduceMulToPrefixUnaryOp                                           = _ReduceType(128)
+	_ReduceBitAndToPrefixUnaryOp                                        = _ReduceType(129)
+	_ReduceAsyncToPrefixUnaryOp                                         = _ReduceType(130)
+	_ReduceDeferToPrefixUnaryOp                                         = _ReduceType(131)
+	_ReduceGreaterToPrefixUnaryOp                                       = _ReduceType(132)
+	_ReducePrefixableExprToMulExpr                                      = _ReduceType(133)
+	_ReduceBinaryMulExprToMulExpr                                       = _ReduceType(134)
+	_ReduceToBinaryMulExpr                                              = _ReduceType(135)
+	_ReduceMulToMulOp                                                   = _ReduceType(136)
+	_ReduceDivToMulOp                                                   = _ReduceType(137)
+	_ReduceModToMulOp                                                   = _ReduceType(138)
+	_ReduceBitAndToMulOp                                                = _ReduceType(139)
+	_ReduceBitLshiftToMulOp                                             = _ReduceType(140)
+	_ReduceBitRshiftToMulOp                                             = _ReduceType(141)
+	_ReduceMulExprToAddExpr                                             = _ReduceType(142)
+	_ReduceBinaryAddExprToAddExpr                                       = _ReduceType(143)
+	_ReduceToBinaryAddExpr                                              = _ReduceType(144)
+	_ReduceAddToAddOp                                                   = _ReduceType(145)
+	_ReduceSubToAddOp                                                   = _ReduceType(146)
+	_ReduceBitOrToAddOp                                                 = _ReduceType(147)
+	_ReduceBitXorToAddOp                                                = _ReduceType(148)
+	_ReduceAddExprToCmpExpr                                             = _ReduceType(149)
+	_ReduceBinaryCmpExprToCmpExpr                                       = _ReduceType(150)
+	_ReduceToBinaryCmpExpr                                              = _ReduceType(151)
+	_ReduceEqualToCmpOp                                                 = _ReduceType(152)
+	_ReduceNotEqualToCmpOp                                              = _ReduceType(153)
+	_ReduceLessToCmpOp                                                  = _ReduceType(154)
+	_ReduceLessOrEqualToCmpOp                                           = _ReduceType(155)
+	_ReduceGreaterToCmpOp                                               = _ReduceType(156)
+	_ReduceGreaterOrEqualToCmpOp                                        = _ReduceType(157)
+	_ReduceCmpExprToAndExpr                                             = _ReduceType(158)
+	_ReduceBinaryAndExprToAndExpr                                       = _ReduceType(159)
+	_ReduceToBinaryAndExpr                                              = _ReduceType(160)
+	_ReduceAndExprToOrExpr                                              = _ReduceType(161)
+	_ReduceBinaryOrExprToOrExpr                                         = _ReduceType(162)
+	_ReduceToBinaryOrExpr                                               = _ReduceType(163)
+	_ReduceOrExprToSendRecvExpr                                         = _ReduceType(164)
+	_ReduceSendExprToSendRecvExpr                                       = _ReduceType(165)
+	_ReduceRecvExprToSendRecvExpr                                       = _ReduceType(166)
+	_ReduceToSendExpr                                                   = _ReduceType(167)
+	_ReduceToRecvExpr                                                   = _ReduceType(168)
+	_ReduceSendRecvExprToAssignOpExpr                                   = _ReduceType(169)
+	_ReduceBinaryAssignOpExprToAssignOpExpr                             = _ReduceType(170)
+	_ReduceToBinaryAssignOpExpr                                         = _ReduceType(171)
+	_ReduceAddAssignToBinaryAssignOp                                    = _ReduceType(172)
+	_ReduceSubAssignToBinaryAssignOp                                    = _ReduceType(173)
+	_ReduceMulAssignToBinaryAssignOp                                    = _ReduceType(174)
+	_ReduceDivAssignToBinaryAssignOp                                    = _ReduceType(175)
+	_ReduceModAssignToBinaryAssignOp                                    = _ReduceType(176)
 	_ReduceBitAndAssignToBinaryAssignOp                                 = _ReduceType(177)
 	_ReduceBitOrAssignToBinaryAssignOp                                  = _ReduceType(178)
 	_ReduceBitXorAssignToBinaryAssignOp                                 = _ReduceType(179)
@@ -2485,7 +2482,7 @@ const (
 	_ReduceQuestionToPrefixUnaryTypeOp                                  = _ReduceType(256)
 	_ReduceExclaimToPrefixUnaryTypeOp                                   = _ReduceType(257)
 	_ReduceBitAndToPrefixUnaryTypeOp                                    = _ReduceType(258)
-	_ReduceBitNegToPrefixUnaryTypeOp                                    = _ReduceType(259)
+	_ReduceTildeToPrefixUnaryTypeOp                                     = _ReduceType(259)
 	_ReduceTildeTildeToPrefixUnaryTypeOp                                = _ReduceType(260)
 	_ReduceReturnableTypeExprToTypeExpr                                 = _ReduceType(261)
 	_ReduceBinaryTypeExprToTypeExpr                                     = _ReduceType(262)
@@ -2831,8 +2828,10 @@ func (i _ReduceType) String() string {
 		return "ToPrefixUnaryExpr"
 	case _ReduceNotToPrefixUnaryOp:
 		return "NotToPrefixUnaryOp"
-	case _ReduceBitNegToPrefixUnaryOp:
-		return "BitNegToPrefixUnaryOp"
+	case _ReduceBitXorToPrefixUnaryOp:
+		return "BitXorToPrefixUnaryOp"
+	case _ReduceAddToPrefixUnaryOp:
+		return "AddToPrefixUnaryOp"
 	case _ReduceSubToPrefixUnaryOp:
 		return "SubToPrefixUnaryOp"
 	case _ReduceMulToPrefixUnaryOp:
@@ -2933,8 +2932,6 @@ func (i _ReduceType) String() string {
 		return "DivAssignToBinaryAssignOp"
 	case _ReduceModAssignToBinaryAssignOp:
 		return "ModAssignToBinaryAssignOp"
-	case _ReduceBitNegAssignToBinaryAssignOp:
-		return "BitNegAssignToBinaryAssignOp"
 	case _ReduceBitAndAssignToBinaryAssignOp:
 		return "BitAndAssignToBinaryAssignOp"
 	case _ReduceBitOrAssignToBinaryAssignOp:
@@ -3099,8 +3096,8 @@ func (i _ReduceType) String() string {
 		return "ExclaimToPrefixUnaryTypeOp"
 	case _ReduceBitAndToPrefixUnaryTypeOp:
 		return "BitAndToPrefixUnaryTypeOp"
-	case _ReduceBitNegToPrefixUnaryTypeOp:
-		return "BitNegToPrefixUnaryTypeOp"
+	case _ReduceTildeToPrefixUnaryTypeOp:
+		return "TildeToPrefixUnaryTypeOp"
 	case _ReduceTildeTildeToPrefixUnaryTypeOp:
 		return "TildeTildeToPrefixUnaryTypeOp"
 	case _ReduceReturnableTypeExprToTypeExpr:
@@ -3627,7 +3624,7 @@ func NewSymbol(token Token) (*Symbol, error) {
 				token.Loc())
 		}
 		symbol.ParseError = val
-	case IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, RepeatToken, ForToken, DoToken, InToken, SelectToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, AsToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeTildeToken, AssignToken, ArrowToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
+	case IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, RepeatToken, ForToken, DoToken, InToken, SelectToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, AsToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeToken, TildeTildeToken, AssignToken, ArrowToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
 		val, ok := token.(*TokenValue)
 		if !ok {
 			return nil, fmt.Errorf(
@@ -3790,7 +3787,7 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, RepeatToken, ForToken, DoToken, InToken, SelectToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, AsToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeTildeToken, AssignToken, ArrowToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, JumpOpType, VarTypeType, PostfixUnaryOpType, PrefixUnaryOpType, MulOpType, AddOpType, CmpOpType, BinaryAssignOpType, PrefixUnaryTypeOpType, BinaryTypeOpType:
+	case IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, RepeatToken, ForToken, DoToken, InToken, SelectToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, AsToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeToken, TildeTildeToken, AssignToken, ArrowToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, JumpOpType, VarTypeType, PostfixUnaryOpType, PrefixUnaryOpType, MulOpType, AddOpType, CmpOpType, BinaryAssignOpType, PrefixUnaryTypeOpType, BinaryTypeOpType:
 		loc, ok := interface{}(s.Value).(locator)
 		if ok {
 			return loc.Loc()
@@ -3942,7 +3939,7 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, RepeatToken, ForToken, DoToken, InToken, SelectToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, AsToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeTildeToken, AssignToken, ArrowToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitNegAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitNegToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, JumpOpType, VarTypeType, PostfixUnaryOpType, PrefixUnaryOpType, MulOpType, AddOpType, CmpOpType, BinaryAssignOpType, PrefixUnaryTypeOpType, BinaryTypeOpType:
+	case IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, RepeatToken, ForToken, DoToken, InToken, SelectToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, AsToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeToken, TildeTildeToken, AssignToken, ArrowToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, JumpOpType, VarTypeType, PostfixUnaryOpType, PrefixUnaryOpType, MulOpType, AddOpType, CmpOpType, BinaryAssignOpType, PrefixUnaryTypeOpType, BinaryTypeOpType:
 		loc, ok := interface{}(s.Value).(locator)
 		if ok {
 			return loc.End()
@@ -4729,67 +4726,74 @@ func (act *_Action) ReduceSymbol(
 		//line grammar.lr:397:4
 		symbol.Value = args[0].Value
 		err = nil
-	case _ReduceBitNegToPrefixUnaryOp:
+	case _ReduceBitXorToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
 		//line grammar.lr:398:4
 		symbol.Value = args[0].Value
 		err = nil
-	case _ReduceSubToPrefixUnaryOp:
+	case _ReduceAddToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
 		//line grammar.lr:399:4
 		symbol.Value = args[0].Value
 		err = nil
+	case _ReduceSubToPrefixUnaryOp:
+		args := stack[len(stack)-1:]
+		stack = stack[:len(stack)-1]
+		symbol.SymbolId_ = PrefixUnaryOpType
+		//line grammar.lr:400:4
+		symbol.Value = args[0].Value
+		err = nil
 	case _ReduceMulToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:402:4
+		//line grammar.lr:403:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:405:4
+		//line grammar.lr:406:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAsyncToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:423:4
+		//line grammar.lr:424:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDeferToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:424:4
+		//line grammar.lr:425:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceGreaterToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:433:4
+		//line grammar.lr:434:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReducePrefixableExprToMulExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulExprType
-		//line grammar.lr:440:4
+		//line grammar.lr:441:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryMulExprToMulExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulExprType
-		//line grammar.lr:441:4
+		//line grammar.lr:442:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryMulExpr:
@@ -4801,56 +4805,56 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:446:4
+		//line grammar.lr:447:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDivToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:447:4
+		//line grammar.lr:448:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceModToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:448:4
+		//line grammar.lr:449:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:449:4
+		//line grammar.lr:450:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitLshiftToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:450:4
+		//line grammar.lr:451:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitRshiftToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:451:4
+		//line grammar.lr:452:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceMulExprToAddExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddExprType
-		//line grammar.lr:458:4
+		//line grammar.lr:459:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryAddExprToAddExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddExprType
-		//line grammar.lr:459:4
+		//line grammar.lr:460:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryAddExpr:
@@ -4862,42 +4866,42 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:464:4
+		//line grammar.lr:465:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:465:4
+		//line grammar.lr:466:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitOrToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:466:4
+		//line grammar.lr:467:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitXorToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:467:4
+		//line grammar.lr:468:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAddExprToCmpExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpExprType
-		//line grammar.lr:474:4
+		//line grammar.lr:475:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryCmpExprToCmpExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpExprType
-		//line grammar.lr:475:4
+		//line grammar.lr:476:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryCmpExpr:
@@ -4909,56 +4913,56 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:480:4
+		//line grammar.lr:481:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceNotEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:481:4
+		//line grammar.lr:482:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceLessToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:482:4
+		//line grammar.lr:483:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceLessOrEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:483:4
+		//line grammar.lr:484:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceGreaterToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:484:4
+		//line grammar.lr:485:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceGreaterOrEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:485:4
+		//line grammar.lr:486:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceCmpExprToAndExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AndExprType
-		//line grammar.lr:492:4
+		//line grammar.lr:493:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryAndExprToAndExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AndExprType
-		//line grammar.lr:493:4
+		//line grammar.lr:494:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryAndExpr:
@@ -4970,14 +4974,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OrExprType
-		//line grammar.lr:502:4
+		//line grammar.lr:503:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryOrExprToOrExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OrExprType
-		//line grammar.lr:503:4
+		//line grammar.lr:504:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryOrExpr:
@@ -4989,21 +4993,21 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SendRecvExprType
-		//line grammar.lr:512:4
+		//line grammar.lr:513:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceSendExprToSendRecvExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SendRecvExprType
-		//line grammar.lr:513:4
+		//line grammar.lr:514:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceRecvExprToSendRecvExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SendRecvExprType
-		//line grammar.lr:514:4
+		//line grammar.lr:515:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToSendExpr:
@@ -5020,14 +5024,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AssignOpExprType
-		//line grammar.lr:527:4
+		//line grammar.lr:528:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryAssignOpExprToAssignOpExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AssignOpExprType
-		//line grammar.lr:528:4
+		//line grammar.lr:529:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryAssignOpExpr:
@@ -5039,38 +5043,31 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:534:4
+		//line grammar.lr:535:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubAssignToBinaryAssignOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:535:4
+		//line grammar.lr:536:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceMulAssignToBinaryAssignOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:536:4
+		//line grammar.lr:537:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDivAssignToBinaryAssignOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:537:4
-		symbol.Value = args[0].Value
-		err = nil
-	case _ReduceModAssignToBinaryAssignOp:
-		args := stack[len(stack)-1:]
-		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = BinaryAssignOpType
 		//line grammar.lr:538:4
 		symbol.Value = args[0].Value
 		err = nil
-	case _ReduceBitNegAssignToBinaryAssignOp:
+	case _ReduceModAssignToBinaryAssignOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
@@ -5569,7 +5566,7 @@ func (act *_Action) ReduceSymbol(
 		//line grammar.lr:745:4
 		symbol.Value = args[0].Value
 		err = nil
-	case _ReduceBitNegToPrefixUnaryTypeOp:
+	case _ReduceTildeToPrefixUnaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryTypeOpType
@@ -6282,14 +6279,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -6463,14 +6462,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -6584,10 +6585,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -6779,14 +6780,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -6984,14 +6987,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -7127,14 +7132,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -7335,14 +7342,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -7530,14 +7539,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -7707,10 +7718,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -7834,14 +7845,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
 		case EllipsisToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSkipPatternToArgument}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -8041,14 +8054,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -8320,14 +8335,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -8484,14 +8501,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -8567,8 +8586,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDivAssignToBinaryAssignOp}, true
 		case ModAssignToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceModAssignToBinaryAssignOp}, true
-		case BitNegAssignToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegAssignToBinaryAssignOp}, true
 		case BitAndAssignToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndAssignToBinaryAssignOp}, true
 		case BitOrAssignToken:
@@ -8649,10 +8666,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case UnsafeStatementType:
@@ -8728,10 +8745,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -8893,14 +8910,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -9083,10 +9102,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -9270,14 +9289,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -9453,10 +9474,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -9573,14 +9594,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -9812,14 +9835,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -9985,10 +10010,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case UnsafeStatementType:
@@ -10085,10 +10110,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -10220,14 +10245,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
 		case EllipsisToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSkipPatternToArgument}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -10358,14 +10385,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -10455,14 +10484,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -10554,14 +10585,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -10685,14 +10718,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -10871,14 +10906,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -11054,14 +11091,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
 		case EllipsisToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSkipPatternToArgument}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -11232,14 +11271,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -11368,14 +11409,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -11465,14 +11508,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -11600,14 +11645,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -11775,14 +11822,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -11918,14 +11967,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -12031,14 +12082,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeferToPrefixUnaryOp}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -12134,10 +12187,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case UnsafeStatementType:
@@ -12213,10 +12266,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -12285,10 +12338,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -12360,10 +12413,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -12440,10 +12493,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -12512,10 +12565,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -12640,10 +12693,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case UnsafeStatementType:
@@ -12716,10 +12769,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -12804,10 +12857,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -12876,10 +12929,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -13023,14 +13076,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -13231,14 +13286,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -13367,10 +13424,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -13434,10 +13491,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -13618,14 +13675,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -13804,14 +13863,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -13977,14 +14038,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -14172,14 +14235,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -14348,14 +14413,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -14517,10 +14584,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -14637,14 +14704,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -14808,14 +14877,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -14982,14 +15053,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -15164,14 +15237,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
 		case EllipsisToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSkipPatternToArgument}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -15407,14 +15482,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
 		case EllipsisToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSkipPatternToArgument}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -15641,14 +15718,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -15817,10 +15896,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -15891,10 +15970,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -15965,10 +16044,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -16119,10 +16198,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case UnsafeStatementType:
@@ -16198,10 +16277,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case UnsafeStatementType:
@@ -16280,10 +16359,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case UnsafeStatementType:
@@ -16360,10 +16439,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -16443,10 +16522,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -16511,10 +16590,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -16595,10 +16674,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -16838,10 +16917,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case UnsafeStatementType:
@@ -16920,10 +16999,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case UnsafeStatementType:
@@ -17003,10 +17082,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -17073,10 +17152,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -17162,10 +17241,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case UnsafeStatementType:
@@ -17244,10 +17323,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case UnsafeStatementType:
@@ -17323,10 +17402,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case UnsafeStatementType:
@@ -17402,10 +17481,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case UnsafeStatementType:
@@ -17493,10 +17572,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -17565,10 +17644,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -17707,10 +17786,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -17848,14 +17927,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
+		case AddToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSubToPrefixUnaryOp}, true
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToPrefixUnaryOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryOp}, true
+		case BitXorToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitXorToPrefixUnaryOp}, true
 		case GreaterToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
@@ -18011,10 +18092,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
 		case ExclaimToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
 		case TildeTildeToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitNegToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitNegToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
 		case InitializableTypeExprType:
@@ -18174,10 +18255,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       branch_statement -> [statement]
@@ -18279,10 +18361,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -18362,8 +18445,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -18501,10 +18584,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [proper_statement_list]
@@ -18669,10 +18753,11 @@ Parser Debug States:
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       atom_expr -> [accessible_expr]
@@ -18732,10 +18817,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -18846,10 +18932,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [optional_statement]
@@ -18963,10 +19050,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -19095,8 +19183,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -19144,10 +19232,11 @@ Parser Debug States:
       LET -> [var_type]
       NOT -> [prefix_unary_op]
       ELLIPSIS -> [argument]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -19278,10 +19367,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -19491,10 +19581,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -19611,10 +19702,11 @@ Parser Debug States:
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       atom_expr -> [accessible_expr]
@@ -19680,7 +19772,6 @@ Parser Debug States:
       MUL_ASSIGN -> [binary_assign_op]
       DIV_ASSIGN -> [binary_assign_op]
       MOD_ASSIGN -> [binary_assign_op]
-      BIT_NEG_ASSIGN -> [binary_assign_op]
       BIT_AND_ASSIGN -> [binary_assign_op]
       BIT_OR_ASSIGN -> [binary_assign_op]
       BIT_XOR_ASSIGN -> [binary_assign_op]
@@ -19733,8 +19824,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       unsafe_statement -> [type_property]
       initializable_type_expr -> [atom_type_expr]
@@ -19794,8 +19885,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -19903,10 +19994,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -20035,8 +20127,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -20150,10 +20242,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [trailing_statement]
@@ -20297,8 +20390,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -20345,10 +20438,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -20519,10 +20613,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -20659,8 +20754,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       unsafe_statement -> [type_property]
       initializable_type_expr -> [atom_type_expr]
@@ -20731,8 +20826,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -20793,10 +20888,11 @@ Parser Debug States:
       LET -> [var_type]
       NOT -> [prefix_unary_op]
       ELLIPSIS -> [argument]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -20897,10 +20993,11 @@ Parser Debug States:
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       atom_expr -> [accessible_expr]
@@ -20950,10 +21047,11 @@ Parser Debug States:
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       atom_expr -> [accessible_expr]
@@ -21007,10 +21105,11 @@ Parser Debug States:
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       atom_expr -> [accessible_expr]
@@ -21064,10 +21163,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -21171,10 +21271,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -21263,10 +21364,11 @@ Parser Debug States:
       LET -> [var_type]
       NOT -> [prefix_unary_op]
       ELLIPSIS -> [argument]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -21362,10 +21464,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -21454,10 +21557,11 @@ Parser Debug States:
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       atom_expr -> [accessible_expr]
@@ -21505,10 +21609,11 @@ Parser Debug States:
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       atom_expr -> [accessible_expr]
@@ -21566,10 +21671,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -21658,10 +21764,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -21750,10 +21857,11 @@ Parser Debug States:
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       atom_expr -> [accessible_expr]
@@ -21811,10 +21919,11 @@ Parser Debug States:
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       atom_expr -> [accessible_expr]
@@ -21868,8 +21977,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       unsafe_statement -> [type_property]
       initializable_type_expr -> [atom_type_expr]
@@ -21916,8 +22025,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -21962,8 +22071,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -22011,8 +22120,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -22066,8 +22175,8 @@ Parser Debug States:
       UNDERSCORE -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -22110,8 +22219,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -22217,8 +22326,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       unsafe_statement -> [type_property]
       initializable_type_expr -> [atom_type_expr]
@@ -22266,8 +22375,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -22330,8 +22439,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -22374,8 +22483,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -22439,10 +22548,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [proper_statement_list]
@@ -22549,10 +22659,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [proper_statement_list]
@@ -22645,8 +22756,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -22686,8 +22797,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -22796,10 +22907,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [trailing_statement]
@@ -22902,10 +23014,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -22994,10 +23107,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -23112,10 +23226,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -23205,10 +23320,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -23360,8 +23476,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -23419,10 +23535,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -23512,10 +23629,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -23605,10 +23723,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -23698,10 +23817,11 @@ Parser Debug States:
       LET -> [var_type]
       NOT -> [prefix_unary_op]
       ELLIPSIS -> [argument]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -23884,10 +24004,11 @@ Parser Debug States:
       LET -> [var_type]
       NOT -> [prefix_unary_op]
       ELLIPSIS -> [argument]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -24028,10 +24149,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       decl_var_pattern -> [expr]
@@ -24194,8 +24316,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -24237,8 +24359,8 @@ Parser Debug States:
       UNDERSCORE -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -24284,8 +24406,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -24417,8 +24539,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       unsafe_statement -> [type_property]
       initializable_type_expr -> [atom_type_expr]
@@ -24464,8 +24586,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       unsafe_statement -> [type_property]
       initializable_type_expr -> [atom_type_expr]
@@ -24510,8 +24632,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       unsafe_statement -> [type_property]
       initializable_type_expr -> [atom_type_expr]
@@ -24568,8 +24690,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -24630,8 +24752,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -24670,8 +24792,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -24724,8 +24846,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -24941,8 +25063,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       unsafe_statement -> [type_property]
       initializable_type_expr -> [atom_type_expr]
@@ -24988,8 +25110,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       unsafe_statement -> [type_property]
       initializable_type_expr -> [atom_type_expr]
@@ -25046,8 +25168,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -25086,8 +25208,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -25149,8 +25271,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       unsafe_statement -> [type_property]
       initializable_type_expr -> [atom_type_expr]
@@ -25195,8 +25317,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       unsafe_statement -> [type_property]
       initializable_type_expr -> [atom_type_expr]
@@ -25241,8 +25363,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       unsafe_statement -> [type_property]
       initializable_type_expr -> [atom_type_expr]
@@ -25287,8 +25409,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       unsafe_statement -> [type_property]
       initializable_type_expr -> [atom_type_expr]
@@ -25347,8 +25469,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -25391,8 +25513,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -25504,8 +25626,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -25557,10 +25679,11 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
+      ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
-      BIT_NEG -> [prefix_unary_op]
       BIT_AND -> [prefix_unary_op]
+      BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [optional_statement]
@@ -25681,8 +25804,8 @@ Parser Debug States:
       DOT -> [inferred_type_expr]
       QUESTION -> [prefix_unary_type_op]
       EXCLAIM -> [prefix_unary_type_op]
+      TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
-      BIT_NEG -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
@@ -25749,10 +25872,10 @@ Parser Debug States:
 Number of states: 242
 Number of shift actions: 1686
 Number of reduce actions: 123
-Number of shift-and-reduce actions: 3768
+Number of shift-and-reduce actions: 3810
 Number of shift/reduce conflicts: 0
 Number of reduce/reduce conflicts: 0
 Number of unoptimized states: 9529
-Number of unoptimized shift actions: 102372
-Number of unoptimized reduce actions: 95072
+Number of unoptimized shift actions: 103327
+Number of unoptimized reduce actions: 93676
 */

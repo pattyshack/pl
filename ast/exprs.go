@@ -141,6 +141,39 @@ func (expr UnaryExpr) TreeString(indent string, label string) string {
 
 type BinaryOp string
 
+const (
+	BinaryAddOp             = BinaryOp("+")
+	BinarySubOp             = BinaryOp("-")
+	BinaryMulOp             = BinaryOp("*")
+	BinaryDivOp             = BinaryOp("/")
+	BinaryModOp             = BinaryOp("%")
+	BinaryBitAndOp          = BinaryOp("&")
+	BinaryBitOrOp           = BinaryOp("|")
+	BinaryBitXorOp          = BinaryOp("^")
+	BinaryBitLshiftOp       = BinaryOp("<<")
+	BinaryBitRshiftOp       = BinaryOp(">>")
+	BinaryEqualOp           = BinaryOp("==")
+	BinaryNotEqualOp        = BinaryOp("!=")
+	BinaryLessOp            = BinaryOp("<")
+	BinaryLessOrEqualOp     = BinaryOp("<=")
+	BinaryGreaterOp         = BinaryOp(">")
+	BinaryGreaterOrEqualOp  = BinaryOp(">=")
+	BinaryAndOp             = BinaryOp("and")
+	BinaryOrOp              = BinaryOp("or")
+	BinarySendOp            = BinaryOp("<-")
+	BinaryAssignOp          = BinaryOp("=")
+	BinaryAddAssignOp       = BinaryOp("+=")
+	BinarySubAssignOp       = BinaryOp("-=")
+	BinaryMulAssignOp       = BinaryOp("*=")
+	BinaryDivAssignOp       = BinaryOp("/=")
+	BinaryModAssignOp       = BinaryOp("%=")
+	BinaryBitAndAssignOp    = BinaryOp("&=")
+	BinaryBitOrAssignOp     = BinaryOp("|=")
+	BinaryBitXorAssignOp    = BinaryOp("^=")
+	BinaryBitLshiftAssignOp = BinaryOp("<<=")
+	BinaryBitRshiftAssignOp = BinaryOp(">>=")
+)
+
 type BinaryExpr struct {
 	IsExpr
 	StartEndPos
