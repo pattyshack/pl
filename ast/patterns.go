@@ -29,7 +29,7 @@ type VarPattern struct {
 var _ Expression = &VarPattern{}
 
 func NewVarPattern(
-	varType ValuedNode,
+	varType TokenValue,
 	pattern Expression,
 	typeExpr TypeExpression,
 ) *VarPattern {

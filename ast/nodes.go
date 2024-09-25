@@ -6,13 +6,13 @@ import (
 	"github.com/pattyshack/gt/lexutil"
 )
 
-type Node interface {
+type Locatable interface {
 	StartEnd() StartEndPos
 	Loc() lexutil.Location
 	End() lexutil.Location
+}
 
-	TreeString(indent string, label string) string
-
+type Commentable interface {
 	PrependToLeading(CommentGroups)
 	AppendToLeading(CommentGroups)
 
@@ -28,9 +28,18 @@ type Node interface {
 	TakeTrailing() CommentGroups
 }
 
-type ValuedNode interface {
-	Node
+type TokenValue interface {
+	Locatable
+	Commentable
+
 	Val() string
+}
+
+type Node interface {
+	Locatable
+	Commentable
+
+	TreeString(indent string, label string) string
 }
 
 type Expression interface {
@@ -90,14 +99,14 @@ type CommentGroup struct {
 	Comments []string
 }
 
-func NewCommentGroup(value ValuedNode) *CommentGroup {
+func NewCommentGroup(value TokenValue) *CommentGroup {
 	return &CommentGroup{
 		StartEndPos: NewStartEndPos(value.Loc(), value.End()),
 		Comments:    []string{value.Val()},
 	}
 }
 
-func (group *CommentGroup) Add(value ValuedNode) {
+func (group *CommentGroup) Add(value TokenValue) {
 	group.EndPos = value.End()
 	group.Comments = append(group.Comments, value.Val())
 }

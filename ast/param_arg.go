@@ -103,8 +103,8 @@ func NewPositionalArgument(expr Expression) *Argument {
 }
 
 func NewNamedArgument(
-	name ValuedNode,
-	assign ValuedNode,
+	name TokenValue,
+	assign TokenValue,
 	expr Expression,
 ) *Argument {
 	arg := &Argument{
@@ -126,7 +126,7 @@ func NewNamedArgument(
 }
 
 func NewSkipPatternArgument(
-	ellipsis ValuedNode,
+	ellipsis TokenValue,
 ) *Argument {
 	arg := &Argument{
 		StartEndPos: NewStartEndPos(ellipsis.Loc(), ellipsis.End()),

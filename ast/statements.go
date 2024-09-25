@@ -103,8 +103,8 @@ type JumpStatement struct {
 var _ Statement = &JumpStatement{}
 
 func NewJumpStatement(
-	op ValuedNode,
-	labelToken ValuedNode,
+	op TokenValue,
+	labelToken TokenValue,
 	value Expression,
 ) *JumpStatement {
 	start := op.Loc()
