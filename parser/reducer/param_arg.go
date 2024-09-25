@@ -20,11 +20,12 @@ func (reducer *Reducer) namedTypedArg(
 	param := &ast.Parameter{
 		StartEndPos: ast.NewStartEndPos(name.Loc(), typeExpr.End()),
 		Kind:        kind,
-		Name:        name,
+		Name:        name.Value,
 		HasEllipsis: false,
 		Type:        typeExpr,
 	}
 	param.LeadingComment = name.TakeLeading()
+	typeExpr.PrependToLeading(name.TakeTrailing())
 	param.TrailingComment = typeExpr.TakeTrailing()
 	return param, nil
 }
@@ -64,13 +65,16 @@ func (reducer *Reducer) namedTypedVararg(
 	param := &ast.Parameter{
 		StartEndPos: ast.NewStartEndPos(name.Loc(), typeExpr.End()),
 		Kind:        kind,
-		Name:        name,
+		Name:        name.Value,
 		HasEllipsis: true,
 		Type:        typeExpr,
 	}
 	param.LeadingComment = name.TakeLeading()
-	name.AppendToTrailing(ellipsis.TakeLeading())
+
 	typeExpr.PrependToLeading(ellipsis.TakeTrailing())
+	typeExpr.PrependToLeading(ellipsis.TakeLeading())
+	typeExpr.PrependToLeading(name.TakeTrailing())
+
 	param.TrailingComment = typeExpr.TakeTrailing()
 	return param, nil
 }
@@ -116,13 +120,15 @@ func (reducer *Reducer) namedInferredVararg(
 	param := &ast.Parameter{
 		StartEndPos: ast.NewStartEndPos(name.Loc(), ellipsis.End()),
 		Kind:        kind,
-		Name:        name,
+		Name:        name.Value,
 		HasEllipsis: true,
 		Type:        nil,
 	}
 	param.LeadingComment = name.TakeLeading()
-	name.AppendToTrailing(ellipsis.TakeLeading())
-	param.TrailingComment = ellipsis.TakeTrailing()
+	trailing := name.TakeTrailing()
+	trailing.Append(ellipsis.TakeLeading())
+	trailing.Append(ellipsis.TakeTrailing())
+	param.TrailingComment = trailing
 	return param, nil
 }
 
@@ -161,7 +167,7 @@ func (reducer *Reducer) UnnamedTypedArgToParameterDecl(
 	param := &ast.Parameter{
 		StartEndPos: ast.NewStartEndPos(typeExpr.Loc(), typeExpr.End()),
 		Kind:        ast.UnnamedTypedArgParameter,
-		Name:        nil,
+		Name:        "",
 		HasEllipsis: false,
 		Type:        typeExpr,
 	}
@@ -179,7 +185,7 @@ func (reducer *Reducer) UnnamedInferredVarargToParameterDecl(
 	param := &ast.Parameter{
 		StartEndPos: ast.NewStartEndPos(ellipsis.Loc(), ellipsis.End()),
 		Kind:        ast.UnnamedInferredVarargParameter,
-		Name:        nil,
+		Name:        "",
 		HasEllipsis: true,
 		Type:        nil,
 	}
@@ -197,7 +203,7 @@ func (reducer *Reducer) UnnamedTypedVarargToParameterDecl(
 	param := &ast.Parameter{
 		StartEndPos: ast.NewStartEndPos(ellipsis.Loc(), typeExpr.End()),
 		Kind:        ast.UnnamedTypedVarargParameter,
-		Name:        nil,
+		Name:        "",
 		HasEllipsis: true,
 		Type:        typeExpr,
 	}
@@ -217,7 +223,7 @@ func (reducer *Reducer) namedInferredArg(
 	param := &ast.Parameter{
 		StartEndPos: ast.NewStartEndPos(name.Loc(), name.End()),
 		Kind:        kind,
-		Name:        name,
+		Name:        name.Value,
 		HasEllipsis: false,
 		Type:        nil,
 	}

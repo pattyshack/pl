@@ -17,7 +17,11 @@ func (reducer *Reducer) TrueToLiteralExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.BoolLiteralExpr{ValuedNode: value}
+	expr := &ast.BoolLiteralExpr{
+		StartEndPos:             value.StartEndPos,
+		LeadingTrailingComments: value.LeadingTrailingComments,
+		Value:                   value.Value,
+	}
 	reducer.BoolLiteralExprs = append(reducer.BoolLiteralExprs, expr)
 	return expr, nil
 }
@@ -28,7 +32,11 @@ func (reducer *Reducer) FalseToLiteralExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.BoolLiteralExpr{ValuedNode: value}
+	expr := &ast.BoolLiteralExpr{
+		StartEndPos:             value.StartEndPos,
+		LeadingTrailingComments: value.LeadingTrailingComments,
+		Value:                   value.Value,
+	}
 	reducer.BoolLiteralExprs = append(reducer.BoolLiteralExprs, expr)
 	return expr, nil
 }
@@ -39,7 +47,11 @@ func (reducer *Reducer) IntegerLiteralToLiteralExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.IntLiteralExpr{ValuedNode: value}
+	expr := &ast.IntLiteralExpr{
+		StartEndPos:             value.StartEndPos,
+		LeadingTrailingComments: value.LeadingTrailingComments,
+		Value:                   value.Value,
+	}
 	reducer.IntLiteralExprs = append(reducer.IntLiteralExprs, expr)
 	return expr, nil
 }
@@ -50,7 +62,11 @@ func (reducer *Reducer) FloatLiteralToLiteralExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.FloatLiteralExpr{ValuedNode: value}
+	expr := &ast.FloatLiteralExpr{
+		StartEndPos:             value.StartEndPos,
+		LeadingTrailingComments: value.LeadingTrailingComments,
+		Value:                   value.Value,
+	}
 	reducer.FloatLiteralExprs = append(reducer.FloatLiteralExprs, expr)
 	return expr, nil
 }
@@ -61,7 +77,11 @@ func (reducer *Reducer) RuneLiteralToLiteralExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.RuneLiteralExpr{ValuedNode: value}
+	expr := &ast.RuneLiteralExpr{
+		StartEndPos:             value.StartEndPos,
+		LeadingTrailingComments: value.LeadingTrailingComments,
+		Value:                   value.Value,
+	}
 	reducer.RuneLiteralExprs = append(reducer.RuneLiteralExprs, expr)
 	return expr, nil
 }
@@ -72,7 +92,11 @@ func (reducer *Reducer) StringLiteralToLiteralExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.StringLiteralExpr{ValuedNode: value}
+	expr := &ast.StringLiteralExpr{
+		StartEndPos:             value.StartEndPos,
+		LeadingTrailingComments: value.LeadingTrailingComments,
+		Value:                   value.Value,
+	}
 	reducer.StringLiteralExprs = append(reducer.StringLiteralExprs, expr)
 	return expr, nil
 }
@@ -87,7 +111,11 @@ func (reducer *Reducer) IdentifierToNamedExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.NamedExpr{ValuedNode: value}
+	expr := &ast.NamedExpr{
+		StartEndPos:             value.StartEndPos,
+		LeadingTrailingComments: value.LeadingTrailingComments,
+		Name:                    value.Value,
+	}
 	reducer.NamedExprs = append(reducer.NamedExprs, expr)
 	return expr, nil
 }
@@ -98,7 +126,11 @@ func (reducer *Reducer) UnderscoreToNamedExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.NamedExpr{ValuedNode: value}
+	expr := &ast.NamedExpr{
+		StartEndPos:             value.StartEndPos,
+		LeadingTrailingComments: value.LeadingTrailingComments,
+		Name:                    value.Value,
+	}
 	reducer.NamedExprs = append(reducer.NamedExprs, expr)
 	return expr, nil
 }
@@ -118,12 +150,13 @@ func (reducer *Reducer) ToAccessExpr(
 	expr := &ast.AccessExpr{
 		StartEndPos: ast.NewStartEndPos(operand.Loc(), field.End()),
 		Operand:     operand,
-		Field:       field,
+		Field:       field.Value,
 	}
 
 	expr.LeadingComment = operand.TakeLeading()
 	operand.AppendToTrailing(dot.TakeLeading())
-	field.PrependToLeading(dot.TakeTrailing())
+	operand.AppendToTrailing(dot.TakeTrailing())
+	operand.AppendToTrailing(field.TakeLeading())
 	expr.TrailingComment = field.TakeTrailing()
 
 	reducer.AccessExprs = append(reducer.AccessExprs, expr)

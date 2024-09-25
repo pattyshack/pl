@@ -48,15 +48,20 @@ func (reducer *Reducer) ToArrayTypeExpr(
 	array := &ast.ArrayTypeExpr{
 		StartEndPos: ast.NewStartEndPos(lbracket.Loc(), rbracket.End()),
 		Value:       value,
-		Size:        size,
+		Size:        size.Value,
 	}
 
 	array.LeadingComment = lbracket.TakeLeading()
+
 	value.PrependToLeading(lbracket.TakeTrailing())
 	value.AppendToTrailing(comma.TakeLeading())
-	array.Size.PrependToLeading(comma.TakeTrailing())
-	array.Size.AppendToTrailing(rbracket.TakeLeading())
-	array.TrailingComment = rbracket.TakeTrailing()
+	value.AppendToTrailing(comma.TakeTrailing())
+	value.AppendToTrailing(size.TakeLeading())
+
+	trailing := size.TakeTrailing()
+	trailing.Append(rbracket.TakeLeading())
+	trailing.Append(rbracket.TakeTrailing())
+	array.TrailingComment = trailing
 
 	reducer.ArrayTypeExprs = append(reducer.ArrayTypeExprs, array)
 	return array, nil

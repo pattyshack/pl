@@ -10,47 +10,62 @@ import (
 
 type BoolLiteralExpr struct {
 	IsExpr
-	ValuedNode
+	StartEndPos
+	LeadingTrailingComments
+
+	Value string
 }
 
 func (expr BoolLiteralExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[BoolLiteralExpr: %s]", indent, label, expr.Val())
+	return fmt.Sprintf("%s%s[BoolLiteralExpr: %s]", indent, label, expr.Value)
 }
 
 type IntLiteralExpr struct {
 	IsExpr
-	ValuedNode
+	StartEndPos
+	LeadingTrailingComments
+
+	Value string
 }
 
 func (expr IntLiteralExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[IntLiteralExpr: %s]", indent, label, expr.Val())
+	return fmt.Sprintf("%s%s[IntLiteralExpr: %s]", indent, label, expr.Value)
 }
 
 type FloatLiteralExpr struct {
 	IsExpr
-	ValuedNode
+	StartEndPos
+	LeadingTrailingComments
+
+	Value string
 }
 
 func (expr FloatLiteralExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[FloatLiteralExpr: %s]", indent, label, expr.Val())
+	return fmt.Sprintf("%s%s[FloatLiteralExpr: %s]", indent, label, expr.Value)
 }
 
 type RuneLiteralExpr struct {
 	IsExpr
-	ValuedNode
+	StartEndPos
+	LeadingTrailingComments
+
+	Value string
 }
 
 func (expr RuneLiteralExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[RuneLiteralExpr: %s]", indent, label, expr.Val())
+	return fmt.Sprintf("%s%s[RuneLiteralExpr: %s]", indent, label, expr.Value)
 }
 
 type StringLiteralExpr struct {
 	IsExpr
-	ValuedNode
+	StartEndPos
+	LeadingTrailingComments
+
+	Value string
 }
 
 func (expr StringLiteralExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[StringLiteralExpr: %s]", indent, label, expr.Val())
+	return fmt.Sprintf("%s%s[StringLiteralExpr: %s]", indent, label, expr.Value)
 }
 
 //
@@ -59,11 +74,14 @@ func (expr StringLiteralExpr) TreeString(indent string, label string) string {
 
 type NamedExpr struct {
 	IsExpr
-	ValuedNode
+	StartEndPos
+	LeadingTrailingComments
+
+	Name string
 }
 
 func (expr NamedExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf("%s%s[NamedExpr: %s]", indent, label, expr.Val())
+	return fmt.Sprintf("%s%s[NamedExpr: %s]", indent, label, expr.Name)
 }
 
 //
@@ -76,12 +94,12 @@ type AccessExpr struct {
 	LeadingTrailingComments
 
 	Operand Expression
-	Field   ValuedNode
+	Field   string
 }
 
 func (expr AccessExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
-		"%s%s[AccessExpr: Field=%s\n", indent, label, expr.Field.Val())
+		"%s%s[AccessExpr: Field=%s\n", indent, label, expr.Field)
 	result += expr.Operand.TreeString(indent+"  ", "Operand=")
 	result += "\n" + indent + "]"
 	return result

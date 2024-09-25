@@ -35,7 +35,7 @@ type ArrayTypeExpr struct {
 	LeadingTrailingComments
 
 	Value TypeExpression
-	Size  ValuedNode
+	Size  string // int literal string
 }
 
 var _ TypeExpression = &ArrayTypeExpr{}
@@ -45,7 +45,7 @@ func (array ArrayTypeExpr) TreeString(indent string, label string) string {
 		"%s%s[ArrayTypeExpr: Size=%s\n",
 		indent,
 		label,
-		array.Size.Val())
+		array.Size)
 	result += array.Value.TreeString(indent+"  ", "Value=")
 	result += "\n" + indent + "]"
 	return result

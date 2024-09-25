@@ -31,7 +31,7 @@ type Parameter struct {
 
 	Kind ParameterKind
 
-	Name        ValuedNode // optional
+	Name        string // optional
 	HasEllipsis bool
 	Type        TypeExpression // optional
 }
@@ -39,16 +39,12 @@ type Parameter struct {
 var _ Node = &Parameter{}
 
 func (param Parameter) TreeString(indent string, label string) string {
-	name := ""
-	if param.Name != nil {
-		name = param.Name.Val()
-	}
 	result := fmt.Sprintf(
 		"%s%s[Parameter: Kind=%v Name=%s HasEllipsis=%v\n",
 		indent,
 		label,
 		param.Kind,
-		name,
+		param.Name,
 		param.HasEllipsis)
 	if param.Type != nil {
 		result += param.Type.TreeString(indent+"  ", "Type=")
