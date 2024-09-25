@@ -6,23 +6,23 @@ import (
 	"github.com/pattyshack/gt/testing/expect"
 	"github.com/pattyshack/gt/testing/suite"
 
-	. "github.com/pattyshack/pl/ast"
-	. "github.com/pattyshack/pl/parser/lr"
+	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/parser/lr"
 )
 
 func expectCommentGroup(
 	t *testing.T,
-	token Token,
+	token lr.Token,
 	expectedComments ...string,
 ) {
-	group, ok := token.(CommentGroupToken)
+	group, ok := token.(lr.CommentGroupToken)
 	expect.True(t, ok)
 	expect.Equal(t, expectedComments, group.Comments)
 }
 
 func expectCommentGroups(
 	t *testing.T,
-	groups CommentGroups,
+	groups ast.CommentGroups,
 	expected ...[]string,
 ) {
 	commentGroups := [][]string{}
@@ -43,15 +43,16 @@ func TestTrimSpacesLexer(t *testing.T) {
 func (s *TrimSpacesLexerSuite) lex(
 	t *testing.T,
 	input string,
-	expected ...SymbolId,
-) []Token {
+	expected ...lr.SymbolId,
+) []lr.Token {
 	return lex(t, NewTrimSpacesLexer, input, expected...)
 }
 
 func (s *TrimSpacesLexerSuite) TestTrimLeadingSpaces(t *testing.T) {
 	tokens := s.lex(
 		t, " a  b   \n\n c",
-		IdentifierToken, IdentifierToken, NewlinesToken, IdentifierToken)
+		lr.IdentifierToken, lr.IdentifierToken, lr.NewlinesToken,
+		lr.IdentifierToken)
 	expectValue(t, "a", tokens[0])
 	expectValue(t, "b", tokens[1])
 	expectCount(t, 2, tokens[2])
@@ -61,8 +62,8 @@ func (s *TrimSpacesLexerSuite) TestTrimLeadingSpaces(t *testing.T) {
 func (s *TrimSpacesLexerSuite) TestMergeNewlines(t *testing.T) {
 	tokens := s.lex(
 		t, " a// asdf \n  \n  b   \n\n   \n\n\n \t\n c // comment\n ",
-		IdentifierToken, lineCommentToken, NewlinesToken, IdentifierToken,
-		NewlinesToken, IdentifierToken, lineCommentToken, NewlinesToken)
+		lr.IdentifierToken, lineCommentToken, lr.NewlinesToken, lr.IdentifierToken,
+		lr.NewlinesToken, lr.IdentifierToken, lineCommentToken, lr.NewlinesToken)
 	expectValue(t, "a", tokens[0])
 	expectValue(t, "// asdf ", tokens[1])
 	expectCount(t, 2, tokens[2])
@@ -83,16 +84,16 @@ func TestCommentGroupLexer(t *testing.T) {
 func (s *CommentGroupLexerSuite) lex(
 	t *testing.T,
 	input string,
-	expected ...SymbolId,
-) []Token {
+	expected ...lr.SymbolId,
+) []lr.Token {
 	return lex(t, NewCommentGroupLexer, input, expected...)
 }
 
 func (s *CommentGroupLexerSuite) TestBlockCommentGroups(t *testing.T) {
 	tokens := s.lex(
 		t, " a  /* group1 */ /* group2 */ b /* group3 */",
-		IdentifierToken, CommentGroupTokenId, CommentGroupTokenId,
-		IdentifierToken, CommentGroupTokenId)
+		lr.IdentifierToken, lr.CommentGroupTokenId, lr.CommentGroupTokenId,
+		lr.IdentifierToken, lr.CommentGroupTokenId)
 	expectValue(t, "a", tokens[0])
 	expectCommentGroup(t, tokens[1], "/* group1 */")
 	expectCommentGroup(t, tokens[2], "/* group2 */")
@@ -105,9 +106,10 @@ func (s *CommentGroupLexerSuite) TestLineGroups(t *testing.T) {
 		t,
 		" a //g1l1\n  //g1l2\n //g1l3\n\n //g2l1\n"+
 			"\t//g2l2\n /*g3*/ //g4l1\n//g4l2\nb",
-		IdentifierToken, CommentGroupTokenId, NewlinesToken, CommentGroupTokenId,
-		NewlinesToken, CommentGroupTokenId, CommentGroupTokenId,
-		NewlinesToken, IdentifierToken)
+		lr.IdentifierToken, lr.CommentGroupTokenId,
+		lr.NewlinesToken, lr.CommentGroupTokenId,
+		lr.NewlinesToken, lr.CommentGroupTokenId, lr.CommentGroupTokenId,
+		lr.NewlinesToken, lr.IdentifierToken)
 	expectValue(t, "a", tokens[0])
 	expectCommentGroup(t, tokens[1], "//g1l1", "//g1l2", "//g1l3")
 	expectCount(t, 2, tokens[2])
@@ -129,8 +131,8 @@ func TestAssociateCommentGroupsLexer(t *testing.T) {
 func (s *AssociateCommentGroupsLexerSuite) lex(
 	t *testing.T,
 	input string,
-	expected ...SymbolId,
-) []Token {
+	expected ...lr.SymbolId,
+) []lr.Token {
 	return lex(t, NewAssociateCommentGroupsLexer, input, expected...)
 }
 
@@ -159,10 +161,10 @@ func (s *AssociateCommentGroupsLexerSuite) TestAssociation(t *testing.T) {
     //?2l2
     //?2l3
     `,
-		IdentifierToken, NewlinesToken,
-		IdentifierToken, NewlinesToken,
-		IdentifierToken, NewlinesToken,
-		CommentGroupsToken)
+		lr.IdentifierToken, lr.NewlinesToken,
+		lr.IdentifierToken, lr.NewlinesToken,
+		lr.IdentifierToken, lr.NewlinesToken,
+		lr.CommentGroupsToken)
 
 	a := expectValue(t, "a", tokens[0])
 	expect.Nil(t, a.LeadingComment.Groups)
@@ -194,7 +196,7 @@ func (s *AssociateCommentGroupsLexerSuite) TestAssociation(t *testing.T) {
 		[]string{"//c1"})
 	expect.Nil(t, c.TrailingComment.Groups)
 
-	floating, ok := tokens[6].(CommentGroupsTok)
+	floating, ok := tokens[6].(lr.CommentGroupsTok)
 	expect.True(t, ok)
 	expectCommentGroups(
 		t,
@@ -213,103 +215,107 @@ func TestTerminalNewlinesLexer(t *testing.T) {
 func (s *TerminalNewlinesLexerSuite) lex(
 	t *testing.T,
 	input string,
-	expected ...SymbolId,
-) []Token {
+	expected ...lr.SymbolId,
+) []lr.Token {
 	return lex(t, NewBasicLexer, input, expected...)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestEOF(t *testing.T) {
-	s.lex(t, "+", AddToken)
-	s.lex(t, "+\n", AddToken)
-	s.lex(t, ",", CommaToken)
-	s.lex(t, ",\n", CommaToken)
-	s.lex(t, "// comment", CommentGroupsToken)
-	s.lex(t, "// comment\n", CommentGroupsToken)
-	s.lex(t, "a", IdentifierToken)
-	s.lex(t, "a\n", IdentifierToken, NewlinesToken)
-	s.lex(t, "a // comment \n", IdentifierToken, NewlinesToken)
+	s.lex(t, "+", lr.AddToken)
+	s.lex(t, "+\n", lr.AddToken)
+	s.lex(t, ",", lr.CommaToken)
+	s.lex(t, ",\n", lr.CommaToken)
+	s.lex(t, "// comment", lr.CommentGroupsToken)
+	s.lex(t, "// comment\n", lr.CommentGroupsToken)
+	s.lex(t, "a", lr.IdentifierToken)
+	s.lex(t, "a\n", lr.IdentifierToken, lr.NewlinesToken)
+	s.lex(t, "a // comment \n", lr.IdentifierToken, lr.NewlinesToken)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestIdentifier(t *testing.T) {
 	s.lex(
 		t, "a // foo \n+ b",
-		IdentifierToken, NewlinesToken, AddToken, IdentifierToken)
+		lr.IdentifierToken, lr.NewlinesToken, lr.AddToken, lr.IdentifierToken)
 	s.lex(
 		t, "a + b\n c",
-		IdentifierToken, AddToken, IdentifierToken, NewlinesToken, IdentifierToken)
+		lr.IdentifierToken, lr.AddToken, lr.IdentifierToken, lr.NewlinesToken,
+		lr.IdentifierToken)
 	s.lex(
 		t, "a + _\n c",
-		IdentifierToken, AddToken, UnderscoreToken, NewlinesToken, IdentifierToken)
+		lr.IdentifierToken, lr.AddToken, lr.UnderscoreToken, lr.NewlinesToken,
+		lr.IdentifierToken)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestLiteral(t *testing.T) {
 	s.lex(
 		t, "1 \n + b",
-		IntegerLiteralToken, NewlinesToken, AddToken, IdentifierToken)
+		lr.IntegerLiteralToken, lr.NewlinesToken, lr.AddToken, lr.IdentifierToken)
 	s.lex(
 		t, "a + 0x123\n c",
-		IdentifierToken, AddToken, IntegerLiteralToken, NewlinesToken,
-		IdentifierToken)
+		lr.IdentifierToken, lr.AddToken, lr.IntegerLiteralToken, lr.NewlinesToken,
+		lr.IdentifierToken)
 	s.lex(
 		t, "1. \n + b",
-		FloatLiteralToken, NewlinesToken, AddToken, IdentifierToken)
+		lr.FloatLiteralToken, lr.NewlinesToken, lr.AddToken, lr.IdentifierToken)
 	s.lex(
 		t, "'a' \n + b",
-		RuneLiteralToken, NewlinesToken, AddToken, IdentifierToken)
+		lr.RuneLiteralToken, lr.NewlinesToken, lr.AddToken, lr.IdentifierToken)
 	s.lex(
 		t, "\"string\" \n + b",
-		StringLiteralToken, NewlinesToken, AddToken, IdentifierToken)
+		lr.StringLiteralToken, lr.NewlinesToken, lr.AddToken, lr.IdentifierToken)
 	s.lex(
 		t, "true \n + b",
-		TrueToken, NewlinesToken, AddToken, IdentifierToken)
+		lr.TrueToken, lr.NewlinesToken, lr.AddToken, lr.IdentifierToken)
 	s.lex(
 		t, "false \n + b",
-		FalseToken, NewlinesToken, AddToken, IdentifierToken)
+		lr.FalseToken, lr.NewlinesToken, lr.AddToken, lr.IdentifierToken)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestJumps(t *testing.T) {
 	s.lex(t, "return @label\n}",
-		ReturnToken, JumpLabelToken, NewlinesToken, RbraceToken)
+		lr.ReturnToken, lr.JumpLabelToken, lr.NewlinesToken, lr.RbraceToken)
 	s.lex(t, "return @label // comment \n}",
-		ReturnToken, JumpLabelToken, NewlinesToken, RbraceToken)
-	s.lex(t, "return\n}", ReturnToken, NewlinesToken, RbraceToken)
-	s.lex(t, "break\n}", BreakToken, NewlinesToken, RbraceToken)
-	s.lex(t, "continue\n}", ContinueToken, NewlinesToken, RbraceToken)
-	s.lex(t, "fallthrough\n}", FallthroughToken, NewlinesToken, RbraceToken)
+		lr.ReturnToken, lr.JumpLabelToken, lr.NewlinesToken, lr.RbraceToken)
+	s.lex(t, "return\n}", lr.ReturnToken, lr.NewlinesToken, lr.RbraceToken)
+	s.lex(t, "break\n}", lr.BreakToken, lr.NewlinesToken, lr.RbraceToken)
+	s.lex(t, "continue\n}", lr.ContinueToken, lr.NewlinesToken, lr.RbraceToken)
+	s.lex(
+		t, "fallthrough\n}",
+		lr.FallthroughToken, lr.NewlinesToken, lr.RbraceToken)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestSuffixUnary(t *testing.T) {
 	s.lex(t, "a++\n}",
-		IdentifierToken, AddOneAssignToken, NewlinesToken, RbraceToken)
+		lr.IdentifierToken, lr.AddOneAssignToken, lr.NewlinesToken, lr.RbraceToken)
 	s.lex(t, "b--\n}",
-		IdentifierToken, SubOneAssignToken, NewlinesToken, RbraceToken)
+		lr.IdentifierToken, lr.SubOneAssignToken, lr.NewlinesToken, lr.RbraceToken)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestEndScope(t *testing.T) {
-	s.lex(t, "}\na", RbraceToken, NewlinesToken, IdentifierToken)
-	s.lex(t, ")\na", RparenToken, NewlinesToken, IdentifierToken)
-	s.lex(t, "]\na", RbracketToken, NewlinesToken, IdentifierToken)
+	s.lex(t, "}\na", lr.RbraceToken, lr.NewlinesToken, lr.IdentifierToken)
+	s.lex(t, ")\na", lr.RparenToken, lr.NewlinesToken, lr.IdentifierToken)
+	s.lex(t, "]\na", lr.RbracketToken, lr.NewlinesToken, lr.IdentifierToken)
 }
 
 func (s *TerminalNewlinesLexerSuite) TestNonTerminalNewlines(t *testing.T) {
-	s.lex(t, ";\na", SemicolonToken, IdentifierToken)
-	s.lex(t, ".\na", DotToken, IdentifierToken)
-	s.lex(t, ",\na", CommaToken, IdentifierToken)
-	s.lex(t, "=\na", AssignToken, IdentifierToken)
-	s.lex(t, "+=\na", AddAssignToken, IdentifierToken)
-	s.lex(t, "<\na", LessToken, IdentifierToken)
-	s.lex(t, "+\na", AddToken, IdentifierToken)
-	s.lex(t, "-\na", SubToken, IdentifierToken)
-	s.lex(t, "*\na", MulToken, IdentifierToken)
-	s.lex(t, "/\na", DivToken, IdentifierToken)
-	s.lex(t, "%\na", ModToken, IdentifierToken)
-	s.lex(t, "and\na", AndToken, IdentifierToken)
-	s.lex(t, "or\na", OrToken, IdentifierToken)
-	s.lex(t, "not\na", NotToken, IdentifierToken)
-	s.lex(t, "async\na", AsyncToken, IdentifierToken)
-	s.lex(t, "defer\na", DeferToken, IdentifierToken)
-	s.lex(t, "func\na", FuncToken, IdentifierToken)
-	s.lex(t, "type\na", TypeToken, IdentifierToken)
-	s.lex(t, "var\na", VarToken, IdentifierToken)
-	s.lex(t, "let\na", LetToken, IdentifierToken)
+	s.lex(t, ";\na", lr.SemicolonToken, lr.IdentifierToken)
+	s.lex(t, ".\na", lr.DotToken, lr.IdentifierToken)
+	s.lex(t, ",\na", lr.CommaToken, lr.IdentifierToken)
+	s.lex(t, "=\na", lr.AssignToken, lr.IdentifierToken)
+	s.lex(t, "+=\na", lr.AddAssignToken, lr.IdentifierToken)
+	s.lex(t, "<\na", lr.LessToken, lr.IdentifierToken)
+	s.lex(t, "+\na", lr.AddToken, lr.IdentifierToken)
+	s.lex(t, "-\na", lr.SubToken, lr.IdentifierToken)
+	s.lex(t, "*\na", lr.MulToken, lr.IdentifierToken)
+	s.lex(t, "/\na", lr.DivToken, lr.IdentifierToken)
+	s.lex(t, "%\na", lr.ModToken, lr.IdentifierToken)
+	s.lex(t, "and\na", lr.AndToken, lr.IdentifierToken)
+	s.lex(t, "or\na", lr.OrToken, lr.IdentifierToken)
+	s.lex(t, "not\na", lr.NotToken, lr.IdentifierToken)
+	s.lex(t, "async\na", lr.AsyncToken, lr.IdentifierToken)
+	s.lex(t, "defer\na", lr.DeferToken, lr.IdentifierToken)
+	s.lex(t, "func\na", lr.FuncToken, lr.IdentifierToken)
+	s.lex(t, "type\na", lr.TypeToken, lr.IdentifierToken)
+	s.lex(t, "var\na", lr.VarToken, lr.IdentifierToken)
+	s.lex(t, "let\na", lr.LetToken, lr.IdentifierToken)
 }

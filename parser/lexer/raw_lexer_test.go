@@ -7,7 +7,7 @@ import (
 	"github.com/pattyshack/gt/testing/expect"
 	"github.com/pattyshack/gt/testing/suite"
 
-	. "github.com/pattyshack/pl/parser/lr"
+	"github.com/pattyshack/pl/parser/lr"
 )
 
 type RawLexerSuite struct {
@@ -20,8 +20,8 @@ func TestRawLexer(t *testing.T) {
 func (s *RawLexerSuite) lex(
 	t *testing.T,
 	input string,
-	expected ...SymbolId,
-) []Token {
+	expected ...lr.SymbolId,
+) []lr.Token {
 	return lex(t, NewRawLexer, input, expected...)
 }
 
@@ -35,14 +35,14 @@ func (s *RawLexerSuite) TestNewlinesTokens(t *testing.T) {
 		} else {
 			testInputPrefix += "\r\n"
 		}
-		s.lex(t, testInputPrefix, AddToken, NewlinesToken)
-		s.lex(t, testInputPrefix+"-", AddToken, NewlinesToken, SubToken)
+		s.lex(t, testInputPrefix, lr.AddToken, lr.NewlinesToken)
+		s.lex(t, testInputPrefix+"-", lr.AddToken, lr.NewlinesToken, lr.SubToken)
 
 		tokens := s.lex(
 			t, testInputPrefix+"\r-",
-			AddToken, NewlinesToken, ParseErrorToken, SubToken)
+			lr.AddToken, lr.NewlinesToken, lr.ParseErrorToken, lr.SubToken)
 
-		newlines, ok := tokens[1].(TokenCount)
+		newlines, ok := tokens[1].(lr.TokenCount)
 		expect.True(t, ok)
 		expect.Equal(t, i+1, newlines.Count)
 
@@ -56,233 +56,236 @@ func (s *RawLexerSuite) TestSpacesTokens(t *testing.T) {
 	// Test in loop to check for peek window resizing
 	for i := 0; i < 151; i++ {
 		testInputPrefix += " "
-		s.lex(t, testInputPrefix, AddToken, spacesToken)
-		s.lex(t, testInputPrefix+"-", AddToken, spacesToken, SubToken)
+		s.lex(t, testInputPrefix, lr.AddToken, spacesToken)
+		s.lex(t, testInputPrefix+"-", lr.AddToken, spacesToken, lr.SubToken)
 	}
 }
 
 func (s *RawLexerSuite) TestLbraceTokens(t *testing.T) {
-	s.lex(t, "{", LbraceToken)
-	s.lex(t, "+{-", AddToken, LbraceToken, SubToken)
+	s.lex(t, "{", lr.LbraceToken)
+	s.lex(t, "+{-", lr.AddToken, lr.LbraceToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestRbraceTokens(t *testing.T) {
-	s.lex(t, "}", RbraceToken)
-	s.lex(t, "+}-", AddToken, RbraceToken, SubToken)
+	s.lex(t, "}", lr.RbraceToken)
+	s.lex(t, "+}-", lr.AddToken, lr.RbraceToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestLparenTokens(t *testing.T) {
-	s.lex(t, "(", LparenToken)
-	s.lex(t, "+(-", AddToken, LparenToken, SubToken)
+	s.lex(t, "(", lr.LparenToken)
+	s.lex(t, "+(-", lr.AddToken, lr.LparenToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestRparenTokens(t *testing.T) {
-	s.lex(t, ")", RparenToken)
-	s.lex(t, "+)-", AddToken, RparenToken, SubToken)
+	s.lex(t, ")", lr.RparenToken)
+	s.lex(t, "+)-", lr.AddToken, lr.RparenToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestLbracketTokens(t *testing.T) {
-	s.lex(t, "[", LbracketToken)
-	s.lex(t, "+[-", AddToken, LbracketToken, SubToken)
+	s.lex(t, "[", lr.LbracketToken)
+	s.lex(t, "+[-", lr.AddToken, lr.LbracketToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestRbracketTokens(t *testing.T) {
-	s.lex(t, "]", RbracketToken)
-	s.lex(t, "+]-", AddToken, RbracketToken, SubToken)
+	s.lex(t, "]", lr.RbracketToken)
+	s.lex(t, "+]-", lr.AddToken, lr.RbracketToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestDotTokens(t *testing.T) {
-	s.lex(t, ".", DotToken)
-	s.lex(t, "+.-", AddToken, DotToken, SubToken)
+	s.lex(t, ".", lr.DotToken)
+	s.lex(t, "+.-", lr.AddToken, lr.DotToken, lr.SubToken)
 
-	s.lex(t, "...", EllipsisToken)
-	s.lex(t, "+...-", AddToken, EllipsisToken, SubToken)
+	s.lex(t, "...", lr.EllipsisToken)
+	s.lex(t, "+...-", lr.AddToken, lr.EllipsisToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestCommaTokens(t *testing.T) {
-	s.lex(t, ",", CommaToken)
-	s.lex(t, "+,-", AddToken, CommaToken, SubToken)
+	s.lex(t, ",", lr.CommaToken)
+	s.lex(t, "+,-", lr.AddToken, lr.CommaToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestQuestionTokens(t *testing.T) {
-	s.lex(t, "?", QuestionToken)
-	s.lex(t, "+?-", AddToken, QuestionToken, SubToken)
+	s.lex(t, "?", lr.QuestionToken)
+	s.lex(t, "+?-", lr.AddToken, lr.QuestionToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestSemicolonTokens(t *testing.T) {
-	s.lex(t, ";", SemicolonToken)
-	s.lex(t, "+;-", AddToken, SemicolonToken, SubToken)
+	s.lex(t, ";", lr.SemicolonToken)
+	s.lex(t, "+;-", lr.AddToken, lr.SemicolonToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestColonTokens(t *testing.T) {
-	s.lex(t, ":", ColonToken)
-	s.lex(t, "+:-", AddToken, ColonToken, SubToken)
+	s.lex(t, ":", lr.ColonToken)
+	s.lex(t, "+:-", lr.AddToken, lr.ColonToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestDollarTokens(t *testing.T) {
-	s.lex(t, "$[", DollarLbracketToken)
-	s.lex(t, "+$[-", AddToken, DollarLbracketToken, SubToken)
+	s.lex(t, "$[", lr.DollarLbracketToken)
+	s.lex(t, "+$[-", lr.AddToken, lr.DollarLbracketToken, lr.SubToken)
 
-	tokens := s.lex(t, "$", ParseErrorToken)
+	tokens := s.lex(t, "$", lr.ParseErrorToken)
 	expectError(t, tokens[0], "unexpected utf8 rune")
 
-	tokens = s.lex(t, "+$-", AddToken, ParseErrorToken, SubToken)
+	tokens = s.lex(t, "+$-", lr.AddToken, lr.ParseErrorToken, lr.SubToken)
 	expectError(t, tokens[1], "unexpected utf8 rune")
 }
 
 func (s *RawLexerSuite) TestAddTokens(t *testing.T) {
-	s.lex(t, "+", AddToken)
-	s.lex(t, "*+/", MulToken, AddToken, DivToken)
+	s.lex(t, "+", lr.AddToken)
+	s.lex(t, "*+/", lr.MulToken, lr.AddToken, lr.DivToken)
 
-	s.lex(t, "++", AddOneAssignToken)
-	s.lex(t, "*++/", MulToken, AddOneAssignToken, DivToken)
+	s.lex(t, "++", lr.AddOneAssignToken)
+	s.lex(t, "*++/", lr.MulToken, lr.AddOneAssignToken, lr.DivToken)
 
-	s.lex(t, "+=", AddAssignToken)
-	s.lex(t, "*+=/", MulToken, AddAssignToken, DivToken)
+	s.lex(t, "+=", lr.AddAssignToken)
+	s.lex(t, "*+=/", lr.MulToken, lr.AddAssignToken, lr.DivToken)
 }
 
 func (s *RawLexerSuite) TestSubTokens(t *testing.T) {
-	s.lex(t, "-", SubToken)
-	s.lex(t, "*-/", MulToken, SubToken, DivToken)
+	s.lex(t, "-", lr.SubToken)
+	s.lex(t, "*-/", lr.MulToken, lr.SubToken, lr.DivToken)
 
-	s.lex(t, "--", SubOneAssignToken)
-	s.lex(t, "*--/", MulToken, SubOneAssignToken, DivToken)
+	s.lex(t, "--", lr.SubOneAssignToken)
+	s.lex(t, "*--/", lr.MulToken, lr.SubOneAssignToken, lr.DivToken)
 
-	s.lex(t, "-=", SubAssignToken)
-	s.lex(t, "*-=/", MulToken, SubAssignToken, DivToken)
+	s.lex(t, "-=", lr.SubAssignToken)
+	s.lex(t, "*-=/", lr.MulToken, lr.SubAssignToken, lr.DivToken)
 }
 
 func (s *RawLexerSuite) TestMulTokens(t *testing.T) {
-	s.lex(t, "*", MulToken)
-	s.lex(t, "+*-", AddToken, MulToken, SubToken)
+	s.lex(t, "*", lr.MulToken)
+	s.lex(t, "+*-", lr.AddToken, lr.MulToken, lr.SubToken)
 
-	s.lex(t, "*=", MulAssignToken)
-	s.lex(t, "+*=-", AddToken, MulAssignToken, SubToken)
+	s.lex(t, "*=", lr.MulAssignToken)
+	s.lex(t, "+*=-", lr.AddToken, lr.MulAssignToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestDivTokens(t *testing.T) {
-	s.lex(t, "/", DivToken)
-	s.lex(t, "+/-", AddToken, DivToken, SubToken)
+	s.lex(t, "/", lr.DivToken)
+	s.lex(t, "+/-", lr.AddToken, lr.DivToken, lr.SubToken)
 
-	s.lex(t, "/=", DivAssignToken)
-	s.lex(t, "+/=-", AddToken, DivAssignToken, SubToken)
+	s.lex(t, "/=", lr.DivAssignToken)
+	s.lex(t, "+/=-", lr.AddToken, lr.DivAssignToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestModTokens(t *testing.T) {
-	s.lex(t, "%", ModToken)
-	s.lex(t, "+%-", AddToken, ModToken, SubToken)
+	s.lex(t, "%", lr.ModToken)
+	s.lex(t, "+%-", lr.AddToken, lr.ModToken, lr.SubToken)
 
-	s.lex(t, "%=", ModAssignToken)
-	s.lex(t, "+%=-", AddToken, ModAssignToken, SubToken)
+	s.lex(t, "%=", lr.ModAssignToken)
+	s.lex(t, "+%=-", lr.AddToken, lr.ModAssignToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestBitNegTokens(t *testing.T) {
-	s.lex(t, "~", BitNegToken)
-	s.lex(t, "+~-", AddToken, BitNegToken, SubToken)
+	s.lex(t, "~", lr.BitNegToken)
+	s.lex(t, "+~-", lr.AddToken, lr.BitNegToken, lr.SubToken)
 
-	s.lex(t, "~=", BitNegAssignToken)
-	s.lex(t, "+~=-", AddToken, BitNegAssignToken, SubToken)
+	s.lex(t, "~=", lr.BitNegAssignToken)
+	s.lex(t, "+~=-", lr.AddToken, lr.BitNegAssignToken, lr.SubToken)
 
-	s.lex(t, "~~", TildeTildeToken)
-	s.lex(t, "+~~-", AddToken, TildeTildeToken, SubToken)
+	s.lex(t, "~~", lr.TildeTildeToken)
+	s.lex(t, "+~~-", lr.AddToken, lr.TildeTildeToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestBitAndTokens(t *testing.T) {
-	s.lex(t, "&", BitAndToken)
-	s.lex(t, "+&-", AddToken, BitAndToken, SubToken)
+	s.lex(t, "&", lr.BitAndToken)
+	s.lex(t, "+&-", lr.AddToken, lr.BitAndToken, lr.SubToken)
 
-	s.lex(t, "&=", BitAndAssignToken)
-	s.lex(t, "+&=-", AddToken, BitAndAssignToken, SubToken)
+	s.lex(t, "&=", lr.BitAndAssignToken)
+	s.lex(t, "+&=-", lr.AddToken, lr.BitAndAssignToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestBitXorTokens(t *testing.T) {
-	s.lex(t, "^", BitXorToken)
-	s.lex(t, "+^-", AddToken, BitXorToken, SubToken)
+	s.lex(t, "^", lr.BitXorToken)
+	s.lex(t, "+^-", lr.AddToken, lr.BitXorToken, lr.SubToken)
 
-	s.lex(t, "^=", BitXorAssignToken)
-	s.lex(t, "+^=-", AddToken, BitXorAssignToken, SubToken)
+	s.lex(t, "^=", lr.BitXorAssignToken)
+	s.lex(t, "+^=-", lr.AddToken, lr.BitXorAssignToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestBitOrTokens(t *testing.T) {
-	s.lex(t, "|", BitOrToken)
-	s.lex(t, "+|-", AddToken, BitOrToken, SubToken)
+	s.lex(t, "|", lr.BitOrToken)
+	s.lex(t, "+|-", lr.AddToken, lr.BitOrToken, lr.SubToken)
 
-	s.lex(t, "|=", BitOrAssignToken)
-	s.lex(t, "+|=-", AddToken, BitOrAssignToken, SubToken)
+	s.lex(t, "|=", lr.BitOrAssignToken)
+	s.lex(t, "+|=-", lr.AddToken, lr.BitOrAssignToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestEqualTokens(t *testing.T) {
-	s.lex(t, "=", AssignToken)
-	s.lex(t, "(=)", LparenToken, AssignToken, RparenToken)
+	s.lex(t, "=", lr.AssignToken)
+	s.lex(t, "(=)", lr.LparenToken, lr.AssignToken, lr.RparenToken)
 
-	s.lex(t, "==", EqualToken)
-	s.lex(t, "(==)", LparenToken, EqualToken, RparenToken)
+	s.lex(t, "==", lr.EqualToken)
+	s.lex(t, "(==)", lr.LparenToken, lr.EqualToken, lr.RparenToken)
 }
 
 func (s *RawLexerSuite) TestExclaimTokens(t *testing.T) {
-	s.lex(t, "!", ExclaimToken)
-	s.lex(t, "+!-", AddToken, ExclaimToken, SubToken)
+	s.lex(t, "!", lr.ExclaimToken)
+	s.lex(t, "+!-", lr.AddToken, lr.ExclaimToken, lr.SubToken)
 
-	s.lex(t, "!=", NotEqualToken)
-	s.lex(t, "+!=-", AddToken, NotEqualToken, SubToken)
+	s.lex(t, "!=", lr.NotEqualToken)
+	s.lex(t, "+!=-", lr.AddToken, lr.NotEqualToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestGreaterTokens(t *testing.T) {
-	s.lex(t, ">", GreaterToken)
-	s.lex(t, "+>-", AddToken, GreaterToken, SubToken)
+	s.lex(t, ">", lr.GreaterToken)
+	s.lex(t, "+>-", lr.AddToken, lr.GreaterToken, lr.SubToken)
 
-	s.lex(t, ">=", GreaterOrEqualToken)
-	s.lex(t, "+>=-", AddToken, GreaterOrEqualToken, SubToken)
+	s.lex(t, ">=", lr.GreaterOrEqualToken)
+	s.lex(t, "+>=-", lr.AddToken, lr.GreaterOrEqualToken, lr.SubToken)
 
-	s.lex(t, ">>", BitRshiftToken)
-	s.lex(t, "+>>-", AddToken, BitRshiftToken, SubToken)
+	s.lex(t, ">>", lr.BitRshiftToken)
+	s.lex(t, "+>>-", lr.AddToken, lr.BitRshiftToken, lr.SubToken)
 
-	s.lex(t, ">>=", BitRshiftAssignToken)
-	s.lex(t, "+>>=-", AddToken, BitRshiftAssignToken, SubToken)
+	s.lex(t, ">>=", lr.BitRshiftAssignToken)
+	s.lex(t, "+>>=-", lr.AddToken, lr.BitRshiftAssignToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestLessTokens(t *testing.T) {
-	s.lex(t, "<", LessToken)
-	s.lex(t, "+</", AddToken, LessToken, DivToken)
+	s.lex(t, "<", lr.LessToken)
+	s.lex(t, "+</", lr.AddToken, lr.LessToken, lr.DivToken)
 
-	s.lex(t, "<=", LessOrEqualToken)
-	s.lex(t, "+<=-", AddToken, LessOrEqualToken, SubToken)
+	s.lex(t, "<=", lr.LessOrEqualToken)
+	s.lex(t, "+<=-", lr.AddToken, lr.LessOrEqualToken, lr.SubToken)
 
-	s.lex(t, "<<", BitLshiftToken)
-	s.lex(t, "+<<-", AddToken, BitLshiftToken, SubToken)
+	s.lex(t, "<<", lr.BitLshiftToken)
+	s.lex(t, "+<<-", lr.AddToken, lr.BitLshiftToken, lr.SubToken)
 
-	s.lex(t, "<<=", BitLshiftAssignToken)
-	s.lex(t, "+<<=-", AddToken, BitLshiftAssignToken, SubToken)
+	s.lex(t, "<<=", lr.BitLshiftAssignToken)
+	s.lex(t, "+<<=-", lr.AddToken, lr.BitLshiftAssignToken, lr.SubToken)
 
-	s.lex(t, "<-", ArrowToken)
-	s.lex(t, "+<--", AddToken, ArrowToken, SubToken)
+	s.lex(t, "<-", lr.ArrowToken)
+	s.lex(t, "+<--", lr.AddToken, lr.ArrowToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestIdentifier(t *testing.T) {
-	tokens := s.lex(t, "abc", IdentifierToken)
+	tokens := s.lex(t, "abc", lr.IdentifierToken)
 	expectValue(t, "abc", tokens[0])
 
 	testId := ""
 	// Test in loop to check for peek window resizing
 	for i := 0; i < 151; i++ {
 		testId += testIdxChar(i)
-		tokens := s.lex(t, "+"+testId, AddToken, IdentifierToken)
+		tokens := s.lex(t, "+"+testId, lr.AddToken, lr.IdentifierToken)
 		expectValue(t, testId, tokens[1])
 
-		tokens = s.lex(t, "+"+testId+"-", AddToken, IdentifierToken, SubToken)
+		tokens = s.lex(
+			t, "+"+testId+"-",
+			lr.AddToken, lr.IdentifierToken, lr.SubToken)
 		expectValue(t, testId, tokens[1])
 	}
 
-	tokens = s.lex(t, "+世界", AddToken, IdentifierToken)
+	tokens = s.lex(t, "+世界", lr.AddToken, lr.IdentifierToken)
 	expectValue(t, "世界", tokens[1])
 
-	tokens = s.lex(t, "+世界-", AddToken, IdentifierToken, SubToken)
+	tokens = s.lex(t, "+世界-", lr.AddToken, lr.IdentifierToken, lr.SubToken)
 	expectValue(t, "世界", tokens[1])
 
 	tokens = s.lex(
 		// '+' + '世' + (first two bytes of '界') + '-'
 		t, string([]byte{'+', 228, 184, 150, 231, 149, '-'}),
-		AddToken, IdentifierToken, ParseErrorToken, ParseErrorToken, SubToken)
+		lr.AddToken, lr.IdentifierToken, lr.ParseErrorToken,
+		lr.ParseErrorToken, lr.SubToken)
 	expectValue(t, "世", tokens[1])
 
 	expectError(t, tokens[2], "unexpected utf8 rune")
@@ -290,51 +293,55 @@ func (s *RawLexerSuite) TestIdentifier(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestLabelDecl(t *testing.T) {
-	tokens := s.lex(t, "abc@", LabelDeclToken)
+	tokens := s.lex(t, "abc@", lr.LabelDeclToken)
 	expectValue(t, "abc@", tokens[0])
 
 	testId := ""
 	// Test in loop to check for peek window resizing
 	for i := 0; i < 151; i++ {
 		testId += testIdxChar(i)
-		tokens := s.lex(t, "+"+testId+"@", AddToken, LabelDeclToken)
+		tokens := s.lex(t, "+"+testId+"@", lr.AddToken, lr.LabelDeclToken)
 		expectValue(t, testId+"@", tokens[1])
 
-		tokens = s.lex(t, "+"+testId+"@-", AddToken, LabelDeclToken, SubToken)
+		tokens = s.lex(
+			t, "+"+testId+"@-",
+			lr.AddToken, lr.LabelDeclToken, lr.SubToken)
 		expectValue(t, testId+"@", tokens[1])
 	}
 
-	tokens = s.lex(t, "+世界@", AddToken, LabelDeclToken)
+	tokens = s.lex(t, "+世界@", lr.AddToken, lr.LabelDeclToken)
 	expectValue(t, "世界@", tokens[1])
 
-	tokens = s.lex(t, "+世界@-", AddToken, LabelDeclToken, SubToken)
+	tokens = s.lex(t, "+世界@-", lr.AddToken, lr.LabelDeclToken, lr.SubToken)
 	expectValue(t, "世界@", tokens[1])
 }
 
 func (s *RawLexerSuite) TestJumpLabel(t *testing.T) {
-	tokens := s.lex(t, "@abc", JumpLabelToken)
+	tokens := s.lex(t, "@abc", lr.JumpLabelToken)
 	expectValue(t, "@abc", tokens[0])
 
-	tokens = s.lex(t, "+@-", AddToken, ParseErrorToken, SubToken)
+	tokens = s.lex(t, "+@-", lr.AddToken, lr.ParseErrorToken, lr.SubToken)
 	expectError(t, tokens[1], "no label name associated with @")
 
 	tokens = s.lex(
 		t, "@0abc",
-		ParseErrorToken, IntegerLiteralToken, IdentifierToken)
+		lr.ParseErrorToken, lr.IntegerLiteralToken, lr.IdentifierToken)
 	expectError(t, tokens[0], "no label name associated with @")
 
-	tokens = s.lex(t, "+@label", AddToken, JumpLabelToken)
+	tokens = s.lex(t, "+@label", lr.AddToken, lr.JumpLabelToken)
 	expectValue(t, "@label", tokens[1])
 
-	tokens = s.lex(t, "+@label-", AddToken, JumpLabelToken, SubToken)
+	tokens = s.lex(t, "+@label-", lr.AddToken, lr.JumpLabelToken, lr.SubToken)
 	expectValue(t, "@label", tokens[1])
 }
 
 func (s *RawLexerSuite) TestKeywordTokens(t *testing.T) {
 	for kw, symbolId := range keywords {
-		s.lex(t, "+"+kw+"-", AddToken, symbolId, SubToken)
+		s.lex(t, "+"+kw+"-", lr.AddToken, symbolId, lr.SubToken)
 
-		tokens := s.lex(t, "+"+kw+"blah-", AddToken, IdentifierToken, SubToken)
+		tokens := s.lex(
+			t, "+"+kw+"blah-",
+			lr.AddToken, lr.IdentifierToken, lr.SubToken)
 		expectValue(t, kw+"blah", tokens[1])
 	}
 }
@@ -345,17 +352,17 @@ func (s *RawLexerSuite) TestLineComment(t *testing.T) {
 
 	comment := "//"
 	for i := 0; i < 101; i++ {
-		tokens := s.lex(t, "+"+comment, AddToken, lineCommentToken)
+		tokens := s.lex(t, "+"+comment, lr.AddToken, lineCommentToken)
 		expectValue(t, comment, tokens[1])
 
 		tokens = s.lex(
 			t, "+"+comment+"\n",
-			AddToken, lineCommentToken, NewlinesToken)
+			lr.AddToken, lineCommentToken, lr.NewlinesToken)
 		expectValue(t, comment, tokens[1])
 
 		tokens = s.lex(
 			t, "+"+comment+"\r\n",
-			AddToken, lineCommentToken, NewlinesToken)
+			lr.AddToken, lineCommentToken, lr.NewlinesToken)
 		expectValue(t, comment, tokens[1])
 
 		comment += testIdxChar(i)
@@ -368,18 +375,18 @@ func (s *RawLexerSuite) TestBlockComment(t *testing.T) {
 
 	commentBody := ""
 	for i := 0; i < 151; i++ {
-		tokens := s.lex(t, "+/*"+commentBody, AddToken, ParseErrorToken)
+		tokens := s.lex(t, "+/*"+commentBody, lr.AddToken, lr.ParseErrorToken)
 		expectError(t, tokens[1], "comment not terminated")
 
-		tokens = s.lex(t, "+/*"+commentBody+"*", AddToken, ParseErrorToken)
+		tokens = s.lex(t, "+/*"+commentBody+"*", lr.AddToken, lr.ParseErrorToken)
 		expectError(t, tokens[1], "comment not terminated")
 
-		tokens = s.lex(t, "+/*"+commentBody+"*/", AddToken, blockCommentToken)
+		tokens = s.lex(t, "+/*"+commentBody+"*/", lr.AddToken, blockCommentToken)
 		expectValue(t, "/*"+commentBody+"*/", tokens[1])
 
 		tokens = s.lex(
-			t, "+/*"+commentBody+"*/-", AddToken,
-			blockCommentToken, SubToken)
+			t, "+/*"+commentBody+"*/-", lr.AddToken,
+			blockCommentToken, lr.SubToken)
 		expectValue(t, "/*"+commentBody+"*/", tokens[1])
 
 		commentBody += testIdxChar(i)
@@ -387,7 +394,9 @@ func (s *RawLexerSuite) TestBlockComment(t *testing.T) {
 
 	comment := "/* scope 0 */"
 	for i := 0; i < 10; i++ {
-		tokens := s.lex(t, "+"+comment+"-", AddToken, blockCommentToken, SubToken)
+		tokens := s.lex(
+			t, "+"+comment+"-",
+			lr.AddToken, blockCommentToken, lr.SubToken)
 		expectValue(t, comment, tokens[1])
 
 		comment = fmt.Sprintf("/* scope %d %s %s */", i+1, comment, comment)
@@ -401,722 +410,770 @@ func (s *RawLexerSuite) TestBlockComment(t *testing.T) {
 		for j := i; j >= 1; j-- {
 			comment += " */"
 
-			tokens := s.lex(t, "+"+comment, AddToken, ParseErrorToken)
+			tokens := s.lex(t, "+"+comment, lr.AddToken, lr.ParseErrorToken)
 			expectError(t, tokens[1], "comment not terminated")
 		}
 
 		comment += " */"
-		tokens := s.lex(t, "+"+comment+"-", AddToken, blockCommentToken, SubToken)
+		tokens := s.lex(
+			t, "+"+comment+"-",
+			lr.AddToken, blockCommentToken, lr.SubToken)
 		expectValue(t, comment, tokens[1])
 	}
 }
 
 func (s *RawLexerSuite) TestBinaryIntegerLiteral(t *testing.T) {
-	tokens := s.lex(t, "0b101", IntegerLiteralToken)
+	tokens := s.lex(t, "0b101", lr.IntegerLiteralToken)
 	literal := expectValue(t, "0b101", tokens[0])
-	expect.Equal(t, BinaryInteger, literal.SubType)
+	expect.Equal(t, lr.BinaryInteger, literal.SubType)
 
-	tokens = s.lex(t, "+0b", AddToken, ParseErrorToken)
+	tokens = s.lex(t, "+0b", lr.AddToken, lr.ParseErrorToken)
 	expectError(t, tokens[1], "binary integer literal has no digits")
 
-	tokens = s.lex(t, "+0b-", AddToken, ParseErrorToken, SubToken)
+	tokens = s.lex(t, "+0b-", lr.AddToken, lr.ParseErrorToken, lr.SubToken)
 	expectError(t, tokens[1], "binary integer literal has no digits")
 
 	tokens = s.lex(
 		t, "+0B_-",
-		AddToken, ParseErrorToken, UnderscoreToken, SubToken)
+		lr.AddToken, lr.ParseErrorToken, lr.UnderscoreToken, lr.SubToken)
 	expectError(t, tokens[1], "binary integer literal has no digits")
 
 	tokens = s.lex(
 		t, "+0B2-",
-		AddToken, ParseErrorToken, IntegerLiteralToken, SubToken)
+		lr.AddToken, lr.ParseErrorToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectError(t, tokens[1], "binary integer literal has no digits")
 
 	expectValue(t, "2", tokens[2])
 
-	tokens = s.lex(t, "+0b1", AddToken, IntegerLiteralToken)
+	tokens = s.lex(t, "+0b1", lr.AddToken, lr.IntegerLiteralToken)
 	expectValue(t, "0b1", tokens[1])
 
-	tokens = s.lex(t, "+0B0-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(t, "+0B0-", lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	literal = expectValue(t, "0B0", tokens[1])
-	expect.Equal(t, BinaryInteger, literal.SubType)
+	expect.Equal(t, lr.BinaryInteger, literal.SubType)
 
 	tokens = s.lex(
 		t, "+0B02-",
-		AddToken, IntegerLiteralToken, IntegerLiteralToken, SubToken)
+		lr.AddToken, lr.IntegerLiteralToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "0B0", tokens[1])
 	expectValue(t, "2", tokens[2])
 
-	tokens = s.lex(t, "+0b_1-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(t, "+0b_1-", lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "0b_1", tokens[1])
 
-	tokens = s.lex(t, "+0B_100_010_111-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(
+		t, "+0B_100_010_111-",
+		lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "0B_100_010_111", tokens[1])
 
-	tokens = s.lex(t, "+0b011101000-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(
+		t, "+0b011101000-",
+		lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "0b011101000", tokens[1])
 }
 
 func (s *RawLexerSuite) TestZeroOPrefixedOctalIntegerLiteral(t *testing.T) {
-	tokens := s.lex(t, "0o135", IntegerLiteralToken)
+	tokens := s.lex(t, "0o135", lr.IntegerLiteralToken)
 	literal := expectValue(t, "0o135", tokens[0])
-	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.SubType)
+	expect.Equal(t, lr.ZeroOPrefixedOctalInteger, literal.SubType)
 
-	tokens = s.lex(t, "+0o", AddToken, ParseErrorToken)
+	tokens = s.lex(t, "+0o", lr.AddToken, lr.ParseErrorToken)
 	expectError(t, tokens[1], "0o-prefixed octal integer literal has no digits")
 
-	tokens = s.lex(t, "+0o-", AddToken, ParseErrorToken, SubToken)
+	tokens = s.lex(t, "+0o-", lr.AddToken, lr.ParseErrorToken, lr.SubToken)
 	expectError(t, tokens[1], "0o-prefixed octal integer literal has no digits")
 
 	tokens = s.lex(
 		t, "+0O_-",
-		AddToken, ParseErrorToken, UnderscoreToken, SubToken)
+		lr.AddToken, lr.ParseErrorToken, lr.UnderscoreToken, lr.SubToken)
 	expectError(t, tokens[1], "0o-prefixed octal integer literal has no digits")
 
 	tokens = s.lex(
 		t, "+0O8-",
-		AddToken, ParseErrorToken, IntegerLiteralToken, SubToken)
+		lr.AddToken, lr.ParseErrorToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectError(t, tokens[1], "0o-prefixed octal integer literal has no digits")
 
 	expectValue(t, "8", tokens[2])
 
-	tokens = s.lex(t, "+0o644", AddToken, IntegerLiteralToken)
+	tokens = s.lex(t, "+0o644", lr.AddToken, lr.IntegerLiteralToken)
 	literal = expectValue(t, "0o644", tokens[1])
-	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.SubType)
+	expect.Equal(t, lr.ZeroOPrefixedOctalInteger, literal.SubType)
 
-	tokens = s.lex(t, "+0O7-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(t, "+0O7-", lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "0O7", tokens[1])
-	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.SubType)
+	expect.Equal(t, lr.ZeroOPrefixedOctalInteger, literal.SubType)
 
 	tokens = s.lex(
 		t, "+0O78-",
-		AddToken, IntegerLiteralToken, IntegerLiteralToken, SubToken)
+		lr.AddToken, lr.IntegerLiteralToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "0O7", tokens[1])
-	expect.Equal(t, ZeroOPrefixedOctalInteger, literal.SubType)
+	expect.Equal(t, lr.ZeroOPrefixedOctalInteger, literal.SubType)
 	expectValue(t, "8", tokens[2])
 
-	tokens = s.lex(t, "+0o_1-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(t, "+0o_1-", lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "0o_1", tokens[1])
 
-	tokens = s.lex(t, "+0O_123_456_701-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(
+		t, "+0O_123_456_701-",
+		lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "0O_123_456_701", tokens[1])
 
-	tokens = s.lex(t, "+0o012345670-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(
+		t, "+0o012345670-",
+		lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "0o012345670", tokens[1])
 }
 
 func (s *RawLexerSuite) TestZeroPrefixedOctalIntegerLiteral(t *testing.T) {
-	tokens := s.lex(t, "0246", IntegerLiteralToken)
+	tokens := s.lex(t, "0246", lr.IntegerLiteralToken)
 	literal := expectValue(t, "0246", tokens[0])
-	expect.Equal(t, ZeroPrefixedOctalInteger, literal.SubType)
+	expect.Equal(t, lr.ZeroPrefixedOctalInteger, literal.SubType)
 
 	tokens = s.lex(
 		t, "+08-",
-		AddToken, IntegerLiteralToken, IntegerLiteralToken, SubToken)
+		lr.AddToken, lr.IntegerLiteralToken, lr.IntegerLiteralToken, lr.SubToken)
 	literal = expectValue(t, "0", tokens[1])
-	expect.Equal(t, DecimalInteger, literal.SubType)
+	expect.Equal(t, lr.DecimalInteger, literal.SubType)
 	expectValue(t, "8", tokens[2])
 
-	tokens = s.lex(t, "+0644", AddToken, IntegerLiteralToken)
+	tokens = s.lex(t, "+0644", lr.AddToken, lr.IntegerLiteralToken)
 	expectValue(t, "0644", tokens[1])
 
-	tokens = s.lex(t, "+07-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(t, "+07-", lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "07", tokens[1])
 
 	tokens = s.lex(
 		t, "+078-",
-		AddToken, IntegerLiteralToken, IntegerLiteralToken, SubToken)
+		lr.AddToken, lr.IntegerLiteralToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "07", tokens[1])
 	expectValue(t, "8", tokens[2])
 
-	tokens = s.lex(t, "+0_1-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(t, "+0_1-", lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	literal = expectValue(t, "0_1", tokens[1])
-	expect.Equal(t, ZeroPrefixedOctalInteger, literal.SubType)
+	expect.Equal(t, lr.ZeroPrefixedOctalInteger, literal.SubType)
 
-	tokens = s.lex(t, "+0_123_456_701-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(
+		t, "+0_123_456_701-",
+		lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "0_123_456_701", tokens[1])
 
-	tokens = s.lex(t, "+0012345670-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(
+		t, "+0012345670-",
+		lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "0012345670", tokens[1])
 }
 
 func (s *RawLexerSuite) TestDecimalIntegerLiteral(t *testing.T) {
-	tokens := s.lex(t, "19", IntegerLiteralToken)
+	tokens := s.lex(t, "19", lr.IntegerLiteralToken)
 	literal := expectValue(t, "19", tokens[0])
-	expect.Equal(t, DecimalInteger, literal.SubType)
+	expect.Equal(t, lr.DecimalInteger, literal.SubType)
 
 	for i := 0; i < 20; i++ {
 		value := fmt.Sprintf("%d", i)
 
 		tokens := s.lex(
 			t, "+"+value,
-			AddToken, IntegerLiteralToken)
+			lr.AddToken, lr.IntegerLiteralToken)
 		literal = expectValue(t, value, tokens[1])
-		expect.Equal(t, DecimalInteger, literal.SubType)
+		expect.Equal(t, lr.DecimalInteger, literal.SubType)
 	}
 
 	tokens = s.lex(
 		t, "+1234567890-",
-		AddToken, IntegerLiteralToken, SubToken)
+		lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "1234567890", tokens[1])
 
-	tokens = s.lex(t, "+644", AddToken, IntegerLiteralToken)
+	tokens = s.lex(t, "+644", lr.AddToken, lr.IntegerLiteralToken)
 	expectValue(t, "644", tokens[1])
 
-	tokens = s.lex(t, "+1_2_3_4_5-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(
+		t, "+1_2_3_4_5-",
+		lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "1_2_3_4_5", tokens[1])
 
-	tokens = s.lex(t, "+123_456_789_0-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(
+		t, "+123_456_789_0-",
+		lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "123_456_789_0", tokens[1])
 
 	tokens = s.lex(
 		t, "+10abc-",
-		AddToken, IntegerLiteralToken, IdentifierToken, SubToken)
+		lr.AddToken, lr.IntegerLiteralToken, lr.IdentifierToken, lr.SubToken)
 	expectValue(t, "10", tokens[1])
 	expectValue(t, "abc", tokens[2])
 
 	tokens = s.lex(
 		t, "+5BCD-",
-		AddToken, IntegerLiteralToken, IdentifierToken, SubToken)
+		lr.AddToken, lr.IntegerLiteralToken, lr.IdentifierToken, lr.SubToken)
 	expectValue(t, "5", tokens[1])
 	expectValue(t, "BCD", tokens[2])
 }
 
 func (s *RawLexerSuite) TestHexadecimalIntegerLiteral(t *testing.T) {
-	tokens := s.lex(t, "0x19afAF", IntegerLiteralToken)
+	tokens := s.lex(t, "0x19afAF", lr.IntegerLiteralToken)
 	literal := expectValue(t, "0x19afAF", tokens[0])
-	expect.Equal(t, HexadecimalInteger, literal.SubType)
+	expect.Equal(t, lr.HexadecimalInteger, literal.SubType)
 
-	tokens = s.lex(t, "+0x", AddToken, ParseErrorToken)
+	tokens = s.lex(t, "+0x", lr.AddToken, lr.ParseErrorToken)
 	expectError(t, tokens[1], "hexadecimal integer literal has no digits")
 
-	tokens = s.lex(t, "+0x-", AddToken, ParseErrorToken, SubToken)
+	tokens = s.lex(t, "+0x-", lr.AddToken, lr.ParseErrorToken, lr.SubToken)
 	expectError(t, tokens[1], "hexadecimal integer literal has no digits")
 
 	tokens = s.lex(
 		t, "+0X_-",
-		AddToken, ParseErrorToken, UnderscoreToken, SubToken)
+		lr.AddToken, lr.ParseErrorToken, lr.UnderscoreToken, lr.SubToken)
 	expectError(t, tokens[1], "hexadecimal integer literal has no digits")
 	expectValue(t, "_", tokens[2])
 
 	tokens = s.lex(
 		t, "+0Xg-",
-		AddToken, ParseErrorToken, IdentifierToken, SubToken)
+		lr.AddToken, lr.ParseErrorToken, lr.IdentifierToken, lr.SubToken)
 	expectError(t, tokens[1], "hexadecimal integer literal has no digits")
 	expectValue(t, "g", tokens[2])
 
-	tokens = s.lex(t, "+0x0123456789", AddToken, IntegerLiteralToken)
+	tokens = s.lex(t, "+0x0123456789", lr.AddToken, lr.IntegerLiteralToken)
 	expectValue(t, "0x0123456789", tokens[1])
 
-	tokens = s.lex(t, "+0Xabcdef-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(
+		t, "+0Xabcdef-",
+		lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	literal = expectValue(t, "0Xabcdef", tokens[1])
-	expect.Equal(t, HexadecimalInteger, literal.SubType)
+	expect.Equal(t, lr.HexadecimalInteger, literal.SubType)
 
 	tokens = s.lex(
 		t, "+0X_ABC_DEFG-",
-		AddToken, IntegerLiteralToken, IdentifierToken, SubToken)
+		lr.AddToken, lr.IntegerLiteralToken, lr.IdentifierToken, lr.SubToken)
 	expectValue(t, "0X_ABC_DEF", tokens[1])
 	expectValue(t, "G", tokens[2])
 
-	tokens = s.lex(t, "+0X123_ABC_abc-", AddToken, IntegerLiteralToken, SubToken)
+	tokens = s.lex(
+		t, "+0X123_ABC_abc-",
+		lr.AddToken, lr.IntegerLiteralToken, lr.SubToken)
 	expectValue(t, "0X123_ABC_abc", tokens[1])
 }
 
 func (s *RawLexerSuite) TestRuneLiteral(t *testing.T) {
-	expectInvalidEsc := func(token Token) {
+	expectInvalidEsc := func(token lr.Token) {
 		expectError(t, token, "invalid escaped")
 	}
 
-	expectNotTerminated := func(token Token) {
+	expectNotTerminated := func(token lr.Token) {
 		expectError(t, token, "rune literal not terminated")
 	}
 
 	// Various errors
-	tokens := s.lex(t, "''", ParseErrorToken)
+	tokens := s.lex(t, "''", lr.ParseErrorToken)
 	expectError(t, tokens[0], "empty rune literal or unescaped '")
 
-	tokens = s.lex(t, "'ab'", ParseErrorToken)
+	tokens = s.lex(t, "'ab'", lr.ParseErrorToken)
 	expectError(t, tokens[0], "more than one character in rune literal")
 
-	tokens = s.lex(t, "'", ParseErrorToken)
+	tokens = s.lex(t, "'", lr.ParseErrorToken)
 	expectNotTerminated(tokens[0])
 
-	tokens = s.lex(t, "'a", ParseErrorToken)
+	tokens = s.lex(t, "'a", lr.ParseErrorToken)
 	expectNotTerminated(tokens[0])
 
-	tokens = s.lex(t, "'ab", ParseErrorToken)
+	tokens = s.lex(t, "'ab", lr.ParseErrorToken)
 	expectNotTerminated(tokens[0])
 
-	tokens = s.lex(t, "'\n", ParseErrorToken, NewlinesToken)
+	tokens = s.lex(t, "'\n", lr.ParseErrorToken, lr.NewlinesToken)
 	expectNotTerminated(tokens[0])
 
-	tokens = s.lex(t, "'\n'", ParseErrorToken, NewlinesToken, ParseErrorToken)
+	tokens = s.lex(
+		t, "'\n'",
+		lr.ParseErrorToken, lr.NewlinesToken, lr.ParseErrorToken)
 	expectNotTerminated(tokens[0])
 	expectNotTerminated(tokens[2])
 
-	tokens = s.lex(t, "'\\\n", ParseErrorToken, NewlinesToken)
+	tokens = s.lex(t, "'\\\n", lr.ParseErrorToken, lr.NewlinesToken)
 	expectInvalidEsc(tokens[0])
 
-	tokens = s.lex(t, "'\\\n'", ParseErrorToken, NewlinesToken, ParseErrorToken)
+	tokens = s.lex(
+		t, "'\\\n'",
+		lr.ParseErrorToken, lr.NewlinesToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[2])
 
 	// invalid escaped character \c
-	tokens = s.lex(t, "'\\c'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\c'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped octal \0 (too short)
-	tokens = s.lex(t, "'\\0'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\0'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped octal \07 (too short)
-	tokens = s.lex(t, "'\\07'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\07'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped octal \078 (wrong digit)
 	tokens = s.lex(
 		t, "'\\078'",
-		ParseErrorToken, IntegerLiteralToken, ParseErrorToken)
+		lr.ParseErrorToken, lr.IntegerLiteralToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectValue(t, "8", tokens[1])
 
 	expectNotTerminated(tokens[2])
 
 	// invalid escaped octal \400 (octal value = 256, i.e., out of bound)
-	tokens = s.lex(t, "'\\400'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\400'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \x (too short)
-	tokens = s.lex(t, "'\\x'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\x'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \xf (too short)
-	tokens = s.lex(t, "'\\xf'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\xf'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \xfg (wrong digit)
 	tokens = s.lex(
 		t, "'\\xfg'",
-		ParseErrorToken, IdentifierToken, ParseErrorToken)
+		lr.ParseErrorToken, lr.IdentifierToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectValue(t, "g", tokens[1])
 	expectNotTerminated(tokens[2])
 
 	// invalid escaped hex \u (too short)
-	tokens = s.lex(t, "'\\u'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\u'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \ua (too short)
-	tokens = s.lex(t, "'\\ua'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\ua'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \uab (too short)
-	tokens = s.lex(t, "'\\uab'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\uab'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \uabc (too short)
-	tokens = s.lex(t, "'\\uabc'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\uabc'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \uabcg (wrong digit)
 	tokens = s.lex(
 		t, "'\\uabcg'",
-		ParseErrorToken, IdentifierToken, ParseErrorToken)
+		lr.ParseErrorToken, lr.IdentifierToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectValue(t, "g", tokens[1])
 	expectNotTerminated(tokens[2])
 
 	// invalid escaped hex \U (too short)
-	tokens = s.lex(t, "'\\U'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\U'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \Ua (too short)
-	tokens = s.lex(t, "'\\Ua'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\Ua'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \Uab (too short)
-	tokens = s.lex(t, "'\\Uab'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\Uab'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \Uabc (too short)
-	tokens = s.lex(t, "'\\Uabc'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\Uabc'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \uabcd (too short)
-	tokens = s.lex(t, "'\\Uabcd'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\Uabcd'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \uabcde (too short)
-	tokens = s.lex(t, "'\\Uabcde'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\Uabcde'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \uabcdef (too short)
-	tokens = s.lex(t, "'\\Uabcdef'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\Uabcdef'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \uabcdef0 (too short)
-	tokens = s.lex(t, "'\\Uabcdef0'", ParseErrorToken, ParseErrorToken)
+	tokens = s.lex(t, "'\\Uabcdef0'", lr.ParseErrorToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectNotTerminated(tokens[1])
 
 	// invalid escaped hex \uabcdef0g (wrong digit)
 	tokens = s.lex(
 		t, "'\\Uabcdef0g'",
-		ParseErrorToken, IdentifierToken, ParseErrorToken)
+		lr.ParseErrorToken, lr.IdentifierToken, lr.ParseErrorToken)
 	expectInvalidEsc(tokens[0])
 	expectValue(t, "g", tokens[1])
 	expectNotTerminated(tokens[2])
 
 	// Basic unescaped byte / unicode
 
-	tokens = s.lex(t, "'a'", RuneLiteralToken)
+	tokens = s.lex(t, "'a'", lr.RuneLiteralToken)
 	expectValue(t, "'a'", tokens[0])
 
-	tokens = s.lex(t, "'世'", RuneLiteralToken)
+	tokens = s.lex(t, "'世'", lr.RuneLiteralToken)
 	expectValue(t, "'世'", tokens[0])
 
 	// Escaped character
 
 	for _, char := range "abfnrtv\\'\"`" {
 		escapedChar := fmt.Sprintf("'\\%s'", string(char))
-		tokens = s.lex(t, escapedChar, RuneLiteralToken)
+		tokens = s.lex(t, escapedChar, lr.RuneLiteralToken)
 		expectValue(t, escapedChar, tokens[0])
 	}
 
 	// Escaped octal
 
 	// 0377 = 255 (largest valid octal)
-	tokens = s.lex(t, "'\\377'", RuneLiteralToken)
+	tokens = s.lex(t, "'\\377'", lr.RuneLiteralToken)
 	expectValue(t, "'\\377'", tokens[0])
 
-	tokens = s.lex(t, "'\\000'", RuneLiteralToken)
+	tokens = s.lex(t, "'\\000'", lr.RuneLiteralToken)
 	expectValue(t, "'\\000'", tokens[0])
 
 	// Escaped \x hex
 
-	tokens = s.lex(t, "'\\xf0'", RuneLiteralToken)
+	tokens = s.lex(t, "'\\xf0'", lr.RuneLiteralToken)
 	expectValue(t, "'\\xf0'", tokens[0])
 
 	// Escaped \u hex
 
-	tokens = s.lex(t, "'\\u09af'", RuneLiteralToken)
+	tokens = s.lex(t, "'\\u09af'", lr.RuneLiteralToken)
 	expectValue(t, "'\\u09af'", tokens[0])
 
 	// Escaped \U hex
 
-	tokens = s.lex(t, "'\\U09afAF12'", RuneLiteralToken)
+	tokens = s.lex(t, "'\\U09afAF12'", lr.RuneLiteralToken)
 	expectValue(t, "'\\U09afAF12'", tokens[0])
 }
 
 func (s *RawLexerSuite) TestSingleLineString(t *testing.T) {
-	tokens := s.lex(t, `"abc`, ParseErrorToken)
+	tokens := s.lex(t, `"abc`, lr.ParseErrorToken)
 	expectError(t, tokens[0], "string literal not terminated")
 
 	tokens = s.lex(
 		t, `"foo\400bar"`,
-		ParseErrorToken, IdentifierToken, ParseErrorToken)
+		lr.ParseErrorToken, lr.IdentifierToken, lr.ParseErrorToken)
 	expectError(t, tokens[0], "invalid escaped")
 	expectValue(t, "bar", tokens[1])
 	expectError(t, tokens[2], "string literal not terminated")
 
-	tokens = s.lex(t, "`abc\n`", ParseErrorToken, NewlinesToken, ParseErrorToken)
+	tokens = s.lex(
+		t, "`abc\n`",
+		lr.ParseErrorToken, lr.NewlinesToken, lr.ParseErrorToken)
 	expectError(t, tokens[0], "string literal not terminated")
 	expectError(t, tokens[2], "string literal not terminated")
 
-	tokens = s.lex(t, "`mismatch\"", ParseErrorToken)
+	tokens = s.lex(t, "`mismatch\"", lr.ParseErrorToken)
 	expectError(t, tokens[0], "string literal not terminated")
 
 	content := "a世\\`\\\"\\n\\000\\xaf\\u09AF\\U01234567"
 
 	value := "`" + content + "\"`"
-	tokens = s.lex(t, "+"+value+"-", AddToken, StringLiteralToken, SubToken)
+	tokens = s.lex(
+		t, "+"+value+"-",
+		lr.AddToken, lr.StringLiteralToken, lr.SubToken)
 	str := expectValue(t, value, tokens[1])
-	expect.Equal(t, SingleLineString, str.SubType)
+	expect.Equal(t, lr.SingleLineString, str.SubType)
 
 	value = "\"" + content + "`\""
-	tokens = s.lex(t, "+"+value+"-", AddToken, StringLiteralToken, SubToken)
+	tokens = s.lex(
+		t, "+"+value+"-",
+		lr.AddToken, lr.StringLiteralToken, lr.SubToken)
 	str = expectValue(t, value, tokens[1])
-	expect.Equal(t, SingleLineString, str.SubType)
+	expect.Equal(t, lr.SingleLineString, str.SubType)
 }
 
 func (s *RawLexerSuite) TestRawSingleLineString(t *testing.T) {
-	tokens := s.lex(t, `r"abc`, ParseErrorToken)
+	tokens := s.lex(t, `r"abc`, lr.ParseErrorToken)
 	expectError(t, tokens[0], "string literal not terminated")
 
-	tokens = s.lex(t, "r`abc\n`", ParseErrorToken, NewlinesToken, ParseErrorToken)
+	tokens = s.lex(
+		t, "r`abc\n`",
+		lr.ParseErrorToken, lr.NewlinesToken, lr.ParseErrorToken)
 	expectError(t, tokens[0], "string literal not terminated")
 	expectError(t, tokens[2], "string literal not terminated")
 
-	tokens = s.lex(t, `r"abc"`, StringLiteralToken)
+	tokens = s.lex(t, `r"abc"`, lr.StringLiteralToken)
 	str := expectValue(t, `r"abc"`, tokens[0])
-	expect.Equal(t, RawSingleLineString, str.SubType)
+	expect.Equal(t, lr.RawSingleLineString, str.SubType)
 
-	tokens = s.lex(t, "r`abc \\c \\400 ok`", StringLiteralToken)
+	tokens = s.lex(t, "r`abc \\c \\400 ok`", lr.StringLiteralToken)
 	str = expectValue(t, "r`abc \\c \\400 ok`", tokens[0])
-	expect.Equal(t, RawSingleLineString, str.SubType)
+	expect.Equal(t, lr.RawSingleLineString, str.SubType)
 
-	tokens = s.lex(t, `r"foo\Uzzz"`, StringLiteralToken)
+	tokens = s.lex(t, `r"foo\Uzzz"`, lr.StringLiteralToken)
 	expectValue(t, `r"foo\Uzzz"`, tokens[0])
 }
 
 func (s *RawLexerSuite) TestMultiLineString(t *testing.T) {
-	tokens := s.lex(t, `"""abc" ""`, ParseErrorToken)
+	tokens := s.lex(t, `"""abc" ""`, lr.ParseErrorToken)
 	expectError(t, tokens[0], "string literal not terminated")
 
 	tokens = s.lex(
 		t, `"""foo\400bar"""`,
-		ParseErrorToken, IdentifierToken, ParseErrorToken)
+		lr.ParseErrorToken, lr.IdentifierToken, lr.ParseErrorToken)
 	expectError(t, tokens[0], "invalid escaped")
 	expectValue(t, "bar", tokens[1])
 	expectError(t, tokens[2], "string literal not terminated")
 
-	tokens = s.lex(t, "```mismatch\"\"\"", ParseErrorToken)
+	tokens = s.lex(t, "```mismatch\"\"\"", lr.ParseErrorToken)
 	expectError(t, tokens[0], "string literal not terminated")
 
-	tokens = s.lex(t, "```\"\"\" \"\" \" ` ``\\\n abc\ndef```", StringLiteralToken)
+	tokens = s.lex(
+		t, "```\"\"\" \"\" \" ` ``\\\n abc\ndef```",
+		lr.StringLiteralToken)
 	str := expectValue(t, "```\"\"\" \"\" \" ` ``\\\n abc\ndef```", tokens[0])
-	expect.Equal(t, MultiLineString, str.SubType)
+	expect.Equal(t, lr.MultiLineString, str.SubType)
 
-	tokens = s.lex(t, "\"\"\"``` \"\" \" ` `` abc\ndef\"\"\"", StringLiteralToken)
+	tokens = s.lex(
+		t, "\"\"\"``` \"\" \" ` `` abc\ndef\"\"\"",
+		lr.StringLiteralToken)
 	expectValue(t, "\"\"\"``` \"\" \" ` `` abc\ndef\"\"\"", tokens[0])
 }
 
 func (s *RawLexerSuite) TestRawMultiLineString(t *testing.T) {
-	tokens := s.lex(t, `r"""abc" ""`, ParseErrorToken)
+	tokens := s.lex(t, `r"""abc" ""`, lr.ParseErrorToken)
 	expectError(t, tokens[0], "string literal not terminated")
 
-	tokens = s.lex(t, "r```mismatch\"\"\"", ParseErrorToken)
+	tokens = s.lex(t, "r```mismatch\"\"\"", lr.ParseErrorToken)
 	expectError(t, tokens[0], "string literal not terminated")
 
-	tokens = s.lex(t, `r"""foo\400bar"""`, StringLiteralToken)
+	tokens = s.lex(t, `r"""foo\400bar"""`, lr.StringLiteralToken)
 	str := expectValue(t, `r"""foo\400bar"""`, tokens[0])
-	expect.Equal(t, RawMultiLineString, str.SubType)
+	expect.Equal(t, lr.RawMultiLineString, str.SubType)
 
-	tokens = s.lex(t, "r```\"\"\" \"\" \" ` `` abc\ndef```", StringLiteralToken)
+	tokens = s.lex(
+		t, "r```\"\"\" \"\" \" ` `` abc\ndef```",
+		lr.StringLiteralToken)
 	expectValue(t, "r```\"\"\" \"\" \" ` `` abc\ndef```", tokens[0])
 
 	tokens = s.lex(
 		t, "r\"\"\"``` \"\" \" ` `` abc\ndef\"\"\"",
-		StringLiteralToken)
+		lr.StringLiteralToken)
 	expectValue(t, "r\"\"\"``` \"\" \" ` `` abc\ndef\"\"\"", tokens[0])
 }
 
 func (s *RawLexerSuite) TestDotDecimalFloat(t *testing.T) {
-	s.lex(t, ".", DotToken)
-	s.lex(t, ".a", DotToken, IdentifierToken)
+	s.lex(t, ".", lr.DotToken)
+	s.lex(t, ".a", lr.DotToken, lr.IdentifierToken)
 
 	for i := 0; i < 10; i++ {
 		value := fmt.Sprintf(".%d", i)
-		tokens := s.lex(t, value, FloatLiteralToken)
+		tokens := s.lex(t, value, lr.FloatLiteralToken)
 		float := expectValue(t, value, tokens[0])
-		expect.Equal(t, DecimalFloat, float.SubType)
+		expect.Equal(t, lr.DecimalFloat, float.SubType)
 
 		value = fmt.Sprintf(".01e%d", i)
-		tokens = s.lex(t, value, FloatLiteralToken)
+		tokens = s.lex(t, value, lr.FloatLiteralToken)
 		float = expectValue(t, value, tokens[0])
-		expect.Equal(t, DecimalFloat, float.SubType)
+		expect.Equal(t, lr.DecimalFloat, float.SubType)
 
 		value = fmt.Sprintf(".0_2E+0%d", i)
-		tokens = s.lex(t, value, FloatLiteralToken)
+		tokens = s.lex(t, value, lr.FloatLiteralToken)
 		float = expectValue(t, value, tokens[0])
-		expect.Equal(t, DecimalFloat, float.SubType)
+		expect.Equal(t, lr.DecimalFloat, float.SubType)
 
 		value = fmt.Sprintf(".0003e-0_0%d", i)
-		tokens = s.lex(t, value, FloatLiteralToken)
+		tokens = s.lex(t, value, lr.FloatLiteralToken)
 		float = expectValue(t, value, tokens[0])
-		expect.Equal(t, DecimalFloat, float.SubType)
+		expect.Equal(t, lr.DecimalFloat, float.SubType)
 	}
 
-	tokens := s.lex(t, "._1", DotToken, IdentifierToken)
+	tokens := s.lex(t, "._1", lr.DotToken, lr.IdentifierToken)
 	expectValue(t, "_1", tokens[1])
 
-	tokens = s.lex(t, ".1e", FloatLiteralToken, IdentifierToken)
+	tokens = s.lex(t, ".1e", lr.FloatLiteralToken, lr.IdentifierToken)
 	expectValue(t, ".1", tokens[0])
 	expectValue(t, "e", tokens[1])
 
-	tokens = s.lex(t, ".1e_1", FloatLiteralToken, IdentifierToken)
+	tokens = s.lex(t, ".1e_1", lr.FloatLiteralToken, lr.IdentifierToken)
 	expectValue(t, ".1", tokens[0])
 	expectValue(t, "e_1", tokens[1])
 
 	tokens = s.lex(
 		t, ".1e+_1",
-		FloatLiteralToken, IdentifierToken, AddToken, IdentifierToken)
+		lr.FloatLiteralToken, lr.IdentifierToken, lr.AddToken, lr.IdentifierToken)
 	expectValue(t, ".1", tokens[0])
 	expectValue(t, "e", tokens[1])
 	expectValue(t, "_1", tokens[3])
 
-	tokens = s.lex(t, ".1ea", FloatLiteralToken, IdentifierToken)
+	tokens = s.lex(t, ".1ea", lr.FloatLiteralToken, lr.IdentifierToken)
 	expectValue(t, ".1", tokens[0])
 	expectValue(t, "ea", tokens[1])
 
-	tokens = s.lex(t, ".1p", FloatLiteralToken, IdentifierToken)
+	tokens = s.lex(t, ".1p", lr.FloatLiteralToken, lr.IdentifierToken)
 	expectValue(t, ".1", tokens[0])
 	expectValue(t, "p", tokens[1])
 
-	tokens = s.lex(t, ".1p5", FloatLiteralToken, IdentifierToken)
+	tokens = s.lex(t, ".1p5", lr.FloatLiteralToken, lr.IdentifierToken)
 	expectValue(t, ".1", tokens[0])
 	expectValue(t, "p5", tokens[1])
 
-	tokens = s.lex(t, ".e10", DotToken, IdentifierToken)
+	tokens = s.lex(t, ".e10", lr.DotToken, lr.IdentifierToken)
 	expectValue(t, "e10", tokens[1])
 
-	s.lex(t, "+.123-", AddToken, FloatLiteralToken, SubToken)
+	s.lex(t, "+.123-", lr.AddToken, lr.FloatLiteralToken, lr.SubToken)
 }
 
 func (s *RawLexerSuite) TestIntPrefixedDecimalFloat(t *testing.T) {
-	tokens := s.lex(t, "123e+", IntegerLiteralToken, IdentifierToken, AddToken)
+	tokens := s.lex(
+		t, "123e+",
+		lr.IntegerLiteralToken, lr.IdentifierToken, lr.AddToken)
 	expectValue(t, "123", tokens[0])
 	expectValue(t, "e", tokens[1])
 
-	tokens = s.lex(t, "123ea", IntegerLiteralToken, IdentifierToken)
+	tokens = s.lex(t, "123ea", lr.IntegerLiteralToken, lr.IdentifierToken)
 	expectValue(t, "123", tokens[0])
 	expectValue(t, "ea", tokens[1])
 
-	tokens = s.lex(t, "123p0", IntegerLiteralToken, IdentifierToken)
+	tokens = s.lex(t, "123p0", lr.IntegerLiteralToken, lr.IdentifierToken)
 	expectValue(t, "123", tokens[0])
 	expectValue(t, "p0", tokens[1])
 
 	for i := 0; i < 10; i++ {
 		value := fmt.Sprintf("%d.", i)
-		tokens = s.lex(t, value, FloatLiteralToken)
+		tokens = s.lex(t, value, lr.FloatLiteralToken)
 		float := expectValue(t, value, tokens[0])
-		expect.Equal(t, DecimalFloat, float.SubType)
+		expect.Equal(t, lr.DecimalFloat, float.SubType)
 
 		value = fmt.Sprintf("1.%d", i)
-		tokens = s.lex(t, value, FloatLiteralToken)
+		tokens = s.lex(t, value, lr.FloatLiteralToken)
 		float = expectValue(t, value, tokens[0])
-		expect.Equal(t, DecimalFloat, float.SubType)
+		expect.Equal(t, lr.DecimalFloat, float.SubType)
 
 		value = fmt.Sprintf("2e%d", i)
-		tokens = s.lex(t, value, FloatLiteralToken)
+		tokens = s.lex(t, value, lr.FloatLiteralToken)
 		float = expectValue(t, value, tokens[0])
-		expect.Equal(t, DecimalFloat, float.SubType)
+		expect.Equal(t, lr.DecimalFloat, float.SubType)
 
 		value = fmt.Sprintf("3.E-%d", i)
-		tokens = s.lex(t, value, FloatLiteralToken)
+		tokens = s.lex(t, value, lr.FloatLiteralToken)
 		float = expectValue(t, value, tokens[0])
-		expect.Equal(t, DecimalFloat, float.SubType)
+		expect.Equal(t, lr.DecimalFloat, float.SubType)
 
 		value = fmt.Sprintf("4.0_%de+4_4", i)
-		tokens = s.lex(t, value, FloatLiteralToken)
+		tokens = s.lex(t, value, lr.FloatLiteralToken)
 		float = expectValue(t, value, tokens[0])
-		expect.Equal(t, DecimalFloat, float.SubType)
+		expect.Equal(t, lr.DecimalFloat, float.SubType)
 	}
 
-	tokens = s.lex(t, "123.", FloatLiteralToken)
+	tokens = s.lex(t, "123.", lr.FloatLiteralToken)
 	float := expectValue(t, "123.", tokens[0])
-	expect.Equal(t, DecimalFloat, float.SubType)
+	expect.Equal(t, lr.DecimalFloat, float.SubType)
 
-	tokens = s.lex(t, "123.456", FloatLiteralToken)
+	tokens = s.lex(t, "123.456", lr.FloatLiteralToken)
 	float = expectValue(t, "123.456", tokens[0])
-	expect.Equal(t, DecimalFloat, float.SubType)
+	expect.Equal(t, lr.DecimalFloat, float.SubType)
 
-	tokens = s.lex(t, "123e0", FloatLiteralToken)
+	tokens = s.lex(t, "123e0", lr.FloatLiteralToken)
 	float = expectValue(t, "123e0", tokens[0])
-	expect.Equal(t, DecimalFloat, float.SubType)
+	expect.Equal(t, lr.DecimalFloat, float.SubType)
 
-	tokens = s.lex(t, "123.456E789", FloatLiteralToken)
+	tokens = s.lex(t, "123.456E789", lr.FloatLiteralToken)
 	float = expectValue(t, "123.456E789", tokens[0])
-	expect.Equal(t, DecimalFloat, float.SubType)
+	expect.Equal(t, lr.DecimalFloat, float.SubType)
 
-	tokens = s.lex(t, "123.a", FloatLiteralToken, IdentifierToken)
+	tokens = s.lex(t, "123.a", lr.FloatLiteralToken, lr.IdentifierToken)
 	expectValue(t, "123.", tokens[0])
 	expectValue(t, "a", tokens[1])
 
-	tokens = s.lex(t, "123._0", FloatLiteralToken, IdentifierToken)
+	tokens = s.lex(t, "123._0", lr.FloatLiteralToken, lr.IdentifierToken)
 	expectValue(t, "123.", tokens[0])
 	expectValue(t, "_0", tokens[1])
 
-	tokens = s.lex(t, "123.0a", FloatLiteralToken, IdentifierToken)
+	tokens = s.lex(t, "123.0a", lr.FloatLiteralToken, lr.IdentifierToken)
 	expectValue(t, "123.0", tokens[0])
 	expectValue(t, "a", tokens[1])
 
-	tokens = s.lex(t, "123.p0", FloatLiteralToken, IdentifierToken)
+	tokens = s.lex(t, "123.p0", lr.FloatLiteralToken, lr.IdentifierToken)
 	expectValue(t, "123.", tokens[0])
 	expectValue(t, "p0", tokens[1])
 }
 
 func (s *RawLexerSuite) TestHexaecimalFloat(t *testing.T) {
-	tokens := s.lex(t, "0xabcp+", IntegerLiteralToken, IdentifierToken, AddToken)
+	tokens := s.lex(
+		t, "0xabcp+",
+		lr.IntegerLiteralToken, lr.IdentifierToken, lr.AddToken)
 	expectValue(t, "0xabc", tokens[0])
 	expectValue(t, "p", tokens[1])
 
-	tokens = s.lex(t, "0xdefpg", IntegerLiteralToken, IdentifierToken)
+	tokens = s.lex(t, "0xdefpg", lr.IntegerLiteralToken, lr.IdentifierToken)
 	expectValue(t, "0xdef", tokens[0])
 	expectValue(t, "pg", tokens[1])
 
 	tokens = s.lex(
 		t, "0x123e+0",
-		IntegerLiteralToken, AddToken, IntegerLiteralToken)
+		lr.IntegerLiteralToken, lr.AddToken, lr.IntegerLiteralToken)
 	expectValue(t, "0x123e", tokens[0])
 	expectValue(t, "0", tokens[2])
 
-	tokens = s.lex(t, "0x.gp0", ParseErrorToken, DotToken, IdentifierToken)
+	tokens = s.lex(
+		t, "0x.gp0",
+		lr.ParseErrorToken, lr.DotToken, lr.IdentifierToken)
 	expectValue(t, "gp0", tokens[2])
 
 	// decimal place leading digit can't be '_'
-	tokens = s.lex(t, "0x._0p0", ParseErrorToken, DotToken, IdentifierToken)
+	tokens = s.lex(
+		t, "0x._0p0",
+		lr.ParseErrorToken, lr.DotToken, lr.IdentifierToken)
 	expectValue(t, "_0p0", tokens[2])
 
 	// missing exponent
-	tokens = s.lex(t, "0x123.", IntegerLiteralToken, DotToken)
+	tokens = s.lex(t, "0x123.", lr.IntegerLiteralToken, lr.DotToken)
 	expectValue(t, "0x123", tokens[0])
 
 	/// missing exponent
-	tokens = s.lex(t, "0x.123", ParseErrorToken, FloatLiteralToken)
+	tokens = s.lex(t, "0x.123", lr.ParseErrorToken, lr.FloatLiteralToken)
 	expectValue(t, ".123", tokens[1])
 
 	/// missing exponent
 	tokens = s.lex(
 		t, "0x123.456",
-		IntegerLiteralToken, FloatLiteralToken)
+		lr.IntegerLiteralToken, lr.FloatLiteralToken)
 	expectValue(t, "0x123", tokens[0])
 	expectValue(t, ".456", tokens[1])
 
 	for i := 0; i < 10; i++ {
 		value := fmt.Sprintf("0x%dpa", i)
-		tokens = s.lex(t, value, FloatLiteralToken)
+		tokens = s.lex(t, value, lr.FloatLiteralToken)
 		float := expectValue(t, value, tokens[0])
-		expect.Equal(t, HexadecimalFloat, float.SubType)
+		expect.Equal(t, lr.HexadecimalFloat, float.SubType)
 
 		value = fmt.Sprintf("0x_%dP+b", i)
-		tokens = s.lex(t, value, FloatLiteralToken)
+		tokens = s.lex(t, value, lr.FloatLiteralToken)
 		float = expectValue(t, value, tokens[0])
-		expect.Equal(t, HexadecimalFloat, float.SubType)
+		expect.Equal(t, lr.HexadecimalFloat, float.SubType)
 
 		value = fmt.Sprintf("0X%d.p-C", i)
-		tokens = s.lex(t, value, FloatLiteralToken)
+		tokens = s.lex(t, value, lr.FloatLiteralToken)
 		float = expectValue(t, value, tokens[0])
-		expect.Equal(t, HexadecimalFloat, float.SubType)
+		expect.Equal(t, lr.HexadecimalFloat, float.SubType)
 
 		value = fmt.Sprintf("0x%d.0_3p0_D", i)
-		tokens = s.lex(t, value, FloatLiteralToken)
+		tokens = s.lex(t, value, lr.FloatLiteralToken)
 		float = expectValue(t, value, tokens[0])
-		expect.Equal(t, HexadecimalFloat, float.SubType)
+		expect.Equal(t, lr.HexadecimalFloat, float.SubType)
 
 		value = fmt.Sprintf("0x.%dp0E", i)
-		tokens = s.lex(t, value, FloatLiteralToken)
+		tokens = s.lex(t, value, lr.FloatLiteralToken)
 		float = expectValue(t, value, tokens[0])
-		expect.Equal(t, HexadecimalFloat, float.SubType)
+		expect.Equal(t, lr.HexadecimalFloat, float.SubType)
 	}
 
-	tokens = s.lex(t, "0x_0_123.ABC_789p456_DEF", FloatLiteralToken)
+	tokens = s.lex(t, "0x_0_123.ABC_789p456_DEF", lr.FloatLiteralToken)
 	expectValue(t, "0x_0_123.ABC_789p456_DEF", tokens[0])
 }
