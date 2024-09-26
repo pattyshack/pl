@@ -4,6 +4,8 @@ type Iter$[Item] trait(
   func next() Item
 )
 
+type StringIter = Iter$[String]
+
 type Fib struct(
   prev Int
   curr Int
