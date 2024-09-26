@@ -619,14 +619,12 @@ func (reducer *Reducer) ToCallExpr(
 ) {
 	leading := funcExpr.TakeLeading()
 
-	var generics []ast.TypeExpression
-	if genericArguments != nil {
-		generics = genericArguments.Elements
-
-		funcExpr.AppendToTrailing(genericArguments.TakeLeading())
-		funcExpr.AppendToTrailing(genericArguments.MiddleComment)
-		funcExpr.AppendToTrailing(genericArguments.TakeTrailing())
+	if genericArguments == nil {
+		genericArguments = ast.NewTypeExpressionList()
+		genericArguments.StartEndPos = lparen.StartEnd()
 	}
+
+	genericArguments.PrependToLeading(funcExpr.TakeTrailing())
 
 	if arguments == nil {
 		arguments = ast.NewArgumentList()
@@ -638,7 +636,7 @@ func (reducer *Reducer) ToCallExpr(
 	expr := &ast.CallExpr{
 		StartEndPos:      ast.NewStartEndPos(funcExpr.Loc(), rparen.End()),
 		FuncExpr:         funcExpr,
-		GenericArguments: generics,
+		GenericArguments: genericArguments,
 		Arguments:        arguments,
 	}
 	expr.LeadingComment = leading
@@ -753,13 +751,8 @@ func (reducer *Reducer) UnlabelledToIfExpr(
 	ast.Expression,
 	error,
 ) {
-	if ifExpr.ElseBranch != nil {
-		ifExpr.TrailingComment = ifExpr.ElseBranch.TakeTrailing()
-	} else {
-		last := ifExpr.ConditionBranches[len(ifExpr.ConditionBranches)-1].Branch
-		ifExpr.TrailingComment = last.TakeTrailing()
-	}
-
+	elements := ifExpr.ConditionBranches.Elements
+	ifExpr.TrailingComment = elements[len(elements)-1].TakeTrailing()
 	return ifExpr, nil
 }
 
@@ -787,14 +780,15 @@ func (reducer *Reducer) ElseToIfElseExpr(
 	*ast.IfExpr,
 	error,
 ) {
-	last := ifExpr.ConditionBranches[len(ifExpr.ConditionBranches)-1].Branch
-	last.AppendToTrailing(elseKW.TakeLeading())
+	cb := &ast.ConditionBranch{
+		StartEndPos: ast.NewStartEndPos(elseKW.Loc(), branch.End()),
+		IsElse:      true,
+		Branch:      branch,
+	}
+	cb.LeadingComment = elseKW.TakeTrailing()
+	cb.LeadingComment.Append(branch.TakeLeading())
 
-	branch.PrependToLeading(elseKW.TakeTrailing())
-
-	ifExpr.EndPos = branch.End()
-	ifExpr.ElseBranch = branch
-
+	ifExpr.ConditionBranches.ReduceAdd(elseKW, cb)
 	return ifExpr, nil
 }
 
@@ -808,19 +802,17 @@ func (reducer *Reducer) ElifToIfElifExpr(
 	*ast.IfExpr,
 	error,
 ) {
-	last := ifExpr.ConditionBranches[len(ifExpr.ConditionBranches)-1].Branch
-	last.AppendToTrailing(elseKW.TakeLeading())
-	last.AppendToTrailing(elseKW.TakeTrailing())
-	last.AppendToTrailing(ifKW.TakeLeading())
+	cb := &ast.ConditionBranch{
+		StartEndPos: ast.NewStartEndPos(elseKW.Loc(), branch.End()),
+		Condition:   condition,
+		Branch:      branch,
+	}
+	cb.LeadingComment = elseKW.TakeTrailing()
+	cb.LeadingComment.Append(ifKW.TakeLeading())
+	cb.LeadingComment.Append(ifKW.TakeTrailing())
+	cb.LeadingComment.Append(condition.TakeLeading())
 
-	condition.PrependToLeading(ifKW.TakeTrailing())
-
-	ifExpr.EndPos = branch.End()
-
-	ifExpr.ConditionBranches = append(
-		ifExpr.ConditionBranches,
-		ast.ConditionBranch{condition, branch})
-
+	ifExpr.ConditionBranches.ReduceAdd(elseKW, cb)
 	return ifExpr, nil
 }
 
@@ -832,12 +824,24 @@ func (reducer *Reducer) ToIfOnlyExpr(
 	*ast.IfExpr,
 	error,
 ) {
-	condition.PrependToLeading(ifKW.TakeTrailing())
+	leading := ifKW.TakeLeading()
+
+	cb := &ast.ConditionBranch{
+		StartEndPos: ast.NewStartEndPos(ifKW.Loc(), branch.End()),
+		Condition:   condition,
+		Branch:      branch,
+	}
+	cb.LeadingComment = ifKW.TakeTrailing()
+	cb.LeadingComment.Append(condition.TakeLeading())
+
+	list := ast.NewConditionBranchList()
+	list.Add(cb)
+
 	expr := &ast.IfExpr{
 		StartEndPos:       ast.NewStartEndPos(ifKW.Loc(), branch.End()),
-		ConditionBranches: []ast.ConditionBranch{{condition, branch}},
+		ConditionBranches: list,
 	}
-	expr.LeadingComment = ifKW.TakeLeading()
+	expr.LeadingComment = leading
 
 	reducer.IfExprs = append(reducer.IfExprs, expr)
 	return expr, nil

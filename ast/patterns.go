@@ -51,6 +51,15 @@ func NewVarPattern(
 	return expr
 }
 
+func (pattern *VarPattern) Walk(visitor Visitor) {
+	visitor.Enter(pattern)
+	pattern.VarPattern.Walk(visitor)
+	if pattern.Type != nil {
+		pattern.Type.Walk(visitor)
+	}
+	visitor.Exit(pattern)
+}
+
 func (expr VarPattern) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
 		"%s%s[VarPattern: Kind=%s\n",
@@ -86,6 +95,13 @@ type CaseAssignPattern struct {
 
 var _ Expression = &CaseAssignPattern{}
 
+func (pattern *CaseAssignPattern) Walk(visitor Visitor) {
+	visitor.Enter(pattern)
+	pattern.AssignPattern.Walk(visitor)
+	pattern.Value.Walk(visitor)
+	visitor.Exit(pattern)
+}
+
 func (pattern CaseAssignPattern) TreeString(
 	indent string,
 	label string,
@@ -116,6 +132,14 @@ type CaseEnumPattern struct {
 }
 
 var _ Expression = &CaseEnumPattern{}
+
+func (pattern *CaseEnumPattern) Walk(visitor Visitor) {
+	visitor.Enter(pattern)
+	if pattern.VarPattern != nil {
+		pattern.VarPattern.Walk(visitor)
+	}
+	visitor.Exit(pattern)
+}
 
 func (pattern CaseEnumPattern) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(

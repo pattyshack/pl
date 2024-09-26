@@ -16,6 +16,11 @@ type FloatingComment struct {
 
 var _ Definition = &FloatingComment{}
 
+func (def *FloatingComment) Walk(visitor Visitor) {
+	visitor.Enter(def)
+	visitor.Exit(def)
+}
+
 func (FloatingComment) TreeString(indent string, label string) string {
 	return fmt.Sprintf("%s%s[FloatingComment]", indent, label)
 }
@@ -33,6 +38,12 @@ type PackageDef struct {
 }
 
 var _ Definition = &PackageDef{}
+
+func (def *PackageDef) Walk(visitor Visitor) {
+	visitor.Enter(def)
+	def.Body.Walk(visitor)
+	visitor.Exit(def)
+}
 
 func (def PackageDef) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[PackageDef:\n", indent, label)
@@ -58,6 +69,16 @@ type TypeDef struct {
 }
 
 var _ Definition = &TypeDef{}
+
+func (def *TypeDef) Walk(visitor Visitor) {
+	visitor.Enter(def)
+	def.GenericParameters.Walk(visitor)
+	def.BaseType.Walk(visitor)
+	if def.Constraint != nil {
+		def.Constraint.Walk(visitor)
+	}
+	visitor.Exit(def)
+}
 
 func (def TypeDef) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(

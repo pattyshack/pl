@@ -6,6 +6,14 @@ import (
 	"github.com/pattyshack/gt/lexutil"
 )
 
+type Visitor interface {
+	// Call before visiting any children.
+	Enter(Node)
+
+	// Call after visiting all children.
+	Exit(Node)
+}
+
 type Locatable interface {
 	StartEnd() StartEndPos
 	Loc() lexutil.Location
@@ -40,6 +48,8 @@ type TokenValue interface {
 type Node interface {
 	Locatable
 	Commentable
+
+	Walk(Visitor)
 
 	TreeString(indent string, label string) string
 }
@@ -230,6 +240,11 @@ func NewParseErrorNode(startEnd StartEndPos, err error) *ParseErrorNode {
 		StartEndPos: startEnd,
 		Errors:      []error{err},
 	}
+}
+
+func (s *ParseErrorNode) Walk(visitor Visitor) {
+	visitor.Enter(s)
+	visitor.Exit(s)
 }
 
 func (s ParseErrorNode) TreeString(indent string, label string) string {

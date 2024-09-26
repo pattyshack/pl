@@ -49,6 +49,14 @@ type NodeList[T Node] struct {
 	ElementType string
 }
 
+func (list *NodeList[T]) Walk(visitor Visitor) {
+	visitor.Enter(list)
+	for _, element := range list.Elements {
+		element.Walk(visitor)
+	}
+	visitor.Exit(list)
+}
+
 func (list *NodeList[T]) TreeString(indent string, label string) string {
 	return ListTreeString(list.Elements, indent, label, list.ElementType)
 }
@@ -180,4 +188,14 @@ type ImportClauseList = NodeList[*ImportClause]
 
 func NewImportClauseList() *ImportClauseList {
 	return &NodeList[*ImportClause]{ElementType: "ImportClause"}
+}
+
+//
+// ConditionBranchList
+//
+
+type ConditionBranchList = NodeList[*ConditionBranch]
+
+func NewConditionBranchList() *ConditionBranchList {
+	return &NodeList[*ConditionBranch]{ElementType: "ConditionBranch"}
 }

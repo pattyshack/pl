@@ -18,6 +18,12 @@ type StatementsExpr struct {
 	Statements *StatementList
 }
 
+func (expr *StatementsExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Statements.Walk(visitor)
+	visitor.Exit(expr)
+}
+
 func (expr StatementsExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
 		"%s%s[StatementsExpr: LabelDecl=%s",
@@ -43,6 +49,11 @@ type ImportClause struct {
 
 var _ Node = &ImportClause{}
 
+func (clause *ImportClause) Walk(visitor Visitor) {
+	visitor.Enter(clause)
+	visitor.Exit(clause)
+}
+
 func (clause ImportClause) TreeString(indent string, label string) string {
 	return fmt.Sprintf(
 		"%s%s[ImportClause: Alias=%s Package=%s]",
@@ -65,6 +76,12 @@ type ImportStatement struct {
 }
 
 var _ Statement = &ImportStatement{}
+
+func (stmt *ImportStatement) Walk(visitor Visitor) {
+	visitor.Enter(stmt)
+	stmt.ImportClauses.Walk(visitor)
+	visitor.Exit(stmt)
+}
 
 func (stmt ImportStatement) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[ImportStatement:", indent, label)
@@ -97,6 +114,14 @@ type JumpStatement struct {
 }
 
 var _ Statement = &JumpStatement{}
+
+func (stmt *JumpStatement) Walk(visitor Visitor) {
+	visitor.Enter(stmt)
+	if stmt.Value != nil {
+		stmt.Value.Walk(visitor)
+	}
+	visitor.Exit(stmt)
+}
 
 func NewJumpStatement(
 	op TokenValue,
@@ -167,6 +192,11 @@ type UnsafeStatement struct {
 var _ Statement = &UnsafeStatement{}
 var _ TypeProperty = &UnsafeStatement{}
 
+func (stmt *UnsafeStatement) Walk(visitor Visitor) {
+	visitor.Enter(stmt)
+	visitor.Exit(stmt)
+}
+
 func (stmt UnsafeStatement) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
 		"%s%s[UnsafeStatement: Language=%s VerbatimSource=\n",
@@ -190,11 +220,20 @@ type BranchStatement struct {
 	LeadingTrailingComments
 
 	IsDefault    bool
-	CasePatterns *ExpressionList
+	CasePatterns *ExpressionList // optional
 	Body         *StatementsExpr
 }
 
 var _ Statement = &BranchStatement{}
+
+func (stmt *BranchStatement) Walk(visitor Visitor) {
+	visitor.Enter(stmt)
+	if stmt.CasePatterns != nil {
+		stmt.CasePatterns.Walk(visitor)
+	}
+	stmt.Body.Walk(visitor)
+	visitor.Exit(stmt)
+}
 
 func (stmt BranchStatement) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(

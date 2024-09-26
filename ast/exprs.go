@@ -16,6 +16,11 @@ type BoolLiteralExpr struct {
 	Value string
 }
 
+func (expr *BoolLiteralExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	visitor.Exit(expr)
+}
+
 func (expr BoolLiteralExpr) TreeString(indent string, label string) string {
 	return fmt.Sprintf("%s%s[BoolLiteralExpr: %s]", indent, label, expr.Value)
 }
@@ -26,6 +31,11 @@ type IntLiteralExpr struct {
 	LeadingTrailingComments
 
 	Value string
+}
+
+func (expr *IntLiteralExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	visitor.Exit(expr)
 }
 
 func (expr IntLiteralExpr) TreeString(indent string, label string) string {
@@ -40,6 +50,11 @@ type FloatLiteralExpr struct {
 	Value string
 }
 
+func (expr *FloatLiteralExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	visitor.Exit(expr)
+}
+
 func (expr FloatLiteralExpr) TreeString(indent string, label string) string {
 	return fmt.Sprintf("%s%s[FloatLiteralExpr: %s]", indent, label, expr.Value)
 }
@@ -52,6 +67,11 @@ type RuneLiteralExpr struct {
 	Value string
 }
 
+func (expr *RuneLiteralExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	visitor.Exit(expr)
+}
+
 func (expr RuneLiteralExpr) TreeString(indent string, label string) string {
 	return fmt.Sprintf("%s%s[RuneLiteralExpr: %s]", indent, label, expr.Value)
 }
@@ -62,6 +82,11 @@ type StringLiteralExpr struct {
 	LeadingTrailingComments
 
 	Value string
+}
+
+func (expr *StringLiteralExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	visitor.Exit(expr)
 }
 
 func (expr StringLiteralExpr) TreeString(indent string, label string) string {
@@ -80,6 +105,11 @@ type NamedExpr struct {
 	Name string
 }
 
+func (expr *NamedExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	visitor.Exit(expr)
+}
+
 func (expr NamedExpr) TreeString(indent string, label string) string {
 	return fmt.Sprintf("%s%s[NamedExpr: %s]", indent, label, expr.Name)
 }
@@ -95,6 +125,12 @@ type AccessExpr struct {
 
 	Operand Expression
 	Field   string
+}
+
+func (expr *AccessExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Operand.Walk(visitor)
+	visitor.Exit(expr)
 }
 
 func (expr AccessExpr) TreeString(indent string, label string) string {
@@ -121,6 +157,12 @@ type UnaryExpr struct {
 
 	Op      UnaryOp
 	Operand Expression
+}
+
+func (expr *UnaryExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Operand.Walk(visitor)
+	visitor.Exit(expr)
 }
 
 func (expr UnaryExpr) TreeString(indent string, label string) string {
@@ -184,6 +226,13 @@ type BinaryExpr struct {
 	Right Expression
 }
 
+func (expr *BinaryExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Left.Walk(visitor)
+	expr.Right.Walk(visitor)
+	visitor.Exit(expr)
+}
+
 func (expr BinaryExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[BinaryExpr: Op=(%s)\n", indent, label, expr.Op)
 	result += expr.Left.TreeString(indent+"  ", "Left=") + "\n"
@@ -206,6 +255,12 @@ type ImplicitStructExpr struct {
 	// An improper struct is the a comma separated list of expressions without
 	// left/right paren.  e.g., return 1, 2, 3
 	IsImproper bool
+}
+
+func (expr *ImplicitStructExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Arguments.Walk(visitor)
+	visitor.Exit(expr)
 }
 
 func (expr *ImplicitStructExpr) TreeString(indent string, label string) string {
@@ -233,6 +288,12 @@ type ColonExpr struct {
 
 var _ Expression = &ColonExpr{}
 
+func (expr *ColonExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Arguments.Walk(visitor)
+	visitor.Exit(expr)
+}
+
 func (expr ColonExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[ColonExpr\n", indent, label)
 	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
@@ -250,23 +311,26 @@ type CallExpr struct {
 	LeadingTrailingComments
 
 	FuncExpr         Expression
-	GenericArguments []TypeExpression
+	GenericArguments *TypeExpressionList
 	Arguments        *ArgumentList
 }
 
 var _ Expression = &CallExpr{}
 
+func (expr *CallExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.FuncExpr.Walk(visitor)
+	expr.GenericArguments.Walk(visitor)
+	expr.Arguments.Walk(visitor)
+	visitor.Exit(expr)
+}
+
 func (expr CallExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[CallExpr\n", indent, label)
 	result += expr.FuncExpr.TreeString(indent+"  ", "FuncExpr=") + "\n"
-	if len(expr.GenericArguments) > 0 {
-		result += ListTreeString(
-			expr.GenericArguments,
-			indent+"  ",
-			"GenericArguments=",
-			"GenericArgument")
-		result += "\n"
-	}
+	result += expr.GenericArguments.TreeString(
+		indent+"  ",
+		"GenericArguments=")
 	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
 	result += "\n" + indent + "]"
 	return result
@@ -283,6 +347,13 @@ type IndexExpr struct {
 
 	Accessible Expression
 	Index      *Argument
+}
+
+func (expr *IndexExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Accessible.Walk(visitor)
+	expr.Index.Walk(visitor)
+	visitor.Exit(expr)
 }
 
 func (expr IndexExpr) TreeString(indent string, label string) string {
@@ -304,6 +375,13 @@ type AsExpr struct {
 
 	Accessible Expression
 	CastType   TypeExpression
+}
+
+func (expr *AsExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Accessible.Walk(visitor)
+	expr.CastType.Walk(visitor)
+	visitor.Exit(expr)
 }
 
 var _ Expression = &AsExpr{}
@@ -329,6 +407,13 @@ type InitializeExpr struct {
 	Arguments     *ArgumentList
 }
 
+func (expr *InitializeExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Initializable.Walk(visitor)
+	expr.Arguments.Walk(visitor)
+	visitor.Exit(expr)
+}
+
 func (expr InitializeExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[InitializeExpr:\n", indent, label)
 	result += expr.Initializable.TreeString(indent+"  ", "Initialiable=") + "\n"
@@ -342,13 +427,34 @@ func (expr InitializeExpr) TreeString(indent string, label string) string {
 //
 
 type ConditionBranch struct {
-	Condition Expression
+	StartEndPos
+	LeadingTrailingComments
+
+	IsElse    bool
+	Condition Expression // nil when IsElse is true
 	Branch    Expression
 }
 
+var _ Node = &ConditionBranch{}
+
+func (cb *ConditionBranch) Walk(visitor Visitor) {
+	visitor.Enter(cb)
+	if cb.Condition == nil {
+		cb.Condition.Walk(visitor)
+	}
+	cb.Branch.Walk(visitor)
+	visitor.Exit(cb)
+}
+
 func (cb ConditionBranch) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[ConditionBranch:\n", indent, label)
-	result += cb.Condition.TreeString(indent+"  ", "Condition=") + "\n"
+	result := fmt.Sprintf(
+		"%s%s[ConditionBranch: IsElse=%v\n",
+		indent,
+		label,
+		cb.IsElse)
+	if cb.Condition != nil {
+		result += cb.Condition.TreeString(indent+"  ", "Condition=") + "\n"
+	}
 	result += cb.Branch.TreeString(indent+"  ", "Branch=")
 	result += "\n" + indent + "]"
 	return result
@@ -360,11 +466,16 @@ type IfExpr struct {
 	LeadingTrailingComments
 
 	LabelDecl         string // optional
-	ConditionBranches []ConditionBranch
-	ElseBranch        Expression // optional
+	ConditionBranches *ConditionBranchList
 }
 
 var _ Expression = &IfExpr{}
+
+func (expr *IfExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.ConditionBranches.Walk(visitor)
+	visitor.Exit(expr)
+}
 
 func (expr IfExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
@@ -372,15 +483,7 @@ func (expr IfExpr) TreeString(indent string, label string) string {
 		indent,
 		label,
 		expr.LabelDecl)
-	for idx, condBranch := range expr.ConditionBranches {
-		branchLabel := fmt.Sprintf("Branch%d=", idx)
-		result += condBranch.TreeString(indent+"  ", branchLabel) + "\n"
-	}
-
-	if expr.ElseBranch != nil {
-		result += expr.ElseBranch.TreeString(indent+"  ", "ElseBranch=") + "\n"
-	}
-
+	expr.ConditionBranches.TreeString(indent+"  ", "Branches=")
 	result += indent + "]"
 	return result
 }
@@ -400,6 +503,13 @@ type SwitchExpr struct {
 }
 
 var _ Expression = &SwitchExpr{}
+
+func (expr *SwitchExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Operand.Walk(visitor)
+	expr.Branches.Walk(visitor)
+	visitor.Exit(expr)
+}
 
 func (expr SwitchExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[SwitchExpr:\n", indent, label)
@@ -423,6 +533,12 @@ type SelectExpr struct {
 }
 
 var _ Expression = &SelectExpr{}
+
+func (expr *SelectExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Branches.Walk(visitor)
+	visitor.Exit(expr)
+}
 
 func (expr SelectExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[SelectExpr:\n", indent, label)
@@ -462,6 +578,21 @@ type LoopExpr struct {
 }
 
 var _ Expression = &LoopExpr{}
+
+func (expr *LoopExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	if expr.Init != nil {
+		expr.Init.Walk(visitor)
+	}
+	if expr.Condition != nil {
+		expr.Condition.Walk(visitor)
+	}
+	if expr.Post != nil {
+		expr.Post.Walk(visitor)
+	}
+	expr.Body.Walk(visitor)
+	visitor.Exit(expr)
+}
 
 func (expr LoopExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(

@@ -69,6 +69,10 @@ func (s TokenValue) Val() string {
 	return s.Value
 }
 
+func (s TokenValue) Walk(visitor ast.Visitor) {
+	panic("should never be called")
+}
+
 func (s TokenValue) TreeString(indent string, label string) string {
 	return fmt.Sprintf(
 		"%s%s[TokenValue: SymbolId=%s Value=%s]",

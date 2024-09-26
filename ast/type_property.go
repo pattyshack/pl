@@ -31,6 +31,12 @@ type FieldDef struct {
 
 var _ TypeProperty = &FieldDef{}
 
+func (def *FieldDef) Walk(visitor Visitor) {
+	visitor.Enter(def)
+	def.Type.Walk(visitor)
+	visitor.Exit(def)
+}
+
 func (def FieldDef) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
 		"%s%s[FieldDef: Kind=%s Name=%s\n",

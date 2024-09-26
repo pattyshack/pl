@@ -24,6 +24,21 @@ type FuncSignature struct {
 var _ TypeExpression = &FuncSignature{}
 var _ TypeProperty = &FuncSignature{}
 
+func (sig *FuncSignature) Walk(visitor Visitor) {
+	visitor.Enter(sig)
+	if sig.Receiver != nil {
+		sig.Receiver.Walk(visitor)
+	}
+	if sig.GenericParameters != nil {
+		sig.GenericParameters.Walk(visitor)
+	}
+	sig.Parameters.Walk(visitor)
+	if sig.ReturnType != nil {
+		sig.ReturnType.Walk(visitor)
+	}
+	visitor.Exit(sig)
+}
+
 func (sig FuncSignature) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
 		"%s%s[FuncSignature: Name=%s\n",
@@ -63,6 +78,13 @@ type FuncDefinition struct {
 
 var _ Expression = &FuncDefinition{}
 var _ Definition = &FuncDefinition{}
+
+func (def *FuncDefinition) Walk(visitor Visitor) {
+	visitor.Enter(def)
+	def.Signature.Walk(visitor)
+	def.Body.Walk(visitor)
+	visitor.Exit(def)
+}
 
 func (def FuncDefinition) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[FuncDefinition:\n", indent, label)

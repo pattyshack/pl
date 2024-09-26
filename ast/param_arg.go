@@ -38,6 +38,14 @@ type Parameter struct {
 
 var _ Node = &Parameter{}
 
+func (param *Parameter) Walk(visitor Visitor) {
+	visitor.Enter(param)
+	if param.Type != nil {
+		param.Type.Walk(visitor)
+	}
+	visitor.Exit(param)
+}
+
 func (param Parameter) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
 		"%s%s[Parameter: Kind=%v Name=%s HasEllipsis=%v\n",
@@ -88,6 +96,14 @@ type Argument struct {
 }
 
 var _ Node = &Argument{}
+
+func (arg *Argument) Walk(visitor Visitor) {
+	visitor.Enter(arg)
+	if arg.Expr != nil {
+		arg.Expr.Walk(visitor)
+	}
+	visitor.Exit(arg)
+}
 
 func NewPositionalArgument(expr Expression) *Argument {
 	return &Argument{

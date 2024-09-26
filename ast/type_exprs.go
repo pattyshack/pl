@@ -18,6 +18,12 @@ type SliceTypeExpr struct {
 
 var _ TypeExpression = &SliceTypeExpr{}
 
+func (expr *SliceTypeExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Value.Walk(visitor)
+	visitor.Exit(expr)
+}
+
 func (slice SliceTypeExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[SliceTypeExpr:\n", indent, label)
 	result += slice.Value.TreeString(indent+"  ", "Value=")
@@ -39,6 +45,12 @@ type ArrayTypeExpr struct {
 }
 
 var _ TypeExpression = &ArrayTypeExpr{}
+
+func (expr *ArrayTypeExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Value.Walk(visitor)
+	visitor.Exit(expr)
+}
 
 func (array ArrayTypeExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
@@ -66,6 +78,13 @@ type MapTypeExpr struct {
 
 var _ TypeExpression = &MapTypeExpr{}
 
+func (expr *MapTypeExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Key.Walk(visitor)
+	expr.Value.Walk(visitor)
+	visitor.Exit(expr)
+}
+
 func (dict MapTypeExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[MapTypeExpr:\n", indent, label)
 	result += dict.Key.TreeString(indent+"  ", "Key=") + "\n"
@@ -84,6 +103,11 @@ type InferredTypeExpr struct {
 	LeadingTrailingComments
 
 	InferMutable bool // "_" infers mutable ref. "." infers immutabel ref.
+}
+
+func (expr *InferredTypeExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	visitor.Exit(expr)
 }
 
 func (expr InferredTypeExpr) TreeString(indent string, label string) string {
@@ -107,6 +131,12 @@ type NamedTypeExpr struct {
 	Name string
 
 	GenericArguments *TypeExpressionList
+}
+
+func (expr *NamedTypeExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.GenericArguments.Walk(visitor)
+	visitor.Exit(expr)
 }
 
 func (expr NamedTypeExpr) TreeString(indent string, label string) string {
@@ -138,6 +168,12 @@ type UnaryTypeExpr struct {
 	Operand TypeExpression
 }
 
+func (expr *UnaryTypeExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Operand.Walk(visitor)
+	visitor.Exit(expr)
+}
+
 func (expr UnaryTypeExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
 		"%s%s[UnaryTypeExpr: Op=(%s)\n",
@@ -163,6 +199,13 @@ type BinaryTypeExpr struct {
 	Left  TypeExpression
 	Op    BinaryTypeOp
 	Right TypeExpression
+}
+
+func (expr *BinaryTypeExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Left.Walk(visitor)
+	expr.Right.Walk(visitor)
+	visitor.Exit(expr)
 }
 
 func (expr BinaryTypeExpr) TreeString(indent string, label string) string {
@@ -202,6 +245,12 @@ type PropertiesTypeExpr struct {
 }
 
 var _ TypeExpression = &PropertiesTypeExpr{}
+
+func (expr *PropertiesTypeExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Properties.Walk(visitor)
+	visitor.Exit(expr)
+}
 
 func (expr PropertiesTypeExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf(
