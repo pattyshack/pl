@@ -111,24 +111,14 @@ func (reducer *Reducer) DefinitionToTypeDef(
 	leading.Append(typeKW.TakeTrailing())
 	leading.Append(name.TakeLeading())
 
-	var params []*ast.GenericParameter
-	if genericParameters != nil {
-		params = genericParameters.Elements
-
-		leading.Append(genericParameters.TakeLeading())
-
-		baseType.PrependToLeading(genericParameters.TakeTrailing())
-		if len(genericParameters.MiddleComment.Groups) > 0 {
-			baseType.PrependToLeading(genericParameters.MiddleComment)
-		}
-	}
+	genericParameters.PrependToLeading(name.TakeTrailing())
 
 	trailing := baseType.TakeTrailing()
 
 	def := &ast.TypeDef{
 		StartEndPos:       ast.NewStartEndPos(typeKW.Loc(), baseType.End()),
 		Name:              name.Value,
-		GenericParameters: params,
+		GenericParameters: genericParameters,
 		BaseType:          baseType,
 	}
 	def.LeadingComment = leading
@@ -152,17 +142,7 @@ func (reducer *Reducer) ConstrainedDefToTypeDef(
 	leading.Append(typeKW.TakeTrailing())
 	leading.Append(name.TakeLeading())
 
-	var params []*ast.GenericParameter
-	if genericParameters != nil {
-		params = genericParameters.Elements
-
-		leading.Append(genericParameters.TakeLeading())
-
-		baseType.PrependToLeading(genericParameters.TakeTrailing())
-		if len(genericParameters.MiddleComment.Groups) > 0 {
-			baseType.PrependToLeading(genericParameters.MiddleComment)
-		}
-	}
+	genericParameters.PrependToLeading(name.TakeTrailing())
 
 	baseType.AppendToTrailing(implements.TakeLeading())
 	constraint.PrependToLeading(implements.TakeTrailing())
@@ -172,7 +152,7 @@ func (reducer *Reducer) ConstrainedDefToTypeDef(
 	def := &ast.TypeDef{
 		StartEndPos:       ast.NewStartEndPos(typeKW.Loc(), constraint.End()),
 		Name:              name.Value,
-		GenericParameters: params,
+		GenericParameters: genericParameters,
 		BaseType:          baseType,
 		Constraint:        constraint,
 	}

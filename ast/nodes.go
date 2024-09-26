@@ -19,6 +19,8 @@ type Commentable interface {
 	PrependToTrailing(CommentGroups)
 	AppendToTrailing(CommentGroups)
 
+	TakeComments() LeadingTrailingComments
+
 	// Return the node's original leading comment groups, and reset the node's
 	// leading comment groups.
 	TakeLeading() CommentGroups
@@ -162,6 +164,12 @@ func (s *LeadingTrailingComments) PrependToLeading(other CommentGroups) {
 
 func (s *LeadingTrailingComments) AppendToLeading(other CommentGroups) {
 	s.LeadingComment.Append(other)
+}
+
+func (s *LeadingTrailingComments) TakeComments() LeadingTrailingComments {
+	tmp := *s
+	*s = LeadingTrailingComments{}
+	return tmp
 }
 
 func (s *LeadingTrailingComments) TakeLeading() CommentGroups {

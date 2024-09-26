@@ -80,7 +80,7 @@ type CaseAssignPattern struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	AssignPattern []Expression
+	AssignPattern *ExpressionList
 	Value         Expression
 }
 
@@ -94,11 +94,9 @@ func (pattern CaseAssignPattern) TreeString(
 		"%s%s[CaseAssignPattern:\n",
 		indent,
 		label)
-	result += ListTreeString(
-		pattern.AssignPattern,
+	result += pattern.AssignPattern.TreeString(
 		indent+"  ",
-		"AssignPattern=",
-		"Pattern")
+		"AssignPattern=")
 	result += "\n" + pattern.Value.TreeString(indent+"  ", "Value=")
 	result += "\n" + indent + "]"
 	return result

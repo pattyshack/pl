@@ -15,9 +15,9 @@ type FuncSignature struct {
 	// Optional. Only used by trait method signature
 	Name string
 	// Optional.  Only used by function definition
-	GenericParameters []*GenericParameter
+	GenericParameters *GenericParameterList
 
-	Parameters []*Parameter
+	Parameters *ParameterList
 	ReturnType TypeExpression // Optional
 }
 
@@ -34,20 +34,12 @@ func (sig FuncSignature) TreeString(indent string, label string) string {
 		result += sig.Receiver.TreeString(indent+"  ", "Receiver=") + "\n"
 	}
 
-	if len(sig.GenericParameters) > 0 {
-		result += ListTreeString(
-			sig.GenericParameters,
-			indent+"  ",
-			"GenericParameters=",
-			"GenericParameter")
-		result += "\n"
-	}
-
-	result += ListTreeString(
-		sig.Parameters,
+	result += sig.GenericParameters.TreeString(
 		indent+"  ",
-		"Parameters=",
-		"Parameter") + "\n"
+		"GenericParameters=")
+	result += "\n"
+
+	result += sig.Parameters.TreeString(indent+"  ", "Parameters=") + "\n"
 
 	if sig.ReturnType == nil {
 		result += indent + "  ReturnType=(nil)\n"

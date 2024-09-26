@@ -102,7 +102,7 @@ func (Reducer) NilToGenericParameterList() (
 	*ast.GenericParameterList,
 	error,
 ) {
-	return ast.NewGenericParameterList(), nil
+	return nil, nil
 }
 
 //
@@ -117,6 +117,9 @@ func (reducer *Reducer) BindingToGenericArguments(
 	*ast.TypeExpressionList,
 	error,
 ) {
+	if list == nil {
+		list = ast.NewTypeExpressionList()
+	}
 	list.ReduceMarkers(dollarLbracket, rbracket)
 	return list, nil
 }
@@ -166,5 +169,5 @@ func (reducer *Reducer) NilToGenericArgumentList() (
 	*ast.TypeExpressionList,
 	error,
 ) {
-	return ast.NewTypeExpressionList(), nil
+	return nil, nil
 }

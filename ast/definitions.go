@@ -52,7 +52,7 @@ type TypeDef struct {
 
 	Name              string
 	IsAlias           bool
-	GenericParameters []*GenericParameter
+	GenericParameters *GenericParameterList
 	BaseType          TypeExpression
 	Constraint        TypeExpression // optional
 }
@@ -66,11 +66,9 @@ func (def TypeDef) TreeString(indent string, label string) string {
 		label,
 		def.Name,
 		def.IsAlias)
-	result += ListTreeString(
-		def.GenericParameters,
+	result += def.GenericParameters.TreeString(
 		indent+"  ",
-		"GenericParameters=",
-		"GenericParameter")
+		"GenericParameters=")
 	result += "\n" + def.BaseType.TreeString(indent+"  ", "BaseType=")
 	if def.Constraint != nil {
 		result += "\n" + def.Constraint.TreeString(indent+"  ", "Constraint=")

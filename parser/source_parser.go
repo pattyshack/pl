@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/pattyshack/gt/lexutil"
@@ -128,6 +127,9 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 		}
 	}
 }
+
+/*
+TODO re-implement using visitor pattern
 
 func (parser *sourceParser) groupCaseStatements(stmts *ast.StatementsExpr) {
 	newStatements := []ast.Statement{}
@@ -305,24 +307,24 @@ func (parser *sourceParser) rejectUnexpectedArguments() {
 	}
 
 	for _, callExpr := range parser.CallExprs {
-		for idx, arg := range callExpr.Arguments {
+		for idx, arg := range callExpr.Arguments.Elements {
 			if arg.Kind == ast.SkipPatternArgument {
 				err := fmt.Errorf("unexpected %s argument: %s", arg.Kind, arg.Loc())
 				parser.ParseErrors = append(parser.ParseErrors, err)
-				callExpr.Arguments[idx] = ast.NewPositionalArgument(
+				callExpr.Arguments.Elements[idx] = ast.NewPositionalArgument(
 					ast.NewParseErrorNode(arg.StartEnd(), err))
 			}
 		}
 	}
 
 	for _, initExpr := range parser.InitializeExprs {
-		for idx, arg := range initExpr.Arguments {
+		for idx, arg := range initExpr.Arguments.Elements {
 			if arg.Kind == ast.SkipPatternArgument ||
 				arg.Kind == ast.VarargAssignmentArgument {
 
 				err := fmt.Errorf("unexpected %s argument: %s", arg.Kind, arg.Loc())
 				parser.ParseErrors = append(parser.ParseErrors, err)
-				initExpr.Arguments[idx] = ast.NewPositionalArgument(
+				initExpr.Arguments.Elements[idx] = ast.NewPositionalArgument(
 					ast.NewParseErrorNode(arg.StartEnd(), err))
 			}
 		}
@@ -331,21 +333,25 @@ func (parser *sourceParser) rejectUnexpectedArguments() {
 	// TODO: reject skip pattern in implicit struct if the struct is not a pattern
 }
 
+*/
+
 func (parser *sourceParser) analyze() {
-	for _, expr := range parser.SwitchExprs {
-		parser.groupCaseStatements(expr.Branches)
-	}
+	/*
+	   	for _, expr := range parser.SwitchExprs {
+	   		parser.groupCaseStatements(expr.Branches)
+	   	}
 
-	for _, expr := range parser.SelectExprs {
-		parser.groupCaseStatements(expr.Branches)
-	}
+	   	for _, expr := range parser.SelectExprs {
+	   		parser.groupCaseStatements(expr.Branches)
+	   	}
 
-	for _, stmts := range parser.StatementsExprs {
-		parser.pruneUnreachableStatements(stmts)
-	}
+	   	for _, stmts := range parser.StatementsExprs {
+	   		parser.pruneUnreachableStatements(stmts)
+	   	}
 
-	parser.rejectUnexpectedStatements()
-	parser.rejectUnexpectedArguments()
+	   parser.rejectUnexpectedStatements()
+	   parser.rejectUnexpectedArguments()
+	*/
 }
 
 func (parser *sourceParser) parseSource() (

@@ -34,38 +34,21 @@ func (reducer *Reducer) toFuncSignature(
 		leading.Append(nameToken.TakeTrailing())
 	}
 
-	var generics []*ast.GenericParameter
-	if genericParameters != nil {
-		generics = genericParameters.Elements
-
-		leading.Append(genericParameters.TakeLeading())
-		leading.Append(genericParameters.MiddleComment)
-		leading.Append(genericParameters.TakeTrailing())
-	}
-
-	leading.Append(parameters.TakeLeading())
-	leading.Append(parameters.MiddleComment)
-
-	trailing := parameters.TakeTrailing()
-
-	end := parameters.End()
+	var end ast.Node = parameters
 	if returnType != nil {
-		end = returnType.End()
-
-		trailing.Append(returnType.TakeLeading())
-		trailing.Append(returnType.TakeTrailing())
+		end = returnType
 	}
 
 	sig := &ast.FuncSignature{
-		StartEndPos:       ast.NewStartEndPos(funcKW.Loc(), end),
+		StartEndPos:       ast.NewStartEndPos(funcKW.Loc(), end.End()),
 		Receiver:          receiver,
 		Name:              name,
-		GenericParameters: generics,
-		Parameters:        parameters.Elements,
+		GenericParameters: genericParameters,
+		Parameters:        parameters,
 		ReturnType:        returnType,
 	}
 	sig.LeadingComment = leading
-	sig.TrailingComment = trailing
+	sig.TrailingComment = end.TakeTrailing()
 
 	return sig
 }

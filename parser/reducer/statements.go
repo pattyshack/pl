@@ -68,8 +68,7 @@ func (reducer *Reducer) ImproperExplicitToStatementList(
 }
 
 func (reducer *Reducer) NilToStatementList() (*ast.StatementList, error) {
-	list := ast.NewStatementList()
-	return list, nil
+	return nil, nil
 }
 
 func (reducer *Reducer) ToStatements(
@@ -80,12 +79,15 @@ func (reducer *Reducer) ToStatements(
 	ast.Expression,
 	error,
 ) {
+	if list == nil {
+		list = ast.NewStatementList()
+	}
 	list.ReduceMarkers(lbrace, rbrace)
 
 	expr := &ast.StatementsExpr{
 		StartEndPos:             list.StartEndPos,
-		LeadingTrailingComments: list.LeadingTrailingComments,
-		Statements:              list.Elements,
+		LeadingTrailingComments: list.TakeComments(),
+		Statements:              list,
 	}
 	expr.LeadingComment.Append(list.MiddleComment)
 
@@ -120,9 +122,12 @@ func (reducer *Reducer) StatementToTrailingStatement(
 	*ast.StatementsExpr,
 	error,
 ) {
+	list := ast.NewStatementList()
+	list.Add(stmt)
+
 	expr := &ast.StatementsExpr{
 		StartEndPos: stmt.StartEnd(),
-		Statements:  []ast.Statement{stmt},
+		Statements:  list,
 	}
 
 	reducer.StatementsExprs = append(reducer.StatementsExprs, expr)
@@ -133,9 +138,7 @@ func (reducer *Reducer) NilToTrailingStatement() (
 	*ast.StatementsExpr,
 	error,
 ) {
-	expr := &ast.StatementsExpr{}
-	reducer.StatementsExprs = append(reducer.StatementsExprs, expr)
-	return expr, nil
+	return nil, nil
 }
 
 //
@@ -221,12 +224,15 @@ func (reducer *Reducer) SingleToImportStatement(
 	error,
 ) {
 	leading := importKW.TakeLeading()
-	leading.Append(importKW.TakeTrailing())
+	importClause.PrependToLeading(importKW.TakeTrailing())
 	trailing := importClause.TakeTrailing()
+
+	list := ast.NewImportClauseList()
+	list.Add(importClause)
 
 	stmt := &ast.ImportStatement{
 		StartEndPos:   ast.NewStartEndPos(importKW.Loc(), importClause.End()),
-		ImportClauses: []*ast.ImportClause{importClause},
+		ImportClauses: list,
 	}
 	stmt.LeadingComment = leading
 	stmt.TrailingComment = trailing
@@ -246,13 +252,12 @@ func (reducer *Reducer) MultipleToImportStatement(
 	clauses.ReduceMarkers(lparen, rparen)
 
 	leading := importKW.TakeLeading()
-	leading.Append(importKW.TakeTrailing())
-	leading.Append(clauses.TakeLeading())
+	clauses.PrependToLeading(importKW.TakeTrailing())
 	trailing := clauses.TakeTrailing()
 
 	stmt := &ast.ImportStatement{
 		StartEndPos:   ast.NewStartEndPos(importKW.Loc(), clauses.End()),
-		ImportClauses: clauses.Elements,
+		ImportClauses: clauses,
 	}
 	stmt.LeadingComment = leading
 	stmt.TrailingComment = trailing
@@ -415,24 +420,24 @@ func (reducer *Reducer) CaseBranchToBranchStatement(
 	ast.Statement,
 	error,
 ) {
-	end := colon.End()
-	if len(body.Statements) > 0 {
-		end = body.End()
+	var end ast.Node = colon
+	if body != nil {
+		end = body
 	} else {
-		body.StartEndPos = colon.StartEnd()
+		body = &ast.StatementsExpr{
+			StartEndPos: colon.StartEnd(),
+		}
 	}
 
 	leading := caseKW.TakeLeading()
-	leading.Append(caseKW.TakeTrailing())
-	leading.Append(casePatterns.TakeLeading())
 
-	body.PrependToLeading(colon.TakeTrailing())
-	body.PrependToLeading(colon.TakeLeading())
-	body.PrependToLeading(casePatterns.TakeTrailing())
+	casePatterns.PrependToLeading(caseKW.TakeTrailing())
+	casePatterns.AppendToTrailing(colon.TakeLeading())
+	casePatterns.AppendToTrailing(colon.TakeTrailing())
 
 	stmt := &ast.BranchStatement{
-		StartEndPos:  ast.NewStartEndPos(caseKW.Loc(), end),
-		CasePatterns: casePatterns.Elements,
+		StartEndPos:  ast.NewStartEndPos(caseKW.Loc(), end.End()),
+		CasePatterns: casePatterns,
 		Body:         body,
 	}
 	stmt.LeadingComment = leading
@@ -448,21 +453,29 @@ func (reducer *Reducer) DefaultBranchToBranchStatement(
 	ast.Statement,
 	error,
 ) {
-	end := colon.End()
-	if len(body.Statements) > 0 {
-		end = body.End()
+	leading := defaultKW.TakeLeading()
+
+	mid := defaultKW.TakeTrailing()
+	mid.Append(colon.TakeLeading())
+	mid.Append(colon.TakeTrailing())
+
+	var end ast.Node = colon
+	if body != nil {
+		end = body
 	} else {
-		body.StartEndPos = colon.StartEnd()
+		stmts := ast.NewStatementList()
+		stmts.StartEndPos = colon.StartEnd()
+
+		body = &ast.StatementsExpr{
+			StartEndPos: colon.StartEnd(),
+			Statements:  stmts,
+		}
 	}
 
-	leading := defaultKW.TakeLeading()
-	leading.Append(defaultKW.TakeTrailing())
-
-	body.PrependToLeading(colon.TakeTrailing())
-	body.PrependToLeading(colon.TakeLeading())
+	body.PrependToLeading(mid)
 
 	stmt := &ast.BranchStatement{
-		StartEndPos:  ast.NewStartEndPos(defaultKW.Loc(), end),
+		StartEndPos:  ast.NewStartEndPos(defaultKW.Loc(), end.End()),
 		IsDefault:    true,
 		CasePatterns: nil,
 		Body:         body,

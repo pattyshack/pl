@@ -292,7 +292,7 @@ func (reducer *Reducer) NilToParameterDeclList() (
 	*ast.ParameterList,
 	error,
 ) {
-	return ast.NewParameterList(), nil
+	return nil, nil
 }
 
 func (reducer *Reducer) ToParameterDecls(
@@ -345,7 +345,7 @@ func (reducer *Reducer) NilToParameterDefList() (
 	*ast.ParameterList,
 	error,
 ) {
-	return ast.NewParameterList(), nil
+	return nil, nil
 }
 
 func (reducer *Reducer) ToParameterDefs(
@@ -502,7 +502,7 @@ func (reducer *Reducer) NilToArguments() (
 	*ast.ArgumentList,
 	error,
 ) {
-	return ast.NewArgumentList(), nil
+	return nil, nil
 }
 
 func (reducer *Reducer) FieldVarPatternToProperFieldVarPatterns(

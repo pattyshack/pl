@@ -82,15 +82,14 @@ func (Reducer) ToCaseAssignPattern(
 ) {
 	leading := assignPatterns.TakeLeading()
 
+	assignPatterns.AppendToTrailing(assign.TakeLeading())
 	value.PrependToLeading(assign.TakeTrailing())
-	value.PrependToLeading(assign.TakeLeading())
-	value.PrependToLeading(assignPatterns.TakeTrailing())
 
 	trailing := value.TakeTrailing()
 
 	pattern := &ast.CaseAssignPattern{
 		StartEndPos:   ast.NewStartEndPos(assignPatterns.Loc(), value.End()),
-		AssignPattern: assignPatterns.Elements,
+		AssignPattern: assignPatterns,
 		Value:         value,
 	}
 	pattern.LeadingComment = leading

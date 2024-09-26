@@ -44,6 +44,13 @@ type NodeList[T Node] struct {
 	MiddleComment CommentGroups
 
 	Elements []T
+
+	// Only used by TreeString
+	ElementType string
+}
+
+func (list *NodeList[T]) TreeString(indent string, label string) string {
+	return ListTreeString(list.Elements, indent, label, list.ElementType)
 }
 
 func (list *NodeList[T]) Add(element T) {
@@ -92,7 +99,7 @@ func (list *NodeList[T]) ReduceMarkers(start TokenValue, end TokenValue) {
 type DefinitionList = NodeList[Definition]
 
 func NewDefinitionList() *DefinitionList {
-	return &NodeList[Definition]{}
+	return &NodeList[Definition]{ElementType: "Definition"}
 }
 
 //
@@ -102,7 +109,7 @@ func NewDefinitionList() *DefinitionList {
 type ExpressionList = NodeList[Expression]
 
 func NewExpressionList() *ExpressionList {
-	return &NodeList[Expression]{}
+	return &NodeList[Expression]{ElementType: "Expression"}
 }
 
 //
@@ -112,7 +119,7 @@ func NewExpressionList() *ExpressionList {
 type TypePropertyList = NodeList[TypeProperty]
 
 func NewTypePropertyList() *TypePropertyList {
-	return &NodeList[TypeProperty]{}
+	return &NodeList[TypeProperty]{ElementType: "TypeProperty"}
 }
 
 //
@@ -122,7 +129,7 @@ func NewTypePropertyList() *TypePropertyList {
 type TypeExpressionList = NodeList[TypeExpression]
 
 func NewTypeExpressionList() *TypeExpressionList {
-	return &NodeList[TypeExpression]{}
+	return &NodeList[TypeExpression]{ElementType: "TypeExpression"}
 }
 
 //
@@ -132,7 +139,7 @@ func NewTypeExpressionList() *TypeExpressionList {
 type StatementList = NodeList[Statement]
 
 func NewStatementList() *StatementList {
-	return &NodeList[Statement]{}
+	return &NodeList[Statement]{ElementType: "Statement"}
 }
 
 //
@@ -142,7 +149,7 @@ func NewStatementList() *StatementList {
 type ParameterList = NodeList[*Parameter]
 
 func NewParameterList() *ParameterList {
-	return &NodeList[*Parameter]{}
+	return &NodeList[*Parameter]{ElementType: "Parameter"}
 }
 
 //
@@ -152,7 +159,7 @@ func NewParameterList() *ParameterList {
 type ArgumentList = NodeList[*Argument]
 
 func NewArgumentList() *ArgumentList {
-	return &NodeList[*Argument]{}
+	return &NodeList[*Argument]{ElementType: "Argument"}
 }
 
 //
@@ -162,7 +169,7 @@ func NewArgumentList() *ArgumentList {
 type GenericParameterList = NodeList[*GenericParameter]
 
 func NewGenericParameterList() *GenericParameterList {
-	return &NodeList[*GenericParameter]{}
+	return &NodeList[*GenericParameter]{ElementType: "GenericParameter"}
 }
 
 //
@@ -172,5 +179,5 @@ func NewGenericParameterList() *GenericParameterList {
 type ImportClauseList = NodeList[*ImportClause]
 
 func NewImportClauseList() *ImportClauseList {
-	return &NodeList[*ImportClause]{}
+	return &NodeList[*ImportClause]{ElementType: "ImportClause"}
 }

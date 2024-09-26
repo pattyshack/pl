@@ -121,13 +121,13 @@ func (cmd *Command) printPackage(
 
 	fmt.Println("Tree:")
 	fmt.Println("-----")
-	fmt.Println(ast.ListTreeString(list.Elements, "", "", "Definition"))
+	fmt.Println(list.TreeString("", ""))
 
 	return nil
 }
 
 func (cmd *Command) printFunc(
-	parse func(string) (*reducer.Reducer, interface{}, error),
+	parse func(string) (*reducer.Reducer, ast.Node, error),
 	args []string,
 ) error {
 	for _, fileName := range args {
@@ -139,14 +139,7 @@ func (cmd *Command) printFunc(
 
 		fmt.Println("Parsed:")
 		fmt.Println("-----")
-		switch value := result.(type) {
-		case ast.Node:
-			fmt.Println(value.TreeString("", ""))
-		case *ast.DefinitionList:
-			ast.ListTreeString(value.Elements, "", "", "Definition")
-		default:
-			panic(fmt.Sprintf("unexpected value: %v", result))
-		}
+		fmt.Println(result.TreeString("", ""))
 
 		if len(reducer.ParseErrors) == 0 {
 			continue
@@ -169,7 +162,7 @@ func (cmd *Command) printExpr(args []string) error {
 			fileName string,
 		) (
 			*reducer.Reducer,
-			interface{},
+			ast.Node,
 			error,
 		) {
 			return parser.ParseExpr(fileName, cmd.ParserOptions)
@@ -183,7 +176,7 @@ func (cmd *Command) printTypeExpr(args []string) error {
 			fileName string,
 		) (
 			*reducer.Reducer,
-			interface{},
+			ast.Node,
 			error,
 		) {
 			return parser.ParseTypeExpr(fileName, cmd.ParserOptions)
@@ -197,7 +190,7 @@ func (cmd *Command) printStatement(args []string) error {
 			fileName string,
 		) (
 			*reducer.Reducer,
-			interface{},
+			ast.Node,
 			error,
 		) {
 			return parser.ParseStatement(fileName, cmd.ParserOptions)
@@ -211,7 +204,7 @@ func (cmd *Command) printDefinition(args []string) error {
 			fileName string,
 		) (
 			*reducer.Reducer,
-			interface{},
+			ast.Node,
 			error,
 		) {
 			return parser.ParseDefinition(fileName, cmd.ParserOptions)
@@ -225,7 +218,7 @@ func (cmd *Command) printSource(args []string) error {
 			fileName string,
 		) (
 			*reducer.Reducer,
-			interface{},
+			ast.Node,
 			error,
 		) {
 			return parser.ParseSource(fileName, cmd.ParserOptions)

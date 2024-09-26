@@ -121,7 +121,7 @@ func (Reducer) NilToImplicitTypeProperties() (
 	*ast.TypePropertyList,
 	error,
 ) {
-	return ast.NewTypePropertyList(), nil
+	return nil, nil
 }
 
 func (Reducer) AddImplicitToProperExplicitTypeProperties(
@@ -184,7 +184,7 @@ func (Reducer) NilToExplicitTypeProperties() (
 	*ast.TypePropertyList,
 	error,
 ) {
-	return ast.NewTypePropertyList(), nil
+	return nil, nil
 }
 
 func (Reducer) PairToProperImplicitEnumTypeProperties(

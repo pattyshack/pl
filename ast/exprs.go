@@ -201,7 +201,7 @@ type ImplicitStructExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	Arguments []*Argument
+	Arguments *ArgumentList
 
 	// An improper struct is the a comma separated list of expressions without
 	// left/right paren.  e.g., return 1, 2, 3
@@ -214,11 +214,7 @@ func (expr *ImplicitStructExpr) TreeString(indent string, label string) string {
 		indent,
 		label,
 		expr.IsImproper)
-	if len(expr.Arguments) == 0 {
-		return result + "]"
-	}
-
-	result += elementsTreeString(expr.Arguments, indent+"  ", "Argument")
+	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
 	result += "\n" + indent + "]\n"
 	return result
 }
@@ -232,18 +228,14 @@ type ColonExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	Arguments []*Argument
+	Arguments *ArgumentList
 }
 
 var _ Expression = &ColonExpr{}
 
 func (expr ColonExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[ColonExpr\n", indent, label)
-	result += ListTreeString(
-		expr.Arguments,
-		indent+"  ",
-		"Arguments=",
-		"Argument")
+	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
 	result += "\n" + indent + "]"
 	return result
 }
@@ -259,7 +251,7 @@ type CallExpr struct {
 
 	FuncExpr         Expression
 	GenericArguments []TypeExpression
-	Arguments        []*Argument
+	Arguments        *ArgumentList
 }
 
 var _ Expression = &CallExpr{}
@@ -275,13 +267,8 @@ func (expr CallExpr) TreeString(indent string, label string) string {
 			"GenericArgument")
 		result += "\n"
 	}
-	result += ListTreeString(
-		expr.Arguments,
-		indent+"  ",
-		"Arguments=",
-		"Argument")
+	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
 	result += "\n" + indent + "]"
-
 	return result
 }
 
@@ -339,17 +326,13 @@ type InitializeExpr struct {
 	LeadingTrailingComments
 
 	Initializable TypeExpression
-	Arguments     []*Argument
+	Arguments     *ArgumentList
 }
 
 func (expr InitializeExpr) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[InitializeExpr:\n", indent, label)
 	result += expr.Initializable.TreeString(indent+"  ", "Initialiable=") + "\n"
-	result += ListTreeString(
-		expr.Arguments,
-		indent+"  ",
-		"Arguments=",
-		"Argument")
+	result += expr.Arguments.TreeString(indent+"  ", "Arguments=")
 	result += "\n" + indent + "]"
 	return result
 }

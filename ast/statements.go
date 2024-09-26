@@ -15,7 +15,7 @@ type StatementsExpr struct {
 	LeadingTrailingComments
 
 	LabelDecl  string // optional
-	Statements []Statement
+	Statements *StatementList
 }
 
 func (expr StatementsExpr) TreeString(indent string, label string) string {
@@ -24,11 +24,7 @@ func (expr StatementsExpr) TreeString(indent string, label string) string {
 		indent,
 		label,
 		expr.LabelDecl)
-	if len(expr.Statements) == 0 {
-		return result + "]"
-	}
-
-	result += elementsTreeString(expr.Statements, indent+"  ", "Statement")
+	result += expr.Statements.TreeString(indent+"  ", "Statements=")
 	result += "\n" + indent + "]"
 	return result
 }
@@ -65,14 +61,14 @@ type ImportStatement struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	ImportClauses []*ImportClause
+	ImportClauses *ImportClauseList
 }
 
 var _ Statement = &ImportStatement{}
 
 func (stmt ImportStatement) TreeString(indent string, label string) string {
 	result := fmt.Sprintf("%s%s[ImportStatement:", indent, label)
-	result += elementsTreeString(stmt.ImportClauses, indent+"  ", "ImportClause")
+	result += stmt.ImportClauses.TreeString(indent+"  ", "ImportClauses=")
 	result += "\n" + indent + "]"
 	return result
 }
@@ -194,7 +190,7 @@ type BranchStatement struct {
 	LeadingTrailingComments
 
 	IsDefault    bool
-	CasePatterns []Expression
+	CasePatterns *ExpressionList
 	Body         *StatementsExpr
 }
 
@@ -207,12 +203,8 @@ func (stmt BranchStatement) TreeString(indent string, label string) string {
 		label,
 		stmt.IsDefault)
 
-	if !stmt.IsDefault {
-		result += "\n" + ListTreeString(
-			stmt.CasePatterns,
-			indent+"  ",
-			"CasePatterns=",
-			"Pattern")
+	if stmt.CasePatterns != nil {
+		result += "\n" + stmt.CasePatterns.TreeString(indent+"  ", "CasePatterns=")
 	}
 
 	result += "\n" + stmt.Body.TreeString(indent+"  ", "Body=")

@@ -106,7 +106,7 @@ type NamedTypeExpr struct {
 	Pkg  string // optional.  "" = local
 	Name string
 
-	GenericArguments []TypeExpression
+	GenericArguments *TypeExpressionList
 }
 
 func (expr NamedTypeExpr) TreeString(indent string, label string) string {
@@ -116,16 +116,9 @@ func (expr NamedTypeExpr) TreeString(indent string, label string) string {
 		label,
 		expr.Pkg,
 		expr.Name)
-
-	if len(expr.GenericArguments) == 0 {
-		return result + "]"
-	}
-
-	result += "\n" + ListTreeString(
-		expr.GenericArguments,
+	result += "\n" + expr.GenericArguments.TreeString(
 		indent+"  ",
-		"GenericArguments=",
-		"GenericArgument")
+		"GenericArguments=")
 	result += "\n" + indent + "]"
 	return result
 }
@@ -205,7 +198,7 @@ type PropertiesTypeExpr struct {
 
 	IsImplicit bool
 
-	Properties []TypeProperty
+	Properties *TypePropertyList
 }
 
 var _ TypeExpression = &PropertiesTypeExpr{}
@@ -217,7 +210,7 @@ func (expr PropertiesTypeExpr) TreeString(indent string, label string) string {
 		label,
 		expr.Kind,
 		expr.IsImplicit)
-	result += elementsTreeString(expr.Properties, indent+"  ", "Property")
+	result += expr.Properties.TreeString(indent+"  ", "Properties=")
 	result += "\n" + indent + "]"
 	return result
 }
