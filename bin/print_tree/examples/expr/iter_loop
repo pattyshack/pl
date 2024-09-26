@@ -1,0 +1,3 @@
+for idx, element in list do {
+  fmt.Println(idx, element)
+}

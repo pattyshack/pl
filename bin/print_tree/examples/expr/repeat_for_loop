@@ -1,0 +1,3 @@
+repeat {
+  fmt.Println("do while")
+} for predicate()

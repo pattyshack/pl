@@ -1,10 +1,5 @@
 package ast
 
-import (
-	"fmt"
-	"strings"
-)
-
 //
 // StatementsExpr
 //
@@ -22,17 +17,6 @@ func (expr *StatementsExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Statements.Walk(visitor)
 	visitor.Exit(expr)
-}
-
-func (expr StatementsExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[StatementsExpr: LabelDecl=%s",
-		indent,
-		label,
-		expr.LabelDecl)
-	result += expr.Statements.TreeString(indent+"  ", "Statements=")
-	result += "\n" + indent + "]"
-	return result
 }
 
 //
@@ -54,15 +38,6 @@ func (clause *ImportClause) Walk(visitor Visitor) {
 	visitor.Exit(clause)
 }
 
-func (clause ImportClause) TreeString(indent string, label string) string {
-	return fmt.Sprintf(
-		"%s%s[ImportClause: Alias=%s Package=%s]",
-		indent,
-		label,
-		clause.Alias,
-		clause.Package)
-}
-
 //
 // ImportStatement
 //
@@ -81,13 +56,6 @@ func (stmt *ImportStatement) Walk(visitor Visitor) {
 	visitor.Enter(stmt)
 	stmt.ImportClauses.Walk(visitor)
 	visitor.Exit(stmt)
-}
-
-func (stmt ImportStatement) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[ImportStatement:", indent, label)
-	result += stmt.ImportClauses.TreeString(indent+"  ", "ImportClauses=")
-	result += "\n" + indent + "]"
-	return result
 }
 
 //
@@ -159,22 +127,6 @@ func NewJumpStatement(
 	return stmt
 }
 
-func (jump JumpStatement) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[JumpStatement: Op=%s Label=%s",
-		indent,
-		label,
-		jump.Op,
-		jump.Label)
-	if jump.Value == nil {
-		return result + " Value=(nil)]"
-	}
-
-	result += "\n" + jump.Value.TreeString(indent+"  ", "Value=")
-	result += "\n" + indent + "]"
-	return result
-}
-
 //
 // UnsafeStatement
 //
@@ -195,19 +147,6 @@ var _ TypeProperty = &UnsafeStatement{}
 func (stmt *UnsafeStatement) Walk(visitor Visitor) {
 	visitor.Enter(stmt)
 	visitor.Exit(stmt)
-}
-
-func (stmt UnsafeStatement) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[UnsafeStatement: Language=%s VerbatimSource=\n",
-		indent,
-		label,
-		stmt.Language)
-	for _, line := range strings.Split(stmt.VerbatimSource, "\n") {
-		result += indent + "  |" + line + "\n"
-	}
-	result += indent + "]"
-	return result
 }
 
 //
@@ -233,21 +172,4 @@ func (stmt *BranchStatement) Walk(visitor Visitor) {
 	}
 	stmt.Body.Walk(visitor)
 	visitor.Exit(stmt)
-}
-
-func (stmt BranchStatement) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[BranchStatement: IsDefault=%v",
-		indent,
-		label,
-		stmt.IsDefault)
-
-	if stmt.CasePatterns != nil {
-		result += "\n" + stmt.CasePatterns.TreeString(indent+"  ", "CasePatterns=")
-	}
-
-	result += "\n" + stmt.Body.TreeString(indent+"  ", "Body=")
-
-	result += "\n" + indent + "]"
-	return result
 }

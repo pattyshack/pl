@@ -1,9 +1,5 @@
 package ast
 
-import (
-	"fmt"
-)
-
 //
 // FieldDef
 //
@@ -35,16 +31,4 @@ func (def *FieldDef) Walk(visitor Visitor) {
 	visitor.Enter(def)
 	def.Type.Walk(visitor)
 	visitor.Exit(def)
-}
-
-func (def FieldDef) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[FieldDef: Kind=%s Name=%s\n",
-		indent,
-		label,
-		def.Kind,
-		def.Name)
-	result += def.Type.TreeString(indent+"  ", "Type=")
-	result += "\n" + indent + "]"
-	return result
 }

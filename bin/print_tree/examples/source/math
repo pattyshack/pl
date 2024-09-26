@@ -1,7 +1,7 @@
 let one = 1
 
-type Iter trait(
-  func next() Int
+type Iter$[Item] trait(
+  func next() Item
 )
 
 type Fib struct(

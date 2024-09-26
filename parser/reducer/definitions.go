@@ -111,7 +111,11 @@ func (reducer *Reducer) DefinitionToTypeDef(
 	leading.Append(typeKW.TakeTrailing())
 	leading.Append(name.TakeLeading())
 
-	genericParameters.PrependToLeading(name.TakeTrailing())
+	if genericParameters != nil {
+		genericParameters.PrependToLeading(name.TakeTrailing())
+	} else {
+		baseType.PrependToLeading(name.TakeTrailing())
+	}
 
 	trailing := baseType.TakeTrailing()
 
@@ -142,7 +146,11 @@ func (reducer *Reducer) ConstrainedDefToTypeDef(
 	leading.Append(typeKW.TakeTrailing())
 	leading.Append(name.TakeLeading())
 
-	genericParameters.PrependToLeading(name.TakeTrailing())
+	if genericParameters != nil {
+		genericParameters.PrependToLeading(name.TakeTrailing())
+	} else {
+		baseType.PrependToLeading(name.TakeTrailing())
+	}
 
 	baseType.AppendToTrailing(implements.TakeLeading())
 	constraint.PrependToLeading(implements.TakeTrailing())

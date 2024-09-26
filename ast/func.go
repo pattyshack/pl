@@ -1,9 +1,5 @@
 package ast
 
-import (
-	"fmt"
-)
-
 type FuncSignature struct {
 	IsTypeExpr
 	IsTypeProp
@@ -39,33 +35,6 @@ func (sig *FuncSignature) Walk(visitor Visitor) {
 	visitor.Exit(sig)
 }
 
-func (sig FuncSignature) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[FuncSignature: Name=%s\n",
-		indent,
-		label,
-		sig.Name)
-	if sig.Receiver != nil {
-		result += sig.Receiver.TreeString(indent+"  ", "Receiver=") + "\n"
-	}
-
-	result += sig.GenericParameters.TreeString(
-		indent+"  ",
-		"GenericParameters=")
-	result += "\n"
-
-	result += sig.Parameters.TreeString(indent+"  ", "Parameters=") + "\n"
-
-	if sig.ReturnType == nil {
-		result += indent + "  ReturnType=(nil)\n"
-	} else {
-		result += sig.ReturnType.TreeString(indent+"  ", "ReturnType=") + "\n"
-	}
-
-	result += indent + "]"
-	return result
-}
-
 type FuncDefinition struct {
 	IsExpr
 	IsDef
@@ -84,12 +53,4 @@ func (def *FuncDefinition) Walk(visitor Visitor) {
 	def.Signature.Walk(visitor)
 	def.Body.Walk(visitor)
 	visitor.Exit(def)
-}
-
-func (def FuncDefinition) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[FuncDefinition:\n", indent, label)
-	result += def.Signature.TreeString(indent+"  ", "Signature=") + "\n"
-	result += def.Body.TreeString(indent+"  ", "Body=")
-	result += "\n" + indent + "]"
-	return result
 }

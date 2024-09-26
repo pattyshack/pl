@@ -1,9 +1,5 @@
 package ast
 
-import (
-	"fmt"
-)
-
 //
 // Parameter
 //
@@ -44,23 +40,6 @@ func (param *Parameter) Walk(visitor Visitor) {
 		param.Type.Walk(visitor)
 	}
 	visitor.Exit(param)
-}
-
-func (param Parameter) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[Parameter: Kind=%v Name=%s HasEllipsis=%v\n",
-		indent,
-		label,
-		param.Kind,
-		param.Name,
-		param.HasEllipsis)
-	if param.Type != nil {
-		result += param.Type.TreeString(indent+"  ", "Type=")
-		result += "\n" + indent + "]"
-	} else {
-		result += "]"
-	}
-	return result
 }
 
 //
@@ -153,23 +132,4 @@ func NewSkipPatternArgument(
 	arg.LeadingComment = ellipsis.TakeLeading()
 	arg.TrailingComment = ellipsis.TakeTrailing()
 	return arg
-}
-
-func (arg *Argument) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[Argument: Kind=%v OptionalName=%s HasEllipsis=%v",
-		indent,
-		label,
-		arg.Kind,
-		arg.OptionalName,
-		arg.HasEllipsis)
-	if arg.Expr != nil {
-		result += "\n"
-		result += arg.Expr.TreeString(indent+"  ", "")
-		result += "\n" + indent + "]"
-	} else {
-		result += "]"
-	}
-
-	return result
 }

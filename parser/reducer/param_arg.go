@@ -303,6 +303,9 @@ func (reducer *Reducer) ToParameterDecls(
 	*ast.ParameterList,
 	error,
 ) {
+	if list == nil {
+		list = ast.NewParameterList()
+	}
 	list.ReduceMarkers(lparen, rparen)
 	return list, nil
 }
@@ -356,6 +359,9 @@ func (reducer *Reducer) ToParameterDefs(
 	*ast.ParameterList,
 	error,
 ) {
+	if list == nil {
+		list = ast.NewParameterList()
+	}
 	list.ReduceMarkers(lparen, rparen)
 	return list, nil
 }

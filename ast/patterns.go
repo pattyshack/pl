@@ -1,9 +1,5 @@
 package ast
 
-import (
-	"fmt"
-)
-
 //
 // VarPattern
 //
@@ -60,24 +56,6 @@ func (pattern *VarPattern) Walk(visitor Visitor) {
 	visitor.Exit(pattern)
 }
 
-func (expr VarPattern) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[VarPattern: Kind=%s\n",
-		indent,
-		label,
-		expr.Kind)
-	result += expr.VarPattern.TreeString(indent+"  ", "VarPattern=") + "\n"
-
-	if expr.Type == nil {
-		result += indent + "  TypeExpr=(nil)\n"
-	} else {
-		result += expr.Type.TreeString(indent+"  ", "TypeExpr=") + "\n"
-	}
-
-	result += indent + "]"
-	return result
-}
-
 //
 // CaseAssignPattern
 //
@@ -102,22 +80,6 @@ func (pattern *CaseAssignPattern) Walk(visitor Visitor) {
 	visitor.Exit(pattern)
 }
 
-func (pattern CaseAssignPattern) TreeString(
-	indent string,
-	label string,
-) string {
-	result := fmt.Sprintf(
-		"%s%s[CaseAssignPattern:\n",
-		indent,
-		label)
-	result += pattern.AssignPattern.TreeString(
-		indent+"  ",
-		"AssignPattern=")
-	result += "\n" + pattern.Value.TreeString(indent+"  ", "Value=")
-	result += "\n" + indent + "]"
-	return result
-}
-
 //
 // CaseEnumPattern
 //
@@ -139,19 +101,4 @@ func (pattern *CaseEnumPattern) Walk(visitor Visitor) {
 		pattern.VarPattern.Walk(visitor)
 	}
 	visitor.Exit(pattern)
-}
-
-func (pattern CaseEnumPattern) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[CaseEnumPattern: EnumValue=%s",
-		indent,
-		label,
-		pattern.EnumValue)
-	if pattern.VarPattern != nil {
-		result += "\n" + pattern.VarPattern.TreeString(indent+"  ", "VarPattern=")
-		result += "\n" + indent + "]"
-	} else {
-		result += "]"
-	}
-	return result
 }

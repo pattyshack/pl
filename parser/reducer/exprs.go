@@ -619,13 +619,6 @@ func (reducer *Reducer) ToCallExpr(
 ) {
 	leading := funcExpr.TakeLeading()
 
-	if genericArguments == nil {
-		genericArguments = ast.NewTypeExpressionList()
-		genericArguments.StartEndPos = lparen.StartEnd()
-	}
-
-	genericArguments.PrependToLeading(funcExpr.TakeTrailing())
-
 	if arguments == nil {
 		arguments = ast.NewArgumentList()
 	}

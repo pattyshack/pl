@@ -1,8 +1,6 @@
 package ast
 
 import (
-	"fmt"
-
 	"github.com/pattyshack/gt/lexutil"
 )
 
@@ -50,8 +48,6 @@ type Node interface {
 	Commentable
 
 	Walk(Visitor)
-
-	TreeString(indent string, label string) string
 }
 
 type Expression interface {
@@ -63,7 +59,6 @@ type Expression interface {
 
 type IsExpr struct {
 	IsStmt
-	IsDef
 }
 
 func (IsExpr) IsExpression() {}
@@ -88,10 +83,13 @@ func (IsTypeProp) IsTypeProperty() {}
 
 type Statement interface {
 	Node
+	Definition
 	IsStatement()
 }
 
-type IsStmt struct{}
+type IsStmt struct {
+	IsDef
+}
 
 func (IsStmt) IsStatement() {}
 
@@ -245,18 +243,4 @@ func NewParseErrorNode(startEnd StartEndPos, err error) *ParseErrorNode {
 func (s *ParseErrorNode) Walk(visitor Visitor) {
 	visitor.Enter(s)
 	visitor.Exit(s)
-}
-
-func (s ParseErrorNode) TreeString(indent string, label string) string {
-	more := ""
-	if len(s.Errors) > 1 {
-		fmt.Sprintf("(and %d more errors) ", len(s.Errors)-1)
-	}
-	return fmt.Sprintf(
-		"%s%s[ParseErrorNode: %s %s%s]",
-		indent,
-		label,
-		s.Errors[0],
-		more,
-		s.StartPos)
 }

@@ -1,0 +1,6 @@
+enum(
+  X string
+  (Int)
+  default X string
+  default ()
+)

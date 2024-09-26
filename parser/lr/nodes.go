@@ -73,15 +73,6 @@ func (s TokenValue) Walk(visitor ast.Visitor) {
 	panic("should never be called")
 }
 
-func (s TokenValue) TreeString(indent string, label string) string {
-	return fmt.Sprintf(
-		"%s%s[TokenValue: SymbolId=%s Value=%s]",
-		indent,
-		label,
-		s.SymbolId,
-		s.Value)
-}
-
 type ParseErrorSymbol struct {
 	*ast.ParseErrorNode
 }

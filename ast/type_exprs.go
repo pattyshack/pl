@@ -1,9 +1,5 @@
 package ast
 
-import (
-	"fmt"
-)
-
 //
 // SliceTypeExpr
 //
@@ -22,13 +18,6 @@ func (expr *SliceTypeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Value.Walk(visitor)
 	visitor.Exit(expr)
-}
-
-func (slice SliceTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[SliceTypeExpr:\n", indent, label)
-	result += slice.Value.TreeString(indent+"  ", "Value=")
-	result += "\n" + indent + "]"
-	return result
 }
 
 //
@@ -50,17 +39,6 @@ func (expr *ArrayTypeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Value.Walk(visitor)
 	visitor.Exit(expr)
-}
-
-func (array ArrayTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[ArrayTypeExpr: Size=%s\n",
-		indent,
-		label,
-		array.Size)
-	result += array.Value.TreeString(indent+"  ", "Value=")
-	result += "\n" + indent + "]"
-	return result
 }
 
 //
@@ -85,14 +63,6 @@ func (expr *MapTypeExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (dict MapTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf("%s%s[MapTypeExpr:\n", indent, label)
-	result += dict.Key.TreeString(indent+"  ", "Key=") + "\n"
-	result += dict.Value.TreeString(indent+"  ", "Value=")
-	result += "\n" + indent + "]"
-	return result
-}
-
 //
 // InferredTypeExpr
 //
@@ -110,14 +80,6 @@ func (expr *InferredTypeExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr InferredTypeExpr) TreeString(indent string, label string) string {
-	return fmt.Sprintf(
-		"%s%s[InferredTypeExpr: InferMutable=%v]",
-		indent,
-		label,
-		expr.InferMutable)
-}
-
 //
 // NamedTypeExpr
 //
@@ -130,27 +92,15 @@ type NamedTypeExpr struct {
 	Pkg  string // optional.  "" = local
 	Name string
 
-	GenericArguments *TypeExpressionList
+	GenericArguments *TypeExpressionList // optional
 }
 
 func (expr *NamedTypeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
-	expr.GenericArguments.Walk(visitor)
+	if expr.GenericArguments != nil {
+		expr.GenericArguments.Walk(visitor)
+	}
 	visitor.Exit(expr)
-}
-
-func (expr NamedTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[NamedTypeExpr: Pkg=%s Name=%s",
-		indent,
-		label,
-		expr.Pkg,
-		expr.Name)
-	result += "\n" + expr.GenericArguments.TreeString(
-		indent+"  ",
-		"GenericArguments=")
-	result += "\n" + indent + "]"
-	return result
 }
 
 //
@@ -174,17 +124,6 @@ func (expr *UnaryTypeExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr UnaryTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[UnaryTypeExpr: Op=(%s)\n",
-		indent,
-		label,
-		expr.Op)
-	result += expr.Operand.TreeString(indent+"  ", "Operand=")
-	result += "\n" + indent + "]"
-	return result
-}
-
 //
 // BinaryTypeExpr
 //
@@ -206,18 +145,6 @@ func (expr *BinaryTypeExpr) Walk(visitor Visitor) {
 	expr.Left.Walk(visitor)
 	expr.Right.Walk(visitor)
 	visitor.Exit(expr)
-}
-
-func (expr BinaryTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[BinaryTypeExpr: Op=(%s)\n",
-		indent,
-		label,
-		expr.Op)
-	result += expr.Left.TreeString(indent+"  ", "Left=") + "\n"
-	result += expr.Right.TreeString(indent+"  ", "Right=")
-	result += "\n" + indent + "]"
-	return result
 }
 
 //
@@ -250,16 +177,4 @@ func (expr *PropertiesTypeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Properties.Walk(visitor)
 	visitor.Exit(expr)
-}
-
-func (expr PropertiesTypeExpr) TreeString(indent string, label string) string {
-	result := fmt.Sprintf(
-		"%s%s[PropertiesTypeExpr: Kind=%s IsImplicit=%v\n",
-		indent,
-		label,
-		expr.Kind,
-		expr.IsImplicit)
-	result += expr.Properties.TreeString(indent+"  ", "Properties=")
-	result += "\n" + indent + "]"
-	return result
 }

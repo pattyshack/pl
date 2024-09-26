@@ -121,7 +121,9 @@ func (cmd *Command) printPackage(
 
 	fmt.Println("Tree:")
 	fmt.Println("-----")
-	fmt.Println(list.TreeString("", ""))
+	buffer := &bytes.Buffer{}
+	ast.PrintTree(buffer, list, "")
+	fmt.Println(buffer.String())
 
 	return nil
 }
@@ -139,7 +141,9 @@ func (cmd *Command) printFunc(
 
 		fmt.Println("Parsed:")
 		fmt.Println("-----")
-		fmt.Println(result.TreeString("", ""))
+		buffer := &bytes.Buffer{}
+		ast.PrintTree(buffer, result, "")
+		fmt.Println(buffer.String())
 
 		if len(reducer.ParseErrors) == 0 {
 			continue
