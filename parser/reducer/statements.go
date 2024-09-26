@@ -91,7 +91,6 @@ func (reducer *Reducer) ToStatements(
 	}
 	expr.LeadingComment.Append(list.MiddleComment)
 
-	reducer.StatementsExprs = append(reducer.StatementsExprs, expr)
 	return expr, nil
 }
 
@@ -130,7 +129,6 @@ func (reducer *Reducer) StatementToTrailingStatement(
 		Statements:  list,
 	}
 
-	reducer.StatementsExprs = append(reducer.StatementsExprs, expr)
 	return expr, nil
 }
 
@@ -157,7 +155,6 @@ func (reducer *Reducer) StringLiteralToImportClause(
 		Package:                 pkg.Value,
 	}
 
-	reducer.ImportClauses = append(reducer.ImportClauses, clause)
 	return clause, nil
 }
 
@@ -178,7 +175,6 @@ func (reducer *Reducer) aliasImport(
 	clause.LeadingComment = leading
 	clause.TrailingComment = pkg.TakeTrailing()
 
-	reducer.ImportClauses = append(reducer.ImportClauses, clause)
 	return clause
 }
 

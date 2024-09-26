@@ -22,7 +22,6 @@ func (reducer *Reducer) TrueToLiteralExpr(
 		LeadingTrailingComments: value.LeadingTrailingComments,
 		Value:                   value.Value,
 	}
-	reducer.BoolLiteralExprs = append(reducer.BoolLiteralExprs, expr)
 	return expr, nil
 }
 
@@ -37,7 +36,6 @@ func (reducer *Reducer) FalseToLiteralExpr(
 		LeadingTrailingComments: value.LeadingTrailingComments,
 		Value:                   value.Value,
 	}
-	reducer.BoolLiteralExprs = append(reducer.BoolLiteralExprs, expr)
 	return expr, nil
 }
 
@@ -52,7 +50,6 @@ func (reducer *Reducer) IntegerLiteralToLiteralExpr(
 		LeadingTrailingComments: value.LeadingTrailingComments,
 		Value:                   value.Value,
 	}
-	reducer.IntLiteralExprs = append(reducer.IntLiteralExprs, expr)
 	return expr, nil
 }
 
@@ -67,7 +64,6 @@ func (reducer *Reducer) FloatLiteralToLiteralExpr(
 		LeadingTrailingComments: value.LeadingTrailingComments,
 		Value:                   value.Value,
 	}
-	reducer.FloatLiteralExprs = append(reducer.FloatLiteralExprs, expr)
 	return expr, nil
 }
 
@@ -82,7 +78,6 @@ func (reducer *Reducer) RuneLiteralToLiteralExpr(
 		LeadingTrailingComments: value.LeadingTrailingComments,
 		Value:                   value.Value,
 	}
-	reducer.RuneLiteralExprs = append(reducer.RuneLiteralExprs, expr)
 	return expr, nil
 }
 
@@ -97,7 +92,6 @@ func (reducer *Reducer) StringLiteralToLiteralExpr(
 		LeadingTrailingComments: value.LeadingTrailingComments,
 		Value:                   value.Value,
 	}
-	reducer.StringLiteralExprs = append(reducer.StringLiteralExprs, expr)
 	return expr, nil
 }
 
@@ -116,7 +110,6 @@ func (reducer *Reducer) IdentifierToNamedExpr(
 		LeadingTrailingComments: value.LeadingTrailingComments,
 		Name:                    value.Value,
 	}
-	reducer.NamedExprs = append(reducer.NamedExprs, expr)
 	return expr, nil
 }
 
@@ -131,7 +124,6 @@ func (reducer *Reducer) UnderscoreToNamedExpr(
 		LeadingTrailingComments: value.LeadingTrailingComments,
 		Name:                    value.Value,
 	}
-	reducer.NamedExprs = append(reducer.NamedExprs, expr)
 	return expr, nil
 }
 
@@ -159,7 +151,6 @@ func (reducer *Reducer) ToAccessExpr(
 	operand.AppendToTrailing(field.TakeLeading())
 	expr.TrailingComment = field.TakeTrailing()
 
-	reducer.AccessExprs = append(reducer.AccessExprs, expr)
 	return expr, nil
 }
 
@@ -182,7 +173,6 @@ func (reducer *Reducer) toPostfixUnaryExpr(
 	operand.AppendToTrailing(op.TakeLeading())
 	expr.TrailingComment = op.TakeTrailing()
 
-	reducer.UnaryExprs = append(reducer.UnaryExprs, expr)
 	return expr
 }
 
@@ -211,7 +201,6 @@ func (reducer *Reducer) toPrefixUnaryExpr(
 	operand.PrependToLeading(op.TakeTrailing())
 	expr.TrailingComment = operand.TakeTrailing()
 
-	reducer.UnaryExprs = append(reducer.UnaryExprs, expr)
 	return expr
 }
 
@@ -256,7 +245,6 @@ func (reducer *Reducer) toBinaryExpr(
 	right.PrependToLeading(op.TakeTrailing())
 	expr.TrailingComment = right.TakeTrailing()
 
-	reducer.BinaryExprs = append(reducer.BinaryExprs, expr)
 	return expr
 }
 
@@ -388,7 +376,6 @@ func (reducer *Reducer) ToImplicitStructExpr(
 	error,
 ) {
 	expr := reducer.toImplicitStructExpr(lparen, args, rparen)
-	reducer.ImplicitStructExprs = append(reducer.ImplicitStructExprs, expr)
 	return expr, nil
 }
 
@@ -413,7 +400,6 @@ func (reducer *Reducer) PairToImproperExprStruct(
 		IsImproper:  true,
 	}
 
-	reducer.ImplicitStructExprs = append(reducer.ImplicitStructExprs, expr)
 	return expr, nil
 }
 
@@ -635,7 +621,6 @@ func (reducer *Reducer) ToCallExpr(
 	expr.LeadingComment = leading
 	expr.TrailingComment = trailing
 
-	reducer.CallExprs = append(reducer.CallExprs, expr)
 	return expr, nil
 }
 
@@ -665,7 +650,6 @@ func (reducer *Reducer) ToIndexExpr(
 	expr.LeadingComment = accessible.TakeLeading()
 	expr.TrailingComment = rbracket.TakeTrailing()
 
-	reducer.IndexExprs = append(reducer.IndexExprs, expr)
 	return expr, nil
 }
 
@@ -730,7 +714,6 @@ func (reducer *Reducer) ToInitializeExpr(
 	expr.LeadingComment = initializable.TakeLeading()
 	expr.TrailingComment = arguments.TakeTrailing()
 
-	reducer.InitializeExprs = append(reducer.InitializeExprs, expr)
 	return expr, nil
 }
 
@@ -836,7 +819,6 @@ func (reducer *Reducer) ToIfOnlyExpr(
 	}
 	expr.LeadingComment = leading
 
-	reducer.IfExprs = append(reducer.IfExprs, expr)
 	return expr, nil
 }
 
@@ -887,7 +869,6 @@ func (reducer *Reducer) ToSwitchExprBody(
 		operand.PrependToLeading(switchKW.TakeTrailing())
 		switchExpr.TrailingComment = trailing
 
-		reducer.SwitchExprs = append(reducer.SwitchExprs, switchExpr)
 		return switchExpr, nil
 	case *ast.ParseErrorNode:
 		return expr, nil
@@ -941,7 +922,6 @@ func (reducer *Reducer) ToSelectExprBody(
 		selectExpr.LeadingComment = switchKW.TakeLeading()
 		selectExpr.TrailingComment = trailing
 
-		reducer.SelectExprs = append(reducer.SelectExprs, selectExpr)
 		return selectExpr, nil
 	case *ast.ParseErrorNode:
 		return expr, nil

@@ -27,7 +27,6 @@ func (reducer *Reducer) ToSliceTypeExpr(
 	value.AppendToTrailing(rbracket.TakeLeading())
 	slice.TrailingComment = rbracket.TakeTrailing()
 
-	reducer.SliceTypeExprs = append(reducer.SliceTypeExprs, slice)
 	return slice, nil
 }
 
@@ -63,7 +62,6 @@ func (reducer *Reducer) ToArrayTypeExpr(
 	trailing.Append(rbracket.TakeTrailing())
 	array.TrailingComment = trailing
 
-	reducer.ArrayTypeExprs = append(reducer.ArrayTypeExprs, array)
 	return array, nil
 }
 
@@ -94,7 +92,6 @@ func (reducer *Reducer) ToMapTypeExpr(
 	value.AppendToTrailing(rbracket.TakeLeading())
 	dict.TrailingComment = rbracket.TakeTrailing()
 
-	reducer.MapTypeExprs = append(reducer.MapTypeExprs, dict)
 	return dict, nil
 }
 
@@ -114,7 +111,6 @@ func (reducer *Reducer) DotToInferredTypeExpr(
 	}
 	expr.LeadingComment = dot.TakeLeading()
 	expr.TrailingComment = dot.TakeTrailing()
-	reducer.InferredTypeExprs = append(reducer.InferredTypeExprs, expr)
 	return expr, nil
 }
 
@@ -130,7 +126,6 @@ func (reducer *Reducer) UnderscoreToInferredTypeExpr(
 	}
 	expr.LeadingComment = underscore.TakeLeading()
 	expr.TrailingComment = underscore.TakeTrailing()
-	reducer.InferredTypeExprs = append(reducer.InferredTypeExprs, expr)
 	return expr, nil
 }
 
@@ -157,7 +152,6 @@ func (reducer *Reducer) toNamedTypeExpr(
 	named.LeadingComment = leading
 	named.TrailingComment = end.TakeTrailing()
 
-	reducer.NamedTypeExprs = append(reducer.NamedTypeExprs, named)
 	return named
 }
 
@@ -214,7 +208,6 @@ func (reducer *Reducer) ToPrefixUnaryTypeExpr(
 	operand.PrependToLeading(op.TakeTrailing())
 	expr.TrailingComment = operand.TakeTrailing()
 
-	reducer.UnaryTypeExprs = append(reducer.UnaryTypeExprs, expr)
 	return expr, nil
 }
 
@@ -242,7 +235,6 @@ func (reducer *Reducer) ToBinaryTypeExpr(
 	right.PrependToLeading(op.TakeTrailing())
 	expr.TrailingComment = right.TakeTrailing()
 
-	reducer.BinaryTypeExprs = append(reducer.BinaryTypeExprs, expr)
 	return expr, nil
 }
 
@@ -311,7 +303,6 @@ func (reducer *Reducer) ToImplicitStructTypeExpr(
 		lparen,
 		properties,
 		rparen)
-	reducer.StructTypeExprs = append(reducer.StructTypeExprs, expr)
 	return expr, nil
 }
 
@@ -330,7 +321,6 @@ func (reducer *Reducer) ToExplicitStructTypeExpr(
 		lparen,
 		properties,
 		rparen)
-	reducer.StructTypeExprs = append(reducer.StructTypeExprs, expr)
 	return expr, nil
 }
 
@@ -349,7 +339,6 @@ func (reducer *Reducer) ToTraitTypeExpr(
 		lparen,
 		properties,
 		rparen)
-	reducer.TraitTypeExprs = append(reducer.TraitTypeExprs, expr)
 	return expr, nil
 }
 
@@ -366,7 +355,6 @@ func (reducer *Reducer) ToImplicitEnumTypeExpr(
 		lparen,
 		properties,
 		rparen)
-	reducer.EnumTypeExprs = append(reducer.EnumTypeExprs, expr)
 	return expr, nil
 }
 
@@ -385,6 +373,5 @@ func (reducer *Reducer) ToExplicitEnumTypeExpr(
 		lparen,
 		properties,
 		rparen)
-	reducer.EnumTypeExprs = append(reducer.EnumTypeExprs, expr)
 	return expr, nil
 }

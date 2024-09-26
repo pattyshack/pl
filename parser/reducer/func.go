@@ -96,7 +96,6 @@ func (reducer *Reducer) ToFuncTypeExpr(
 		nil, // generic parameters
 		parameters,
 		returnType)
-	reducer.FuncTypeExprs = append(reducer.FuncTypeExprs, sig)
 	return sig, nil
 }
 
@@ -138,7 +137,6 @@ func (reducer *Reducer) FuncDefToNamedFuncDef(
 		returnType,
 		body)
 
-	reducer.FuncDefinitions = append(reducer.FuncDefinitions, def)
 	return def, nil
 }
 
@@ -168,7 +166,6 @@ func (reducer *Reducer) MethodDefToNamedFuncDef(
 		parameters,
 		returnType,
 		body)
-	reducer.MethodDefinitions = append(reducer.MethodDefinitions, def)
 	return def, nil
 }
 
@@ -189,6 +186,5 @@ func (reducer *Reducer) ToAnonymousFuncExpr(
 		parameters,
 		returnType,
 		body)
-	reducer.AnonymousFuncExprs = append(reducer.AnonymousFuncExprs, def)
 	return def, nil
 }
