@@ -317,7 +317,9 @@ func (parser *sourceParser) rejectUnexpectedArguments() {
 
 	for _, initExpr := range parser.InitializeExprs {
 		for idx, arg := range initExpr.Arguments {
-			if arg.Kind == ast.SkipPatternArgument {
+			if arg.Kind == ast.SkipPatternArgument ||
+				arg.Kind == ast.VarargAssignmentArgument {
+
 				err := fmt.Errorf("unexpected %s argument: %s", arg.Kind, arg.Loc())
 				parser.ParseErrors = append(parser.ParseErrors, err)
 				initExpr.Arguments[idx] = ast.NewPositionalArgument(
