@@ -131,93 +131,6 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 
 /*
 TODO re-implement using visitor pattern
-
-func (parser *sourceParser) rejectUnexpectedStatements() {
-	pkgBodies := map[*ast.StatementsExpr]struct{}{}
-	for _, pkg := range parser.PackageDefs {
-		pkgBodies[pkg.Body] = struct{}{}
-	}
-
-	branchBodies := map[*ast.StatementsExpr]struct{}{}
-	for _, switchExpr := range parser.SwitchExprs {
-		branchBodies[switchExpr.Branches] = struct{}{}
-	}
-	for _, selectExpr := range parser.SelectExprs {
-		branchBodies[selectExpr.Branches] = struct{}{}
-	}
-
-	caseBodies := map[*ast.StatementsExpr]struct{}{}
-	for stmts, _ := range branchBodies {
-		for _, stmt := range stmts.Statements {
-			switch branch := stmt.(type) {
-			case *ast.BranchStatement:
-				caseBodies[branch.Body] = struct{}{}
-			}
-		}
-	}
-
-	for _, stmts := range parser.StatementsExprs {
-		for idx, stmt := range stmts.Statements {
-			switch casted := stmt.(type) {
-			case *ast.UnsafeStatement:
-				// usable by all
-			case *ast.ParseErrorNode:
-				// usable by all
-			case *ast.ImportStatement:
-				_, ok := pkgBodies[stmts]
-				if ok {
-					continue
-				}
-				err := fmt.Errorf("unexpected import statement: %s", stmt.Loc())
-				parser.ParseErrors = append(parser.ParseErrors, err)
-				stmts.Statements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
-
-			case *ast.BranchStatement:
-				_, ok := branchBodies[stmts]
-				if ok {
-					continue
-				}
-				err := fmt.Errorf("unexpected branch statement: %s", stmt.Loc())
-				parser.ParseErrors = append(parser.ParseErrors, err)
-				stmts.Statements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
-
-			case *ast.JumpStatement:
-				_, isPkg := pkgBodies[stmts]
-				_, isBranch := branchBodies[stmts]
-				if isPkg || isBranch {
-					err := fmt.Errorf("unexpected jump statement: %s", stmt.Loc())
-					parser.ParseErrors = append(parser.ParseErrors, err)
-					stmts.Statements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
-					continue
-				}
-
-				if casted.Op == ast.FallthroughOp {
-					_, ok := caseBodies[stmts]
-					if !ok {
-						err := fmt.Errorf(
-							"unexpected fallthrough statement: %s",
-							stmt.Loc())
-						parser.ParseErrors = append(parser.ParseErrors, err)
-						stmts.Statements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
-					}
-				}
-			case ast.Expression:
-				_, isPkg := pkgBodies[stmts]
-				_, isBranch := branchBodies[stmts]
-				if !isPkg && !isBranch {
-					continue
-				}
-				err := fmt.Errorf("unexpected expression statement: %s", stmt.Loc())
-				parser.ParseErrors = append(parser.ParseErrors, err)
-				stmts.Statements[idx] = ast.NewParseErrorNode(stmt.StartEnd(), err)
-
-			default:
-				panic(fmt.Sprintf("unexpected statement type: %v", stmt))
-			}
-		}
-	}
-}
-
 func (parser *sourceParser) rejectUnexpectedArguments() {
 	for _, indexExpr := range parser.IndexExprs {
 		switch indexExpr.Index.Kind {
@@ -265,8 +178,8 @@ func (parser *sourceParser) rejectUnexpectedArguments() {
 
 func (parser *sourceParser) analyze(node ast.Node) {
 	passes := [][]util.Pass{
-		{&reorganizeCaseStatements{}},
-		{&detectUnreachableStatements{}},
+		{reorganizeCaseStatements()},
+		{detectUnreachableStatements(), detectUnexpectedStatements()},
 	}
 
 	parser.ParseErrors = append(

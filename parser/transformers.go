@@ -4,21 +4,26 @@ import (
 	"fmt"
 
 	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/util"
 )
 
-type reorganizeCaseStatements struct {
+type caseStatementsReorganizer struct {
 	errs []error
 }
 
-func (transformer *reorganizeCaseStatements) Errors() []error {
+func reorganizeCaseStatements() util.Pass {
+	return &caseStatementsReorganizer{}
+}
+
+func (transformer *caseStatementsReorganizer) Errors() []error {
 	return transformer.errs
 }
 
-func (transformer *reorganizeCaseStatements) Process(node ast.Node) {
+func (transformer *caseStatementsReorganizer) Process(node ast.Node) {
 	node.Walk(transformer)
 }
 
-func (transformer *reorganizeCaseStatements) Enter(node ast.Node) {
+func (transformer *caseStatementsReorganizer) Enter(node ast.Node) {
 	switch expr := node.(type) {
 	case *ast.SwitchExpr:
 		transformer.groupCaseStatements(expr.Branches)
@@ -27,10 +32,10 @@ func (transformer *reorganizeCaseStatements) Enter(node ast.Node) {
 	}
 }
 
-func (reorganizeCaseStatements) Exit(node ast.Node) {
+func (caseStatementsReorganizer) Exit(node ast.Node) {
 }
 
-func (transformer *reorganizeCaseStatements) groupCaseStatements(
+func (transformer *caseStatementsReorganizer) groupCaseStatements(
 	stmts *ast.StatementsExpr,
 ) {
 	newStatements := []ast.Statement{}
