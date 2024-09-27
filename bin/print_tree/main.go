@@ -10,6 +10,7 @@ import (
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser"
+	"github.com/pattyshack/pl/util"
 )
 
 type Command struct {
@@ -121,7 +122,7 @@ func (cmd *Command) printPackage(
 	fmt.Println("Tree:")
 	fmt.Println("-----")
 	buffer := &bytes.Buffer{}
-	ast.PrintTree(buffer, list, "")
+	util.PrintTree(buffer, list, "")
 	fmt.Println(buffer.String())
 
 	if len(parseErrors) > 0 {
@@ -150,7 +151,7 @@ func (cmd *Command) printFunc(
 		fmt.Println("Parsed:")
 		fmt.Println("-----")
 		buffer := &bytes.Buffer{}
-		ast.PrintTree(buffer, result, "")
+		util.PrintTree(buffer, result, "")
 		fmt.Println(buffer.String())
 
 		if len(parseErrors) == 0 {
