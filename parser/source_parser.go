@@ -8,6 +8,7 @@ import (
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 	reducerImpl "github.com/pattyshack/pl/parser/reducer"
+	"github.com/pattyshack/pl/util"
 )
 
 type bufferLexer struct {
@@ -130,56 +131,6 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 
 /*
 TODO re-implement using visitor pattern
-
-func (parser *sourceParser) groupCaseStatements(stmts *ast.StatementsExpr) {
-	newStatements := []ast.Statement{}
-	var current *ast.BranchStatement
-	for _, stmt := range stmts.Statements {
-		branch, ok := stmt.(*ast.BranchStatement)
-		if !ok {
-			if current != nil {
-				current.Body.Statements = append(current.Body.Statements, stmt)
-				current.EndPos = stmt.End()
-			} else {
-				err := fmt.Errorf(
-					"statement does not belong to any branch: %s",
-					stmt.Loc())
-				parser.ParseErrors = append(parser.ParseErrors, err)
-				newStatements = append(
-					newStatements,
-					ast.NewParseErrorNode(stmt.StartEnd(), err))
-			}
-			continue
-		}
-
-		current = branch
-		newStatements = append(newStatements, branch)
-
-		// Flatten nested case statements
-		for {
-			if len(current.Body.Statements) == 0 {
-				break
-			}
-
-			if len(current.Body.Statements) != 1 {
-				panic("should never happen")
-			}
-
-			nested, ok := current.Body.Statements[0].(*ast.BranchStatement)
-			if !ok {
-				break
-			}
-
-			current.EndPos = nested.Loc()
-			current.Body.Statements = nil
-
-			current = nested
-			newStatements = append(newStatements, nested)
-		}
-	}
-
-	stmts.Statements = newStatements
-}
 
 func (parser *sourceParser) pruneUnreachableStatements(
 	stmts *ast.StatementsExpr,
@@ -335,16 +286,16 @@ func (parser *sourceParser) rejectUnexpectedArguments() {
 
 */
 
-func (parser *sourceParser) analyze() {
+func (parser *sourceParser) analyze(node ast.Node) {
+	passes := [][]util.Pass{
+		{&reorganizeCaseStatements{}},
+	}
+
+	parser.ParseErrors = append(
+		parser.ParseErrors,
+		util.Process(node, passes, 0)...)
+
 	/*
-	   	for _, expr := range parser.SwitchExprs {
-	   		parser.groupCaseStatements(expr.Branches)
-	   	}
-
-	   	for _, expr := range parser.SelectExprs {
-	   		parser.groupCaseStatements(expr.Branches)
-	   	}
-
 	   	for _, stmts := range parser.StatementsExprs {
 	   		parser.pruneUnreachableStatements(stmts)
 	   	}
@@ -364,7 +315,7 @@ func (parser *sourceParser) parseSource() (
 		return nil, nil, err
 	}
 
-	parser.analyze()
+	parser.analyze(source)
 	return source, parser.ParseErrors, nil
 }
 
@@ -378,7 +329,7 @@ func (parser *sourceParser) parseExpr() (
 		return nil, nil, err
 	}
 
-	parser.analyze()
+	parser.analyze(expr)
 	return expr, parser.ParseErrors, nil
 }
 
@@ -392,7 +343,7 @@ func (parser *sourceParser) parseTypeExpr() (
 		return nil, nil, err
 	}
 
-	parser.analyze()
+	parser.analyze(typeExpr)
 	return typeExpr, parser.ParseErrors, nil
 }
 
@@ -406,7 +357,7 @@ func (parser *sourceParser) parseStatement() (
 		return nil, nil, err
 	}
 
-	parser.analyze()
+	parser.analyze(stmt)
 	return stmt, parser.ParseErrors, nil
 }
 
@@ -420,7 +371,7 @@ func (parser *sourceParser) parseDefinition() (
 		return nil, nil, err
 	}
 
-	parser.analyze()
+	parser.analyze(def)
 	return def, parser.ParseErrors, nil
 }
 
