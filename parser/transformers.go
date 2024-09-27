@@ -33,45 +33,46 @@ func (reorganizeCaseStatements) Exit(node ast.Node) {
 func (transformer *reorganizeCaseStatements) groupCaseStatements(
 	stmts *ast.StatementsExpr,
 ) {
-	newStatements := ast.NewStatementList()
+	newStatements := []ast.Statement{}
 	var current *ast.BranchStatement
-	for _, stmt := range stmts.Statements.Elements {
+	for _, stmt := range stmts.Statements {
 		branch, ok := stmt.(*ast.BranchStatement)
 		if !ok {
 			if current != nil {
-				current.Body.Statements.Add(stmt)
+				current.Body.Statements = append(current.Body.Statements, stmt)
 			} else {
 				err := fmt.Errorf(
 					"statement does not belong to any branch: %s",
 					stmt.Loc())
 				transformer.errs = append(transformer.errs, err)
-				newStatements.Add(
+				newStatements = append(
+					newStatements,
 					ast.NewParseErrorNode(stmt.StartEnd(), err))
 			}
 			continue
 		}
 
 		current = branch
-		newStatements.Add(branch)
+		newStatements = append(newStatements, branch)
 
 		// Flatten nested case statements
 		for {
-			if len(current.Body.Statements.Elements) == 0 {
+			if len(current.Body.Statements) == 0 {
 				break
 			}
 
-			if len(current.Body.Statements.Elements) != 1 {
+			if len(current.Body.Statements) != 1 {
 				panic("should never happen")
 			}
 
-			nested, ok := current.Body.Statements.Elements[0].(*ast.BranchStatement)
+			nested, ok := current.Body.Statements[0].(*ast.BranchStatement)
 			if !ok {
 				break
 			}
 
-			current.Body.Statements.Elements = nil
+			current.Body.Statements = nil
 			current = nested
-			newStatements.Add(nested)
+			newStatements = append(newStatements, nested)
 		}
 	}
 

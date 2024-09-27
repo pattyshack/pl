@@ -75,8 +75,12 @@ func (printer *treePrinter) push(labels ...string) {
 	}
 }
 
-func (printer *treePrinter) list(elementType string, size int) {
-	printer.write("[%sList:", elementType)
+func (printer *treePrinter) list(
+	header string,
+	elementType string,
+	size int,
+) {
+	printer.write(header)
 	if size == 0 {
 		printer.write("]")
 	} else {
@@ -146,8 +150,10 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.write("[InitializeExpr:")
 		printer.push("Initializable=", "Arguments=")
 	case *ast.IfExpr:
-		printer.write("[IfExpr: LabelDecl=%s", node.LabelDecl)
-		printer.push("Branches=")
+		printer.list(
+			fmt.Sprintf("[IfExpr: LabelDecl=%s", node.LabelDecl),
+			"Branch",
+			len(node.ConditionBranches))
 	case *ast.SwitchExpr:
 		printer.write("[SwitchExpr: LabelDecl=%s", node.LabelDecl)
 		printer.push("Operand=", "Branches=")
@@ -172,8 +178,10 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		labels = append(labels, "Body=")
 		printer.push(labels...)
 	case *ast.StatementsExpr:
-		printer.write("[StatementsExpr: LabelDecl=%s", node.LabelDecl)
-		printer.push("Statements=")
+		printer.list(
+			fmt.Sprintf("[StatementsExpr: LabelDecl=%s", node.LabelDecl),
+			"Statement",
+			len(node.Statements))
 	case *ast.VarPattern:
 		printer.write("[VarPattern: Kind=%s", node.Kind)
 		if node.Type != nil {
@@ -217,11 +225,13 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.write("[BinaryTypeExpr: Op=(%s)", node.Op)
 		printer.push("Left=", "Right=")
 	case *ast.PropertiesTypeExpr:
-		printer.write(
-			"[PropertiesTypeExpr: Kind=%s IsImplicit=%v",
-			node.Kind,
-			node.IsImplicit)
-		printer.push("Properties=")
+		printer.list(
+			fmt.Sprintf(
+				"[PropertiesTypeExpr: Kind=%s IsImplicit=%v",
+				node.Kind,
+				node.IsImplicit),
+			"Property",
+			len(node.Properties))
 	case *ast.FuncSignature:
 		printer.write("[FuncSignature: Name=%s", node.Name)
 		labels := []string{}
@@ -238,8 +248,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.push(labels...)
 
 	case *ast.ImportStatement:
-		printer.write("[ImportStatement:")
-		printer.push("ImportClauses=")
+		printer.list("[ImportStatement:", "ImportClause", len(node.ImportClauses))
 	case *ast.JumpStatement:
 		printer.write("[JumpStatement: Op=%s Label=%s", node.Op, node.Label)
 		if node.Value != nil {
@@ -333,25 +342,20 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		}
 
 	case *ast.DefinitionList:
-		printer.list("Definition", len(node.Elements))
+		printer.list("[DefinitionList:", "Definition", len(node.Elements))
 	case *ast.ExpressionList:
-		printer.list("Expression", len(node.Elements))
-	case *ast.TypePropertyList:
-		printer.list("TypeProperty", len(node.Elements))
+		printer.list("[ExpressionList:", "Expression", len(node.Elements))
 	case *ast.TypeExpressionList:
-		printer.list("TypeExpression", len(node.Elements))
-	case *ast.StatementList:
-		printer.list("Statement", len(node.Elements))
+		printer.list("[TypeExpressionList:", "TypeExpression", len(node.Elements))
 	case *ast.ParameterList:
-		printer.list("Parameter", len(node.Elements))
+		printer.list("[ParameterList:", "Parameter", len(node.Elements))
 	case *ast.ArgumentList:
-		printer.list("Argument", len(node.Elements))
+		printer.list("[ArgumentList:", "Argument", len(node.Elements))
 	case *ast.GenericParameterList:
-		printer.list("GenericParameter", len(node.Elements))
-	case *ast.ImportClauseList:
-		printer.list("ImportClause", len(node.Elements))
-	case *ast.ConditionBranchList:
-		printer.list("ConditionBranch", len(node.Elements))
+		printer.list(
+			"[GenericParameterList:",
+			"GenericParameter",
+			len(node.Elements))
 	default:
 		printer.write("unhandled node: %v", n)
 	}
@@ -378,7 +382,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.InitializeExpr:
 		printer.endNode()
 	case *ast.IfExpr:
-		printer.endNode()
+		printer.endList(len(node.ConditionBranches))
 	case *ast.SwitchExpr:
 		printer.endNode()
 	case *ast.SelectExpr:
@@ -386,7 +390,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.LoopExpr:
 		printer.endNode()
 	case *ast.StatementsExpr:
-		printer.endNode()
+		printer.endList(len(node.Statements))
 	case *ast.VarPattern:
 		printer.endNode()
 	case *ast.CaseAssignPattern:
@@ -411,12 +415,12 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.BinaryTypeExpr:
 		printer.endNode()
 	case *ast.PropertiesTypeExpr:
-		printer.endNode()
+		printer.endList(len(node.Properties))
 	case *ast.FuncSignature:
 		printer.endNode()
 
 	case *ast.ImportStatement:
-		printer.endNode()
+		printer.endList(len(node.ImportClauses))
 	case *ast.JumpStatement:
 		if node.Value != nil {
 			printer.endNode()
@@ -452,21 +456,13 @@ func (printer *treePrinter) Exit(n ast.Node) {
 		printer.endList(len(node.Elements))
 	case *ast.ExpressionList:
 		printer.endList(len(node.Elements))
-	case *ast.TypePropertyList:
-		printer.endList(len(node.Elements))
 	case *ast.TypeExpressionList:
-		printer.endList(len(node.Elements))
-	case *ast.StatementList:
 		printer.endList(len(node.Elements))
 	case *ast.ParameterList:
 		printer.endList(len(node.Elements))
 	case *ast.ArgumentList:
 		printer.endList(len(node.Elements))
 	case *ast.GenericParameterList:
-		printer.endList(len(node.Elements))
-	case *ast.ImportClauseList:
-		printer.endList(len(node.Elements))
-	case *ast.ConditionBranchList:
 		printer.endList(len(node.Elements))
 	}
 }

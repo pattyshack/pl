@@ -10,12 +10,14 @@ type StatementsExpr struct {
 	LeadingTrailingComments
 
 	LabelDecl  string // optional
-	Statements *StatementList
+	Statements []Statement
 }
 
 func (expr *StatementsExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
-	expr.Statements.Walk(visitor)
+	for _, stmt := range expr.Statements {
+		stmt.Walk(visitor)
+	}
 	visitor.Exit(expr)
 }
 
@@ -47,14 +49,16 @@ type ImportStatement struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	ImportClauses *ImportClauseList
+	ImportClauses []*ImportClause
 }
 
 var _ Statement = &ImportStatement{}
 
 func (stmt *ImportStatement) Walk(visitor Visitor) {
 	visitor.Enter(stmt)
-	stmt.ImportClauses.Walk(visitor)
+	for _, clause := range stmt.ImportClauses {
+		clause.Walk(visitor)
+	}
 	visitor.Exit(stmt)
 }
 

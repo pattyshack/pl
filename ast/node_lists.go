@@ -80,16 +80,6 @@ func NewExpressionList() *ExpressionList {
 }
 
 //
-// TypePropertyList
-//
-
-type TypePropertyList = NodeList[TypeProperty]
-
-func NewTypePropertyList() *TypePropertyList {
-	return &NodeList[TypeProperty]{}
-}
-
-//
 // TypeExpressionList
 //
 
@@ -97,16 +87,6 @@ type TypeExpressionList = NodeList[TypeExpression]
 
 func NewTypeExpressionList() *TypeExpressionList {
 	return &NodeList[TypeExpression]{}
-}
-
-//
-// StatementList
-//
-
-type StatementList = NodeList[Statement]
-
-func NewStatementList() *StatementList {
-	return &NodeList[Statement]{}
 }
 
 //
@@ -140,21 +120,29 @@ func NewGenericParameterList() *GenericParameterList {
 }
 
 //
-// ImportClauseList
+// Intermediate representations only used during parsing.  Not real ast list
 //
 
-type ImportClauseList = NodeList[*ImportClause]
+type StatementList = NodeList[Statement]
 
-func NewImportClauseList() *ImportClauseList {
-	return &NodeList[*ImportClause]{}
+func NewStatementList() *StatementList {
+	return &NodeList[Statement]{}
 }
 
-//
-// ConditionBranchList
-//
+type TypePropertyList = NodeList[TypeProperty]
+
+func NewTypePropertyList() *TypePropertyList {
+	return &NodeList[TypeProperty]{}
+}
 
 type ConditionBranchList = NodeList[*ConditionBranch]
 
 func NewConditionBranchList() *ConditionBranchList {
 	return &NodeList[*ConditionBranch]{}
+}
+
+type ImportClauseList = NodeList[*ImportClause]
+
+func NewImportClauseList() *ImportClauseList {
+	return &NodeList[*ImportClause]{}
 }

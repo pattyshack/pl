@@ -727,8 +727,8 @@ func (reducer *Reducer) UnlabelledToIfExpr(
 	ast.Expression,
 	error,
 ) {
-	elements := ifExpr.ConditionBranches.Elements
-	ifExpr.TrailingComment = elements[len(elements)-1].TakeTrailing()
+	branches := ifExpr.ConditionBranches
+	ifExpr.TrailingComment = branches[len(branches)-1].TakeTrailing()
 	return ifExpr, nil
 }
 
@@ -756,6 +756,9 @@ func (reducer *Reducer) ElseToIfElseExpr(
 	*ast.IfExpr,
 	error,
 ) {
+	last := ifExpr.ConditionBranches[len(ifExpr.ConditionBranches)-1]
+	last.AppendToTrailing(elseKW.TakeLeading())
+
 	cb := &ast.ConditionBranch{
 		StartEndPos: ast.NewStartEndPos(elseKW.Loc(), branch.End()),
 		IsElse:      true,
@@ -763,8 +766,10 @@ func (reducer *Reducer) ElseToIfElseExpr(
 	}
 	cb.LeadingComment = elseKW.TakeTrailing()
 	cb.LeadingComment.Append(branch.TakeLeading())
+	cb.TrailingComment = branch.TakeTrailing()
 
-	ifExpr.ConditionBranches.ReduceAdd(elseKW, cb)
+	ifExpr.EndPos = branch.End()
+	ifExpr.ConditionBranches = append(ifExpr.ConditionBranches, cb)
 	return ifExpr, nil
 }
 
@@ -778,6 +783,9 @@ func (reducer *Reducer) ElifToIfElifExpr(
 	*ast.IfExpr,
 	error,
 ) {
+	last := ifExpr.ConditionBranches[len(ifExpr.ConditionBranches)-1]
+	last.AppendToTrailing(elseKW.TakeLeading())
+
 	cb := &ast.ConditionBranch{
 		StartEndPos: ast.NewStartEndPos(elseKW.Loc(), branch.End()),
 		Condition:   condition,
@@ -787,8 +795,10 @@ func (reducer *Reducer) ElifToIfElifExpr(
 	cb.LeadingComment.Append(ifKW.TakeLeading())
 	cb.LeadingComment.Append(ifKW.TakeTrailing())
 	cb.LeadingComment.Append(condition.TakeLeading())
+	cb.TrailingComment = branch.TakeTrailing()
 
-	ifExpr.ConditionBranches.ReduceAdd(elseKW, cb)
+	ifExpr.EndPos = branch.End()
+	ifExpr.ConditionBranches = append(ifExpr.ConditionBranches, cb)
 	return ifExpr, nil
 }
 
@@ -809,13 +819,11 @@ func (reducer *Reducer) ToIfOnlyExpr(
 	}
 	cb.LeadingComment = ifKW.TakeTrailing()
 	cb.LeadingComment.Append(condition.TakeLeading())
-
-	list := ast.NewConditionBranchList()
-	list.Add(cb)
+	cb.TrailingComment = branch.TakeTrailing()
 
 	expr := &ast.IfExpr{
 		StartEndPos:       ast.NewStartEndPos(ifKW.Loc(), branch.End()),
-		ConditionBranches: list,
+		ConditionBranches: []*ast.ConditionBranch{cb},
 	}
 	expr.LeadingComment = leading
 

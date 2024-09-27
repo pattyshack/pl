@@ -345,14 +345,16 @@ type IfExpr struct {
 	LeadingTrailingComments
 
 	LabelDecl         string // optional
-	ConditionBranches *ConditionBranchList
+	ConditionBranches []*ConditionBranch
 }
 
 var _ Expression = &IfExpr{}
 
 func (expr *IfExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
-	expr.ConditionBranches.Walk(visitor)
+	for _, condBranch := range expr.ConditionBranches {
+		condBranch.Walk(visitor)
+	}
 	visitor.Exit(expr)
 }
 

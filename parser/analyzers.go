@@ -24,18 +24,18 @@ func (detector *detectUnreachableStatements) Enter(node ast.Node) {
 		return
 	}
 
-	for idx, stmt := range stmts.Statements.Elements {
+	for idx, stmt := range stmts.Statements {
 		_, ok := stmt.(*ast.JumpStatement)
 		if !ok {
 			continue
 		}
 
-		if idx < len(stmts.Statements.Elements)-1 {
+		if idx < len(stmts.Statements)-1 {
 			detector.errs = append(
 				detector.errs,
 				fmt.Errorf(
 					"unreachable statement: %s",
-					stmts.Statements.Elements[idx+1].Loc()))
+					stmts.Statements[idx+1].Loc()))
 			break
 		}
 	}

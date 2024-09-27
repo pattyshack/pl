@@ -254,11 +254,11 @@ func (reducer *Reducer) implicitPropertiesTypeExpr(
 	properties.ReduceMarkers(lparen, rparen)
 
 	return &ast.PropertiesTypeExpr{
-		StartEndPos:             ast.NewStartEndPos(lparen.Loc(), rparen.End()),
+		StartEndPos:             properties.StartEnd(),
 		LeadingTrailingComments: properties.TakeComments(),
 		Kind:                    kind,
 		IsImplicit:              true,
-		Properties:              properties,
+		Properties:              properties.Elements,
 	}
 }
 
@@ -274,18 +274,16 @@ func (reducer *Reducer) explicitPropertiesTypeExpr(
 	}
 	properties.ReduceMarkers(lparen, rparen)
 
-	leading := kw.TakeLeading()
 	properties.PrependToLeading(kw.TakeTrailing())
-	trailing := properties.TakeTrailing()
+	properties.PrependToLeading(kw.TakeLeading())
 
 	expr := &ast.PropertiesTypeExpr{
-		StartEndPos: ast.NewStartEndPos(kw.Loc(), rparen.End()),
-		Kind:        kind,
-		IsImplicit:  false,
-		Properties:  properties,
+		StartEndPos:             ast.NewStartEndPos(kw.Loc(), rparen.End()),
+		LeadingTrailingComments: properties.TakeComments(),
+		Kind:                    kind,
+		IsImplicit:              false,
+		Properties:              properties.Elements,
 	}
-	expr.LeadingComment = leading
-	expr.TrailingComment = trailing
 
 	return expr
 }

@@ -168,13 +168,15 @@ type PropertiesTypeExpr struct {
 
 	IsImplicit bool
 
-	Properties *TypePropertyList
+	Properties []TypeProperty
 }
 
 var _ TypeExpression = &PropertiesTypeExpr{}
 
 func (expr *PropertiesTypeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
-	expr.Properties.Walk(visitor)
+	for _, prop := range expr.Properties {
+		prop.Walk(visitor)
+	}
 	visitor.Exit(expr)
 }

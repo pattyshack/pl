@@ -87,7 +87,7 @@ func (reducer *Reducer) ToStatements(
 	expr := &ast.StatementsExpr{
 		StartEndPos:             list.StartEndPos,
 		LeadingTrailingComments: list.TakeComments(),
-		Statements:              list,
+		Statements:              list.Elements,
 	}
 	expr.LeadingComment.Append(list.MiddleComment)
 
@@ -121,12 +121,9 @@ func (reducer *Reducer) StatementToTrailingStatement(
 	*ast.StatementsExpr,
 	error,
 ) {
-	list := ast.NewStatementList()
-	list.Add(stmt)
-
 	expr := &ast.StatementsExpr{
 		StartEndPos: stmt.StartEnd(),
-		Statements:  list,
+		Statements:  []ast.Statement{stmt},
 	}
 
 	return expr, nil
@@ -228,7 +225,7 @@ func (reducer *Reducer) SingleToImportStatement(
 
 	stmt := &ast.ImportStatement{
 		StartEndPos:   ast.NewStartEndPos(importKW.Loc(), importClause.End()),
-		ImportClauses: list,
+		ImportClauses: []*ast.ImportClause{importClause},
 	}
 	stmt.LeadingComment = leading
 	stmt.TrailingComment = trailing
@@ -248,12 +245,13 @@ func (reducer *Reducer) MultipleToImportStatement(
 	clauses.ReduceMarkers(lparen, rparen)
 
 	leading := importKW.TakeLeading()
-	clauses.PrependToLeading(importKW.TakeTrailing())
+	leading.Append(importKW.TakeTrailing())
+	leading.Append(clauses.TakeLeading())
 	trailing := clauses.TakeTrailing()
 
 	stmt := &ast.ImportStatement{
 		StartEndPos:   ast.NewStartEndPos(importKW.Loc(), clauses.End()),
-		ImportClauses: clauses,
+		ImportClauses: clauses.Elements,
 	}
 	stmt.LeadingComment = leading
 	stmt.TrailingComment = trailing
@@ -459,12 +457,8 @@ func (reducer *Reducer) DefaultBranchToBranchStatement(
 	if body != nil {
 		end = body
 	} else {
-		stmts := ast.NewStatementList()
-		stmts.StartEndPos = colon.StartEnd()
-
 		body = &ast.StatementsExpr{
 			StartEndPos: colon.StartEnd(),
-			Statements:  stmts,
 		}
 	}
 
