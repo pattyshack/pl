@@ -132,29 +132,6 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 /*
 TODO re-implement using visitor pattern
 
-func (parser *sourceParser) pruneUnreachableStatements(
-	stmts *ast.StatementsExpr,
-) {
-	for idx, stmt := range stmts.Statements {
-		_, ok := stmt.(*ast.JumpStatement)
-		if !ok {
-			continue
-		}
-
-		if idx < len(stmts.Statements)-1 {
-			err := fmt.Errorf(
-				"unreachable statement: %s",
-				stmts.Statements[idx+1].Loc())
-			parser.ParseErrors = append(parser.ParseErrors, err)
-			stmts.Statements[idx+1] = ast.NewParseErrorNode(
-				stmts.Statements[idx+1].StartEnd(),
-				err)
-			stmts.Statements = stmts.Statements[:idx+2]
-			break
-		}
-	}
-}
-
 func (parser *sourceParser) rejectUnexpectedStatements() {
 	pkgBodies := map[*ast.StatementsExpr]struct{}{}
 	for _, pkg := range parser.PackageDefs {
@@ -289,6 +266,7 @@ func (parser *sourceParser) rejectUnexpectedArguments() {
 func (parser *sourceParser) analyze(node ast.Node) {
 	passes := [][]util.Pass{
 		{&reorganizeCaseStatements{}},
+		{&detectUnreachableStatements{}},
 	}
 
 	parser.ParseErrors = append(
@@ -296,10 +274,6 @@ func (parser *sourceParser) analyze(node ast.Node) {
 		util.Process(node, passes, 0)...)
 
 	/*
-	   	for _, stmts := range parser.StatementsExprs {
-	   		parser.pruneUnreachableStatements(stmts)
-	   	}
-
 	   parser.rejectUnexpectedStatements()
 	   parser.rejectUnexpectedArguments()
 	*/
