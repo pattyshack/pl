@@ -2,13 +2,12 @@ package parser
 
 import (
 	"github.com/pattyshack/pl/ast"
-	reducerImpl "github.com/pattyshack/pl/parser/reducer"
 )
 
 type parseSourceResult struct {
-	*reducerImpl.Reducer
-	*ast.DefinitionList
-	Err error
+	Defs        *ast.DefinitionList
+	ParseErrors []error
+	Err         error
 }
 
 type packageParser struct {
@@ -18,19 +17,23 @@ func ParsePackage(
 	packageSources []string,
 	options ParserOptions,
 ) (
-	*reducerImpl.Reducer,
 	*ast.DefinitionList,
+	[]error,
 	error,
 ) {
 	sourceChan := make(chan parseSourceResult, len(packageSources))
 	for _, src := range packageSources {
 		go func(fileName string) {
-			reducer, list, err := ParseSource(fileName, options)
-			sourceChan <- parseSourceResult{reducer, list, err}
+			list, parseErrors, err := ParseSource(fileName, options)
+			sourceChan <- parseSourceResult{
+				Defs:        list,
+				ParseErrors: parseErrors,
+				Err:         err,
+			}
 		}(src)
 	}
 
-	var reducer *reducerImpl.Reducer
+	var parseErrors []error
 	var list *ast.DefinitionList
 	for i := 0; i < len(packageSources); i++ {
 		result := <-sourceChan
@@ -39,13 +42,13 @@ func ParsePackage(
 		}
 
 		if i == 0 {
-			reducer = result.Reducer
-			list = result.DefinitionList
+			list = result.Defs
+			parseErrors = result.ParseErrors
 		} else {
-			reducer.MergeFrom(result.Reducer)
-			list.Elements = append(list.Elements, result.DefinitionList.Elements...)
+			list.Elements = append(list.Elements, result.Defs.Elements...)
+			parseErrors = append(parseErrors, result.ParseErrors...)
 		}
 	}
 
-	return reducer, list, nil
+	return list, parseErrors, nil
 }

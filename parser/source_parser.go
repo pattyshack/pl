@@ -96,7 +96,7 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 	list := ast.NewDefinitionList()
 	for {
 		start := parser.lexer.CurrentLocation()
-		segment, err := parser.readDefinitionSegment()
+		segment, readErr := parser.readDefinitionSegment()
 		end := parser.lexer.CurrentLocation()
 
 		if len(segment) > 0 {
@@ -118,12 +118,12 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 			}
 		}
 
-		if err != nil {
-			if err == io.EOF {
-				err = nil
+		if readErr != nil {
+			if readErr == io.EOF {
+				readErr = nil
 			}
 
-			return list, err
+			return list, readErr
 		}
 	}
 }
@@ -355,8 +355,8 @@ func (parser *sourceParser) analyze() {
 }
 
 func (parser *sourceParser) parseSource() (
-	*reducerImpl.Reducer,
 	*ast.DefinitionList,
+	[]error,
 	error,
 ) {
 	source, err := parser._parseSource()
@@ -365,12 +365,12 @@ func (parser *sourceParser) parseSource() (
 	}
 
 	parser.analyze()
-	return parser.Reducer, source, nil
+	return source, parser.ParseErrors, nil
 }
 
 func (parser *sourceParser) parseExpr() (
-	*reducerImpl.Reducer,
 	ast.Expression,
+	[]error,
 	error,
 ) {
 	expr, err := lr.ParseExpr(parser.lexer, parser)
@@ -379,12 +379,12 @@ func (parser *sourceParser) parseExpr() (
 	}
 
 	parser.analyze()
-	return parser.Reducer, expr, nil
+	return expr, parser.ParseErrors, nil
 }
 
 func (parser *sourceParser) parseTypeExpr() (
-	*reducerImpl.Reducer,
 	ast.TypeExpression,
+	[]error,
 	error,
 ) {
 	typeExpr, err := lr.ParseTypeExpr(parser.lexer, parser)
@@ -393,12 +393,12 @@ func (parser *sourceParser) parseTypeExpr() (
 	}
 
 	parser.analyze()
-	return parser.Reducer, typeExpr, nil
+	return typeExpr, parser.ParseErrors, nil
 }
 
 func (parser *sourceParser) parseStatement() (
-	*reducerImpl.Reducer,
 	ast.Statement,
+	[]error,
 	error,
 ) {
 	stmt, err := lr.ParseStatement(parser.lexer, parser)
@@ -407,12 +407,12 @@ func (parser *sourceParser) parseStatement() (
 	}
 
 	parser.analyze()
-	return parser.Reducer, stmt, nil
+	return stmt, parser.ParseErrors, nil
 }
 
 func (parser *sourceParser) parseDefinition() (
-	*reducerImpl.Reducer,
 	ast.Definition,
+	[]error,
 	error,
 ) {
 	def, err := lr.ParseDefinition(parser.lexer, parser)
@@ -421,15 +421,15 @@ func (parser *sourceParser) parseDefinition() (
 	}
 
 	parser.analyze()
-	return parser.Reducer, def, nil
+	return def, parser.ParseErrors, nil
 }
 
 func ParseExpr(
 	fileName string,
 	options ParserOptions,
 ) (
-	*reducerImpl.Reducer,
 	ast.Expression,
+	[]error,
 	error,
 ) {
 	parser, err := newSourceParser(fileName, options)
@@ -444,8 +444,8 @@ func ParseTypeExpr(
 	fileName string,
 	options ParserOptions,
 ) (
-	*reducerImpl.Reducer,
 	ast.TypeExpression,
+	[]error,
 	error,
 ) {
 	parser, err := newSourceParser(fileName, options)
@@ -460,8 +460,8 @@ func ParseStatement(
 	fileName string,
 	options ParserOptions,
 ) (
-	*reducerImpl.Reducer,
 	ast.Statement,
+	[]error,
 	error,
 ) {
 	parser, err := newSourceParser(fileName, options)
@@ -476,8 +476,8 @@ func ParseDefinition(
 	fileName string,
 	options ParserOptions,
 ) (
-	*reducerImpl.Reducer,
 	ast.Definition,
+	[]error,
 	error,
 ) {
 	parser, err := newSourceParser(fileName, options)
@@ -492,8 +492,8 @@ func ParseSource(
 	fileName string,
 	options ParserOptions,
 ) (
-	*reducerImpl.Reducer,
 	*ast.DefinitionList,
+	[]error,
 	error,
 ) {
 	parser, err := newSourceParser(fileName, options)
