@@ -19,7 +19,7 @@ func (reducer *Reducer) AddToProperDefinitions(
 	*ast.DefinitionList,
 	error,
 ) {
-	list.ReduceAdd(&lr.TokenValue{}, def)
+	list.Add(def)
 	return list, nil
 }
 

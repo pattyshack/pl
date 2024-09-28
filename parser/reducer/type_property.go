@@ -132,7 +132,7 @@ func (Reducer) AddImplicitToProperExplicitTypeProperties(
 	*ast.TypePropertyList,
 	error,
 ) {
-	list.ReduceAdd(&lr.TokenValue{}, property)
+	list.Add(property)
 	return list, nil
 }
 
@@ -247,7 +247,7 @@ func (Reducer) ImplicitPairToProperExplicitEnumTypeProperties(
 ) {
 	list := ast.NewTypePropertyList()
 	list.Add(property1)
-	list.ReduceAdd(&lr.TokenValue{}, property2)
+	list.Add(property2)
 	return list, nil
 }
 
@@ -271,7 +271,7 @@ func (Reducer) ImplicitAddToProperExplicitEnumTypeProperties(
 	*ast.TypePropertyList,
 	error,
 ) {
-	list.ReduceAdd(&lr.TokenValue{}, property)
+	list.Add(property)
 	return list, nil
 }
 

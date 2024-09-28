@@ -19,7 +19,7 @@ func (reducer *Reducer) AddImplicitToProperStatementList(
 	*ast.StatementList,
 	error,
 ) {
-	statements.ReduceAdd(&lr.TokenValue{}, statement)
+	statements.Add(statement)
 	return statements, nil
 }
 
@@ -267,7 +267,7 @@ func (reducer *Reducer) AddImplicitToProperImportClauses(
 	*ast.ImportClauseList,
 	error,
 ) {
-	clauses.ReduceAdd(&lr.TokenValue{}, importClause)
+	clauses.Add(importClause)
 	return clauses, nil
 }
 
