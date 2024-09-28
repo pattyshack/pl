@@ -319,6 +319,24 @@ func (expr *InitializeExpr) Walk(visitor Visitor) {
 // IfExpr
 //
 
+type CaseConditionExpr struct {
+	IsExpr
+	StartEndPos
+	LeadingTrailingComments
+
+	SwitchablePatterns *ExpressionList
+	Value              Expression
+}
+
+var _ Expression = &CaseConditionExpr{}
+
+func (cond *CaseConditionExpr) Walk(visitor Visitor) {
+	visitor.Enter(cond)
+	cond.SwitchablePatterns.Walk(visitor)
+	cond.Value.Walk(visitor)
+	visitor.Exit(cond)
+}
+
 type ConditionBranch struct {
 	StartEndPos
 	LeadingTrailingComments

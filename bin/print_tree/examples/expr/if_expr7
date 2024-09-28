@@ -1,0 +1,3 @@
+if case 'a', 'b', 'c' = value {
+  fmt.Println("match")
+}

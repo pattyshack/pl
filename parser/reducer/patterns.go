@@ -98,18 +98,6 @@ func (Reducer) ToCaseAssignPattern(
 	return pattern, nil
 }
 
-func (Reducer) ToCaseAssignExpr(
-	caseKW *lr.TokenValue,
-	pattern *ast.CaseAssignPattern,
-) (
-	ast.Expression,
-	error,
-) {
-	pattern.PrependToLeading(caseKW.TakeTrailing())
-	pattern.PrependToLeading(caseKW.TakeLeading())
-	return pattern, nil
-}
-
 //
 // CaseEnumPattern
 //

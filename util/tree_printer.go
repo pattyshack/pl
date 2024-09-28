@@ -199,6 +199,9 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		} else {
 			printer.write("]")
 		}
+	case *ast.CaseConditionExpr:
+		printer.write("[CaseConditionExpr:")
+		printer.push("SwitchablePatterns=", "Value=")
 
 	case *ast.SliceTypeExpr:
 		printer.write("[SliceTypeExpr:")
@@ -399,6 +402,8 @@ func (printer *treePrinter) Exit(n ast.Node) {
 		if node.VarPattern != nil {
 			printer.endNode()
 		}
+	case *ast.CaseConditionExpr:
+		printer.endNode()
 
 	case *ast.SliceTypeExpr:
 		printer.endNode()

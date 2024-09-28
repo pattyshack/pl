@@ -721,6 +721,32 @@ func (reducer *Reducer) ToInitializeExpr(
 // IfExpr
 //
 
+func (reducer *Reducer) ToCaseCondition(
+	caseKW *lr.TokenValue,
+	switchablePatterns *ast.ExpressionList,
+	assign *lr.TokenValue,
+	value ast.Expression,
+) (
+	ast.Expression,
+	error,
+) {
+	leading := caseKW.TakeLeading()
+	switchablePatterns.PrependToLeading(caseKW.TakeTrailing())
+	switchablePatterns.AppendToTrailing(assign.TakeLeading())
+	value.PrependToLeading(assign.TakeTrailing())
+	trailing := value.TakeTrailing()
+
+	cond := &ast.CaseConditionExpr{
+		StartEndPos:        ast.NewStartEndPos(caseKW.Loc(), value.End()),
+		SwitchablePatterns: switchablePatterns,
+		Value:              value,
+	}
+	cond.LeadingComment = leading
+	cond.TrailingComment = trailing
+
+	return cond, nil
+}
+
 func (reducer *Reducer) UnlabelledToIfExpr(
 	ifExpr *ast.IfExpr,
 ) (
