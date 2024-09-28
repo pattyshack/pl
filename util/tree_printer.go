@@ -189,9 +189,6 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		} else {
 			printer.push("VarPattern=")
 		}
-	case *ast.CaseAssignPattern:
-		printer.write("[CaseAssignPattern:")
-		printer.push("AssignPattern=", "Value=")
 	case *ast.CaseEnumPattern:
 		printer.write("[CaseEnumPattern: EnumValue=%s", node.EnumValue)
 		if node.VarPattern != nil {
@@ -395,8 +392,6 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.StatementsExpr:
 		printer.endList(len(node.Statements))
 	case *ast.VarPattern:
-		printer.endNode()
-	case *ast.CaseAssignPattern:
 		printer.endNode()
 	case *ast.CaseEnumPattern:
 		if node.VarPattern != nil {

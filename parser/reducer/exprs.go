@@ -347,6 +347,34 @@ func (reducer *Reducer) DefToGlobalVarDef(
 	return reducer.toBinaryExpr(pattern, assign, value), nil
 }
 
+func (reducer *Reducer) ToAssignSelectablePattern(
+	exprList *ast.ExpressionList,
+	assign *lr.TokenValue,
+	value ast.Expression,
+) (
+	ast.Expression,
+	error,
+) {
+	implicitStruct := &ast.ImplicitStructExpr{
+		StartEndPos:             exprList.StartEnd(),
+		LeadingTrailingComments: exprList.TakeComments(),
+		Arguments:               ast.NewArgumentList(),
+		IsImproper:              true,
+	}
+
+	for _, expr := range exprList.Elements {
+		_, ok := expr.(*ast.CaseEnumPattern)
+		if ok {
+			reducer.ParseErrors = append(
+				reducer.ParseErrors,
+				fmt.Errorf("unexpected case enum pattern: %s", expr.Loc()))
+		}
+		implicitStruct.Arguments.Add(ast.NewPositionalArgument(expr))
+	}
+
+	return reducer.toBinaryExpr(implicitStruct, assign, value), nil
+}
+
 //
 // ImplicitStructExpr
 //

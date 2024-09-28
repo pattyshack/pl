@@ -57,30 +57,6 @@ func (pattern *VarPattern) Walk(visitor Visitor) {
 }
 
 //
-// CaseAssignPattern
-//
-
-// REMINDER: In post analysis, ensure AssignPattern is valid (reject case enum
-// pattern).
-type CaseAssignPattern struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	AssignPattern *ExpressionList
-	Value         Expression
-}
-
-var _ Expression = &CaseAssignPattern{}
-
-func (pattern *CaseAssignPattern) Walk(visitor Visitor) {
-	visitor.Enter(pattern)
-	pattern.AssignPattern.Walk(visitor)
-	pattern.Value.Walk(visitor)
-	visitor.Exit(pattern)
-}
-
-//
 // CaseEnumPattern
 //
 

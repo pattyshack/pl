@@ -223,20 +223,14 @@ field_var_pattern<Argument> ->
   skip_pattern: ELLIPSIS
 
 case_patterns<ExpressionList> ->
-  // In select expr, must verify the list has exactly one recv or send
-  // expression.
+  // In select expr, must verify the list has exactly one recv/send expression.
   = switchable_case_patterns |
-  case_assign_pattern
+  assign_selectable_pattern
 
-// case_assign_pattern has two distinct semantic usage
-//
-// When used in a select statement, switchable_case_patterns must be an
-// valid assign_pattern and expr must be either a send_expr or an
-// recv_expr.
-//
-// When used in a if case condition, the expr is matched against
-// the switchable_case_patterns.
-case_assign_pattern<CaseAssignPattern> ->
+// switchable_case_patterns must be a valid assign_pattern (case_enum_pattern
+// in switchable_case_patterns are rejected by post analysis).
+// expr must be either a send_expr or an recv_expr
+assign_selectable_pattern<Expression> ->
   switchable_case_patterns ASSIGN expr
 
 switchable_case_patterns<ExpressionList> ->
@@ -1008,7 +1002,6 @@ go:
     ImportClauseList: "*github.com/pattyshack/pl/ast.ImportClauseList"
     ImplicitStruct: "*github.com/pattyshack/pl/ast.ImplicitStructExpr"
     UnsafeStatement: "*github.com/pattyshack/pl/ast.UnsafeStatement"
-    CaseAssignPattern: "*github.com/pattyshack/pl/ast.CaseAssignPattern"
     CommentGroups: "CommentGroupsTok"
   generate_end_pos: True
 }%%

@@ -35,13 +35,13 @@ func (Reducer) TypedToDeclVarPattern(
 //
 
 func (Reducer) ToCasePatterns(
-	pattern *ast.CaseAssignPattern,
+	expr ast.Expression,
 ) (
 	*ast.ExpressionList,
 	error,
 ) {
 	list := ast.NewExpressionList()
-	list.Add(pattern)
+	list.Add(expr)
 	return list, nil
 }
 
@@ -66,36 +66,6 @@ func (Reducer) AddToSwitchableCasePatterns(
 ) {
 	list.ReduceAdd(comma, pattern)
 	return list, nil
-}
-
-//
-// CaseAssignPattern
-//
-
-func (Reducer) ToCaseAssignPattern(
-	assignPatterns *ast.ExpressionList,
-	assign *lr.TokenValue,
-	value ast.Expression,
-) (
-	*ast.CaseAssignPattern,
-	error,
-) {
-	leading := assignPatterns.TakeLeading()
-
-	assignPatterns.AppendToTrailing(assign.TakeLeading())
-	value.PrependToLeading(assign.TakeTrailing())
-
-	trailing := value.TakeTrailing()
-
-	pattern := &ast.CaseAssignPattern{
-		StartEndPos:   ast.NewStartEndPos(assignPatterns.Loc(), value.End()),
-		AssignPattern: assignPatterns,
-		Value:         value,
-	}
-	pattern.LeadingComment = leading
-	pattern.TrailingComment = trailing
-
-	return pattern, nil
 }
 
 //
