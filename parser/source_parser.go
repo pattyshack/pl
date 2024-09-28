@@ -129,67 +129,21 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 	}
 }
 
-/*
-TODO re-implement using visitor pattern
-func (parser *sourceParser) rejectUnexpectedArguments() {
-	for _, indexExpr := range parser.IndexExprs {
-		switch indexExpr.Index.Kind {
-		case ast.PositionalArgument, ast.ColonExprArgument:
-			// ok
-		default:
-			err := fmt.Errorf(
-				"unexpected %s argument: %s",
-				indexExpr.Index.Kind,
-				indexExpr.Index.Loc())
-			parser.ParseErrors = append(parser.ParseErrors, err)
-			indexExpr.Index = ast.NewPositionalArgument(
-				ast.NewParseErrorNode(indexExpr.Index.StartEnd(), err))
-		}
-	}
-
-	for _, callExpr := range parser.CallExprs {
-		for idx, arg := range callExpr.Arguments.Elements {
-			if arg.Kind == ast.SkipPatternArgument {
-				err := fmt.Errorf("unexpected %s argument: %s", arg.Kind, arg.Loc())
-				parser.ParseErrors = append(parser.ParseErrors, err)
-				callExpr.Arguments.Elements[idx] = ast.NewPositionalArgument(
-					ast.NewParseErrorNode(arg.StartEnd(), err))
-			}
-		}
-	}
-
-	for _, initExpr := range parser.InitializeExprs {
-		for idx, arg := range initExpr.Arguments.Elements {
-			if arg.Kind == ast.SkipPatternArgument ||
-				arg.Kind == ast.VarargAssignmentArgument {
-
-				err := fmt.Errorf("unexpected %s argument: %s", arg.Kind, arg.Loc())
-				parser.ParseErrors = append(parser.ParseErrors, err)
-				initExpr.Arguments.Elements[idx] = ast.NewPositionalArgument(
-					ast.NewParseErrorNode(arg.StartEnd(), err))
-			}
-		}
-	}
-
-	// TODO: reject skip pattern in implicit struct if the struct is not a pattern
-}
-
-*/
-
 func (parser *sourceParser) analyze(node ast.Node) {
 	passes := [][]util.Pass{
-		{reorganizeCaseStatements()},
-		{detectUnreachableStatements(), detectUnexpectedStatements()},
+		{
+			reorganizeCaseStatements(),
+		},
+		{
+			detectUnreachableStatements(),
+			detectUnexpectedStatements(),
+			detectUnexpectedArguments(),
+		},
 	}
 
 	parser.ParseErrors = append(
 		parser.ParseErrors,
 		util.Process(node, passes, 0)...)
-
-	/*
-	   parser.rejectUnexpectedStatements()
-	   parser.rejectUnexpectedArguments()
-	*/
 }
 
 func (parser *sourceParser) parseSource() (

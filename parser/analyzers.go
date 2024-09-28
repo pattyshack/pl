@@ -178,3 +178,65 @@ func (detector *unexpectedStatementsDetector) checkStmtsExpr(
 
 func (detector *unexpectedStatementsDetector) Exit(node ast.Node) {
 }
+
+type unexpectedArgumentsDetector struct {
+	errs []error
+}
+
+func detectUnexpectedArguments() util.Pass {
+	return &unexpectedArgumentsDetector{}
+}
+
+func (detector *unexpectedArgumentsDetector) Errors() []error {
+	return detector.errs
+}
+
+func (detector *unexpectedArgumentsDetector) Process(node ast.Node) {
+	node.Walk(detector)
+}
+
+func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
+	switch node := n.(type) {
+	case *ast.IndexExpr:
+		if node.Index.Kind != ast.PositionalArgument &&
+			node.Index.Kind != ast.ColonExprArgument {
+
+			detector.errs = append(
+				detector.errs,
+				fmt.Errorf(
+					"unexpected %s argument: %s",
+					node.Index.Kind,
+					node.Index.Loc()))
+		}
+	case *ast.CallExpr:
+		for _, arg := range node.Arguments.Elements {
+			if arg.Kind == ast.SkipPatternArgument {
+				detector.errs = append(
+					detector.errs,
+					fmt.Errorf("unexpected %s argument: %s", arg.Kind, arg.Loc()))
+			}
+		}
+	case *ast.InitializeExpr:
+		for _, arg := range node.Arguments.Elements {
+			if arg.Kind == ast.SkipPatternArgument ||
+				arg.Kind == ast.VarargAssignmentArgument {
+
+				detector.errs = append(
+					detector.errs,
+					fmt.Errorf("unexpected %s argument: %s", arg.Kind, arg.Loc()))
+			}
+		}
+	case *ast.ImplicitStructExpr:
+		// TODO detect invalid skip-pattern (...) usage in non-pattern expressions
+		for _, arg := range node.Arguments.Elements {
+			if arg.Kind == ast.VarargAssignmentArgument {
+				detector.errs = append(
+					detector.errs,
+					fmt.Errorf("unexpected %s argument: %s", arg.Kind, arg.Loc()))
+			}
+		}
+	}
+}
+
+func (detector *unexpectedArgumentsDetector) Exit(node ast.Node) {
+}
