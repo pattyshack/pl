@@ -115,27 +115,6 @@ func (reducer *Reducer) LabelledToStatementsExpr(
 	panic(fmt.Sprintf("Unexpected expression: %v", statementsExprOrParseError))
 }
 
-func (reducer *Reducer) StatementToTrailingStatement(
-	stmt ast.Statement,
-) (
-	*ast.StatementsExpr,
-	error,
-) {
-	expr := &ast.StatementsExpr{
-		StartEndPos: stmt.StartEnd(),
-		Statements:  []ast.Statement{stmt},
-	}
-
-	return expr, nil
-}
-
-func (reducer *Reducer) NilToTrailingStatement() (
-	*ast.StatementsExpr,
-	error,
-) {
-	return nil, nil
-}
-
 //
 // ImportClause
 //
@@ -409,18 +388,18 @@ func (reducer *Reducer) CaseBranchToBranchStatement(
 	caseKW *lr.TokenValue,
 	casePatterns *ast.ExpressionList,
 	colon *lr.TokenValue,
-	body *ast.StatementsExpr,
+	trailingStatement ast.Statement,
 ) (
 	ast.Statement,
 	error,
 ) {
-	var end ast.Node = colon
-	if body != nil {
-		end = body
-	} else {
-		body = &ast.StatementsExpr{
-			StartEndPos: colon.StartEnd(),
-		}
+	body := &ast.StatementsExpr{
+		StartEndPos: colon.StartEnd(),
+	}
+
+	if trailingStatement != nil {
+		body.EndPos = trailingStatement.End()
+		body.Statements = append(body.Statements, trailingStatement)
 	}
 
 	leading := caseKW.TakeLeading()
@@ -430,7 +409,7 @@ func (reducer *Reducer) CaseBranchToBranchStatement(
 	casePatterns.AppendToTrailing(colon.TakeTrailing())
 
 	stmt := &ast.BranchStatement{
-		StartEndPos:  ast.NewStartEndPos(caseKW.Loc(), end.End()),
+		StartEndPos:  ast.NewStartEndPos(caseKW.Loc(), body.End()),
 		CasePatterns: casePatterns,
 		Body:         body,
 	}
@@ -442,30 +421,28 @@ func (reducer *Reducer) CaseBranchToBranchStatement(
 func (reducer *Reducer) DefaultBranchToBranchStatement(
 	defaultKW *lr.TokenValue,
 	colon *lr.TokenValue,
-	body *ast.StatementsExpr,
+	trailingStatement ast.Statement,
 ) (
 	ast.Statement,
 	error,
 ) {
-	leading := defaultKW.TakeLeading()
-
-	mid := defaultKW.TakeTrailing()
-	mid.Append(colon.TakeLeading())
-	mid.Append(colon.TakeTrailing())
-
-	var end ast.Node = colon
-	if body != nil {
-		end = body
-	} else {
-		body = &ast.StatementsExpr{
-			StartEndPos: colon.StartEnd(),
-		}
+	body := &ast.StatementsExpr{
+		StartEndPos: colon.StartEnd(),
 	}
 
-	body.PrependToLeading(mid)
+	if trailingStatement != nil {
+		body.EndPos = trailingStatement.End()
+		body.Statements = append(body.Statements, trailingStatement)
+	}
+
+	leading := defaultKW.TakeLeading()
+
+	body.LeadingComment = defaultKW.TakeTrailing()
+	body.LeadingComment.Append(colon.TakeLeading())
+	body.LeadingComment.Append(colon.TakeTrailing())
 
 	stmt := &ast.BranchStatement{
-		StartEndPos:  ast.NewStartEndPos(defaultKW.Loc(), end.End()),
+		StartEndPos:  ast.NewStartEndPos(defaultKW.Loc(), body.End()),
 		IsDefault:    true,
 		CasePatterns: nil,
 		Body:         body,

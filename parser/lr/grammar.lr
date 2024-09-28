@@ -93,9 +93,6 @@ floating_comment<Definition> -> COMMENT_GROUPS
 // Statement ==================================================================
 //
 
-// The subset of simple statement that is usable within a traditional style
-// for loop (plus the option to not have any statement).  In particular, the
-// subset does not include any branching expressions.
 statement<Statement> ->
   = unsafe_statement |
 
@@ -120,12 +117,8 @@ branch_statement<Statement> ->
   // select_assign_send_bracnh are only applicable to select expression.
   // Post analysis is needed to associate statements to cases (move trailing
   // non-case statements into case's data structure).
-  case_branch: CASE case_patterns COLON trailing_statement |
-  default_branch: DEFAULT COLON trailing_statement
-
-trailing_statement<StatementsExpr> ->
-  statement |
-  nil:
+  case_branch: CASE case_patterns COLON optional_statement |
+  default_branch: DEFAULT COLON optional_statement
 
 //
 // Unsafe statement
@@ -992,7 +985,6 @@ go:
     TypeExpressionList: "*github.com/pattyshack/pl/ast.TypeExpressionList"
     Statement: "github.com/pattyshack/pl/ast.Statement"
     StatementList: "*github.com/pattyshack/pl/ast.StatementList"
-    StatementsExpr: "*github.com/pattyshack/pl/ast.StatementsExpr"
     Definition: "github.com/pattyshack/pl/ast.Definition"
     Definitions: "*github.com/pattyshack/pl/ast.DefinitionList"
     TypeProperty: "github.com/pattyshack/pl/ast.TypeProperty"

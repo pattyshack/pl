@@ -156,6 +156,7 @@ const (
 	BinaryOrOp              = BinaryOp("or")
 	BinarySendOp            = BinaryOp("<-")
 	BinaryAssignOp          = BinaryOp("=")
+	BinaryInOp              = BinaryOp("in")
 	BinaryAddAssignOp       = BinaryOp("+=")
 	BinarySubAssignOp       = BinaryOp("-=")
 	BinaryMulAssignOp       = BinaryOp("*=")
