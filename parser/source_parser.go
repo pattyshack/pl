@@ -135,6 +135,7 @@ func (parser *sourceParser) analyze(node ast.Node) {
 			detectUnreachableStatements(),
 			detectUnexpectedStatements(),
 			detectUnexpectedArguments(),
+			detectUnexpectedSelectSwitchBranches(),
 		},
 	}
 

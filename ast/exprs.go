@@ -111,6 +111,23 @@ func (expr *AccessExpr) Walk(visitor Visitor) {
 
 type UnaryOp string
 
+const (
+	UnaryReturnDefaultEnumOp  = UnaryOp("?")
+	UnaryPanicOnDefaultEnumOp = UnaryOp("!")
+	UnaryAssignAddOneOp       = UnaryOp("++")
+	UnaryAssignSubOneOp       = UnaryOp("--")
+	UnaryNotOp                = UnaryOp("not")
+	UnaryBitwiseComplementOp  = UnaryOp("^")
+	UnaryPlusOp               = UnaryOp("+")
+	UnaryMinusOp              = UnaryOp("-")
+	UnaryDerefOp              = UnaryOp("*")
+	UnaryRefOp                = UnaryOp("&")
+	UnaryAsyncOp              = UnaryOp("async")
+	UnaryDeferOp              = UnaryOp("defer")
+	UnaryAssignToOp           = UnaryOp(">")
+	UnaryRecvOp               = UnaryOp("<-")
+)
+
 type UnaryExpr struct {
 	IsExpr
 

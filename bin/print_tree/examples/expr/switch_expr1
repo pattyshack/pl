@@ -1,8 +1,10 @@
 switch foo() {
 bad
+default:
 case 1, 2,3: i++
   fmt.Println(i)
   fallthrough
+case bad = assignment:
 default:
   fmt.Println("default")
 }

@@ -3,9 +3,16 @@ select {
 case i = <-sender:
   fmt.Println("received")
   fmt.Println(i)
+case closed = receiver <- blah:
+case not x:
+case 1 + 2:
+case foo():
+case <-sender:
+default:
 case var i, .enumValue = <-sender2:
   fmt.Println("received")
   fmt.Println(i)
+case i, j, k:
 case receiver <- foo():
   fmt.Println("send")
 }
