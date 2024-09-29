@@ -132,9 +132,6 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 func (parser *sourceParser) analyze(node ast.Node) {
 	passes := [][]util.Pass{
 		{
-			reorganizeCaseStatements(),
-		},
-		{
 			detectUnreachableStatements(),
 			detectUnexpectedStatements(),
 			detectUnexpectedArguments(),

@@ -888,6 +888,55 @@ func (reducer *Reducer) ToIfOnlyExpr(
 // SwitchExpr
 //
 
+func (reducer *Reducer) groupBranches(
+	stmts *ast.StatementsExpr,
+) {
+	newStatements := make([]ast.Statement, 0, len(stmts.Statements))
+	var current *ast.BranchStatement
+	for _, stmt := range stmts.Statements {
+		branch, ok := stmt.(*ast.BranchStatement)
+		if !ok {
+			if current != nil {
+				current.Body.Statements = append(current.Body.Statements, stmt)
+				current.Body.EndPos = stmt.End()
+				current.EndPos = stmt.End()
+			} else {
+				// This is a parse error.  The error is detected in post analysis
+				newStatements = append(newStatements, stmt)
+			}
+			continue
+		}
+
+		current = branch
+		newStatements = append(newStatements, branch)
+
+		// Flatten nested case statements
+		for {
+			if len(current.Body.Statements) == 0 {
+				break
+			}
+
+			if len(current.Body.Statements) != 1 {
+				panic("should never happen")
+			}
+
+			subStmt := current.Body.Statements[0]
+			nestedBranch, ok := subStmt.(*ast.BranchStatement)
+			if !ok {
+				current.Body.EndPos = subStmt.End()
+				current.EndPos = subStmt.End()
+				break
+			}
+
+			current.Body.Statements = nil
+			current = nestedBranch
+			newStatements = append(newStatements, nestedBranch)
+		}
+	}
+
+	stmts.Statements = newStatements
+}
+
 func (reducer *Reducer) LabelledToSwitchExpr(
 	labelDecl *lr.TokenValue,
 	expr ast.Expression,
@@ -919,7 +968,7 @@ func (reducer *Reducer) ToSwitchExprBody(
 ) {
 	switch branches := expr.(type) {
 	case *ast.StatementsExpr:
-		trailing := branches.TakeTrailing()
+		reducer.groupBranches(branches)
 
 		switchExpr := &ast.SwitchExpr{
 			StartEndPos: ast.NewStartEndPos(switchKW.Loc(), branches.End()),
@@ -929,7 +978,7 @@ func (reducer *Reducer) ToSwitchExprBody(
 
 		switchExpr.LeadingComment = switchKW.TakeLeading()
 		operand.PrependToLeading(switchKW.TakeTrailing())
-		switchExpr.TrailingComment = trailing
+		switchExpr.TrailingComment = branches.TakeTrailing()
 
 		return switchExpr, nil
 	case *ast.ParseErrorNode:
@@ -973,8 +1022,7 @@ func (reducer *Reducer) ToSelectExprBody(
 ) {
 	switch branches := expr.(type) {
 	case *ast.StatementsExpr:
-		branches.PrependToLeading(switchKW.TakeTrailing())
-		trailing := branches.TakeTrailing()
+		reducer.groupBranches(branches)
 
 		selectExpr := &ast.SelectExpr{
 			StartEndPos: ast.NewStartEndPos(switchKW.Loc(), branches.End()),
@@ -982,7 +1030,8 @@ func (reducer *Reducer) ToSelectExprBody(
 		}
 
 		selectExpr.LeadingComment = switchKW.TakeLeading()
-		selectExpr.TrailingComment = trailing
+		branches.PrependToLeading(switchKW.TakeTrailing())
+		selectExpr.TrailingComment = branches.TakeTrailing()
 
 		return selectExpr, nil
 	case *ast.ParseErrorNode:
