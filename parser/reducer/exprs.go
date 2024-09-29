@@ -355,25 +355,40 @@ func (reducer *Reducer) ToAssignSelectablePattern(
 	ast.Expression,
 	error,
 ) {
-	implicitStruct := &ast.ImplicitStructExpr{
-		StartEndPos:             exprList.StartEnd(),
-		LeadingTrailingComments: exprList.TakeComments(),
-		Arguments:               ast.NewArgumentList(),
-		IsImproper:              true,
-	}
-
-	for _, expr := range exprList.Elements {
-    // TODO: move error check into pattern analyzer
+	var expr ast.Expression
+	if len(exprList.Elements) == 1 {
+		expr = exprList.Elements[0]
+		// TODO: move error check into pattern analyzer
 		_, ok := expr.(*ast.CaseEnumPattern)
 		if ok {
 			reducer.ParseErrors = append(
 				reducer.ParseErrors,
 				fmt.Errorf("%s: unexpected case enum pattern", expr.Loc()))
 		}
-		implicitStruct.Arguments.Add(ast.NewPositionalArgument(expr))
+
+	} else {
+		implicitStruct := &ast.ImplicitStructExpr{
+			StartEndPos:             exprList.StartEnd(),
+			LeadingTrailingComments: exprList.TakeComments(),
+			Arguments:               ast.NewArgumentList(),
+			IsImproper:              true,
+		}
+
+		for _, item := range exprList.Elements {
+			// TODO: move error check into pattern analyzer
+			_, ok := item.(*ast.CaseEnumPattern)
+			if ok {
+				reducer.ParseErrors = append(
+					reducer.ParseErrors,
+					fmt.Errorf("%s: unexpected case enum pattern", item.Loc()))
+			}
+			implicitStruct.Arguments.Add(ast.NewPositionalArgument(item))
+		}
+
+		expr = implicitStruct
 	}
 
-	return reducer.toBinaryExpr(implicitStruct, assign, value), nil
+	return reducer.toBinaryExpr(expr, assign, value), nil
 }
 
 //

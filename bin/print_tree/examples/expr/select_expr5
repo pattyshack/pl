@@ -1,6 +1,9 @@
 select {
   bad
-case var i, .enumValue = <-sender:
+case i = <-sender:
+  fmt.Println("received")
+  fmt.Println(i)
+case var i, .enumValue = <-sender2:
   fmt.Println("received")
   fmt.Println(i)
 case receiver <- foo():
