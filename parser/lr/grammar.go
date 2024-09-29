@@ -1076,10 +1076,10 @@ type DefaultParseErrorHandler struct{}
 
 func (DefaultParseErrorHandler) Error(nextToken Token, stack _Stack) error {
 	return fmt.Errorf(
-		"Syntax error: unexpected symbol %v. Expecting %v (%v)",
+		"%s: syntax error: unexpected symbol %s. expecting %v",
+		nextToken.Loc(),
 		nextToken.Id(),
-		ExpectedTerminals(stack[len(stack)-1].StateId),
-		nextToken.Loc())
+		ExpectedTerminals(stack[len(stack)-1].StateId))
 }
 
 func ExpectedTerminals(id _StateId) []SymbolId {
@@ -3571,54 +3571,57 @@ func NewSymbol(token Token) (*Symbol, error) {
 		val, ok := token.(CommentGroupsTok)
 		if !ok {
 			return nil, fmt.Errorf(
-				"Invalid value type for token %s.  "+
-					"Expecting CommentGroupsTok (%v)",
-				token.Id(),
-				token.Loc())
+				"%s: invalid value type for token %s. "+
+					"expecting CommentGroupsTok",
+				token.Loc(),
+				token.Id())
 		}
 		symbol.CommentGroups = val
 	case NewlinesToken:
 		val, ok := token.(TokenCount)
 		if !ok {
 			return nil, fmt.Errorf(
-				"Invalid value type for token %s.  "+
-					"Expecting TokenCount (%v)",
-				token.Id(),
-				token.Loc())
+				"%s: invalid value type for token %s. "+
+					"expecting TokenCount",
+				token.Loc(),
+				token.Id())
 		}
 		symbol.Count = val
 	case _EndMarker:
 		val, ok := token.(GenericSymbol)
 		if !ok {
 			return nil, fmt.Errorf(
-				"Invalid value type for token %s.  "+
-					"Expecting GenericSymbol (%v)",
-				token.Id(),
-				token.Loc())
+				"%s: invalid value type for token %s. "+
+					"expecting GenericSymbol",
+				token.Loc(),
+				token.Id())
 		}
 		symbol.Generic_ = val
 	case ParseErrorToken:
 		val, ok := token.(ParseErrorSymbol)
 		if !ok {
 			return nil, fmt.Errorf(
-				"Invalid value type for token %s.  "+
-					"Expecting ParseErrorSymbol (%v)",
-				token.Id(),
-				token.Loc())
+				"%s: invalid value type for token %s. "+
+					"expecting ParseErrorSymbol",
+				token.Loc(),
+				token.Id())
 		}
 		symbol.ParseError = val
 	case IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, RepeatToken, ForToken, DoToken, InToken, SelectToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, PackageToken, ImportToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, AsToken, NotToken, AndToken, OrToken, LabelDeclToken, JumpLabelToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeToken, TildeTildeToken, AssignToken, ArrowToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
 		val, ok := token.(*TokenValue)
 		if !ok {
 			return nil, fmt.Errorf(
-				"Invalid value type for token %s.  "+
-					"Expecting *TokenValue (%v)",
-				token.Id(),
-				token.Loc())
+				"%s: invalid value type for token %s. "+
+					"expecting *TokenValue",
+				token.Loc(),
+				token.Id())
 		}
 		symbol.Value = val
 	default:
-		return nil, fmt.Errorf("Unexpected token type: %s", symbol.Id())
+		return nil, fmt.Errorf(
+			"%s: unexpected token type: %s",
+			token.Loc(),
+			token.Id())
 	}
 	return symbol, nil
 }
@@ -3921,7 +3924,10 @@ func (stack *_PseudoSymbolStack) Top() (*Symbol, error) {
 		token, err := stack.lexer.Next()
 		if err != nil {
 			if err != io.EOF {
-				return nil, fmt.Errorf("Unexpected lex error: %s", err)
+				return nil, fmt.Errorf(
+					"%s: unexpected lex error: %s",
+					stack.lexer.CurrentLocation(),
+					err)
 			}
 			token = GenericSymbol{
 				SymbolId: _EndMarker,
@@ -6020,7 +6026,7 @@ func (act *_Action) ReduceSymbol(
 	}
 
 	if err != nil {
-		err = fmt.Errorf("Unexpected %s reduce error: %s", act.ReduceType, err)
+		err = fmt.Errorf("unexpected %s reduce error: %s", act.ReduceType, err)
 	}
 
 	return stack, symbol, err
