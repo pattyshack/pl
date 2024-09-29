@@ -39,7 +39,7 @@ func (detector *unreachableStatementsDetector) Enter(node ast.Node) {
 			detector.errs = append(
 				detector.errs,
 				fmt.Errorf(
-					"unreachable statement: %s",
+					"%s: unreachable statement",
 					stmts.Statements[idx+1].Loc()))
 			break
 		}
@@ -110,7 +110,10 @@ func (detector *unexpectedStatementsDetector) checkPkgDef(
 		if invalidStmtType != "" {
 			detector.errs = append(
 				detector.errs,
-				fmt.Errorf("unexpected %s: %s", invalidStmtType, stmt.Loc()))
+				fmt.Errorf(
+					"%s: unexpected %s. expected import statement",
+					stmt.Loc(),
+					invalidStmtType))
 		}
 	}
 }
@@ -141,7 +144,10 @@ func (detector *unexpectedStatementsDetector) checkSwitchSelectExpr(
 		if invalidStmtType != "" {
 			detector.errs = append(
 				detector.errs,
-				fmt.Errorf("unexpected %s: %s", invalidStmtType, node.Loc()))
+				fmt.Errorf(
+					"%s: unexpected %s. expected case or default branch statement",
+					node.Loc(),
+					invalidStmtType))
 		}
 	}
 }
@@ -171,7 +177,10 @@ func (detector *unexpectedStatementsDetector) checkStmtsExpr(
 		if invalidStmtType != "" {
 			detector.errs = append(
 				detector.errs,
-				fmt.Errorf("unexpected %s: %s", invalidStmtType, node.Loc()))
+				fmt.Errorf(
+					"%s: unexpected %s. expected expression, assign or jump statement",
+					node.Loc(),
+					invalidStmtType))
 		}
 	}
 }
@@ -204,16 +213,16 @@ func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 			detector.errs = append(
 				detector.errs,
 				fmt.Errorf(
-					"unexpected %s argument: %s",
-					node.Index.Kind,
-					node.Index.Loc()))
+					"%s: unexpected %s argument",
+					node.Index.Loc(),
+					node.Index.Kind))
 		}
 	case *ast.CallExpr:
 		for _, arg := range node.Arguments.Elements {
 			if arg.Kind == ast.SkipPatternArgument {
 				detector.errs = append(
 					detector.errs,
-					fmt.Errorf("unexpected %s argument: %s", arg.Kind, arg.Loc()))
+					fmt.Errorf("%s: unexpected %s argument", arg.Loc(), arg.Kind))
 			}
 		}
 	case *ast.InitializeExpr:
@@ -223,7 +232,7 @@ func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 
 				detector.errs = append(
 					detector.errs,
-					fmt.Errorf("unexpected %s argument: %s", arg.Kind, arg.Loc()))
+					fmt.Errorf("%s: unexpected %s argument", arg.Loc(), arg.Kind))
 			}
 		}
 	case *ast.ImplicitStructExpr:
@@ -232,7 +241,7 @@ func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 			if arg.Kind == ast.VarargAssignmentArgument {
 				detector.errs = append(
 					detector.errs,
-					fmt.Errorf("unexpected %s argument: %s", arg.Kind, arg.Loc()))
+					fmt.Errorf("%s: unexpected %s argument", arg.Loc(), arg.Kind))
 			}
 		}
 	}
