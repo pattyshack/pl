@@ -363,11 +363,12 @@ func (reducer *Reducer) ToAssignSelectablePattern(
 	}
 
 	for _, expr := range exprList.Elements {
+    // TODO: move error check into pattern analyzer
 		_, ok := expr.(*ast.CaseEnumPattern)
 		if ok {
 			reducer.ParseErrors = append(
 				reducer.ParseErrors,
-				fmt.Errorf("unexpected case enum pattern: %s", expr.Loc()))
+				fmt.Errorf("%s: unexpected case enum pattern", expr.Loc()))
 		}
 		implicitStruct.Arguments.Add(ast.NewPositionalArgument(expr))
 	}

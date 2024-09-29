@@ -400,7 +400,7 @@ func (lexer *RawLexer) lexNewlinesToken() (lr.Token, error) {
 		return &lr.ParseErrorSymbol{
 			ast.NewParseErrorNode(
 				ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf("unexpected utf8 rune")),
+				fmt.Errorf("%s: unexpected utf8 rune", loc)),
 		}, nil
 	}
 
@@ -463,7 +463,7 @@ func (lexer *RawLexer) lexBlockCommentToken() (lr.Token, error) {
 		return &lr.ParseErrorSymbol{
 			ast.NewParseErrorNode(
 				ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf("block comment not terminated")),
+				fmt.Errorf("%s: block comment not terminated", loc)),
 		}, nil
 	}
 
@@ -655,7 +655,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
 	if !hasDigits {
 		return &lr.ParseErrorSymbol{
 			ast.NewParseErrorNode(ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf("%s has no digits", subType)),
+				fmt.Errorf("%s: %s has no digits", loc, subType)),
 		}, nil
 	}
 
@@ -1059,7 +1059,7 @@ func (lexer *RawLexer) lexRuneLiteralToken() (lr.Token, error) {
 		return &lr.ParseErrorSymbol{
 			ast.NewParseErrorNode(
 				ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf(result.errorMsg)),
+				fmt.Errorf("%s: %s", loc, result.errorMsg)),
 		}, nil
 	}
 
@@ -1117,7 +1117,7 @@ func (lexer *RawLexer) lexStringLiteralToken(
 		return &lr.ParseErrorSymbol{
 			ast.NewParseErrorNode(
 				ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf(result.errorMsg)),
+				fmt.Errorf("%s: %s", loc, result.errorMsg)),
 		}, nil
 	}
 
@@ -1151,7 +1151,7 @@ func (lexer *RawLexer) lexJumpLabelToken() (lr.Token, error) {
 		return &lr.ParseErrorSymbol{
 			ast.NewParseErrorNode(
 				ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf("no label name associated with @")),
+				fmt.Errorf("%s: no label name associated with @", loc)),
 		}, nil
 	}
 
@@ -1239,7 +1239,7 @@ func (lexer *RawLexer) Next() (lr.Token, error) {
 		return &lr.ParseErrorSymbol{
 			ast.NewParseErrorNode(
 				ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf("unexpected utf8 rune")),
+				fmt.Errorf("%s: unexpected utf8 rune", loc)),
 		}, nil
 	}
 
