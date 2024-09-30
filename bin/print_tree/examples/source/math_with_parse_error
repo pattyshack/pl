@@ -26,4 +26,6 @@ func fact(i Int) Int {
   return i * fact(i - 1)
 }
 
-func bad() {fallthrough}
+func bad() {+}
+
+{fallthrough}

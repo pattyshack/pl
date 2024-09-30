@@ -122,9 +122,14 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 			return &lr.Symbol{SymbolId_: lr.StatementsType, Expression: block}, nil
 		}
 
-		errNode := ast.NewParseErrorNode(
-			ast.NewStartEndPos(pos, lexer.CurrentLocation()),
-			parseErr)
+		// TODO emit error
+		startEnd := ast.NewStartEndPos(pos, lexer.CurrentLocation())
+		stmts := &ast.StatementsExpr{
+			StartEndPos: startEnd,
+			Statements: []ast.Statement{
+				ast.NewParseErrorNode(startEnd, parseErr),
+			},
+		}
 
 		for len(lexer.stack) >= currentLevel {
 			if lexer.isEndOfCurrentScope() {
@@ -134,15 +139,21 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 
 			peeked, err := lexer.buffered.Peek(1)
 			if err != nil || len(peeked) == 0 {
-				return lr.ParseErrorSymbol{errNode}, nil
+        break
 			}
 
 			switch peeked[0].Id() {
 			case lr.LbraceToken:
+				curr := lexer.CurrentLocation()
 				lexer.pushScope()
 				_, parseErr = lr.ParseStatements(lexer, lexer.reducer)
 				if parseErr != nil {
-					errNode.Errors = append(errNode.Errors, parseErr)
+					// TODO emit error
+					stmts.Statements = append(
+						stmts.Statements,
+						ast.NewParseErrorNode(
+							ast.NewStartEndPos(curr, lexer.CurrentLocation()),
+							parseErr))
 				}
 			case lr.RbraceToken:
 				lexer.popScope()
@@ -155,7 +166,8 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 			}
 		}
 
-		return lr.ParseErrorSymbol{errNode}, nil
+		stmts.EndPos = lexer.CurrentLocation()
+		return &lr.Symbol{SymbolId_: lr.StatementsType, Expression: stmts}, nil
 	case lr.RbraceToken:
 		lexer.endCurrentScope()
 	}
