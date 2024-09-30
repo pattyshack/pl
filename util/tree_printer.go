@@ -210,12 +210,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			printer.write("]")
 		}
 	case *ast.CasePatternExpr:
-		printer.write("[CasePatternExpr:")
-		if node.Value != nil {
-			printer.push("Patterns=", "Value=")
-		} else {
-			printer.push("Patterns=")
-		}
+		printer.list("[CasePatternExpr:", nil, "Pattern", len(node.Patterns))
 
 	case *ast.SliceTypeExpr:
 		printer.write("[SliceTypeExpr:")
@@ -416,7 +411,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 			printer.endNode()
 		}
 	case *ast.CasePatternExpr:
-		printer.endNode()
+		printer.endList(len(node.Patterns))
 
 	case *ast.SliceTypeExpr:
 		printer.endNode()

@@ -790,15 +790,22 @@ func (reducer *Reducer) ToCasePatternExpr(
 	error,
 ) {
 	leading := caseKW.TakeLeading()
-	switchablePatterns.PrependToLeading(caseKW.TakeTrailing())
-	switchablePatterns.AppendToTrailing(assign.TakeLeading())
+
+	pattern := &ast.CasePatternExpr{
+		StartEndPos: switchablePatterns.StartEnd(),
+		Patterns:    switchablePatterns.Elements,
+	}
+	pattern.LeadingComment = caseKW.TakeTrailing()
+	pattern.TrailingComment = assign.TakeLeading()
+
 	value.PrependToLeading(assign.TakeTrailing())
 	trailing := value.TakeTrailing()
 
-	cond := &ast.CasePatternExpr{
+	cond := &ast.BinaryExpr{
 		StartEndPos: ast.NewStartEndPos(caseKW.Loc(), value.End()),
-		Patterns:    switchablePatterns,
-		Value:       value,
+		Left:        pattern,
+		Op:          ast.BinaryAssignOp,
+		Right:       value,
 	}
 	cond.LeadingComment = leading
 	cond.TrailingComment = trailing
@@ -1041,8 +1048,8 @@ func (reducer *Reducer) ToSelectExprBody(
 			continue
 		}
 
-		if len(expr.Patterns.Elements) == 1 {
-			branch.Condition = expr.Patterns.Elements[0]
+		if len(expr.Patterns) == 1 {
+			branch.Condition = expr.Patterns[0]
 		}
 	}
 

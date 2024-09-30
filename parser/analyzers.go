@@ -240,7 +240,7 @@ func (detector *unexpectedSelectSwitchBranchesDetector) checkBranches(
 			if !ok {
 				detector.Emit("%s: unexpected expression", branch.Condition.Loc())
 			} else {
-				for _, pattern := range casePatternExpr.Patterns.Elements {
+				for _, pattern := range casePatternExpr.Patterns {
 					binary, ok := pattern.(*ast.BinaryExpr)
 					if ok && binary.Op == ast.BinaryAssignOp {
 						detector.Emit("%s: unexpected assignment pattern", binary.Loc())

@@ -402,7 +402,7 @@ func (reducer *Reducer) CaseBranchToBranchStmt(
 
 	cond := &ast.CasePatternExpr{
 		StartEndPos: casePatterns.StartEnd(),
-		Patterns:    casePatterns,
+		Patterns:    casePatterns.Elements,
 	}
 
 	stmt := &ast.ConditionBranchStmt{

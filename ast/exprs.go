@@ -368,17 +368,15 @@ type CasePatternExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	Patterns *ExpressionList
-	Value    Expression // optional
+	Patterns []Expression
 }
 
 var _ Expression = &CasePatternExpr{}
 
 func (cond *CasePatternExpr) Walk(visitor Visitor) {
 	visitor.Enter(cond)
-	cond.Patterns.Walk(visitor)
-	if cond.Value != nil {
-		cond.Value.Walk(visitor)
+	for _, pattern := range cond.Patterns {
+		pattern.Walk(visitor)
 	}
 	visitor.Exit(cond)
 }
