@@ -108,7 +108,7 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 				},
 				parser)
 			if err != nil {
-				parser.ParseErrors = append(parser.ParseErrors, err)
+				parser.EmitErrors(err)
 				def = &ast.ParseErrorExpr{
 					StartEndPos: ast.NewStartEndPos(start, end),
 					Error:       err,
@@ -142,9 +142,7 @@ func (parser *sourceParser) analyze(node ast.Node) {
 		},
 	}
 
-	parser.ParseErrors = append(
-		parser.ParseErrors,
-		util.Process(node, passes, 0)...)
+	parser.EmitErrors(util.Process(node, passes, 0)...)
 }
 
 func (parser *sourceParser) parseSource() (
@@ -158,7 +156,7 @@ func (parser *sourceParser) parseSource() (
 	}
 
 	parser.analyze(source)
-	return source, parser.ParseErrors, nil
+	return source, parser.Errors(), nil
 }
 
 func (parser *sourceParser) parseExpr() (
@@ -172,7 +170,7 @@ func (parser *sourceParser) parseExpr() (
 	}
 
 	parser.analyze(expr)
-	return expr, parser.ParseErrors, nil
+	return expr, parser.Errors(), nil
 }
 
 func (parser *sourceParser) parseTypeExpr() (
@@ -186,7 +184,7 @@ func (parser *sourceParser) parseTypeExpr() (
 	}
 
 	parser.analyze(typeExpr)
-	return typeExpr, parser.ParseErrors, nil
+	return typeExpr, parser.Errors(), nil
 }
 
 func (parser *sourceParser) parseStatement() (
@@ -200,7 +198,7 @@ func (parser *sourceParser) parseStatement() (
 	}
 
 	parser.analyze(stmt)
-	return stmt, parser.ParseErrors, nil
+	return stmt, parser.Errors(), nil
 }
 
 func (parser *sourceParser) parseDefinition() (
@@ -214,7 +212,7 @@ func (parser *sourceParser) parseDefinition() (
 	}
 
 	parser.analyze(def)
-	return def, parser.ParseErrors, nil
+	return def, parser.Errors(), nil
 }
 
 func ParseExpr(

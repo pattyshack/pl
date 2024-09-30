@@ -1,8 +1,6 @@
 package reducer
 
 import (
-	"fmt"
-
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
@@ -17,7 +15,6 @@ func (reducer *Reducer) ToParseErrorExpr(
 	ast.Expression,
 	error,
 ) {
-	reducer.ParseErrors = append(reducer.ParseErrors, pe.Error)
 	expr := ast.ParseErrorExpr(*pe)
 	return &expr, nil
 }
@@ -376,9 +373,7 @@ func (reducer *Reducer) ToAssignSelectablePattern(
 		// TODO: move error check into pattern analyzer
 		_, ok := expr.(*ast.CaseEnumPattern)
 		if ok {
-			reducer.ParseErrors = append(
-				reducer.ParseErrors,
-				fmt.Errorf("%s: unexpected case enum pattern", expr.Loc()))
+			reducer.Emit("%s: unexpected case enum pattern", expr.Loc())
 		}
 
 	} else {
@@ -393,9 +388,7 @@ func (reducer *Reducer) ToAssignSelectablePattern(
 			// TODO: move error check into pattern analyzer
 			_, ok := item.(*ast.CaseEnumPattern)
 			if ok {
-				reducer.ParseErrors = append(
-					reducer.ParseErrors,
-					fmt.Errorf("%s: unexpected case enum pattern", item.Loc()))
+				reducer.Emit("%s: unexpected case enum pattern", item.Loc())
 			}
 			implicitStruct.Arguments.Add(ast.NewPositionalArgument(item))
 		}

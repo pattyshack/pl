@@ -2,18 +2,15 @@ package reducer
 
 import (
 	"github.com/pattyshack/pl/parser/lr"
+	"github.com/pattyshack/pl/util"
 )
 
 type Reducer struct {
-	ParseErrors []error
+	util.ErrorEmitter
 }
 
 var _ lr.Reducer = &Reducer{}
 
 func NewReducer() *Reducer {
 	return &Reducer{}
-}
-
-func (reducer *Reducer) MergeFrom(other *Reducer) {
-	reducer.ParseErrors = append(reducer.ParseErrors, other.ParseErrors...)
 }
