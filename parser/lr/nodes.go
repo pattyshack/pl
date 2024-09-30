@@ -3,6 +3,8 @@ package lr
 import (
 	"fmt"
 
+	"github.com/pattyshack/gt/lexutil"
+
 	"github.com/pattyshack/pl/ast"
 )
 
@@ -73,8 +75,18 @@ func (s TokenValue) Walk(visitor ast.Visitor) {
 	panic("should never be called")
 }
 
-type ParseErrorSymbol struct {
-	*ast.ParseErrorNode
+type ParseErrorSymbol ast.ParseErrorExpr
+
+func NewParseErrorSymbol(
+	start lexutil.Location,
+	end lexutil.Location,
+	format string,
+	args ...interface{},
+) *ParseErrorSymbol {
+	return &ParseErrorSymbol{
+		StartEndPos: ast.NewStartEndPos(start, end),
+		Error:       fmt.Errorf(format, args...),
+	}
 }
 
 func (ParseErrorSymbol) Id() SymbolId {

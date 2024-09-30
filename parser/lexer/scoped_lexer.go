@@ -130,7 +130,10 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 		stmts := &ast.StatementsExpr{
 			StartEndPos: startEnd,
 			Statements: []ast.Statement{
-				ast.NewParseErrorNode(startEnd, parseErr),
+				&ast.ParseErrorExpr{
+					StartEndPos: startEnd,
+					Error:       parseErr,
+				},
 			},
 		}
 
@@ -154,9 +157,10 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 					// TODO emit error
 					stmts.Statements = append(
 						stmts.Statements,
-						ast.NewParseErrorNode(
-							ast.NewStartEndPos(curr, lexer.CurrentLocation()),
-							parseErr))
+						&ast.ParseErrorExpr{
+							StartEndPos: ast.NewStartEndPos(curr, lexer.CurrentLocation()),
+							Error:       parseErr,
+						})
 				}
 			case lr.RbraceToken:
 				lexer.popScope()

@@ -223,24 +223,3 @@ func (sep StartEndPos) Loc() lexutil.Location {
 func (sep StartEndPos) End() lexutil.Location {
 	return sep.EndPos
 }
-
-type ParseErrorNode struct {
-	IsExpr
-
-	StartEndPos
-	LeadingTrailingComments
-
-	Errors []error
-}
-
-func NewParseErrorNode(startEnd StartEndPos, err error) *ParseErrorNode {
-	return &ParseErrorNode{
-		StartEndPos: startEnd,
-		Errors:      []error{err},
-	}
-}
-
-func (s *ParseErrorNode) Walk(visitor Visitor) {
-	visitor.Enter(s)
-	visitor.Exit(s)
-}

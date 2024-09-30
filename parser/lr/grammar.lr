@@ -965,7 +965,7 @@ package_def<Definition> -> PACKAGE statements
 go:
   package: lr
   value_types:
-    ParseError: "ParseErrorSymbol"
+    ParseError: "*ParseErrorSymbol"
     Count: "TokenCount"
     Value: "*TokenValue"
     Expression: "github.com/pattyshack/pl/ast.Expression"

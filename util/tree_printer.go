@@ -104,8 +104,8 @@ func (printer *treePrinter) Enter(n ast.Node) {
 	printer.writeLabel()
 
 	switch node := n.(type) {
-	case *ast.ParseErrorNode:
-		printer.write("[ParseErrorNode: %s %s]", node.Errors[0], node.StartPos)
+	case *ast.ParseErrorExpr:
+		printer.write("[ParseErrorExpr: %s %s]", node.Error, node.StartPos)
 	case *ast.BoolLiteralExpr:
 		printer.write("[BoolLiteralExpr: %s]", node.Value)
 	case *ast.IntLiteralExpr:

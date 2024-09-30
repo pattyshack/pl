@@ -1,6 +1,24 @@
 package ast
 
 //
+// ParseErrorExpr
+//
+
+type ParseErrorExpr struct {
+	IsExpr
+
+	StartEndPos
+	LeadingTrailingComments
+
+	Error error
+}
+
+func (s *ParseErrorExpr) Walk(visitor Visitor) {
+	visitor.Enter(s)
+	visitor.Exit(s)
+}
+
+//
 // (Bool/Int/Float/Rune/String)LiteralExpr
 //
 

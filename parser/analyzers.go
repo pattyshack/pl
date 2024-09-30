@@ -80,7 +80,7 @@ func (detector *unexpectedStatementsDetector) checkPkgDef(
 	for _, stmt := range stmts.Statements {
 		invalidStmtType := ""
 		switch stmt.(type) {
-		case *ast.ParseErrorNode: // ok
+		case *ast.ParseErrorExpr: // ok
 		case *ast.UnsafeStatement: // ok
 		case *ast.ImportStatement: // ok
 		case *ast.BranchStatement:
@@ -110,7 +110,7 @@ func (detector *unexpectedStatementsDetector) checkSwitchSelectExpr(
 	for _, node := range stmts.Statements {
 		invalidStmtType := ""
 		switch stmt := node.(type) {
-		case *ast.ParseErrorNode: // ok
+		case *ast.ParseErrorExpr: // ok
 		case *ast.UnsafeStatement: // ok
 		case *ast.BranchStatement:
 			detector.checkStmtsExpr(stmt.Body, true)
@@ -141,7 +141,7 @@ func (detector *unexpectedStatementsDetector) checkStmtsExpr(
 	for _, node := range stmts.Statements {
 		invalidStmtType := ""
 		switch stmt := node.(type) {
-		case *ast.ParseErrorNode: // ok
+		case *ast.ParseErrorExpr: // ok
 		case *ast.UnsafeStatement: // ok
 		case ast.Expression: // ok
 		case *ast.JumpStatement:

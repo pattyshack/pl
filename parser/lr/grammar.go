@@ -307,7 +307,7 @@ type CaseEnumPatternReducer interface {
 
 type ParseErrorExprReducer interface {
 	// 284:32: parse_error_expr -> ...
-	ToParseErrorExpr(ParseError_ ParseErrorSymbol) (ast.Expression, error)
+	ToParseErrorExpr(ParseError_ *ParseErrorSymbol) (ast.Expression, error)
 }
 
 type LiteralExprReducer interface {
@@ -3543,7 +3543,7 @@ type Symbol struct {
 	LoopExpr             *ast.LoopExpr
 	Parameter            *ast.Parameter
 	Parameters           *ast.ParameterList
-	ParseError           ParseErrorSymbol
+	ParseError           *ParseErrorSymbol
 	SelectExpr           *ast.SelectExpr
 	Statement            ast.Statement
 	StatementList        *ast.StatementList
@@ -3596,11 +3596,11 @@ func NewSymbol(token Token) (*Symbol, error) {
 		}
 		symbol.Generic_ = val
 	case ParseErrorToken:
-		val, ok := token.(ParseErrorSymbol)
+		val, ok := token.(*ParseErrorSymbol)
 		if !ok {
 			return nil, fmt.Errorf(
 				"%s: invalid value type for token %s. "+
-					"expecting ParseErrorSymbol",
+					"expecting *ParseErrorSymbol",
 				token.Loc(),
 				token.Id())
 		}

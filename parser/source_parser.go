@@ -109,7 +109,10 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 				parser)
 			if err != nil {
 				parser.ParseErrors = append(parser.ParseErrors, err)
-				def = ast.NewParseErrorNode(ast.NewStartEndPos(start, end), err)
+				def = &ast.ParseErrorExpr{
+					StartEndPos: ast.NewStartEndPos(start, end),
+					Error:       err,
+				}
 			}
 
 			if len(list.Elements) == 0 {

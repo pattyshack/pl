@@ -397,11 +397,9 @@ func (lexer *RawLexer) lexNewlinesToken() (lr.Token, error) {
 			panic("This should never happen")
 		}
 
-		return &lr.ParseErrorSymbol{
-			ast.NewParseErrorNode(
-				ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf("%s: unexpected utf8 rune", loc)),
-		}, nil
+		return lr.NewParseErrorSymbol(
+			loc, lexer.Location,
+			"%s: unexpected utf8 rune", loc), nil
 	}
 
 	panic("This should never happen")
@@ -460,11 +458,9 @@ func (lexer *RawLexer) lexBlockCommentToken() (lr.Token, error) {
 	}
 
 	if scopeLevel > 0 {
-		return &lr.ParseErrorSymbol{
-			ast.NewParseErrorNode(
-				ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf("%s: block comment not terminated", loc)),
-		}, nil
+		return lr.NewParseErrorSymbol(
+			loc, lexer.Location,
+			"%s: block comment not terminated", loc), nil
 	}
 
 	return &lr.TokenValue{
@@ -653,10 +649,9 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
 	}
 
 	if !hasDigits {
-		return &lr.ParseErrorSymbol{
-			ast.NewParseErrorNode(ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf("%s: %s has no digits", loc, subType)),
-		}, nil
+		return lr.NewParseErrorSymbol(
+			loc, lexer.Location,
+			"%s: %s has no digits", loc, subType), nil
 	}
 
 	return &lr.TokenValue{
@@ -1056,11 +1051,9 @@ func (lexer *RawLexer) lexRuneLiteralToken() (lr.Token, error) {
 	}
 
 	if result.errorMsg != "" {
-		return &lr.ParseErrorSymbol{
-			ast.NewParseErrorNode(
-				ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf("%s: %s", loc, result.errorMsg)),
-		}, nil
+		return lr.NewParseErrorSymbol(
+			loc, lexer.Location,
+			"%s: %s", loc, result.errorMsg), nil
 	}
 
 	return &lr.TokenValue{
@@ -1114,11 +1107,9 @@ func (lexer *RawLexer) lexStringLiteralToken(
 	}
 
 	if result.errorMsg != "" {
-		return &lr.ParseErrorSymbol{
-			ast.NewParseErrorNode(
-				ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf("%s: %s", loc, result.errorMsg)),
-		}, nil
+		return lr.NewParseErrorSymbol(
+			loc, lexer.Location,
+			"%s: %s", loc, result.errorMsg), nil
 	}
 
 	return &lr.TokenValue{
@@ -1148,11 +1139,9 @@ func (lexer *RawLexer) lexJumpLabelToken() (lr.Token, error) {
 			panic("Should never happen")
 		}
 
-		return &lr.ParseErrorSymbol{
-			ast.NewParseErrorNode(
-				ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf("%s: no label name associated with @", loc)),
-		}, nil
+		return lr.NewParseErrorSymbol(
+			loc, lexer.Location,
+			"%s: no label name associated with @", loc), nil
 	}
 
 	size++
@@ -1236,11 +1225,9 @@ func (lexer *RawLexer) Next() (lr.Token, error) {
 			panic("Should never happen")
 		}
 
-		return &lr.ParseErrorSymbol{
-			ast.NewParseErrorNode(
-				ast.NewStartEndPos(loc, lexer.Location),
-				fmt.Errorf("%s: unexpected utf8 rune", loc)),
-		}, nil
+		return lr.NewParseErrorSymbol(
+			loc, lexer.Location,
+			"%s: unexpected utf8 rune", loc), nil
 	}
 
 	if size > 0 {

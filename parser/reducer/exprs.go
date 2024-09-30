@@ -8,6 +8,21 @@ import (
 )
 
 //
+// ParseErrorExpr
+//
+
+func (reducer *Reducer) ToParseErrorExpr(
+	pe *lr.ParseErrorSymbol,
+) (
+	ast.Expression,
+	error,
+) {
+	reducer.ParseErrors = append(reducer.ParseErrors, pe.Error)
+	expr := ast.ParseErrorExpr(*pe)
+	return &expr, nil
+}
+
+//
 // (Bool/Int/Float/Rune/String)LiteralExpr
 //
 
