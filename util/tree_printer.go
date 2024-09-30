@@ -77,14 +77,15 @@ func (printer *treePrinter) push(labels ...string) {
 
 func (printer *treePrinter) list(
 	header string,
+	argLabels []string,
 	elementType string,
 	size int,
 ) {
 	printer.write(header)
-	if size == 0 {
+	if size == 0 && len(argLabels) == 0 {
 		printer.write("]")
 	} else {
-		printer.indent += indent
+		printer.push(argLabels...)
 
 		for i := size - 1; i >= 0; i-- {
 			printer.labelStack = append(
@@ -152,14 +153,21 @@ func (printer *treePrinter) Enter(n ast.Node) {
 	case *ast.IfExpr:
 		printer.list(
 			fmt.Sprintf("[IfExpr: LabelDecl=%s", node.LabelDecl),
+			nil,
 			"Branch",
 			len(node.ConditionBranches))
 	case *ast.SwitchExpr:
-		printer.write("[SwitchExpr: LabelDecl=%s", node.LabelDecl)
-		printer.push("Operand=", "Branches=")
+		printer.list(
+			fmt.Sprintf("[SwitchExpr: LabelDecl=%s", node.LabelDecl),
+			[]string{"Operand="},
+			"Branch",
+			len(node.ConditionBranches))
 	case *ast.SelectExpr:
-		printer.write("[SwitchExpr: LabelDecl=%s", node.LabelDecl)
-		printer.push("Branches=")
+		printer.list(
+			fmt.Sprintf("[SwitchExpr: LabelDecl=%s", node.LabelDecl),
+			nil,
+			"Branch",
+			len(node.ConditionBranches))
 	case *ast.LoopExpr:
 		printer.write(
 			"[LoopExpr: LoopKind=%s LabelDecl=%s",
@@ -180,6 +188,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 	case *ast.StatementsExpr:
 		printer.list(
 			fmt.Sprintf("[StatementsExpr: LabelDecl=%s", node.LabelDecl),
+			nil,
 			"Statement",
 			len(node.Statements))
 	case *ast.VarPattern:
@@ -234,6 +243,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 				"[PropertiesTypeExpr: Kind=%s IsImplicit=%v",
 				node.Kind,
 				node.IsImplicit),
+			nil,
 			"Property",
 			len(node.Properties))
 	case *ast.FuncSignature:
@@ -252,7 +262,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.push(labels...)
 
 	case *ast.ImportStmt:
-		printer.list("[ImportStmt:", "ImportClause", len(node.ImportClauses))
+		printer.list("[ImportStmt:", nil, "ImportClause", len(node.ImportClauses))
 	case *ast.JumpStmt:
 		printer.write("[JumpStmt: Op=%s Label=%s", node.Op, node.Label)
 		if node.Value != nil {
@@ -341,18 +351,23 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			node.Package)
 
 	case *ast.DefinitionList:
-		printer.list("[DefinitionList:", "Definition", len(node.Elements))
+		printer.list("[DefinitionList:", nil, "Definition", len(node.Elements))
 	case *ast.ExpressionList:
-		printer.list("[ExpressionList:", "Expression", len(node.Elements))
+		printer.list("[ExpressionList:", nil, "Expression", len(node.Elements))
 	case *ast.TypeExpressionList:
-		printer.list("[TypeExpressionList:", "TypeExpression", len(node.Elements))
+		printer.list(
+			"[TypeExpressionList:",
+			nil,
+			"TypeExpression",
+			len(node.Elements))
 	case *ast.ParameterList:
-		printer.list("[ParameterList:", "Parameter", len(node.Elements))
+		printer.list("[ParameterList:", nil, "Parameter", len(node.Elements))
 	case *ast.ArgumentList:
-		printer.list("[ArgumentList:", "Argument", len(node.Elements))
+		printer.list("[ArgumentList:", nil, "Argument", len(node.Elements))
 	case *ast.GenericParameterList:
 		printer.list(
 			"[GenericParameterList:",
+			nil,
 			"GenericParameter",
 			len(node.Elements))
 	default:
@@ -385,7 +400,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.SwitchExpr:
 		printer.endNode()
 	case *ast.SelectExpr:
-		printer.endNode()
+		printer.endList(len(node.ConditionBranches))
 	case *ast.LoopExpr:
 		printer.endNode()
 	case *ast.StatementsExpr:

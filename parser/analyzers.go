@@ -60,9 +60,9 @@ func (detector *unexpectedStatementsDetector) Enter(n ast.Node) {
 	case *ast.PackageDef:
 		detector.checkPkgDef(node.Body)
 	case *ast.SwitchExpr:
-		detector.checkSwitchSelectExpr(node.Branches)
+		detector.checkSwitchSelectExpr(node.ConditionBranches)
 	case *ast.SelectExpr:
-		detector.checkSwitchSelectExpr(node.Branches)
+		detector.checkSwitchSelectExpr(node.ConditionBranches)
 	case *ast.StatementsExpr:
 		_, ok := detector.processed[node]
 		if ok {
@@ -103,16 +103,9 @@ func (detector *unexpectedStatementsDetector) checkPkgDef(
 }
 
 func (detector *unexpectedStatementsDetector) checkSwitchSelectExpr(
-	stmts *ast.StatementsExpr,
+	conditionBranches []*ast.ConditionBranchStmt,
 ) {
-	detector.processed[stmts] = struct{}{}
-
-	for _, node := range stmts.Statements {
-		stmt, ok := node.(*ast.ConditionBranchStmt)
-		if !ok {
-			panic("should never happen")
-		}
-
+	for _, stmt := range conditionBranches {
 		detector.checkStmtsExpr(stmt.Branch, true)
 		detector.processed[stmt.Branch] = struct{}{}
 	}
@@ -223,23 +216,18 @@ func (detector *unexpectedSelectSwitchBranchesDetector) Process(node ast.Node) {
 func (detector *unexpectedSelectSwitchBranchesDetector) Enter(node ast.Node) {
 	switch expr := node.(type) {
 	case *ast.SwitchExpr:
-		detector.checkBranches(expr.Branches, true)
+		detector.checkBranches(expr.ConditionBranches, true)
 	case *ast.SelectExpr:
-		detector.checkBranches(expr.Branches, false)
+		detector.checkBranches(expr.ConditionBranches, false)
 	}
 }
 
 func (detector *unexpectedSelectSwitchBranchesDetector) checkBranches(
-	body *ast.StatementsExpr,
+	condBranches []*ast.ConditionBranchStmt,
 	isSwitch bool,
 ) {
-	last := len(body.Statements) - 1
-	for idx, stmt := range body.Statements {
-		branch, ok := stmt.(*ast.ConditionBranchStmt)
-		if !ok {
-			continue // handled by unexpectedStatementsDetector
-		}
-
+	last := len(condBranches) - 1
+	for idx, branch := range condBranches {
 		if branch.IsDefaultBranch {
 			if idx != last {
 				detector.Emit("%s: default branch is not the last branch", branch.Loc())

@@ -403,9 +403,9 @@ type SwitchExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	LabelDecl string // optional
-	Operand   Expression
-	Branches  *StatementsExpr
+	LabelDecl         string // optional
+	Operand           Expression
+	ConditionBranches []*ConditionBranchStmt
 }
 
 var _ Expression = &SwitchExpr{}
@@ -413,7 +413,9 @@ var _ Expression = &SwitchExpr{}
 func (expr *SwitchExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Operand.Walk(visitor)
-	expr.Branches.Walk(visitor)
+	for _, condBranch := range expr.ConditionBranches {
+		condBranch.Walk(visitor)
+	}
 	visitor.Exit(expr)
 }
 
@@ -426,15 +428,17 @@ type SelectExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	LabelDecl string // optional
-	Branches  *StatementsExpr
+	LabelDecl         string // optional
+	ConditionBranches []*ConditionBranchStmt
 }
 
 var _ Expression = &SelectExpr{}
 
 func (expr *SelectExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
-	expr.Branches.Walk(visitor)
+	for _, condBranch := range expr.ConditionBranches {
+		condBranch.Walk(visitor)
+	}
 	visitor.Exit(expr)
 }
 

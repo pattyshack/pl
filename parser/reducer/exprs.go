@@ -914,8 +914,8 @@ func (reducer *Reducer) ToIfOnlyExpr(
 
 func (reducer *Reducer) groupBranches(
 	stmts *ast.StatementsExpr,
-) {
-	newStatements := make([]ast.Statement, 0, len(stmts.Statements))
+) []*ast.ConditionBranchStmt {
+	branches := make([]*ast.ConditionBranchStmt, 0, len(stmts.Statements))
 	var current *ast.ConditionBranchStmt
 	for _, stmt := range stmts.Statements {
 		branch, ok := stmt.(*ast.ConditionBranchStmt)
@@ -934,7 +934,7 @@ func (reducer *Reducer) groupBranches(
 		}
 
 		current = branch
-		newStatements = append(newStatements, branch)
+		branches = append(branches, branch)
 
 		// Flatten nested case statements
 		for {
@@ -956,11 +956,11 @@ func (reducer *Reducer) groupBranches(
 
 			current.Branch.Statements = nil
 			current = nestedBranch
-			newStatements = append(newStatements, nestedBranch)
+			branches = append(branches, nestedBranch)
 		}
 	}
 
-	stmts.Statements = newStatements
+	return branches
 }
 
 func (reducer *Reducer) LabelledToSwitchExpr(
@@ -980,22 +980,23 @@ func (reducer *Reducer) LabelledToSwitchExpr(
 func (reducer *Reducer) ToSwitchExprBody(
 	switchKW *lr.TokenValue,
 	operand ast.Expression,
-	branches *ast.StatementsExpr,
+	stmts *ast.StatementsExpr,
 ) (
 	*ast.SwitchExpr,
 	error,
 ) {
-	reducer.groupBranches(branches)
+	branches := reducer.groupBranches(stmts)
 
 	switchExpr := &ast.SwitchExpr{
-		StartEndPos: ast.NewStartEndPos(switchKW.Loc(), branches.End()),
-		Operand:     operand,
-		Branches:    branches,
+		StartEndPos:       ast.NewStartEndPos(switchKW.Loc(), stmts.End()),
+		Operand:           operand,
+		ConditionBranches: branches,
 	}
 
 	switchExpr.LeadingComment = switchKW.TakeLeading()
 	operand.PrependToLeading(switchKW.TakeTrailing())
-	switchExpr.TrailingComment = branches.TakeTrailing()
+	operand.AppendToTrailing(stmts.TakeLeading())
+	switchExpr.TrailingComment = stmts.TakeTrailing()
 
 	return switchExpr, nil
 }
@@ -1019,20 +1020,15 @@ func (reducer *Reducer) LabelledToSelectExpr(
 }
 
 func (reducer *Reducer) ToSelectExprBody(
-	switchKW *lr.TokenValue,
-	branches *ast.StatementsExpr,
+	selectKW *lr.TokenValue,
+	stmts *ast.StatementsExpr,
 ) (
 	*ast.SelectExpr,
 	error,
 ) {
-	reducer.groupBranches(branches)
+	branches := reducer.groupBranches(stmts)
 
-	for _, stmt := range branches.Statements {
-		branch, ok := stmt.(*ast.ConditionBranchStmt)
-		if !ok {
-			continue
-		}
-
+	for _, branch := range branches {
 		expr, ok := branch.Condition.(*ast.CasePatternExpr)
 		if !ok {
 			continue
@@ -1044,13 +1040,14 @@ func (reducer *Reducer) ToSelectExprBody(
 	}
 
 	selectExpr := &ast.SelectExpr{
-		StartEndPos: ast.NewStartEndPos(switchKW.Loc(), branches.End()),
-		Branches:    branches,
+		StartEndPos:       ast.NewStartEndPos(selectKW.Loc(), stmts.End()),
+		ConditionBranches: branches,
 	}
 
-	selectExpr.LeadingComment = switchKW.TakeLeading()
-	branches.PrependToLeading(switchKW.TakeTrailing())
-	selectExpr.TrailingComment = branches.TakeTrailing()
+	selectExpr.LeadingComment = selectKW.TakeLeading()
+	selectExpr.LeadingComment.Append(selectKW.TakeTrailing())
+	selectExpr.LeadingComment.Append(stmts.TakeLeading())
+	selectExpr.TrailingComment = stmts.TakeTrailing()
 
 	return selectExpr, nil
 }
