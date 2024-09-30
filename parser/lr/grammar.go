@@ -531,9 +531,9 @@ type IfOnlyExprReducer interface {
 	ToIfOnlyExpr(If_ *TokenValue, Condition_ ast.Expression, Statements_ *ast.StatementsExpr) (*ast.IfExpr, error)
 }
 
-type CaseConditionReducer interface {
-	// 603:30: case_condition -> ...
-	ToCaseCondition(Case_ *TokenValue, SwitchableCasePatterns_ *ast.ExpressionList, Assign_ *TokenValue, Expr_ ast.Expression) (ast.Expression, error)
+type CasePatternExprReducer interface {
+	// 603:33: case_pattern_expr -> ...
+	ToCasePatternExpr(Case_ *TokenValue, SwitchableCasePatterns_ *ast.ExpressionList, Assign_ *TokenValue, Expr_ ast.Expression) (ast.Expression, error)
 }
 
 type SwitchExprReducer interface {
@@ -1009,7 +1009,7 @@ type Reducer interface {
 	IfElseExprReducer
 	IfElifExprReducer
 	IfOnlyExprReducer
-	CaseConditionReducer
+	CasePatternExprReducer
 	SwitchExprReducer
 	SwitchExprBodyReducer
 	SelectExprReducer
@@ -1902,8 +1902,8 @@ func (i SymbolId) String() string {
 		return "if_only_expr"
 	case ConditionType:
 		return "condition"
-	case CaseConditionType:
-		return "case_condition"
+	case CasePatternExprType:
+		return "case_pattern_expr"
 	case SwitchExprType:
 		return "switch_expr"
 	case SwitchExprBodyType:
@@ -2117,7 +2117,7 @@ const (
 	IfElifExprType                       = SymbolId(421)
 	IfOnlyExprType                       = SymbolId(422)
 	ConditionType                        = SymbolId(423)
-	CaseConditionType                    = SymbolId(424)
+	CasePatternExprType                  = SymbolId(424)
 	SwitchExprType                       = SymbolId(425)
 	SwitchExprBodyType                   = SymbolId(426)
 	SelectExprType                       = SymbolId(427)
@@ -2416,8 +2416,8 @@ const (
 	_ReduceElifToIfElifExpr                                             = _ReduceType(203)
 	_ReduceToIfOnlyExpr                                                 = _ReduceType(204)
 	_ReduceExprToCondition                                              = _ReduceType(205)
-	_ReduceCaseConditionToCondition                                     = _ReduceType(206)
-	_ReduceToCaseCondition                                              = _ReduceType(207)
+	_ReduceCasePatternExprToCondition                                   = _ReduceType(206)
+	_ReduceToCasePatternExpr                                            = _ReduceType(207)
 	_ReduceSwitchExprBodyToSwitchExpr                                   = _ReduceType(208)
 	_ReduceLabelledToSwitchExpr                                         = _ReduceType(209)
 	_ReduceToSwitchExprBody                                             = _ReduceType(210)
@@ -2974,10 +2974,10 @@ func (i _ReduceType) String() string {
 		return "ToIfOnlyExpr"
 	case _ReduceExprToCondition:
 		return "ExprToCondition"
-	case _ReduceCaseConditionToCondition:
-		return "CaseConditionToCondition"
-	case _ReduceToCaseCondition:
-		return "ToCaseCondition"
+	case _ReduceCasePatternExprToCondition:
+		return "CasePatternExprToCondition"
+	case _ReduceToCasePatternExpr:
+		return "ToCasePatternExpr"
 	case _ReduceSwitchExprBodyToSwitchExpr:
 		return "SwitchExprBodyToSwitchExpr"
 	case _ReduceLabelledToSwitchExpr:
@@ -3666,7 +3666,7 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case DeclVarPatternType, VarPatternType, TuplePatternType, AssignSelectablePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, IfExprType, ConditionType, CaseConditionType, SwitchExprType, SelectExprType, LoopExprType, OptionalExprType, ReturnableExprType, AnonymousFuncExprType:
+	case DeclVarPatternType, VarPatternType, TuplePatternType, AssignSelectablePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, IfExprType, ConditionType, CasePatternExprType, SwitchExprType, SelectExprType, LoopExprType, OptionalExprType, ReturnableExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
 		if ok {
 			return loc.Loc()
@@ -3828,7 +3828,7 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case DeclVarPatternType, VarPatternType, TuplePatternType, AssignSelectablePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, IfExprType, ConditionType, CaseConditionType, SwitchExprType, SelectExprType, LoopExprType, OptionalExprType, ReturnableExprType, AnonymousFuncExprType:
+	case DeclVarPatternType, VarPatternType, TuplePatternType, AssignSelectablePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, IfExprType, ConditionType, CasePatternExprType, SwitchExprType, SelectExprType, LoopExprType, OptionalExprType, ReturnableExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
 		if ok {
 			return loc.End()
@@ -5262,18 +5262,18 @@ func (act *_Action) ReduceSymbol(
 		//line grammar.lr:600:4
 		symbol.Expression = args[0].Expression
 		err = nil
-	case _ReduceCaseConditionToCondition:
+	case _ReduceCasePatternExprToCondition:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ConditionType
 		//line grammar.lr:601:4
 		symbol.Expression = args[0].Expression
 		err = nil
-	case _ReduceToCaseCondition:
+	case _ReduceToCasePatternExpr:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
-		symbol.SymbolId_ = CaseConditionType
-		symbol.Expression, err = reducer.ToCaseCondition(args[0].Value, args[1].ExpressionList, args[2].Value, args[3].Expression)
+		symbol.SymbolId_ = CasePatternExprType
+		symbol.Expression, err = reducer.ToCasePatternExpr(args[0].Value, args[1].ExpressionList, args[2].Value, args[3].Expression)
 	case _ReduceSwitchExprBodyToSwitchExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -7595,8 +7595,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
-		case CaseConditionType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceCaseConditionToCondition}, true
+		case CasePatternExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceCasePatternExprToCondition}, true
 		case SwitchExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
@@ -15722,8 +15722,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabelledToIfExpr}, true
 		case IfOnlyExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIfOnlyExprToIfElifExpr}, true
-		case CaseConditionType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceCaseConditionToCondition}, true
+		case CasePatternExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceCasePatternExprToCondition}, true
 		case SwitchExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSwitchExprToExpr}, true
 		case SwitchExprBodyType:
@@ -16904,7 +16904,7 @@ func (_ActionTableType) Get(
 		case BinaryAssignOpExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryAssignOpExprToAssignOpExpr}, true
 		case ExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceToCaseCondition}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceToCasePatternExpr}, true
 		case StatementsExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementsExprToExpr}, true
 		case StatementsType:
@@ -19167,7 +19167,7 @@ Parser Debug States:
       if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      case_condition -> [condition]
+      case_pattern_expr -> [condition]
       switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
       select_expr -> [expr]
@@ -20491,7 +20491,7 @@ Parser Debug States:
 
   State 76:
     Kernel Items:
-      case_condition: CASE.switchable_case_patterns ASSIGN expr
+      case_pattern_expr: CASE.switchable_case_patterns ASSIGN expr
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -23486,7 +23486,7 @@ Parser Debug States:
   State 150:
     Kernel Items:
       switchable_case_patterns: switchable_case_patterns.COMMA switchable_case_pattern
-      case_condition: CASE switchable_case_patterns.ASSIGN expr
+      case_pattern_expr: CASE switchable_case_patterns.ASSIGN expr
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -24240,7 +24240,7 @@ Parser Debug States:
       if_expr -> [expr]
       if_else_expr -> [if_expr]
       if_only_expr -> [if_elif_expr]
-      case_condition -> [condition]
+      case_pattern_expr -> [condition]
       switch_expr -> [expr]
       switch_expr_body -> [switch_expr]
       select_expr -> [expr]
@@ -25057,7 +25057,7 @@ Parser Debug States:
 
   State 211:
     Kernel Items:
-      case_condition: CASE switchable_case_patterns ASSIGN.expr
+      case_pattern_expr: CASE switchable_case_patterns ASSIGN.expr
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -25105,7 +25105,7 @@ Parser Debug States:
       recv_expr -> [send_recv_expr]
       assign_op_expr -> [expr]
       binary_assign_op_expr -> [assign_op_expr]
-      expr -> [case_condition]
+      expr -> [case_pattern_expr]
       statements_expr -> [expr]
       statements -> [statements_expr]
       if_expr -> [expr]

@@ -773,7 +773,7 @@ func (reducer *Reducer) ToInitializeExpr(
 // IfExpr
 //
 
-func (reducer *Reducer) ToCaseCondition(
+func (reducer *Reducer) ToCasePatternExpr(
 	caseKW *lr.TokenValue,
 	switchablePatterns *ast.ExpressionList,
 	assign *lr.TokenValue,
@@ -788,10 +788,10 @@ func (reducer *Reducer) ToCaseCondition(
 	value.PrependToLeading(assign.TakeTrailing())
 	trailing := value.TakeTrailing()
 
-	cond := &ast.CaseConditionExpr{
-		StartEndPos:        ast.NewStartEndPos(caseKW.Loc(), value.End()),
-		SwitchablePatterns: switchablePatterns,
-		Value:              value,
+	cond := &ast.CasePatternExpr{
+		StartEndPos: ast.NewStartEndPos(caseKW.Loc(), value.End()),
+		Patterns:    switchablePatterns,
+		Value:       value,
 	}
 	cond.LeadingComment = leading
 	cond.TrailingComment = trailing
@@ -838,9 +838,9 @@ func (reducer *Reducer) ElseToIfElseExpr(
 	last.AppendToTrailing(elseKW.TakeLeading())
 
 	cb := &ast.ConditionBranch{
-		StartEndPos: ast.NewStartEndPos(elseKW.Loc(), branch.End()),
-		IsElse:      true,
-		Branch:      branch,
+		StartEndPos:     ast.NewStartEndPos(elseKW.Loc(), branch.End()),
+		IsDefaultBranch: true,
+		Branch:          branch,
 	}
 	cb.LeadingComment = elseKW.TakeTrailing()
 	cb.LeadingComment.Append(branch.TakeLeading())

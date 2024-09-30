@@ -355,29 +355,34 @@ func (expr *InitializeExpr) Walk(visitor Visitor) {
 // IfExpr
 //
 
-type CaseConditionExpr struct {
+type CasePatternExpr struct {
 	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
-	SwitchablePatterns *ExpressionList
-	Value              Expression
+	Patterns *ExpressionList
+	Value Expression // optional
 }
 
-var _ Expression = &CaseConditionExpr{}
+var _ Expression = &CasePatternExpr{}
 
-func (cond *CaseConditionExpr) Walk(visitor Visitor) {
+func (cond *CasePatternExpr) Walk(visitor Visitor) {
 	visitor.Enter(cond)
-	cond.SwitchablePatterns.Walk(visitor)
-	cond.Value.Walk(visitor)
+	cond.Patterns.Walk(visitor)
+	if cond.Value != nil {
+		cond.Value.Walk(visitor)
+	}
 	visitor.Exit(cond)
 }
 
 type ConditionBranch struct {
+	IsStmt
 	StartEndPos
 	LeadingTrailingComments
 
-	IsElse    bool
+	// either default branch in SwitchExpr/SelectExpr, or else branch in IfExpr
+	IsDefaultBranch bool
+
 	Condition Expression // nil when IsElse is true
 	Branch    *StatementsExpr
 }

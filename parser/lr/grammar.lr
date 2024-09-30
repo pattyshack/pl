@@ -598,9 +598,9 @@ if_only_expr<IfExpr> ->
 
 condition<Expression> ->
   = expr |
-  = case_condition
+  = case_pattern_expr
 
-case_condition<Expression> -> CASE switchable_case_patterns ASSIGN expr
+case_pattern_expr<Expression> -> CASE switchable_case_patterns ASSIGN expr
 
 // match patterns within the same case must all have identical variable binding
 //
