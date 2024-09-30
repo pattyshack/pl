@@ -1,26 +1,12 @@
 package parser
 
 import (
-	"fmt"
-
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/util"
 )
 
-type errorEmitter struct {
-	errs []error
-}
-
-func (detector *errorEmitter) Errors() []error {
-	return detector.errs
-}
-
-func (detector *errorEmitter) emit(format string, args ...interface{}) {
-	detector.errs = append(detector.errs, fmt.Errorf(format, args...))
-}
-
 type unreachableStatementsDetector struct {
-	errorEmitter
+	util.ErrorEmitter
 }
 
 func detectUnreachableStatements() util.Pass {
@@ -44,7 +30,7 @@ func (detector *unreachableStatementsDetector) Enter(node ast.Node) {
 		}
 
 		if idx < len(stmts.Statements)-1 {
-			detector.emit("%s: unreachable statement", stmts.Statements[idx+1].Loc())
+			detector.Emit("%s: unreachable statement", stmts.Statements[idx+1].Loc())
 			break
 		}
 	}
@@ -56,7 +42,7 @@ func (detector *unreachableStatementsDetector) Exit(node ast.Node) {
 type unexpectedStatementsDetector struct {
 	processed map[*ast.StatementsExpr]struct{}
 
-	errorEmitter
+	util.ErrorEmitter
 }
 
 func detectUnexpectedStatements() util.Pass {
@@ -108,7 +94,7 @@ func (detector *unexpectedStatementsDetector) checkPkgDef(
 		}
 
 		if invalidStmtType != "" {
-			detector.emit(
+			detector.Emit(
 				"%s: unexpected %s. expected import statement",
 				stmt.Loc(),
 				invalidStmtType)
@@ -140,7 +126,7 @@ func (detector *unexpectedStatementsDetector) checkSwitchSelectExpr(
 		}
 
 		if invalidStmtType != "" {
-			detector.emit(
+			detector.Emit(
 				"%s: unexpected %s. expected case or default branch statement",
 				node.Loc(),
 				invalidStmtType)
@@ -171,7 +157,7 @@ func (detector *unexpectedStatementsDetector) checkStmtsExpr(
 		}
 
 		if invalidStmtType != "" {
-			detector.emit(
+			detector.Emit(
 				"%s: unexpected %s. expected expression, assign or jump statement",
 				node.Loc(),
 				invalidStmtType)
@@ -183,7 +169,7 @@ func (detector *unexpectedStatementsDetector) Exit(node ast.Node) {
 }
 
 type unexpectedArgumentsDetector struct {
-	errorEmitter
+	util.ErrorEmitter
 }
 
 func detectUnexpectedArguments() util.Pass {
@@ -200,7 +186,7 @@ func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 		if node.Index.Kind != ast.PositionalArgument &&
 			node.Index.Kind != ast.ColonExprArgument {
 
-			detector.emit(
+			detector.Emit(
 				"%s: unexpected %s argument",
 				node.Index.Loc(),
 				node.Index.Kind)
@@ -208,7 +194,7 @@ func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 	case *ast.CallExpr:
 		for _, arg := range node.Arguments.Elements {
 			if arg.Kind == ast.SkipPatternArgument {
-				detector.emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
+				detector.Emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
 			}
 		}
 	case *ast.InitializeExpr:
@@ -216,14 +202,14 @@ func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 			if arg.Kind == ast.SkipPatternArgument ||
 				arg.Kind == ast.VarargAssignmentArgument {
 
-				detector.emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
+				detector.Emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
 			}
 		}
 	case *ast.ImplicitStructExpr:
 		// TODO detect invalid skip-pattern (...) usage in non-pattern expressions
 		for _, arg := range node.Arguments.Elements {
 			if arg.Kind == ast.VarargAssignmentArgument {
-				detector.emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
+				detector.Emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
 			}
 		}
 	}
@@ -239,7 +225,7 @@ func (detector *unexpectedArgumentsDetector) Exit(node ast.Node) {
 //     send/recv expr (and assign pattern don't include case enum pattern; this
 //     is check by a different pass)
 type unexpectedSelectSwitchBranchesDetector struct {
-	errorEmitter
+	util.ErrorEmitter
 }
 
 func detectUnexpectedSelectSwitchBranches() util.Pass {
@@ -272,7 +258,7 @@ func (detector *unexpectedSelectSwitchBranchesDetector) checkBranches(
 
 		if branch.IsDefault {
 			if idx != last {
-				detector.emit("%s: default branch is not the last branch", branch.Loc())
+				detector.Emit("%s: default branch is not the last branch", branch.Loc())
 			}
 			continue
 		}
@@ -281,12 +267,12 @@ func (detector *unexpectedSelectSwitchBranchesDetector) checkBranches(
 			for _, pattern := range branch.CasePatterns.Elements {
 				binary, ok := pattern.(*ast.BinaryExpr)
 				if ok && binary.Op == ast.BinaryAssignOp {
-					detector.emit("%s: unexpected assignment pattern", pattern.Loc())
+					detector.Emit("%s: unexpected assignment pattern", pattern.Loc())
 				}
 			}
 		} else {
 			if len(branch.CasePatterns.Elements) > 1 {
-				detector.emit(
+				detector.Emit(
 					"%s: unexpected pattern list, expecting only one pattern per case",
 					branch.CasePatterns.Loc())
 			} else {
@@ -306,7 +292,7 @@ func (detector *unexpectedSelectSwitchBranchesDetector) checkBranches(
 				}
 
 				if !isValid {
-					detector.emit(
+					detector.Emit(
 						"%s: unexpected expression, expecting send/recv expression",
 						expr.Loc())
 				}
