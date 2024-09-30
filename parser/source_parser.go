@@ -42,8 +42,9 @@ func newSourceParser(
 	*sourceParser,
 	error,
 ) {
-	reducer := reducerImpl.NewReducer()
-	lexer, err := options.NewLexer(fileName, reducer)
+	emitter := &util.ErrorEmitter{}
+	reducer := reducerImpl.NewReducer(emitter)
+	lexer, err := options.NewLexer(fileName, emitter, reducer)
 	if err != nil {
 		return nil, err
 	}

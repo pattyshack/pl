@@ -7,6 +7,7 @@ import (
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
+	"github.com/pattyshack/pl/util"
 )
 
 type scope struct {
@@ -15,6 +16,8 @@ type scope struct {
 }
 
 type ScopedLexer struct {
+	*util.ErrorEmitter
+
 	buffered *lexutil.BufferedReader[lr.Token]
 	base     lr.Lexer
 	reducer  lr.Reducer
@@ -25,11 +28,13 @@ type ScopedLexer struct {
 func NewLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
-	options LexerOptions,
+	emitter *util.ErrorEmitter,
 	reducer lr.Reducer,
+	options LexerOptions,
 ) *ScopedLexer {
-	base := NewBasicLexer(sourceFileName, sourceContent, options)
+	base := NewBasicLexer(sourceFileName, sourceContent, emitter, options)
 	return &ScopedLexer{
+		ErrorEmitter: emitter,
 		buffered: lexutil.NewBufferedReader(
 			lexutil.NewLexerReader[lr.Token](base),
 			10),
@@ -125,7 +130,7 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 			}, nil
 		}
 
-		// TODO emit error
+		lexer.EmitErrors(parseErr)
 		startEnd := ast.NewStartEndPos(pos, lexer.CurrentLocation())
 		stmts := &ast.StatementsExpr{
 			StartEndPos: startEnd,
@@ -154,7 +159,7 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 				lexer.pushScope()
 				_, parseErr = lr.ParseStatements(lexer, lexer.reducer)
 				if parseErr != nil {
-					// TODO emit error
+					lexer.EmitErrors(parseErr)
 					stmts.Statements = append(
 						stmts.Statements,
 						&ast.ParseErrorExpr{

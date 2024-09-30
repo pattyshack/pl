@@ -7,6 +7,7 @@ import (
 
 	"github.com/pattyshack/pl/parser/lexer"
 	"github.com/pattyshack/pl/parser/lr"
+	"github.com/pattyshack/pl/util"
 )
 
 type ParserOptions struct {
@@ -34,6 +35,7 @@ func (options ParserOptions) NewReader(fileName string) (io.Reader, error) {
 
 func (options ParserOptions) NewLexer(
 	fileName string,
+	emitter *util.ErrorEmitter,
 	reducer lr.Reducer,
 ) (
 	lr.Lexer,
@@ -45,7 +47,16 @@ func (options ParserOptions) NewLexer(
 	}
 
 	if options.UseBasicLexer {
-		return lexer.NewBasicLexer(fileName, reader, options.LexerOptions), nil
+		return lexer.NewBasicLexer(
+			fileName,
+			reader,
+			emitter,
+			options.LexerOptions), nil
 	}
-	return lexer.NewLexer(fileName, reader, options.LexerOptions, reducer), nil
+	return lexer.NewLexer(
+		fileName,
+		reader,
+		emitter,
+		reducer,
+		options.LexerOptions), nil
 }

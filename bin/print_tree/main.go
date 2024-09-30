@@ -242,7 +242,7 @@ func (cmd *Command) printSource(args []string) error {
 func (cmd *Command) printTokens(args []string) error {
 	cmd.UseBasicLexer = true
 	for _, fileName := range args {
-		lexer, err := cmd.NewLexer(fileName, nil)
+		lexer, err := cmd.NewLexer(fileName, &util.ErrorEmitter{}, nil)
 		if err != nil {
 			continue
 		}

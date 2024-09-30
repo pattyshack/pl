@@ -8,6 +8,7 @@ import (
 	"github.com/pattyshack/gt/testing/expect"
 
 	"github.com/pattyshack/pl/parser/lr"
+	"github.com/pattyshack/pl/util"
 )
 
 func expectError(t *testing.T, token lr.Token, errMsg string) {
@@ -39,7 +40,7 @@ func expectCount(
 
 func lex[T lr.Lexer](
 	t *testing.T,
-	newLexer func(string, io.Reader, LexerOptions) T,
+	newLexer func(string, io.Reader, *util.ErrorEmitter, LexerOptions) T,
 	input string,
 	expected ...lr.SymbolId,
 ) []lr.Token {
@@ -48,6 +49,7 @@ func lex[T lr.Lexer](
 	lexer := newLexer(
 		"source.txt",
 		buffer,
+		&util.ErrorEmitter{},
 		LexerOptions{
 			PreserveCommentContent: true,
 			initialPeekWindowSize:  1,

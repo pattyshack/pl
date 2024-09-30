@@ -6,11 +6,14 @@ import (
 )
 
 type Reducer struct {
-	util.ErrorEmitter
+	// TODO: rm
+	*util.ErrorEmitter
 }
 
 var _ lr.Reducer = &Reducer{}
 
-func NewReducer() *Reducer {
-	return &Reducer{}
+func NewReducer(emitter *util.ErrorEmitter) *Reducer {
+	return &Reducer{
+		ErrorEmitter: emitter,
+	}
 }

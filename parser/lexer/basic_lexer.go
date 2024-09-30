@@ -7,6 +7,7 @@ import (
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
+	"github.com/pattyshack/pl/util"
 )
 
 // Discard spacesToken and merge adjacent NewlinesTokens
@@ -18,9 +19,10 @@ type TrimSpacesLexer struct {
 func NewTrimSpacesLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
+	emitter *util.ErrorEmitter,
 	options LexerOptions,
 ) lr.Lexer {
-	base := NewRawLexer(sourceFileName, sourceContent, options)
+	base := NewRawLexer(sourceFileName, sourceContent, emitter, options)
 	return &TrimSpacesLexer{
 		buffered: lexutil.NewBufferedReader(
 			lexutil.NewLexerReader[lr.Token](base),
@@ -93,9 +95,10 @@ type CommentGroupLexer struct {
 func NewCommentGroupLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
+	emitter *util.ErrorEmitter,
 	options LexerOptions,
 ) lr.Lexer {
-	base := NewTrimSpacesLexer(sourceFileName, sourceContent, options)
+	base := NewTrimSpacesLexer(sourceFileName, sourceContent, emitter, options)
 	return &CommentGroupLexer{
 		buffered: lexutil.NewBufferedReader(
 			lexutil.NewLexerReader[lr.Token](base),
@@ -166,9 +169,10 @@ type AssociateCommentGroupsLexer struct {
 func NewAssociateCommentGroupsLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
+	emitter *util.ErrorEmitter,
 	options LexerOptions,
 ) lr.Lexer {
-	base := NewCommentGroupLexer(sourceFileName, sourceContent, options)
+	base := NewCommentGroupLexer(sourceFileName, sourceContent, emitter, options)
 	return &AssociateCommentGroupsLexer{
 		buffered: lexutil.NewBufferedReader(
 			lexutil.NewLexerReader[lr.Token](base),
@@ -277,9 +281,14 @@ type TerminalNewlinesLexer struct {
 func NewBasicLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
+	emitter *util.ErrorEmitter,
 	options LexerOptions,
 ) lr.Lexer {
-	base := NewAssociateCommentGroupsLexer(sourceFileName, sourceContent, options)
+	base := NewAssociateCommentGroupsLexer(
+		sourceFileName,
+		sourceContent,
+		emitter,
+		options)
 	return &TerminalNewlinesLexer{
 		buffered: lexutil.NewBufferedReader(
 			lexutil.NewLexerReader[lr.Token](base),
