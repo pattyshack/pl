@@ -76,7 +76,8 @@ definition<Definition> ->
   = global_var_def |
   // There can only be at most one statements per package, which act as
   // the package's init function
-  = statements_or_parse_error |
+  = statements |
+  = parse_error_expr |
   = floating_comment
 
 // Global variable dependencies must be topologically sortable.
@@ -547,7 +548,7 @@ expr<Expression> ->
 
 statements_expr<Expression> ->
   = statements |
-  labelled: LABEL_DECL statements_or_parse_error
+  labelled: LABEL_DECL statements
 
 // IMPORTANT NOTE!!!
 //
@@ -565,10 +566,6 @@ statements_expr<Expression> ->
 // real value type, i.e., *StatementsExpr, or PARSE_ERROR's value type,
 // i.e., *ParseErrorSymbol
 statements<Expression> -> LBRACE statement_list RBRACE
-
-statements_or_parse_error<Expression> ->
-  = statements |
-  = parse_error_expr
 
 proper_statement_list<StatementList> ->
   add_implicit: proper_statement_list NEWLINES statement |
@@ -590,14 +587,14 @@ if_expr<Expression> ->
 
 if_else_expr<IfExpr> ->
   = if_elif_expr |
-  else: if_elif_expr ELSE statements_or_parse_error
+  else: if_elif_expr ELSE statements
 
 if_elif_expr<IfExpr> ->
   = if_only_expr |
-  elif: if_elif_expr ELSE IF condition statements_or_parse_error
+  elif: if_elif_expr ELSE IF condition statements
 
 if_only_expr<IfExpr> ->
-  IF condition statements_or_parse_error
+  IF condition statements
 
 condition<Expression> ->
   = expr |
@@ -626,13 +623,13 @@ switch_expr<Expression> ->
   = switch_expr_body |
   labelled: LABEL_DECL switch_expr_body
 
-switch_expr_body<Expression> -> SWITCH expr statements_or_parse_error
+switch_expr_body<Expression> -> SWITCH expr statements
 
 select_expr<Expression> ->
   = select_expr_body |
   labelled: LABEL_DECL select_expr_body
 
-select_expr_body<Expression> -> SELECT statements_or_parse_error
+select_expr_body<Expression> -> SELECT statements
 
 // NOTE: Since we use {} for expression grouping, we need the extra DO keyword
 // to help the parser figure out which block is the loop's body.
@@ -655,9 +652,9 @@ optional_expr<Expression> ->
   = expr |
   nil:
 
-repeat_loop_body<Expression> -> REPEAT statements_or_parse_error
+repeat_loop_body<Expression> -> REPEAT statements
 
-for_loop_body<Expression> -> DO statements_or_parse_error
+for_loop_body<Expression> -> DO statements
 
 //
 // Returnable expressions (This is purely syntactic sugar)
@@ -947,11 +944,11 @@ method_signature<TypeProperty> -> FUNC IDENTIFIER parameter_decls return_type
 //  let <alias> = <original_func>
 // instead.
 named_func_def<Definition> ->
-  func_def: FUNC IDENTIFIER generic_parameters parameter_defs return_type statements_or_parse_error |
-  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER parameter_defs return_type statements_or_parse_error
+  func_def: FUNC IDENTIFIER generic_parameters parameter_defs return_type statements |
+  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER parameter_defs return_type statements
 
 anonymous_func_expr<Expression> ->
-  FUNC parameter_defs return_type statements_or_parse_error
+  FUNC parameter_defs return_type statements
 
 //
 // Package definition =========================================================
@@ -962,7 +959,7 @@ anonymous_func_expr<Expression> ->
 // "internal" since that's special cased by go.  As an alternative to go's
 // internal, if the package name is a private, it can only be accessed by its
 // parent directory package.
-package_def<Definition> -> PACKAGE statements_or_parse_error
+package_def<Definition> -> PACKAGE statements
 
 %%lang_specs{
 go:
