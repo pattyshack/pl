@@ -377,23 +377,22 @@ func (reducer *Reducer) ToAssignSelectablePattern(
 		}
 
 	} else {
-		implicitStruct := &ast.ImplicitStructExpr{
-			StartEndPos:             exprList.StartEnd(),
-			LeadingTrailingComments: exprList.TakeComments(),
-			Arguments:               ast.NewArgumentList(),
-			IsImproper:              true,
-		}
-
+		args := make([]*ast.Argument, 0, len(exprList.Elements))
 		for _, item := range exprList.Elements {
 			// TODO: move error check into pattern analyzer
 			_, ok := item.(*ast.CaseEnumPattern)
 			if ok {
 				reducer.Emit("%s: unexpected case enum pattern", item.Loc())
 			}
-			implicitStruct.Arguments.Add(ast.NewPositionalArgument(item))
+			args = append(args, ast.NewPositionalArgument(item))
 		}
 
-		expr = implicitStruct
+		expr = &ast.ImplicitStructExpr{
+			StartEndPos:             exprList.StartEnd(),
+			LeadingTrailingComments: exprList.TakeComments(),
+			Arguments:               args,
+			IsImproper:              true,
+		}
 	}
 
 	return reducer.toBinaryExpr(expr, assign, value), nil
@@ -412,10 +411,12 @@ func (reducer *Reducer) toImplicitStructExpr(
 		args = ast.NewArgumentList()
 	}
 	args.ReduceMarkers(lparen, rparen)
+	args.LeadingComment.Append(args.MiddleComment)
+
 	return &ast.ImplicitStructExpr{
 		StartEndPos:             args.StartEndPos,
 		LeadingTrailingComments: args.TakeComments(),
-		Arguments:               args,
+		Arguments:               args.Elements,
 	}
 }
 
@@ -439,15 +440,11 @@ func (reducer *Reducer) PairToImproperExprStruct(
 	*ast.ImplicitStructExpr,
 	error,
 ) {
-	arg1 := ast.NewPositionalArgument(expr1)
-	arg2 := ast.NewPositionalArgument(expr2)
-
-	list := ast.NewArgumentList()
-	list.Add(arg1)
-	list.ReduceAdd(comma, arg2)
+	list := []*ast.Argument{ast.NewPositionalArgument(expr1)}
+	list = ast.ReduceAdd(list, comma, ast.NewPositionalArgument(expr2))
 
 	expr := &ast.ImplicitStructExpr{
-		StartEndPos: list.StartEndPos,
+		StartEndPos: ast.NewStartEndPos(expr1.Loc(), expr2.End()),
 		Arguments:   list,
 		IsImproper:  true,
 	}
@@ -464,7 +461,10 @@ func (reducer *Reducer) AddToImproperExprStruct(
 	error,
 ) {
 	structExpr.EndPos = expr.End()
-	structExpr.Arguments.ReduceAdd(comma, ast.NewPositionalArgument(expr))
+	structExpr.Arguments = ast.ReduceAdd(
+		structExpr.Arguments,
+		comma,
+		ast.NewPositionalArgument(expr))
 	return structExpr, nil
 }
 
@@ -489,22 +489,23 @@ func (Reducer) UnitUnitPairToColonExpr(
 	*ast.ColonExpr,
 	error,
 ) {
-	leftArg := &ast.Argument{
-		StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
-		Kind:        ast.IsImplicitUnitArgument,
+	args := []*ast.Argument{
+		&ast.Argument{
+			StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
+			Kind:        ast.IsImplicitUnitArgument,
+		},
 	}
 
-	rightArg := &ast.Argument{
-		StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
-		Kind:        ast.IsImplicitUnitArgument,
-	}
-
-	args := ast.NewArgumentList()
-	args.Add(leftArg)
-	args.ReduceAdd(colon, rightArg)
+	args = ast.ReduceAdd(
+		args,
+		colon,
+		&ast.Argument{
+			StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
+			Kind:        ast.IsImplicitUnitArgument,
+		})
 
 	return &ast.ColonExpr{
-		StartEndPos: args.StartEndPos,
+		StartEndPos: colon.StartEnd(),
 		Arguments:   args,
 	}, nil
 }
@@ -521,20 +522,20 @@ func (Reducer) ExprUnitPairToColonExpr(
 		Kind:        ast.PositionalArgument,
 		Expr:        leftExpr,
 	}
-	leftArg.LeadingComment = leftExpr.TakeLeading()
-	leftArg.TrailingComment = leftExpr.TakeTrailing()
+	leftArg.LeadingTrailingComments = leftExpr.TakeComments()
 
-	rightArg := &ast.Argument{
-		StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
-		Kind:        ast.IsImplicitUnitArgument,
-	}
+	args := []*ast.Argument{leftArg}
 
-	args := ast.NewArgumentList()
-	args.Add(leftArg)
-	args.ReduceAdd(colon, rightArg)
+	args = ast.ReduceAdd(
+		args,
+		colon,
+		&ast.Argument{
+			StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
+			Kind:        ast.IsImplicitUnitArgument,
+		})
 
 	return &ast.ColonExpr{
-		StartEndPos: args.StartEndPos,
+		StartEndPos: ast.NewStartEndPos(leftExpr.Loc(), colon.End()),
 		Arguments:   args,
 	}, nil
 }
@@ -546,25 +547,24 @@ func (reducer *Reducer) UnitExprPairToColonExpr(
 	*ast.ColonExpr,
 	error,
 ) {
-	leftArg := &ast.Argument{
-		StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
-		Kind:        ast.IsImplicitUnitArgument,
+	args := []*ast.Argument{
+		&ast.Argument{
+			StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
+			Kind:        ast.IsImplicitUnitArgument,
+		},
 	}
 
-	rightArg := &ast.Argument{
-		StartEndPos: ast.NewStartEndPos(rightExpr.Loc(), rightExpr.End()),
-		Kind:        ast.PositionalArgument,
-		Expr:        rightExpr,
-	}
-	rightArg.LeadingComment = rightExpr.TakeLeading()
-	rightArg.TrailingComment = rightExpr.TakeTrailing()
-
-	args := ast.NewArgumentList()
-	args.Add(leftArg)
-	args.ReduceAdd(colon, rightArg)
+	args = ast.ReduceAdd(
+		args,
+		colon,
+		&ast.Argument{
+			StartEndPos: ast.NewStartEndPos(rightExpr.Loc(), rightExpr.End()),
+			Kind:        ast.PositionalArgument,
+			Expr:        rightExpr,
+		})
 
 	return &ast.ColonExpr{
-		StartEndPos: args.StartEndPos,
+		StartEndPos: ast.NewStartEndPos(colon.Loc(), rightExpr.End()),
 		Arguments:   args,
 	}, nil
 }
@@ -593,12 +593,11 @@ func (reducer *Reducer) ExprExprPairToColonExpr(
 	rightArg.LeadingComment = rightExpr.TakeLeading()
 	rightArg.TrailingComment = rightExpr.TakeTrailing()
 
-	args := ast.NewArgumentList()
-	args.Add(leftArg)
-	args.ReduceAdd(colon, rightArg)
+	args := []*ast.Argument{leftArg}
+	args = ast.ReduceAdd(args, colon, rightArg)
 
 	return &ast.ColonExpr{
-		StartEndPos: args.StartEndPos,
+		StartEndPos: ast.NewStartEndPos(leftExpr.Loc(), rightExpr.End()),
 		Arguments:   args,
 	}, nil
 }
@@ -615,7 +614,7 @@ func (reducer *Reducer) ColonExprUnitTupleToColonExpr(
 		Kind:        ast.IsImplicitUnitArgument,
 	}
 
-	colonExpr.Arguments.ReduceAdd(colon, arg)
+	colonExpr.Arguments = ast.ReduceAdd(colonExpr.Arguments, colon, arg)
 	colonExpr.EndPos = colon.End()
 	return colonExpr, nil
 }
@@ -636,8 +635,8 @@ func (reducer *Reducer) ColonExprExprTupleToColonExpr(
 	arg.LeadingComment = expr.TakeLeading()
 	arg.TrailingComment = expr.TakeTrailing()
 
+	colonExpr.Arguments = ast.ReduceAdd(colonExpr.Arguments, colon, arg)
 	colonExpr.EndPos = expr.End()
-	colonExpr.Arguments.ReduceAdd(colon, arg)
 	return colonExpr, nil
 }
 
@@ -657,18 +656,24 @@ func (reducer *Reducer) ToCallExpr(
 ) {
 	leading := funcExpr.TakeLeading()
 
+	var prev ast.Node = funcExpr
+	if genericArguments != nil {
+		prev = genericArguments
+	}
+
 	if arguments == nil {
 		arguments = ast.NewArgumentList()
 	}
-
 	arguments.ReduceMarkers(lparen, rparen)
+
+	prev.AppendToTrailing(arguments.TakeLeading())
 	trailing := arguments.TakeTrailing()
 
 	expr := &ast.CallExpr{
 		StartEndPos:      ast.NewStartEndPos(funcExpr.Loc(), rparen.End()),
 		FuncExpr:         funcExpr,
 		GenericArguments: genericArguments,
-		Arguments:        arguments,
+		Arguments:        arguments.Elements,
 	}
 	expr.LeadingComment = leading
 	expr.TrailingComment = trailing
@@ -760,10 +765,12 @@ func (reducer *Reducer) ToInitializeExpr(
 	expr := &ast.InitializeExpr{
 		StartEndPos:   ast.NewStartEndPos(initializable.Loc(), rparen.End()),
 		Initializable: initializable,
-		Arguments:     arguments,
+		Arguments:     arguments.Elements,
 	}
 
 	expr.LeadingComment = initializable.TakeLeading()
+	initializable.AppendToTrailing(arguments.TakeLeading())
+	initializable.AppendToTrailing(arguments.MiddleComment)
 	expr.TrailingComment = arguments.TakeTrailing()
 
 	return expr, nil

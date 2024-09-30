@@ -28,12 +28,17 @@ func (list *NodeList[T]) Add(element T) {
 	list.Elements = append(list.Elements, element)
 }
 
-func (list *NodeList[T]) ReduceAdd(separator TokenValue, element T) {
-	prev := list.Elements[len(list.Elements)-1]
-	prev.AppendToTrailing(separator.TakeLeading())
-	prev.AppendToTrailing(separator.TakeTrailing())
+func ReduceAdd[T Node](list []T, seperator TokenValue, element T) []T {
+	prev := list[len(list)-1]
+	prev.AppendToTrailing(seperator.TakeLeading())
+	prev.AppendToTrailing(seperator.TakeTrailing())
 
-	list.Add(element)
+	return append(list, element)
+}
+
+func (list *NodeList[T]) ReduceAdd(separator TokenValue, element T) {
+	list.Elements = ReduceAdd(list.Elements, separator, element)
+	list.EndPos = element.End()
 }
 
 func (list *NodeList[T]) ReduceImproper(separator TokenValue) {
@@ -100,16 +105,6 @@ func NewParameterList() *ParameterList {
 }
 
 //
-// Argument list
-//
-
-type ArgumentList = NodeList[*Argument]
-
-func NewArgumentList() *ArgumentList {
-	return &NodeList[*Argument]{}
-}
-
-//
 // GenericParameterList
 //
 
@@ -145,4 +140,10 @@ type ImportClauseList = NodeList[*ImportClause]
 
 func NewImportClauseList() *ImportClauseList {
 	return &NodeList[*ImportClause]{}
+}
+
+type ArgumentList = NodeList[*Argument]
+
+func NewArgumentList() *ArgumentList {
+	return &NodeList[*Argument]{}
 }

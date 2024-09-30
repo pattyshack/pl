@@ -129,18 +129,19 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.write("[BinaryExpr: Op=(%s)", node.Op)
 		printer.push("Left=", "Right=")
 	case *ast.ImplicitStructExpr:
-		printer.write("[ImplicitStructExpr: IsImproper=%v", node.IsImproper)
-		printer.push("Arguments=")
+		printer.list(
+			fmt.Sprintf("[ImplicitStructExpr: IsImproper=%v", node.IsImproper),
+			nil,
+			"Argument",
+			len(node.Arguments))
 	case *ast.ColonExpr:
-		printer.write("[ColonExpr:")
-		printer.push("Arguments=")
+		printer.list("[ColonExpr:", nil, "Argument", len(node.Arguments))
 	case *ast.CallExpr:
-		printer.write("[CallExpr")
+		argLabels := []string{"FuncExpr="}
 		if node.GenericArguments != nil {
-			printer.push("FuncExpr=", "GenericArguments=", "Arguments=")
-		} else {
-			printer.push("FuncExpr=", "Arguments=")
+			argLabels = append(argLabels, "GenericArguments=")
 		}
+		printer.list("[CallExpr", argLabels, "Argument", len(node.Arguments))
 	case *ast.IndexExpr:
 		printer.write("[IndexExpr:")
 		printer.push("Accessible=", "Argument=")
@@ -148,8 +149,11 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.write("[AsExpr:")
 		printer.push("Accessible=", "CastType=")
 	case *ast.InitializeExpr:
-		printer.write("[InitializeExpr:")
-		printer.push("Initializable=", "Arguments=")
+		printer.list(
+			"[InitializeExpr:",
+			[]string{"Initializable="},
+			"Argument",
+			len(node.Arguments))
 	case *ast.IfExpr:
 		printer.list(
 			fmt.Sprintf("[IfExpr: LabelDecl=%s", node.LabelDecl),
@@ -384,9 +388,9 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.BinaryExpr:
 		printer.endNode()
 	case *ast.ImplicitStructExpr:
-		printer.endNode()
+		printer.endList(len(node.Arguments))
 	case *ast.ColonExpr:
-		printer.endNode()
+		printer.endList(len(node.Arguments))
 	case *ast.CallExpr:
 		printer.endNode()
 	case *ast.IndexExpr:

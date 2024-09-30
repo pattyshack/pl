@@ -230,16 +230,18 @@ type ImplicitStructExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	Arguments *ArgumentList
-
 	// An improper struct is the a comma separated list of expressions without
 	// left/right paren.  e.g., return 1, 2, 3
 	IsImproper bool
+
+	Arguments []*Argument
 }
 
 func (expr *ImplicitStructExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
-	expr.Arguments.Walk(visitor)
+	for _, arg := range expr.Arguments {
+		arg.Walk(visitor)
+	}
 	visitor.Exit(expr)
 }
 
@@ -252,14 +254,16 @@ type ColonExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	Arguments *ArgumentList
+	Arguments []*Argument
 }
 
 var _ Expression = &ColonExpr{}
 
 func (expr *ColonExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
-	expr.Arguments.Walk(visitor)
+	for _, arg := range expr.Arguments {
+		arg.Walk(visitor)
+	}
 	visitor.Exit(expr)
 }
 
@@ -274,7 +278,7 @@ type CallExpr struct {
 
 	FuncExpr         Expression
 	GenericArguments *TypeExpressionList // optional
-	Arguments        *ArgumentList
+	Arguments        []*Argument
 }
 
 var _ Expression = &CallExpr{}
@@ -285,7 +289,9 @@ func (expr *CallExpr) Walk(visitor Visitor) {
 	if expr.GenericArguments != nil {
 		expr.GenericArguments.Walk(visitor)
 	}
-	expr.Arguments.Walk(visitor)
+	for _, arg := range expr.Arguments {
+		arg.Walk(visitor)
+	}
 	visitor.Exit(expr)
 }
 
@@ -341,13 +347,15 @@ type InitializeExpr struct {
 	LeadingTrailingComments
 
 	Initializable TypeExpression
-	Arguments     *ArgumentList
+	Arguments     []*Argument
 }
 
 func (expr *InitializeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Initializable.Walk(visitor)
-	expr.Arguments.Walk(visitor)
+	for _, arg := range expr.Arguments {
+		arg.Walk(visitor)
+	}
 	visitor.Exit(expr)
 }
 

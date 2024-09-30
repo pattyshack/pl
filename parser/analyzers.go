@@ -169,13 +169,13 @@ func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 				node.Index.Kind)
 		}
 	case *ast.CallExpr:
-		for _, arg := range node.Arguments.Elements {
+		for _, arg := range node.Arguments {
 			if arg.Kind == ast.SkipPatternArgument {
 				detector.Emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
 			}
 		}
 	case *ast.InitializeExpr:
-		for _, arg := range node.Arguments.Elements {
+		for _, arg := range node.Arguments {
 			if arg.Kind == ast.SkipPatternArgument ||
 				arg.Kind == ast.VarargAssignmentArgument {
 
@@ -184,7 +184,7 @@ func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 		}
 	case *ast.ImplicitStructExpr:
 		// TODO detect invalid skip-pattern (...) usage in non-pattern expressions
-		for _, arg := range node.Arguments.Elements {
+		for _, arg := range node.Arguments {
 			if arg.Kind == ast.VarargAssignmentArgument {
 				detector.Emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
 			}
