@@ -379,7 +379,7 @@ type ConditionBranch struct {
 
 	IsElse    bool
 	Condition Expression // nil when IsElse is true
-	Branch    Expression
+	Branch    *StatementsExpr
 }
 
 var _ Node = &ConditionBranch{}
