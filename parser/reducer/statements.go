@@ -395,14 +395,20 @@ func (reducer *Reducer) CaseBranchToBranchStmt(
 
 	leading := caseKW.TakeLeading()
 
-	casePatterns.PrependToLeading(caseKW.TakeTrailing())
-	casePatterns.AppendToTrailing(colon.TakeLeading())
-	casePatterns.AppendToTrailing(colon.TakeTrailing())
+	casePatterns.Elements[0].PrependToLeading(caseKW.TakeTrailing())
+	lastPattern := casePatterns.Elements[len(casePatterns.Elements)-1]
+	lastPattern.AppendToTrailing(colon.TakeLeading())
+	lastPattern.AppendToTrailing(colon.TakeTrailing())
 
-	stmt := &ast.BranchStmt{
-		StartEndPos:  ast.NewStartEndPos(caseKW.Loc(), body.End()),
-		CasePatterns: casePatterns,
-		Body:         body,
+	cond := &ast.CasePatternExpr{
+		StartEndPos: casePatterns.StartEnd(),
+		Patterns:    casePatterns,
+	}
+
+	stmt := &ast.ConditionBranchStmt{
+		StartEndPos: ast.NewStartEndPos(caseKW.Loc(), body.End()),
+		Condition:   cond,
+		Branch:      body,
 	}
 	stmt.LeadingComment = leading
 
@@ -432,11 +438,11 @@ func (reducer *Reducer) DefaultBranchToBranchStmt(
 	body.LeadingComment.Append(colon.TakeLeading())
 	body.LeadingComment.Append(colon.TakeTrailing())
 
-	stmt := &ast.BranchStmt{
-		StartEndPos:  ast.NewStartEndPos(defaultKW.Loc(), body.End()),
-		IsDefault:    true,
-		CasePatterns: nil,
-		Body:         body,
+	stmt := &ast.ConditionBranchStmt{
+		StartEndPos:     ast.NewStartEndPos(defaultKW.Loc(), body.End()),
+		IsDefaultBranch: true,
+		Condition:       nil,
+		Branch:          body,
 	}
 	stmt.LeadingComment = leading
 

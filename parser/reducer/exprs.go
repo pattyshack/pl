@@ -916,13 +916,13 @@ func (reducer *Reducer) groupBranches(
 	stmts *ast.StatementsExpr,
 ) {
 	newStatements := make([]ast.Statement, 0, len(stmts.Statements))
-	var current *ast.BranchStmt
+	var current *ast.ConditionBranchStmt
 	for _, stmt := range stmts.Statements {
-		branch, ok := stmt.(*ast.BranchStmt)
+		branch, ok := stmt.(*ast.ConditionBranchStmt)
 		if !ok {
 			if current != nil {
-				current.Body.Statements = append(current.Body.Statements, stmt)
-				current.Body.EndPos = stmt.End()
+				current.Branch.Statements = append(current.Branch.Statements, stmt)
+				current.Branch.EndPos = stmt.End()
 				current.EndPos = stmt.End()
 			} else {
 				// This is a parse error.  The error is detected in post analysis
@@ -936,23 +936,23 @@ func (reducer *Reducer) groupBranches(
 
 		// Flatten nested case statements
 		for {
-			if len(current.Body.Statements) == 0 {
+			if len(current.Branch.Statements) == 0 {
 				break
 			}
 
-			if len(current.Body.Statements) != 1 {
+			if len(current.Branch.Statements) != 1 {
 				panic("should never happen")
 			}
 
-			subStmt := current.Body.Statements[0]
-			nestedBranch, ok := subStmt.(*ast.BranchStmt)
+			subStmt := current.Branch.Statements[0]
+			nestedBranch, ok := subStmt.(*ast.ConditionBranchStmt)
 			if !ok {
-				current.Body.EndPos = subStmt.End()
+				current.Branch.EndPos = subStmt.End()
 				current.EndPos = subStmt.End()
 				break
 			}
 
-			current.Body.Statements = nil
+			current.Branch.Statements = nil
 			current = nestedBranch
 			newStatements = append(newStatements, nestedBranch)
 		}
@@ -1024,6 +1024,22 @@ func (reducer *Reducer) ToSelectExprBody(
 	error,
 ) {
 	reducer.groupBranches(branches)
+
+	for _, stmt := range branches.Statements {
+		branch, ok := stmt.(*ast.ConditionBranchStmt)
+		if !ok {
+			continue
+		}
+
+		expr, ok := branch.Condition.(*ast.CasePatternExpr)
+		if !ok {
+			continue
+		}
+
+		if len(expr.Patterns.Elements) == 1 {
+			branch.Condition = expr.Patterns.Elements[0]
+		}
+	}
 
 	selectExpr := &ast.SelectExpr{
 		StartEndPos: ast.NewStartEndPos(switchKW.Loc(), branches.End()),

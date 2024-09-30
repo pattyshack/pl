@@ -199,9 +199,9 @@ func (printer *treePrinter) Enter(n ast.Node) {
 	case *ast.CasePatternExpr:
 		printer.write("[CasePatternExpr:")
 		if node.Value != nil {
-			printer.push("SwitchablePatterns=", "Value=")
+			printer.push("Patterns=", "Value=")
 		} else {
-			printer.push("SwitchablePatterns=")
+			printer.push("Patterns=")
 		}
 
 	case *ast.SliceTypeExpr:
@@ -272,17 +272,10 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		}
 		printer.write(printer.indent)
 		printer.write("]")
-	case *ast.BranchStmt:
-		printer.write("[BranchStmt: IsDefault=%v", node.IsDefault)
-		if node.CasePatterns != nil {
-			printer.push("CasePatterns=", "Body=")
-		} else {
-			printer.push("Body=")
-		}
 	case *ast.ConditionBranchStmt:
 		printer.write(
-      "[ConditionBranchStmt: IsDefaultBranch=%v",
-      node.IsDefaultBranch)
+			"[ConditionBranchStmt: IsDefaultBranch=%v",
+			node.IsDefaultBranch)
 		if node.Condition != nil {
 			printer.push("Condition=", "Branch=")
 		} else {
@@ -431,8 +424,6 @@ func (printer *treePrinter) Exit(n ast.Node) {
 		if node.Value != nil {
 			printer.endNode()
 		}
-	case *ast.BranchStmt:
-		printer.endNode()
 	case *ast.ConditionBranchStmt:
 		printer.endNode()
 

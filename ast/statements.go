@@ -149,29 +149,6 @@ func (stmt *UnsafeStmt) Walk(visitor Visitor) {
 }
 
 //
-// BranchStmt
-//
-
-type BranchStmt struct {
-	IsStmt
-	StartEndPos
-	LeadingTrailingComments
-
-	IsDefault    bool
-	CasePatterns *ExpressionList // optional
-	Body         *StatementsExpr
-}
-
-func (stmt *BranchStmt) Walk(visitor Visitor) {
-	visitor.Enter(stmt)
-	if stmt.CasePatterns != nil {
-		stmt.CasePatterns.Walk(visitor)
-	}
-	stmt.Body.Walk(visitor)
-	visitor.Exit(stmt)
-}
-
-//
 // ConditionBranchStmt
 //
 

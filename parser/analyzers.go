@@ -83,7 +83,7 @@ func (detector *unexpectedStatementsDetector) checkPkgDef(
 		case *ast.ParseErrorExpr: // ok
 		case *ast.UnsafeStmt: // ok
 		case *ast.ImportStmt: // ok
-		case *ast.BranchStmt:
+		case *ast.ConditionBranchStmt:
 			invalidStmtType = "branch statement"
 		case *ast.JumpStmt:
 			invalidStmtType = "jump statement"
@@ -112,9 +112,9 @@ func (detector *unexpectedStatementsDetector) checkSwitchSelectExpr(
 		switch stmt := node.(type) {
 		case *ast.ParseErrorExpr: // ok
 		case *ast.UnsafeStmt: // ok
-		case *ast.BranchStmt:
-			detector.checkStmtsExpr(stmt.Body, true)
-			detector.processed[stmt.Body] = struct{}{}
+		case *ast.ConditionBranchStmt:
+			detector.checkStmtsExpr(stmt.Branch, true)
+			detector.processed[stmt.Branch] = struct{}{}
 		case *ast.ImportStmt:
 			invalidStmtType = "import statement"
 		case *ast.JumpStmt:
@@ -148,7 +148,7 @@ func (detector *unexpectedStatementsDetector) checkStmtsExpr(
 			if stmt.Op == ast.FallthroughOp && !allowFallthrough {
 				invalidStmtType = "fallthrough statement"
 			}
-		case *ast.BranchStmt:
+		case *ast.ConditionBranchStmt:
 			invalidStmtType = "branch statement"
 		case *ast.ImportStmt:
 			invalidStmtType = "import statement"
@@ -251,12 +251,12 @@ func (detector *unexpectedSelectSwitchBranchesDetector) checkBranches(
 ) {
 	last := len(body.Statements) - 1
 	for idx, stmt := range body.Statements {
-		branch, ok := stmt.(*ast.BranchStmt)
+		branch, ok := stmt.(*ast.ConditionBranchStmt)
 		if !ok {
 			continue // handled by unexpectedStatementsDetector
 		}
 
-		if branch.IsDefault {
+		if branch.IsDefaultBranch {
 			if idx != last {
 				detector.Emit("%s: default branch is not the last branch", branch.Loc())
 			}
@@ -264,19 +264,25 @@ func (detector *unexpectedSelectSwitchBranchesDetector) checkBranches(
 		}
 
 		if isSwitch {
-			for _, pattern := range branch.CasePatterns.Elements {
-				binary, ok := pattern.(*ast.BinaryExpr)
-				if ok && binary.Op == ast.BinaryAssignOp {
-					detector.Emit("%s: unexpected assignment pattern", pattern.Loc())
+			casePatternExpr, ok := branch.Condition.(*ast.CasePatternExpr)
+			if !ok {
+				detector.Emit("%s: unexpected expression", branch.Condition.Loc())
+			} else {
+				for _, pattern := range casePatternExpr.Patterns.Elements {
+					binary, ok := pattern.(*ast.BinaryExpr)
+					if ok && binary.Op == ast.BinaryAssignOp {
+						detector.Emit("%s: unexpected assignment pattern", binary.Loc())
+					}
 				}
 			}
 		} else {
-			if len(branch.CasePatterns.Elements) > 1 {
+			_, ok := branch.Condition.(*ast.CasePatternExpr)
+			if ok {
 				detector.Emit(
 					"%s: unexpected pattern list, expecting only one pattern per case",
-					branch.CasePatterns.Loc())
+					branch.Condition.Loc())
 			} else {
-				expr := branch.CasePatterns.Elements[0]
+				expr := branch.Condition
 
 				binary, ok := expr.(*ast.BinaryExpr)
 				if ok && binary.Op == ast.BinaryAssignOp {
