@@ -351,8 +351,6 @@ func (printer *treePrinter) Enter(n ast.Node) {
 
 	case *ast.DefinitionList:
 		printer.list("[DefinitionList:", nil, "Definition", len(node.Elements))
-	case *ast.ExpressionList:
-		printer.list("[ExpressionList:", nil, "Expression", len(node.Elements))
 	case *ast.TypeExpressionList:
 		printer.list(
 			"[TypeExpressionList:",
@@ -361,8 +359,6 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			len(node.Elements))
 	case *ast.ParameterList:
 		printer.list("[ParameterList:", nil, "Parameter", len(node.Elements))
-	case *ast.ArgumentList:
-		printer.list("[ArgumentList:", nil, "Argument", len(node.Elements))
 	case *ast.GenericParameterList:
 		printer.list(
 			"[GenericParameterList:",
@@ -465,13 +461,9 @@ func (printer *treePrinter) Exit(n ast.Node) {
 
 	case *ast.DefinitionList:
 		printer.endList(len(node.Elements))
-	case *ast.ExpressionList:
-		printer.endList(len(node.Elements))
 	case *ast.TypeExpressionList:
 		printer.endList(len(node.Elements))
 	case *ast.ParameterList:
-		printer.endList(len(node.Elements))
-	case *ast.ArgumentList:
 		printer.endList(len(node.Elements))
 	case *ast.GenericParameterList:
 		printer.endList(len(node.Elements))

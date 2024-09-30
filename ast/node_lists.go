@@ -75,16 +75,6 @@ func NewDefinitionList() *DefinitionList {
 }
 
 //
-// ExpressionList
-//
-
-type ExpressionList = NodeList[Expression]
-
-func NewExpressionList() *ExpressionList {
-	return &NodeList[Expression]{}
-}
-
-//
 // TypeExpressionList
 //
 
@@ -146,4 +136,10 @@ type ArgumentList = NodeList[*Argument]
 
 func NewArgumentList() *ArgumentList {
 	return &NodeList[*Argument]{}
+}
+
+type ExpressionList = NodeList[Expression]
+
+func NewExpressionList() *ExpressionList {
+	return &NodeList[Expression]{}
 }
