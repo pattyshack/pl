@@ -160,47 +160,47 @@ type FloatingCommentReducer interface {
 	ToFloatingComment(CommentGroups_ CommentGroupsTok) (ast.Definition, error)
 }
 
-type BranchStatementReducer interface {
-	// 121:2: branch_statement -> case_branch: ...
-	CaseBranchToBranchStatement(Case_ *TokenValue, CasePatterns_ *ast.ExpressionList, Colon_ *TokenValue, OptionalStatement_ ast.Statement) (ast.Statement, error)
+type BranchStmtReducer interface {
+	// 121:2: branch_stmt -> case_branch: ...
+	CaseBranchToBranchStmt(Case_ *TokenValue, CasePatterns_ *ast.ExpressionList, Colon_ *TokenValue, OptionalStatement_ ast.Statement) (ast.Statement, error)
 
-	// 122:2: branch_statement -> default_branch: ...
-	DefaultBranchToBranchStatement(Default_ *TokenValue, Colon_ *TokenValue, OptionalStatement_ ast.Statement) (ast.Statement, error)
+	// 122:2: branch_stmt -> default_branch: ...
+	DefaultBranchToBranchStmt(Default_ *TokenValue, Colon_ *TokenValue, OptionalStatement_ ast.Statement) (ast.Statement, error)
 }
 
-type UnsafeStatementReducer interface {
-	// 131:2: unsafe_statement -> ...
-	ToUnsafeStatement(Unsafe_ *TokenValue, Less_ *TokenValue, Identifier_ *TokenValue, Greater_ *TokenValue, StringLiteral_ *TokenValue) (*ast.UnsafeStatement, error)
+type UnsafeStmtReducer interface {
+	// 131:2: unsafe_stmt -> ...
+	ToUnsafeStmt(Unsafe_ *TokenValue, Less_ *TokenValue, Identifier_ *TokenValue, Greater_ *TokenValue, StringLiteral_ *TokenValue) (*ast.UnsafeStmt, error)
 }
 
-type JumpStatementReducer interface {
-	// 138:2: jump_statement -> unlabeled_no_value: ...
-	UnlabeledNoValueToJumpStatement(JumpOp_ *TokenValue) (ast.Statement, error)
+type JumpStmtReducer interface {
+	// 138:2: jump_stmt -> unlabeled_no_value: ...
+	UnlabeledNoValueToJumpStmt(JumpOp_ *TokenValue) (ast.Statement, error)
 
-	// 139:2: jump_statement -> unlabeled_valued: ...
-	UnlabeledValuedToJumpStatement(JumpOp_ *TokenValue, ReturnableExpr_ ast.Expression) (ast.Statement, error)
+	// 139:2: jump_stmt -> unlabeled_valued: ...
+	UnlabeledValuedToJumpStmt(JumpOp_ *TokenValue, ReturnableExpr_ ast.Expression) (ast.Statement, error)
 
-	// 140:2: jump_statement -> labeled_no_value: ...
-	LabeledNoValueToJumpStatement(JumpOp_ *TokenValue, JumpLabel_ *TokenValue) (ast.Statement, error)
+	// 140:2: jump_stmt -> labeled_no_value: ...
+	LabeledNoValueToJumpStmt(JumpOp_ *TokenValue, JumpLabel_ *TokenValue) (ast.Statement, error)
 
-	// 141:2: jump_statement -> labeled_valued: ...
-	LabeledValuedToJumpStatement(JumpOp_ *TokenValue, JumpLabel_ *TokenValue, ReturnableExpr_ ast.Expression) (ast.Statement, error)
+	// 141:2: jump_stmt -> labeled_valued: ...
+	LabeledValuedToJumpStmt(JumpOp_ *TokenValue, JumpLabel_ *TokenValue, ReturnableExpr_ ast.Expression) (ast.Statement, error)
 
-	// 144:2: jump_statement -> FALLTHROUGH: ...
-	FallthroughToJumpStatement(Fallthrough_ *TokenValue) (ast.Statement, error)
+	// 144:2: jump_stmt -> FALLTHROUGH: ...
+	FallthroughToJumpStmt(Fallthrough_ *TokenValue) (ast.Statement, error)
 }
 
-type AssignStatementReducer interface {
-	// 159:31: assign_statement -> ...
-	ToAssignStatement(ReturnableExpr_ ast.Expression, Assign_ *TokenValue, ReturnableExpr_2 ast.Expression) (ast.Statement, error)
+type AssignStmtReducer interface {
+	// 159:26: assign_stmt -> ...
+	ToAssignStmt(ReturnableExpr_ ast.Expression, Assign_ *TokenValue, ReturnableExpr_2 ast.Expression) (ast.Statement, error)
 }
 
-type ImportStatementReducer interface {
-	// 166:2: import_statement -> single: ...
-	SingleToImportStatement(Import_ *TokenValue, ImportClause_ *ast.ImportClause) (ast.Statement, error)
+type ImportStmtReducer interface {
+	// 166:2: import_stmt -> single: ...
+	SingleToImportStmt(Import_ *TokenValue, ImportClause_ *ast.ImportClause) (ast.Statement, error)
 
-	// 167:2: import_statement -> multiple: ...
-	MultipleToImportStatement(Import_ *TokenValue, Lparen_ *TokenValue, ImportClauses_ *ast.ImportClauseList, Rparen_ *TokenValue) (ast.Statement, error)
+	// 167:2: import_stmt -> multiple: ...
+	MultipleToImportStmt(Import_ *TokenValue, Lparen_ *TokenValue, ImportClauses_ *ast.ImportClauseList, Rparen_ *TokenValue) (ast.Statement, error)
 }
 
 type ProperImportClausesReducer interface {
@@ -961,11 +961,11 @@ type Reducer interface {
 	DefinitionsReducer
 	GlobalVarDefReducer
 	FloatingCommentReducer
-	BranchStatementReducer
-	UnsafeStatementReducer
-	JumpStatementReducer
-	AssignStatementReducer
-	ImportStatementReducer
+	BranchStmtReducer
+	UnsafeStmtReducer
+	JumpStmtReducer
+	AssignStmtReducer
+	ImportStmtReducer
 	ProperImportClausesReducer
 	ImportClausesReducer
 	ImportClauseReducer
@@ -1760,18 +1760,18 @@ func (i SymbolId) String() string {
 		return "floating_comment"
 	case StatementType:
 		return "statement"
-	case BranchStatementType:
-		return "branch_statement"
-	case UnsafeStatementType:
-		return "unsafe_statement"
-	case JumpStatementType:
-		return "jump_statement"
+	case BranchStmtType:
+		return "branch_stmt"
+	case UnsafeStmtType:
+		return "unsafe_stmt"
+	case JumpStmtType:
+		return "jump_stmt"
 	case JumpOpType:
 		return "jump_op"
-	case AssignStatementType:
-		return "assign_statement"
-	case ImportStatementType:
-		return "import_statement"
+	case AssignStmtType:
+		return "assign_stmt"
+	case ImportStmtType:
+		return "import_stmt"
 	case ProperImportClausesType:
 		return "proper_import_clauses"
 	case ImportClausesType:
@@ -2046,12 +2046,12 @@ const (
 	GlobalVarDefType                     = SymbolId(350)
 	FloatingCommentType                  = SymbolId(351)
 	StatementType                        = SymbolId(352)
-	BranchStatementType                  = SymbolId(353)
-	UnsafeStatementType                  = SymbolId(354)
-	JumpStatementType                    = SymbolId(355)
+	BranchStmtType                       = SymbolId(353)
+	UnsafeStmtType                       = SymbolId(354)
+	JumpStmtType                         = SymbolId(355)
 	JumpOpType                           = SymbolId(356)
-	AssignStatementType                  = SymbolId(357)
-	ImportStatementType                  = SymbolId(358)
+	AssignStmtType                       = SymbolId(357)
+	ImportStmtType                       = SymbolId(358)
 	ProperImportClausesType              = SymbolId(359)
 	ImportClausesType                    = SymbolId(360)
 	ImportClauseType                     = SymbolId(361)
@@ -2227,26 +2227,26 @@ const (
 	_ReduceDeclVarPatternToGlobalVarDef                                 = _ReduceType(14)
 	_ReduceDefToGlobalVarDef                                            = _ReduceType(15)
 	_ReduceToFloatingComment                                            = _ReduceType(16)
-	_ReduceUnsafeStatementToStatement                                   = _ReduceType(17)
-	_ReduceImportStatementToStatement                                   = _ReduceType(18)
-	_ReduceBranchStatementToStatement                                   = _ReduceType(19)
+	_ReduceUnsafeStmtToStatement                                        = _ReduceType(17)
+	_ReduceImportStmtToStatement                                        = _ReduceType(18)
+	_ReduceBranchStmtToStatement                                        = _ReduceType(19)
 	_ReduceReturnableExprToStatement                                    = _ReduceType(20)
-	_ReduceJumpStatementToStatement                                     = _ReduceType(21)
-	_ReduceAssignStatementToStatement                                   = _ReduceType(22)
-	_ReduceCaseBranchToBranchStatement                                  = _ReduceType(23)
-	_ReduceDefaultBranchToBranchStatement                               = _ReduceType(24)
-	_ReduceToUnsafeStatement                                            = _ReduceType(25)
-	_ReduceUnlabeledNoValueToJumpStatement                              = _ReduceType(26)
-	_ReduceUnlabeledValuedToJumpStatement                               = _ReduceType(27)
-	_ReduceLabeledNoValueToJumpStatement                                = _ReduceType(28)
-	_ReduceLabeledValuedToJumpStatement                                 = _ReduceType(29)
-	_ReduceFallthroughToJumpStatement                                   = _ReduceType(30)
+	_ReduceJumpStmtToStatement                                          = _ReduceType(21)
+	_ReduceAssignStmtToStatement                                        = _ReduceType(22)
+	_ReduceCaseBranchToBranchStmt                                       = _ReduceType(23)
+	_ReduceDefaultBranchToBranchStmt                                    = _ReduceType(24)
+	_ReduceToUnsafeStmt                                                 = _ReduceType(25)
+	_ReduceUnlabeledNoValueToJumpStmt                                   = _ReduceType(26)
+	_ReduceUnlabeledValuedToJumpStmt                                    = _ReduceType(27)
+	_ReduceLabeledNoValueToJumpStmt                                     = _ReduceType(28)
+	_ReduceLabeledValuedToJumpStmt                                      = _ReduceType(29)
+	_ReduceFallthroughToJumpStmt                                        = _ReduceType(30)
 	_ReduceReturnToJumpOp                                               = _ReduceType(31)
 	_ReduceBreakToJumpOp                                                = _ReduceType(32)
 	_ReduceContinueToJumpOp                                             = _ReduceType(33)
-	_ReduceToAssignStatement                                            = _ReduceType(34)
-	_ReduceSingleToImportStatement                                      = _ReduceType(35)
-	_ReduceMultipleToImportStatement                                    = _ReduceType(36)
+	_ReduceToAssignStmt                                                 = _ReduceType(34)
+	_ReduceSingleToImportStmt                                           = _ReduceType(35)
+	_ReduceMultipleToImportStmt                                         = _ReduceType(36)
 	_ReduceAddImplicitToProperImportClauses                             = _ReduceType(37)
 	_ReduceAddExplicitToProperImportClauses                             = _ReduceType(38)
 	_ReduceImportClauseToProperImportClauses                            = _ReduceType(39)
@@ -2499,7 +2499,7 @@ const (
 	_ReduceDefaultEnumFieldDefToTypeProperty                            = _ReduceType(286)
 	_ReducePaddingFieldDefToTypeProperty                                = _ReduceType(287)
 	_ReduceMethodSignatureToTypeProperty                                = _ReduceType(288)
-	_ReduceUnsafeStatementToTypeProperty                                = _ReduceType(289)
+	_ReduceUnsafeStmtToTypeProperty                                     = _ReduceType(289)
 	_ReduceAddToProperImplicitTypeProperties                            = _ReduceType(290)
 	_ReduceTypePropertyToProperImplicitTypeProperties                   = _ReduceType(291)
 	_ReduceProperImplicitTypePropertiesToImplicitTypeProperties         = _ReduceType(292)
@@ -2596,46 +2596,46 @@ func (i _ReduceType) String() string {
 		return "DefToGlobalVarDef"
 	case _ReduceToFloatingComment:
 		return "ToFloatingComment"
-	case _ReduceUnsafeStatementToStatement:
-		return "UnsafeStatementToStatement"
-	case _ReduceImportStatementToStatement:
-		return "ImportStatementToStatement"
-	case _ReduceBranchStatementToStatement:
-		return "BranchStatementToStatement"
+	case _ReduceUnsafeStmtToStatement:
+		return "UnsafeStmtToStatement"
+	case _ReduceImportStmtToStatement:
+		return "ImportStmtToStatement"
+	case _ReduceBranchStmtToStatement:
+		return "BranchStmtToStatement"
 	case _ReduceReturnableExprToStatement:
 		return "ReturnableExprToStatement"
-	case _ReduceJumpStatementToStatement:
-		return "JumpStatementToStatement"
-	case _ReduceAssignStatementToStatement:
-		return "AssignStatementToStatement"
-	case _ReduceCaseBranchToBranchStatement:
-		return "CaseBranchToBranchStatement"
-	case _ReduceDefaultBranchToBranchStatement:
-		return "DefaultBranchToBranchStatement"
-	case _ReduceToUnsafeStatement:
-		return "ToUnsafeStatement"
-	case _ReduceUnlabeledNoValueToJumpStatement:
-		return "UnlabeledNoValueToJumpStatement"
-	case _ReduceUnlabeledValuedToJumpStatement:
-		return "UnlabeledValuedToJumpStatement"
-	case _ReduceLabeledNoValueToJumpStatement:
-		return "LabeledNoValueToJumpStatement"
-	case _ReduceLabeledValuedToJumpStatement:
-		return "LabeledValuedToJumpStatement"
-	case _ReduceFallthroughToJumpStatement:
-		return "FallthroughToJumpStatement"
+	case _ReduceJumpStmtToStatement:
+		return "JumpStmtToStatement"
+	case _ReduceAssignStmtToStatement:
+		return "AssignStmtToStatement"
+	case _ReduceCaseBranchToBranchStmt:
+		return "CaseBranchToBranchStmt"
+	case _ReduceDefaultBranchToBranchStmt:
+		return "DefaultBranchToBranchStmt"
+	case _ReduceToUnsafeStmt:
+		return "ToUnsafeStmt"
+	case _ReduceUnlabeledNoValueToJumpStmt:
+		return "UnlabeledNoValueToJumpStmt"
+	case _ReduceUnlabeledValuedToJumpStmt:
+		return "UnlabeledValuedToJumpStmt"
+	case _ReduceLabeledNoValueToJumpStmt:
+		return "LabeledNoValueToJumpStmt"
+	case _ReduceLabeledValuedToJumpStmt:
+		return "LabeledValuedToJumpStmt"
+	case _ReduceFallthroughToJumpStmt:
+		return "FallthroughToJumpStmt"
 	case _ReduceReturnToJumpOp:
 		return "ReturnToJumpOp"
 	case _ReduceBreakToJumpOp:
 		return "BreakToJumpOp"
 	case _ReduceContinueToJumpOp:
 		return "ContinueToJumpOp"
-	case _ReduceToAssignStatement:
-		return "ToAssignStatement"
-	case _ReduceSingleToImportStatement:
-		return "SingleToImportStatement"
-	case _ReduceMultipleToImportStatement:
-		return "MultipleToImportStatement"
+	case _ReduceToAssignStmt:
+		return "ToAssignStmt"
+	case _ReduceSingleToImportStmt:
+		return "SingleToImportStmt"
+	case _ReduceMultipleToImportStmt:
+		return "MultipleToImportStmt"
 	case _ReduceAddImplicitToProperImportClauses:
 		return "AddImplicitToProperImportClauses"
 	case _ReduceAddExplicitToProperImportClauses:
@@ -3140,8 +3140,8 @@ func (i _ReduceType) String() string {
 		return "PaddingFieldDefToTypeProperty"
 	case _ReduceMethodSignatureToTypeProperty:
 		return "MethodSignatureToTypeProperty"
-	case _ReduceUnsafeStatementToTypeProperty:
-		return "UnsafeStatementToTypeProperty"
+	case _ReduceUnsafeStmtToTypeProperty:
+		return "UnsafeStmtToTypeProperty"
 	case _ReduceAddToProperImplicitTypeProperties:
 		return "AddToProperImplicitTypeProperties"
 	case _ReduceTypePropertyToProperImplicitTypeProperties:
@@ -3553,7 +3553,7 @@ type Symbol struct {
 	TypeExpressionList   *ast.TypeExpressionList
 	TypeProperties       *ast.TypePropertyList
 	TypeProperty         ast.TypeProperty
-	UnsafeStatement      *ast.UnsafeStatement
+	UnsafeStmt           *ast.UnsafeStmt
 	Value                *TokenValue
 }
 
@@ -3736,7 +3736,7 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case StatementType, BranchStatementType, JumpStatementType, AssignStatementType, ImportStatementType, OptionalStatementType:
+	case StatementType, BranchStmtType, JumpStmtType, AssignStmtType, ImportStmtType, OptionalStatementType:
 		loc, ok := interface{}(s.Statement).(locator)
 		if ok {
 			return loc.Loc()
@@ -3776,8 +3776,8 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case UnsafeStatementType:
-		loc, ok := interface{}(s.UnsafeStatement).(locator)
+	case UnsafeStmtType:
+		loc, ok := interface{}(s.UnsafeStmt).(locator)
 		if ok {
 			return loc.Loc()
 		}
@@ -3898,7 +3898,7 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case StatementType, BranchStatementType, JumpStatementType, AssignStatementType, ImportStatementType, OptionalStatementType:
+	case StatementType, BranchStmtType, JumpStmtType, AssignStmtType, ImportStmtType, OptionalStatementType:
 		loc, ok := interface{}(s.Statement).(locator)
 		if ok {
 			return loc.End()
@@ -3938,8 +3938,8 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case UnsafeStatementType:
-		loc, ok := interface{}(s.UnsafeStatement).(locator)
+	case UnsafeStmtType:
+		loc, ok := interface{}(s.UnsafeStmt).(locator)
 		if ok {
 			return loc.End()
 		}
@@ -4121,21 +4121,21 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = FloatingCommentType
 		symbol.Definition, err = reducer.ToFloatingComment(args[0].CommentGroups)
-	case _ReduceUnsafeStatementToStatement:
+	case _ReduceUnsafeStmtToStatement:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = StatementType
 		//line grammar.lr:98:4
-		symbol.Statement = args[0].UnsafeStatement
+		symbol.Statement = args[0].UnsafeStmt
 		err = nil
-	case _ReduceImportStatementToStatement:
+	case _ReduceImportStmtToStatement:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = StatementType
 		//line grammar.lr:101:4
 		symbol.Statement = args[0].Statement
 		err = nil
-	case _ReduceBranchStatementToStatement:
+	case _ReduceBranchStmtToStatement:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = StatementType
@@ -4149,60 +4149,60 @@ func (act *_Action) ReduceSymbol(
 		//line grammar.lr:108:4
 		symbol.Statement = args[0].Expression
 		err = nil
-	case _ReduceJumpStatementToStatement:
+	case _ReduceJumpStmtToStatement:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = StatementType
 		//line grammar.lr:109:4
 		symbol.Statement = args[0].Statement
 		err = nil
-	case _ReduceAssignStatementToStatement:
+	case _ReduceAssignStmtToStatement:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = StatementType
 		//line grammar.lr:113:4
 		symbol.Statement = args[0].Statement
 		err = nil
-	case _ReduceCaseBranchToBranchStatement:
+	case _ReduceCaseBranchToBranchStmt:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
-		symbol.SymbolId_ = BranchStatementType
-		symbol.Statement, err = reducer.CaseBranchToBranchStatement(args[0].Value, args[1].ExpressionList, args[2].Value, args[3].Statement)
-	case _ReduceDefaultBranchToBranchStatement:
+		symbol.SymbolId_ = BranchStmtType
+		symbol.Statement, err = reducer.CaseBranchToBranchStmt(args[0].Value, args[1].ExpressionList, args[2].Value, args[3].Statement)
+	case _ReduceDefaultBranchToBranchStmt:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
-		symbol.SymbolId_ = BranchStatementType
-		symbol.Statement, err = reducer.DefaultBranchToBranchStatement(args[0].Value, args[1].Value, args[2].Statement)
-	case _ReduceToUnsafeStatement:
+		symbol.SymbolId_ = BranchStmtType
+		symbol.Statement, err = reducer.DefaultBranchToBranchStmt(args[0].Value, args[1].Value, args[2].Statement)
+	case _ReduceToUnsafeStmt:
 		args := stack[len(stack)-5:]
 		stack = stack[:len(stack)-5]
-		symbol.SymbolId_ = UnsafeStatementType
-		symbol.UnsafeStatement, err = reducer.ToUnsafeStatement(args[0].Value, args[1].Value, args[2].Value, args[3].Value, args[4].Value)
-	case _ReduceUnlabeledNoValueToJumpStatement:
+		symbol.SymbolId_ = UnsafeStmtType
+		symbol.UnsafeStmt, err = reducer.ToUnsafeStmt(args[0].Value, args[1].Value, args[2].Value, args[3].Value, args[4].Value)
+	case _ReduceUnlabeledNoValueToJumpStmt:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = JumpStatementType
-		symbol.Statement, err = reducer.UnlabeledNoValueToJumpStatement(args[0].Value)
-	case _ReduceUnlabeledValuedToJumpStatement:
+		symbol.SymbolId_ = JumpStmtType
+		symbol.Statement, err = reducer.UnlabeledNoValueToJumpStmt(args[0].Value)
+	case _ReduceUnlabeledValuedToJumpStmt:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
-		symbol.SymbolId_ = JumpStatementType
-		symbol.Statement, err = reducer.UnlabeledValuedToJumpStatement(args[0].Value, args[1].Expression)
-	case _ReduceLabeledNoValueToJumpStatement:
+		symbol.SymbolId_ = JumpStmtType
+		symbol.Statement, err = reducer.UnlabeledValuedToJumpStmt(args[0].Value, args[1].Expression)
+	case _ReduceLabeledNoValueToJumpStmt:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
-		symbol.SymbolId_ = JumpStatementType
-		symbol.Statement, err = reducer.LabeledNoValueToJumpStatement(args[0].Value, args[1].Value)
-	case _ReduceLabeledValuedToJumpStatement:
+		symbol.SymbolId_ = JumpStmtType
+		symbol.Statement, err = reducer.LabeledNoValueToJumpStmt(args[0].Value, args[1].Value)
+	case _ReduceLabeledValuedToJumpStmt:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
-		symbol.SymbolId_ = JumpStatementType
-		symbol.Statement, err = reducer.LabeledValuedToJumpStatement(args[0].Value, args[1].Value, args[2].Expression)
-	case _ReduceFallthroughToJumpStatement:
+		symbol.SymbolId_ = JumpStmtType
+		symbol.Statement, err = reducer.LabeledValuedToJumpStmt(args[0].Value, args[1].Value, args[2].Expression)
+	case _ReduceFallthroughToJumpStmt:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = JumpStatementType
-		symbol.Statement, err = reducer.FallthroughToJumpStatement(args[0].Value)
+		symbol.SymbolId_ = JumpStmtType
+		symbol.Statement, err = reducer.FallthroughToJumpStmt(args[0].Value)
 	case _ReduceReturnToJumpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -4224,21 +4224,21 @@ func (act *_Action) ReduceSymbol(
 		//line grammar.lr:149:4
 		symbol.Value = args[0].Value
 		err = nil
-	case _ReduceToAssignStatement:
+	case _ReduceToAssignStmt:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
-		symbol.SymbolId_ = AssignStatementType
-		symbol.Statement, err = reducer.ToAssignStatement(args[0].Expression, args[1].Value, args[2].Expression)
-	case _ReduceSingleToImportStatement:
+		symbol.SymbolId_ = AssignStmtType
+		symbol.Statement, err = reducer.ToAssignStmt(args[0].Expression, args[1].Value, args[2].Expression)
+	case _ReduceSingleToImportStmt:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
-		symbol.SymbolId_ = ImportStatementType
-		symbol.Statement, err = reducer.SingleToImportStatement(args[0].Value, args[1].ImportClause)
-	case _ReduceMultipleToImportStatement:
+		symbol.SymbolId_ = ImportStmtType
+		symbol.Statement, err = reducer.SingleToImportStmt(args[0].Value, args[1].ImportClause)
+	case _ReduceMultipleToImportStmt:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
-		symbol.SymbolId_ = ImportStatementType
-		symbol.Statement, err = reducer.MultipleToImportStatement(args[0].Value, args[1].Value, args[2].ImportClauseList, args[3].Value)
+		symbol.SymbolId_ = ImportStmtType
+		symbol.Statement, err = reducer.MultipleToImportStmt(args[0].Value, args[1].Value, args[2].ImportClauseList, args[3].Value)
 	case _ReduceAddImplicitToProperImportClauses:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -5737,12 +5737,12 @@ func (act *_Action) ReduceSymbol(
 		//line grammar.lr:806:4
 		symbol.TypeProperty = args[0].TypeProperty
 		err = nil
-	case _ReduceUnsafeStatementToTypeProperty:
+	case _ReduceUnsafeStmtToTypeProperty:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TypePropertyType
 		//line grammar.lr:807:4
-		symbol.TypeProperty = args[0].UnsafeStatement
+		symbol.TypeProperty = args[0].UnsafeStmt
 		err = nil
 	case _ReduceAddToProperImplicitTypeProperties:
 		args := stack[len(stack)-3:]
@@ -6256,7 +6256,7 @@ func (_ActionTableType) Get(
 		case ContinueToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStmt}, true
 		case AsyncToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
 		case DeferToken:
@@ -6281,16 +6281,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGreaterToPrefixUnaryOp}, true
 		case ParseErrorToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
-		case BranchStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStatementToStatement}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToStatement}, true
-		case JumpStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStatementToStatement}, true
-		case AssignStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStatementToStatement}, true
-		case ImportStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
+		case BranchStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStmtToStatement}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToStatement}, true
+		case JumpStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStmtToStatement}, true
+		case AssignStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStmtToStatement}, true
+		case ImportStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStmtToStatement}, true
 		case DeclVarPatternType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
@@ -6757,7 +6757,7 @@ func (_ActionTableType) Get(
 		case ContinueToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStmt}, true
 		case AsyncToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
 		case DeferToken:
@@ -6784,16 +6784,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case StatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementToProperStatementList}, true
-		case BranchStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStatementToStatement}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToStatement}, true
-		case JumpStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStatementToStatement}, true
-		case AssignStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStatementToStatement}, true
-		case ImportStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
+		case BranchStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStmtToStatement}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToStatement}, true
+		case JumpStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStmtToStatement}, true
+		case AssignStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStmtToStatement}, true
+		case ImportStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStmtToStatement}, true
 		case DeclVarPatternType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
@@ -7313,7 +7313,7 @@ func (_ActionTableType) Get(
 		case ContinueToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStmt}, true
 		case AsyncToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
 		case DeferToken:
@@ -7340,16 +7340,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case StatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementToOptionalStatement}, true
-		case BranchStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStatementToStatement}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToStatement}, true
-		case JumpStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStatementToStatement}, true
-		case AssignStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStatementToStatement}, true
-		case ImportStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
+		case BranchStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStmtToStatement}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToStatement}, true
+		case JumpStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStmtToStatement}, true
+		case AssignStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStmtToStatement}, true
+		case ImportStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStmtToStatement}, true
 		case DeclVarPatternType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
@@ -7633,7 +7633,7 @@ func (_ActionTableType) Get(
 		case StringLiteralToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStringLiteralToImportClause}, true
 		case ImportClauseType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSingleToImportStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSingleToImportStmt}, true
 		}
 	case _State27:
 		switch symbolId {
@@ -8384,7 +8384,7 @@ func (_ActionTableType) Get(
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case ReturnableExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabeledValuedToJumpStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnlabeledValuedToJumpStmt}, true
 		case SliceTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
 		case ArrayTypeExprType:
@@ -8397,7 +8397,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAnonymousFuncExprToAtomExpr}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceUnlabeledNoValueToJumpStatement}, true
+			return _Action{_ReduceAction, 0, _ReduceUnlabeledNoValueToJumpStmt}, true
 		}
 	case _State44:
 		switch symbolId {
@@ -8636,8 +8636,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToTypeProperty}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -9240,7 +9240,7 @@ func (_ActionTableType) Get(
 		case ContinueToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStmt}, true
 		case AsyncToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
 		case DeferToken:
@@ -9267,16 +9267,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case StatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementToOptionalStatement}, true
-		case BranchStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStatementToStatement}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToStatement}, true
-		case JumpStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStatementToStatement}, true
-		case AssignStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStatementToStatement}, true
-		case ImportStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
+		case BranchStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStmtToStatement}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToStatement}, true
+		case JumpStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStmtToStatement}, true
+		case AssignStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStmtToStatement}, true
+		case ImportStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStmtToStatement}, true
 		case DeclVarPatternType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
@@ -9348,7 +9348,7 @@ func (_ActionTableType) Get(
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case OptionalStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDefaultBranchToBranchStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDefaultBranchToBranchStmt}, true
 		case SliceTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
 		case ArrayTypeExprType:
@@ -9970,8 +9970,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToTypeProperty}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -11298,7 +11298,7 @@ func (_ActionTableType) Get(
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case ReturnableExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceLabeledValuedToJumpStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceLabeledValuedToJumpStmt}, true
 		case SliceTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
 		case ArrayTypeExprType:
@@ -11311,7 +11311,7 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAnonymousFuncExprToAtomExpr}, true
 
 		default:
-			return _Action{_ReduceAction, 0, _ReduceLabeledNoValueToJumpStatement}, true
+			return _Action{_ReduceAction, 0, _ReduceLabeledNoValueToJumpStmt}, true
 		}
 	case _State104:
 		switch symbolId {
@@ -11849,7 +11849,7 @@ func (_ActionTableType) Get(
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case ReturnableExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceToAssignStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceToAssignStmt}, true
 		case SliceTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
 		case ArrayTypeExprType:
@@ -12135,8 +12135,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToTypeProperty}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -12641,8 +12641,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToTypeProperty}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -13007,7 +13007,7 @@ func (_ActionTableType) Get(
 		case ContinueToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStmt}, true
 		case AsyncToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
 		case DeferToken:
@@ -13034,16 +13034,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case StatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAddImplicitToProperStatementList}, true
-		case BranchStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStatementToStatement}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToStatement}, true
-		case JumpStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStatementToStatement}, true
-		case AssignStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStatementToStatement}, true
-		case ImportStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
+		case BranchStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStmtToStatement}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToStatement}, true
+		case JumpStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStmtToStatement}, true
+		case AssignStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStmtToStatement}, true
+		case ImportStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStmtToStatement}, true
 		case DeclVarPatternType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
@@ -13217,7 +13217,7 @@ func (_ActionTableType) Get(
 		case ContinueToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStmt}, true
 		case AsyncToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
 		case DeferToken:
@@ -13244,16 +13244,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case StatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAddExplicitToProperStatementList}, true
-		case BranchStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStatementToStatement}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToStatement}, true
-		case JumpStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStatementToStatement}, true
-		case AssignStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStatementToStatement}, true
-		case ImportStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
+		case BranchStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStmtToStatement}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToStatement}, true
+		case JumpStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStmtToStatement}, true
+		case AssignStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStmtToStatement}, true
+		case ImportStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStmtToStatement}, true
 		case DeclVarPatternType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
@@ -13606,7 +13606,7 @@ func (_ActionTableType) Get(
 		case ContinueToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStmt}, true
 		case AsyncToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
 		case DeferToken:
@@ -13633,16 +13633,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case StatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementToOptionalStatement}, true
-		case BranchStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStatementToStatement}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToStatement}, true
-		case JumpStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStatementToStatement}, true
-		case AssignStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStatementToStatement}, true
-		case ImportStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
+		case BranchStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStmtToStatement}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToStatement}, true
+		case JumpStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStmtToStatement}, true
+		case AssignStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStmtToStatement}, true
+		case ImportStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStmtToStatement}, true
 		case DeclVarPatternType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
@@ -13714,7 +13714,7 @@ func (_ActionTableType) Get(
 		case LoopExprBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLoopExprBodyToLoopExpr}, true
 		case OptionalStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceCaseBranchToBranchStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceCaseBranchToBranchStmt}, true
 		case SliceTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
 		case ArrayTypeExprType:
@@ -14474,7 +14474,7 @@ func (_ActionTableType) Get(
 	case _State151:
 		switch symbolId {
 		case RparenToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceMultipleToImportStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceMultipleToImportStmt}, true
 		}
 	case _State152:
 		switch symbolId {
@@ -16134,8 +16134,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToTypeProperty}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -16213,8 +16213,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToTypeProperty}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -16295,8 +16295,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToTypeProperty}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -17026,8 +17026,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToTypeProperty}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -17108,8 +17108,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToTypeProperty}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -17155,7 +17155,7 @@ func (_ActionTableType) Get(
 	case _State218:
 		switch symbolId {
 		case StringLiteralToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceToUnsafeStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceToUnsafeStmt}, true
 		}
 	case _State219:
 		switch symbolId {
@@ -17344,8 +17344,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToTypeProperty}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -17426,8 +17426,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToTypeProperty}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -17505,8 +17505,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToTypeProperty}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -17584,8 +17584,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToTypeProperty}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -18007,7 +18007,7 @@ func (_ActionTableType) Get(
 		case ContinueToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceContinueToJumpOp}, true
 		case FallthroughToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStatement}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFallthroughToJumpStmt}, true
 		case AsyncToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAsyncToPrefixUnaryOp}, true
 		case DeferToken:
@@ -18034,16 +18034,16 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParseErrorExpr}, true
 		case StatementType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStatementToOptionalStatement}, true
-		case BranchStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStatementToStatement}, true
-		case UnsafeStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStatementToStatement}, true
-		case JumpStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStatementToStatement}, true
-		case AssignStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStatementToStatement}, true
-		case ImportStatementType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStatementToStatement}, true
+		case BranchStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBranchStmtToStatement}, true
+		case UnsafeStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToStatement}, true
+		case JumpStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceJumpStmtToStatement}, true
+		case AssignStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAssignStmtToStatement}, true
+		case ImportStmtType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceImportStmtToStatement}, true
 		case DeclVarPatternType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDeclVarPatternToExpr}, true
 		case AtomExprType:
@@ -18332,7 +18332,7 @@ Parser Debug States:
       RETURN -> [jump_op]
       BREAK -> [jump_op]
       CONTINUE -> [jump_op]
-      FALLTHROUGH -> [jump_statement]
+      FALLTHROUGH -> [jump_stmt]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       VAR -> [var_type]
@@ -18345,11 +18345,11 @@ Parser Debug States:
       BIT_XOR -> [prefix_unary_op]
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
-      branch_statement -> [statement]
-      unsafe_statement -> [statement]
-      jump_statement -> [statement]
-      assign_statement -> [statement]
-      import_statement -> [statement]
+      branch_stmt -> [statement]
+      unsafe_stmt -> [statement]
+      jump_stmt -> [statement]
+      assign_stmt -> [statement]
+      import_stmt -> [statement]
       decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
@@ -18661,7 +18661,7 @@ Parser Debug States:
       RETURN -> [jump_op]
       BREAK -> [jump_op]
       CONTINUE -> [jump_op]
-      FALLTHROUGH -> [jump_statement]
+      FALLTHROUGH -> [jump_stmt]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       VAR -> [var_type]
@@ -18675,11 +18675,11 @@ Parser Debug States:
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [proper_statement_list]
-      branch_statement -> [statement]
-      unsafe_statement -> [statement]
-      jump_statement -> [statement]
-      assign_statement -> [statement]
-      import_statement -> [statement]
+      branch_stmt -> [statement]
+      unsafe_stmt -> [statement]
+      jump_stmt -> [statement]
+      assign_stmt -> [statement]
+      import_stmt -> [statement]
       decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
@@ -18880,7 +18880,7 @@ Parser Debug States:
 
   State 21:
     Kernel Items:
-      branch_statement: CASE.case_patterns COLON optional_statement
+      branch_stmt: CASE.case_patterns COLON optional_statement
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -18979,7 +18979,7 @@ Parser Debug States:
 
   State 22:
     Kernel Items:
-      branch_statement: DEFAULT.COLON optional_statement
+      branch_stmt: DEFAULT.COLON optional_statement
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -19006,7 +19006,7 @@ Parser Debug States:
       RETURN -> [jump_op]
       BREAK -> [jump_op]
       CONTINUE -> [jump_op]
-      FALLTHROUGH -> [jump_statement]
+      FALLTHROUGH -> [jump_stmt]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       VAR -> [var_type]
@@ -19020,11 +19020,11 @@ Parser Debug States:
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [optional_statement]
-      branch_statement -> [statement]
-      unsafe_statement -> [statement]
-      jump_statement -> [statement]
-      assign_statement -> [statement]
-      import_statement -> [statement]
+      branch_stmt -> [statement]
+      unsafe_stmt -> [statement]
+      jump_stmt -> [statement]
+      assign_stmt -> [statement]
+      import_stmt -> [statement]
       decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
@@ -19209,13 +19209,13 @@ Parser Debug States:
 
   State 26:
     Kernel Items:
-      import_statement: IMPORT.import_clause
-      import_statement: IMPORT.LPAREN import_clauses RPAREN
+      import_stmt: IMPORT.import_clause
+      import_stmt: IMPORT.LPAREN import_clauses RPAREN
     Reduce:
       (nil)
     ShiftAndReduce:
       STRING_LITERAL -> [import_clause]
-      import_clause -> [import_statement]
+      import_clause -> [import_stmt]
     Goto:
       IDENTIFIER -> State 79
       UNDERSCORE -> State 81
@@ -19514,7 +19514,7 @@ Parser Debug States:
 
   State 34:
     Kernel Items:
-      unsafe_statement: UNSAFE.LESS IDENTIFIER GREATER STRING_LITERAL
+      unsafe_stmt: UNSAFE.LESS IDENTIFIER GREATER STRING_LITERAL
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -19632,12 +19632,12 @@ Parser Debug States:
 
   State 43:
     Kernel Items:
-      jump_statement: jump_op., *
-      jump_statement: jump_op.returnable_expr
-      jump_statement: jump_op.JUMP_LABEL
-      jump_statement: jump_op.JUMP_LABEL returnable_expr
+      jump_stmt: jump_op., *
+      jump_stmt: jump_op.returnable_expr
+      jump_stmt: jump_op.JUMP_LABEL
+      jump_stmt: jump_op.JUMP_LABEL returnable_expr
     Reduce:
-      * -> [jump_statement]
+      * -> [jump_stmt]
     ShiftAndReduce:
       INTEGER_LITERAL -> [literal_expr]
       FLOAT_LITERAL -> [literal_expr]
@@ -19694,7 +19694,7 @@ Parser Debug States:
       select_expr_body -> [select_expr]
       loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
-      returnable_expr -> [jump_statement]
+      returnable_expr -> [jump_stmt]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
       map_type_expr -> [initializable_type_expr]
@@ -19822,7 +19822,7 @@ Parser Debug States:
   State 48:
     Kernel Items:
       statement: returnable_expr., *
-      assign_statement: returnable_expr.ASSIGN returnable_expr
+      assign_stmt: returnable_expr.ASSIGN returnable_expr
     Reduce:
       * -> [statement]
     ShiftAndReduce:
@@ -19898,7 +19898,7 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_statement -> [type_property]
+      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -20251,7 +20251,7 @@ Parser Debug States:
 
   State 67:
     Kernel Items:
-      branch_statement: CASE case_patterns.COLON optional_statement
+      branch_stmt: CASE case_patterns.COLON optional_statement
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -20291,7 +20291,7 @@ Parser Debug States:
 
   State 70:
     Kernel Items:
-      branch_statement: DEFAULT COLON.optional_statement
+      branch_stmt: DEFAULT COLON.optional_statement
     Reduce:
       * -> [optional_statement]
     ShiftAndReduce:
@@ -20306,7 +20306,7 @@ Parser Debug States:
       RETURN -> [jump_op]
       BREAK -> [jump_op]
       CONTINUE -> [jump_op]
-      FALLTHROUGH -> [jump_statement]
+      FALLTHROUGH -> [jump_stmt]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       VAR -> [var_type]
@@ -20320,11 +20320,11 @@ Parser Debug States:
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [optional_statement]
-      branch_statement -> [statement]
-      unsafe_statement -> [statement]
-      jump_statement -> [statement]
-      assign_statement -> [statement]
-      import_statement -> [statement]
+      branch_stmt -> [statement]
+      unsafe_stmt -> [statement]
+      jump_stmt -> [statement]
+      assign_stmt -> [statement]
+      import_stmt -> [statement]
       decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
@@ -20360,7 +20360,7 @@ Parser Debug States:
       select_expr_body -> [select_expr]
       loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
-      optional_statement -> [branch_statement]
+      optional_statement -> [branch_stmt]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
       map_type_expr -> [initializable_type_expr]
@@ -20426,7 +20426,7 @@ Parser Debug States:
   State 73:
     Kernel Items:
       statement: returnable_expr., *
-      assign_statement: returnable_expr.ASSIGN returnable_expr
+      assign_stmt: returnable_expr.ASSIGN returnable_expr
       loop_expr_body: FOR returnable_expr.IN expr for_loop_body
     Reduce:
       * -> [statement]
@@ -20618,7 +20618,7 @@ Parser Debug States:
 
   State 80:
     Kernel Items:
-      import_statement: IMPORT LPAREN.import_clauses RPAREN
+      import_stmt: IMPORT LPAREN.import_clauses RPAREN
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -20823,7 +20823,7 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_statement -> [type_property]
+      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -20871,7 +20871,7 @@ Parser Debug States:
 
   State 91:
     Kernel Items:
-      unsafe_statement: UNSAFE LESS.IDENTIFIER GREATER STRING_LITERAL
+      unsafe_stmt: UNSAFE LESS.IDENTIFIER GREATER STRING_LITERAL
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -21506,10 +21506,10 @@ Parser Debug States:
 
   State 103:
     Kernel Items:
-      jump_statement: jump_op JUMP_LABEL., *
-      jump_statement: jump_op JUMP_LABEL.returnable_expr
+      jump_stmt: jump_op JUMP_LABEL., *
+      jump_stmt: jump_op JUMP_LABEL.returnable_expr
     Reduce:
-      * -> [jump_statement]
+      * -> [jump_stmt]
     ShiftAndReduce:
       INTEGER_LITERAL -> [literal_expr]
       FLOAT_LITERAL -> [literal_expr]
@@ -21566,7 +21566,7 @@ Parser Debug States:
       select_expr_body -> [select_expr]
       loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
-      returnable_expr -> [jump_statement]
+      returnable_expr -> [jump_stmt]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
       map_type_expr -> [initializable_type_expr]
@@ -21807,7 +21807,7 @@ Parser Debug States:
 
   State 107:
     Kernel Items:
-      assign_statement: returnable_expr ASSIGN.returnable_expr
+      assign_stmt: returnable_expr ASSIGN.returnable_expr
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -21866,7 +21866,7 @@ Parser Debug States:
       select_expr_body -> [select_expr]
       loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
-      returnable_expr -> [assign_statement]
+      returnable_expr -> [assign_stmt]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
       map_type_expr -> [initializable_type_expr]
@@ -22040,7 +22040,7 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_statement -> [type_property]
+      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -22389,7 +22389,7 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_statement -> [type_property]
+      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -22602,7 +22602,7 @@ Parser Debug States:
       RETURN -> [jump_op]
       BREAK -> [jump_op]
       CONTINUE -> [jump_op]
-      FALLTHROUGH -> [jump_statement]
+      FALLTHROUGH -> [jump_stmt]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       VAR -> [var_type]
@@ -22616,11 +22616,11 @@ Parser Debug States:
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [proper_statement_list]
-      branch_statement -> [statement]
-      unsafe_statement -> [statement]
-      jump_statement -> [statement]
-      assign_statement -> [statement]
-      import_statement -> [statement]
+      branch_stmt -> [statement]
+      unsafe_stmt -> [statement]
+      jump_stmt -> [statement]
+      assign_stmt -> [statement]
+      import_stmt -> [statement]
       decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
@@ -22713,7 +22713,7 @@ Parser Debug States:
       RETURN -> [jump_op]
       BREAK -> [jump_op]
       CONTINUE -> [jump_op]
-      FALLTHROUGH -> [jump_statement]
+      FALLTHROUGH -> [jump_stmt]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       VAR -> [var_type]
@@ -22727,11 +22727,11 @@ Parser Debug States:
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [proper_statement_list]
-      branch_statement -> [statement]
-      unsafe_statement -> [statement]
-      jump_statement -> [statement]
-      assign_statement -> [statement]
-      import_statement -> [statement]
+      branch_stmt -> [statement]
+      unsafe_stmt -> [statement]
+      jump_stmt -> [statement]
+      assign_stmt -> [statement]
+      import_stmt -> [statement]
       decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
@@ -22946,7 +22946,7 @@ Parser Debug States:
 
   State 140:
     Kernel Items:
-      branch_statement: CASE case_patterns COLON.optional_statement
+      branch_stmt: CASE case_patterns COLON.optional_statement
     Reduce:
       * -> [optional_statement]
     ShiftAndReduce:
@@ -22961,7 +22961,7 @@ Parser Debug States:
       RETURN -> [jump_op]
       BREAK -> [jump_op]
       CONTINUE -> [jump_op]
-      FALLTHROUGH -> [jump_statement]
+      FALLTHROUGH -> [jump_stmt]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       VAR -> [var_type]
@@ -22975,11 +22975,11 @@ Parser Debug States:
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [optional_statement]
-      branch_statement -> [statement]
-      unsafe_statement -> [statement]
-      jump_statement -> [statement]
-      assign_statement -> [statement]
-      import_statement -> [statement]
+      branch_stmt -> [statement]
+      unsafe_stmt -> [statement]
+      jump_stmt -> [statement]
+      assign_stmt -> [statement]
+      import_stmt -> [statement]
       decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]
@@ -23015,7 +23015,7 @@ Parser Debug States:
       select_expr_body -> [select_expr]
       loop_expr -> [expr]
       loop_expr_body -> [loop_expr]
-      optional_statement -> [branch_statement]
+      optional_statement -> [branch_stmt]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
       map_type_expr -> [initializable_type_expr]
@@ -23497,11 +23497,11 @@ Parser Debug States:
 
   State 151:
     Kernel Items:
-      import_statement: IMPORT LPAREN import_clauses.RPAREN
+      import_stmt: IMPORT LPAREN import_clauses.RPAREN
     Reduce:
       (nil)
     ShiftAndReduce:
-      RPAREN -> [import_statement]
+      RPAREN -> [import_stmt]
     Goto:
       (nil)
 
@@ -23976,7 +23976,7 @@ Parser Debug States:
 
   State 161:
     Kernel Items:
-      unsafe_statement: UNSAFE LESS IDENTIFIER.GREATER STRING_LITERAL
+      unsafe_stmt: UNSAFE LESS IDENTIFIER.GREATER STRING_LITERAL
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -24596,7 +24596,7 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_statement -> [type_property]
+      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -24643,7 +24643,7 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_statement -> [type_property]
+      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -24689,7 +24689,7 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_statement -> [type_property]
+      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -25213,7 +25213,7 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_statement -> [type_property]
+      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -25260,7 +25260,7 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_statement -> [type_property]
+      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -25296,11 +25296,11 @@ Parser Debug States:
 
   State 218:
     Kernel Items:
-      unsafe_statement: UNSAFE LESS IDENTIFIER GREATER.STRING_LITERAL
+      unsafe_stmt: UNSAFE LESS IDENTIFIER GREATER.STRING_LITERAL
     Reduce:
       (nil)
     ShiftAndReduce:
-      STRING_LITERAL -> [unsafe_statement]
+      STRING_LITERAL -> [unsafe_stmt]
     Goto:
       (nil)
 
@@ -25418,7 +25418,7 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_statement -> [type_property]
+      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -25464,7 +25464,7 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_statement -> [type_property]
+      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -25510,7 +25510,7 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_statement -> [type_property]
+      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -25556,7 +25556,7 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_statement -> [type_property]
+      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -25814,7 +25814,7 @@ Parser Debug States:
       RETURN -> [jump_op]
       BREAK -> [jump_op]
       CONTINUE -> [jump_op]
-      FALLTHROUGH -> [jump_statement]
+      FALLTHROUGH -> [jump_stmt]
       ASYNC -> [prefix_unary_op]
       DEFER -> [prefix_unary_op]
       VAR -> [var_type]
@@ -25828,11 +25828,11 @@ Parser Debug States:
       GREATER -> [prefix_unary_op]
       PARSE_ERROR -> [parse_error_expr]
       statement -> [optional_statement]
-      branch_statement -> [statement]
-      unsafe_statement -> [statement]
-      jump_statement -> [statement]
-      assign_statement -> [statement]
-      import_statement -> [statement]
+      branch_stmt -> [statement]
+      unsafe_stmt -> [statement]
+      jump_stmt -> [statement]
+      assign_stmt -> [statement]
+      import_stmt -> [statement]
       decl_var_pattern -> [expr]
       atom_expr -> [accessible_expr]
       parse_error_expr -> [atom_expr]

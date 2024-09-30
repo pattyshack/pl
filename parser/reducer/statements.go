@@ -176,10 +176,10 @@ func (reducer *Reducer) ImportToLocalToImportClause(
 }
 
 //
-// ImportStatement
+// ImportStmt
 //
 
-func (reducer *Reducer) SingleToImportStatement(
+func (reducer *Reducer) SingleToImportStmt(
 	importKW *lr.TokenValue,
 	importClause *ast.ImportClause,
 ) (
@@ -193,7 +193,7 @@ func (reducer *Reducer) SingleToImportStatement(
 	list := ast.NewImportClauseList()
 	list.Add(importClause)
 
-	stmt := &ast.ImportStatement{
+	stmt := &ast.ImportStmt{
 		StartEndPos:   ast.NewStartEndPos(importKW.Loc(), importClause.End()),
 		ImportClauses: []*ast.ImportClause{importClause},
 	}
@@ -203,7 +203,7 @@ func (reducer *Reducer) SingleToImportStatement(
 	return stmt, nil
 }
 
-func (reducer *Reducer) MultipleToImportStatement(
+func (reducer *Reducer) MultipleToImportStmt(
 	importKW *lr.TokenValue,
 	lparen *lr.TokenValue,
 	clauses *ast.ImportClauseList,
@@ -219,7 +219,7 @@ func (reducer *Reducer) MultipleToImportStatement(
 	leading.Append(clauses.TakeLeading())
 	trailing := clauses.TakeTrailing()
 
-	stmt := &ast.ImportStatement{
+	stmt := &ast.ImportStmt{
 		StartEndPos:   ast.NewStartEndPos(importKW.Loc(), clauses.End()),
 		ImportClauses: clauses.Elements,
 	}
@@ -286,39 +286,39 @@ func (reducer *Reducer) ExplicitToImportClauses(
 }
 
 //
-// JumpStatement
+// JumpStmt
 //
 
-func (reducer *Reducer) UnlabeledNoValueToJumpStatement(
+func (reducer *Reducer) UnlabeledNoValueToJumpStmt(
 	op *lr.TokenValue,
 ) (
 	ast.Statement,
 	error,
 ) {
-	return ast.NewJumpStatement(op, nil, nil), nil
+	return ast.NewJumpStmt(op, nil, nil), nil
 }
 
-func (reducer *Reducer) UnlabeledValuedToJumpStatement(
+func (reducer *Reducer) UnlabeledValuedToJumpStmt(
 	op *lr.TokenValue,
 	value ast.Expression,
 ) (
 	ast.Statement,
 	error,
 ) {
-	return ast.NewJumpStatement(op, nil, value), nil
+	return ast.NewJumpStmt(op, nil, value), nil
 }
 
-func (reducer *Reducer) LabeledNoValueToJumpStatement(
+func (reducer *Reducer) LabeledNoValueToJumpStmt(
 	op *lr.TokenValue,
 	label *lr.TokenValue,
 ) (
 	ast.Statement,
 	error,
 ) {
-	return ast.NewJumpStatement(op, label, nil), nil
+	return ast.NewJumpStmt(op, label, nil), nil
 }
 
-func (reducer *Reducer) LabeledValuedToJumpStatement(
+func (reducer *Reducer) LabeledValuedToJumpStmt(
 	op *lr.TokenValue,
 	label *lr.TokenValue,
 	value ast.Expression,
@@ -326,30 +326,30 @@ func (reducer *Reducer) LabeledValuedToJumpStatement(
 	ast.Statement,
 	error,
 ) {
-	return ast.NewJumpStatement(op, label, value), nil
+	return ast.NewJumpStmt(op, label, value), nil
 }
 
-func (reducer *Reducer) FallthroughToJumpStatement(
+func (reducer *Reducer) FallthroughToJumpStmt(
 	op *lr.TokenValue,
 ) (
 	ast.Statement,
 	error,
 ) {
-	return ast.NewJumpStatement(op, nil, nil), nil
+	return ast.NewJumpStmt(op, nil, nil), nil
 }
 
 //
-// UnsafeStatement
+// UnsafeStmt
 //
 
-func (reducer *Reducer) ToUnsafeStatement(
+func (reducer *Reducer) ToUnsafeStmt(
 	unsafe *lr.TokenValue,
 	less *lr.TokenValue,
 	language *lr.TokenValue,
 	greater *lr.TokenValue,
 	verbatimSource *lr.TokenValue,
 ) (
-	*ast.UnsafeStatement,
+	*ast.UnsafeStmt,
 	error,
 ) {
 	leading := unsafe.TakeLeading()
@@ -361,7 +361,7 @@ func (reducer *Reducer) ToUnsafeStatement(
 	leading.Append(greater.TakeLeading())
 	leading.Append(greater.TakeTrailing())
 	leading.Append(verbatimSource.TakeLeading())
-	stmt := &ast.UnsafeStatement{
+	stmt := &ast.UnsafeStmt{
 		StartEndPos:    ast.NewStartEndPos(unsafe.Loc(), verbatimSource.End()),
 		Language:       language.Value,
 		VerbatimSource: verbatimSource.Value,
@@ -372,10 +372,10 @@ func (reducer *Reducer) ToUnsafeStatement(
 }
 
 //
-// BranchStatement
+// BranchStmt
 //
 
-func (reducer *Reducer) CaseBranchToBranchStatement(
+func (reducer *Reducer) CaseBranchToBranchStmt(
 	caseKW *lr.TokenValue,
 	casePatterns *ast.ExpressionList,
 	colon *lr.TokenValue,
@@ -399,7 +399,7 @@ func (reducer *Reducer) CaseBranchToBranchStatement(
 	casePatterns.AppendToTrailing(colon.TakeLeading())
 	casePatterns.AppendToTrailing(colon.TakeTrailing())
 
-	stmt := &ast.BranchStatement{
+	stmt := &ast.BranchStmt{
 		StartEndPos:  ast.NewStartEndPos(caseKW.Loc(), body.End()),
 		CasePatterns: casePatterns,
 		Body:         body,
@@ -409,7 +409,7 @@ func (reducer *Reducer) CaseBranchToBranchStatement(
 	return stmt, nil
 }
 
-func (reducer *Reducer) DefaultBranchToBranchStatement(
+func (reducer *Reducer) DefaultBranchToBranchStmt(
 	defaultKW *lr.TokenValue,
 	colon *lr.TokenValue,
 	trailingStatement ast.Statement,
@@ -432,7 +432,7 @@ func (reducer *Reducer) DefaultBranchToBranchStatement(
 	body.LeadingComment.Append(colon.TakeLeading())
 	body.LeadingComment.Append(colon.TakeTrailing())
 
-	stmt := &ast.BranchStatement{
+	stmt := &ast.BranchStmt{
 		StartEndPos:  ast.NewStartEndPos(defaultKW.Loc(), body.End()),
 		IsDefault:    true,
 		CasePatterns: nil,

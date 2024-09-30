@@ -24,7 +24,7 @@ func (detector *unreachableStatementsDetector) Enter(node ast.Node) {
 	}
 
 	for idx, stmt := range stmts.Statements {
-		_, ok := stmt.(*ast.JumpStatement)
+		_, ok := stmt.(*ast.JumpStmt)
 		if !ok {
 			continue
 		}
@@ -81,11 +81,11 @@ func (detector *unexpectedStatementsDetector) checkPkgDef(
 		invalidStmtType := ""
 		switch stmt.(type) {
 		case *ast.ParseErrorExpr: // ok
-		case *ast.UnsafeStatement: // ok
-		case *ast.ImportStatement: // ok
-		case *ast.BranchStatement:
+		case *ast.UnsafeStmt: // ok
+		case *ast.ImportStmt: // ok
+		case *ast.BranchStmt:
 			invalidStmtType = "branch statement"
-		case *ast.JumpStatement:
+		case *ast.JumpStmt:
 			invalidStmtType = "jump statement"
 		case ast.Expression:
 			invalidStmtType = "expression statement"
@@ -111,13 +111,13 @@ func (detector *unexpectedStatementsDetector) checkSwitchSelectExpr(
 		invalidStmtType := ""
 		switch stmt := node.(type) {
 		case *ast.ParseErrorExpr: // ok
-		case *ast.UnsafeStatement: // ok
-		case *ast.BranchStatement:
+		case *ast.UnsafeStmt: // ok
+		case *ast.BranchStmt:
 			detector.checkStmtsExpr(stmt.Body, true)
 			detector.processed[stmt.Body] = struct{}{}
-		case *ast.ImportStatement:
+		case *ast.ImportStmt:
 			invalidStmtType = "import statement"
-		case *ast.JumpStatement:
+		case *ast.JumpStmt:
 			invalidStmtType = "jump statement"
 		case ast.Expression:
 			invalidStmtType = "expression statement"
@@ -142,15 +142,15 @@ func (detector *unexpectedStatementsDetector) checkStmtsExpr(
 		invalidStmtType := ""
 		switch stmt := node.(type) {
 		case *ast.ParseErrorExpr: // ok
-		case *ast.UnsafeStatement: // ok
+		case *ast.UnsafeStmt: // ok
 		case ast.Expression: // ok
-		case *ast.JumpStatement:
+		case *ast.JumpStmt:
 			if stmt.Op == ast.FallthroughOp && !allowFallthrough {
 				invalidStmtType = "fallthrough statement"
 			}
-		case *ast.BranchStatement:
+		case *ast.BranchStmt:
 			invalidStmtType = "branch statement"
-		case *ast.ImportStatement:
+		case *ast.ImportStmt:
 			invalidStmtType = "import statement"
 		default:
 			invalidStmtType = "statement type"
@@ -251,7 +251,7 @@ func (detector *unexpectedSelectSwitchBranchesDetector) checkBranches(
 ) {
 	last := len(body.Statements) - 1
 	for idx, stmt := range body.Statements {
-		branch, ok := stmt.(*ast.BranchStatement)
+		branch, ok := stmt.(*ast.BranchStmt)
 		if !ok {
 			continue // handled by unexpectedStatementsDetector
 		}

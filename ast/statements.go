@@ -41,10 +41,10 @@ func (clause *ImportClause) Walk(visitor Visitor) {
 }
 
 //
-// ImportStatement
+// ImportStmt
 //
 
-type ImportStatement struct {
+type ImportStmt struct {
 	IsStmt
 	StartEndPos
 	LeadingTrailingComments
@@ -52,9 +52,7 @@ type ImportStatement struct {
 	ImportClauses []*ImportClause
 }
 
-var _ Statement = &ImportStatement{}
-
-func (stmt *ImportStatement) Walk(visitor Visitor) {
+func (stmt *ImportStmt) Walk(visitor Visitor) {
 	visitor.Enter(stmt)
 	for _, clause := range stmt.ImportClauses {
 		clause.Walk(visitor)
@@ -63,7 +61,7 @@ func (stmt *ImportStatement) Walk(visitor Visitor) {
 }
 
 //
-// JumpStatement
+// JumpStmt
 //
 
 type JumpOp string
@@ -75,7 +73,7 @@ const (
 	BreakOp       = JumpOp("break")
 )
 
-type JumpStatement struct {
+type JumpStmt struct {
 	IsStmt
 	StartEndPos
 	LeadingTrailingComments
@@ -85,9 +83,7 @@ type JumpStatement struct {
 	Value Expression // optional
 }
 
-var _ Statement = &JumpStatement{}
-
-func (stmt *JumpStatement) Walk(visitor Visitor) {
+func (stmt *JumpStmt) Walk(visitor Visitor) {
 	visitor.Enter(stmt)
 	if stmt.Value != nil {
 		stmt.Value.Walk(visitor)
@@ -95,11 +91,11 @@ func (stmt *JumpStatement) Walk(visitor Visitor) {
 	visitor.Exit(stmt)
 }
 
-func NewJumpStatement(
+func NewJumpStmt(
 	op TokenValue,
 	labelToken TokenValue,
 	value Expression,
-) *JumpStatement {
+) *JumpStmt {
 	start := op.Loc()
 	end := op.End()
 	leading := op.TakeLeading()
@@ -119,7 +115,7 @@ func NewJumpStatement(
 		trailing = value.TakeTrailing()
 	}
 
-	stmt := &JumpStatement{
+	stmt := &JumpStmt{
 		StartEndPos: NewStartEndPos(start, end),
 		Op:          JumpOp(op.Val()),
 		Label:       label,
@@ -132,10 +128,10 @@ func NewJumpStatement(
 }
 
 //
-// UnsafeStatement
+// UnsafeStmt
 //
 
-type UnsafeStatement struct {
+type UnsafeStmt struct {
 	IsStmt
 	IsTypeProp
 	StartEndPos
@@ -145,19 +141,18 @@ type UnsafeStatement struct {
 	VerbatimSource string
 }
 
-var _ Statement = &UnsafeStatement{}
-var _ TypeProperty = &UnsafeStatement{}
+var _ TypeProperty = &UnsafeStmt{}
 
-func (stmt *UnsafeStatement) Walk(visitor Visitor) {
+func (stmt *UnsafeStmt) Walk(visitor Visitor) {
 	visitor.Enter(stmt)
 	visitor.Exit(stmt)
 }
 
 //
-// BranchStatement
+// BranchStmt
 //
 
-type BranchStatement struct {
+type BranchStmt struct {
 	IsStmt
 	StartEndPos
 	LeadingTrailingComments
@@ -167,13 +162,36 @@ type BranchStatement struct {
 	Body         *StatementsExpr
 }
 
-var _ Statement = &BranchStatement{}
-
-func (stmt *BranchStatement) Walk(visitor Visitor) {
+func (stmt *BranchStmt) Walk(visitor Visitor) {
 	visitor.Enter(stmt)
 	if stmt.CasePatterns != nil {
 		stmt.CasePatterns.Walk(visitor)
 	}
 	stmt.Body.Walk(visitor)
 	visitor.Exit(stmt)
+}
+
+//
+// ConditionBranchStmt
+//
+
+type ConditionBranchStmt struct {
+	IsStmt
+	StartEndPos
+	LeadingTrailingComments
+
+	// either default branch in SwitchExpr/SelectExpr, or else branch in IfExpr
+	IsDefaultBranch bool
+
+	Condition Expression // nil when IsElse is true
+	Branch    *StatementsExpr
+}
+
+func (cb *ConditionBranchStmt) Walk(visitor Visitor) {
+	visitor.Enter(cb)
+	if cb.Condition != nil {
+		cb.Condition.Walk(visitor)
+	}
+	cb.Branch.Walk(visitor)
+	visitor.Exit(cb)
 }

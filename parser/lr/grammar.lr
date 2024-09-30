@@ -95,24 +95,24 @@ floating_comment<Definition> -> COMMENT_GROUPS
 //
 
 statement<Statement> ->
-  = unsafe_statement |
+  = unsafe_stmt |
 
   // NOTE: Only applicable to package_def
-  = import_statement |
+  = import_stmt |
 
   // Note: Only applicable to switch / select body
-  = branch_statement |
+  = branch_stmt |
 
   // NOTE: The following are only applicable in expression blocks
 
   = returnable_expr |
-  = jump_statement |
+  = jump_stmt |
 
   // NOTE: assignment can only operate on proper address values.  Additional
   // checks are applied during post analysis.
-  = assign_statement
+  = assign_stmt
 
-branch_statement<Statement> ->
+branch_stmt<Statement> ->
   // NOTE: case_branch and default_branch are applicable only to switch and
   // select expression blocks. select_assign_recv_branch and
   // select_assign_send_bracnh are only applicable to select expression.
@@ -127,14 +127,14 @@ branch_statement<Statement> ->
 
 // escape hatch to get a basic compiler/transpiler running.
 // unsafe<go> "emit verbatim go source"
-unsafe_statement<UnsafeStatement> ->
+unsafe_stmt<UnsafeStmt> ->
   UNSAFE LESS IDENTIFIER GREATER STRING_LITERAL
 
 //
 // Jump / fallthrough statements
 //
 
-jump_statement<Statement> ->
+jump_stmt<Statement> ->
   unlabeled_no_value: jump_op |
   unlabeled_valued: jump_op returnable_expr |
   labeled_no_value: jump_op JUMP_LABEL |
@@ -156,13 +156,13 @@ jump_op<Value> ->
 // expressions.  Additional post analysis checks are needed to reject
 // invalid usage, depending on the context (e.g., assignment should only
 // operate on proper address values)
-assign_statement<Statement> -> returnable_expr ASSIGN returnable_expr
+assign_stmt<Statement> -> returnable_expr ASSIGN returnable_expr
 
 //
 // Import statement
 //
 
-import_statement<Statement> ->
+import_stmt<Statement> ->
   single: IMPORT import_clause |
   multiple: IMPORT LPAREN import_clauses RPAREN
 
@@ -804,7 +804,7 @@ type_property<TypeProperty> ->
   default_enum_field_def: DEFAULT field_def |
   padding_field_def: UNDERSCORE type_expr |
   = method_signature |
-  = unsafe_statement
+  = unsafe_stmt
 
 proper_implicit_type_properties<TypeProperties> ->
   add: proper_implicit_type_properties COMMA type_property |
@@ -994,7 +994,7 @@ go:
     ImportClause: "*github.com/pattyshack/pl/ast.ImportClause"
     ImportClauseList: "*github.com/pattyshack/pl/ast.ImportClauseList"
     ImplicitStruct: "*github.com/pattyshack/pl/ast.ImplicitStructExpr"
-    UnsafeStatement: "*github.com/pattyshack/pl/ast.UnsafeStatement"
+    UnsafeStmt: "*github.com/pattyshack/pl/ast.UnsafeStmt"
     CommentGroups: "CommentGroupsTok"
   generate_end_pos: True
 }%%

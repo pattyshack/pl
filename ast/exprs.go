@@ -361,7 +361,7 @@ type CasePatternExpr struct {
 	LeadingTrailingComments
 
 	Patterns *ExpressionList
-	Value Expression // optional
+	Value    Expression // optional
 }
 
 var _ Expression = &CasePatternExpr{}
@@ -375,36 +375,13 @@ func (cond *CasePatternExpr) Walk(visitor Visitor) {
 	visitor.Exit(cond)
 }
 
-type ConditionBranch struct {
-	IsStmt
-	StartEndPos
-	LeadingTrailingComments
-
-	// either default branch in SwitchExpr/SelectExpr, or else branch in IfExpr
-	IsDefaultBranch bool
-
-	Condition Expression // nil when IsElse is true
-	Branch    *StatementsExpr
-}
-
-var _ Node = &ConditionBranch{}
-
-func (cb *ConditionBranch) Walk(visitor Visitor) {
-	visitor.Enter(cb)
-	if cb.Condition != nil {
-		cb.Condition.Walk(visitor)
-	}
-	cb.Branch.Walk(visitor)
-	visitor.Exit(cb)
-}
-
 type IfExpr struct {
 	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
 	LabelDecl         string // optional
-	ConditionBranches []*ConditionBranch
+	ConditionBranches []*ConditionBranchStmt
 }
 
 var _ Expression = &IfExpr{}

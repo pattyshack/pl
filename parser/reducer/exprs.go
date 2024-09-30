@@ -337,7 +337,7 @@ func (reducer *Reducer) ToBinaryAssignOpExpr(
 	return reducer.toBinaryExpr(address, op, value), nil
 }
 
-func (reducer *Reducer) ToAssignStatement(
+func (reducer *Reducer) ToAssignStmt(
 	pattern ast.Expression,
 	assign *lr.TokenValue,
 	value ast.Expression,
@@ -837,7 +837,7 @@ func (reducer *Reducer) ElseToIfElseExpr(
 	last := ifExpr.ConditionBranches[len(ifExpr.ConditionBranches)-1]
 	last.AppendToTrailing(elseKW.TakeLeading())
 
-	cb := &ast.ConditionBranch{
+	cb := &ast.ConditionBranchStmt{
 		StartEndPos:     ast.NewStartEndPos(elseKW.Loc(), branch.End()),
 		IsDefaultBranch: true,
 		Branch:          branch,
@@ -864,7 +864,7 @@ func (reducer *Reducer) ElifToIfElifExpr(
 	last := ifExpr.ConditionBranches[len(ifExpr.ConditionBranches)-1]
 	last.AppendToTrailing(elseKW.TakeLeading())
 
-	cb := &ast.ConditionBranch{
+	cb := &ast.ConditionBranchStmt{
 		StartEndPos: ast.NewStartEndPos(elseKW.Loc(), branch.End()),
 		Condition:   condition,
 		Branch:      branch,
@@ -890,7 +890,7 @@ func (reducer *Reducer) ToIfOnlyExpr(
 ) {
 	leading := ifKW.TakeLeading()
 
-	cb := &ast.ConditionBranch{
+	cb := &ast.ConditionBranchStmt{
 		StartEndPos: ast.NewStartEndPos(ifKW.Loc(), branch.End()),
 		Condition:   condition,
 		Branch:      branch,
@@ -901,7 +901,7 @@ func (reducer *Reducer) ToIfOnlyExpr(
 
 	expr := &ast.IfExpr{
 		StartEndPos:       ast.NewStartEndPos(ifKW.Loc(), branch.End()),
-		ConditionBranches: []*ast.ConditionBranch{cb},
+		ConditionBranches: []*ast.ConditionBranchStmt{cb},
 	}
 	expr.LeadingComment = leading
 
@@ -916,9 +916,9 @@ func (reducer *Reducer) groupBranches(
 	stmts *ast.StatementsExpr,
 ) {
 	newStatements := make([]ast.Statement, 0, len(stmts.Statements))
-	var current *ast.BranchStatement
+	var current *ast.BranchStmt
 	for _, stmt := range stmts.Statements {
-		branch, ok := stmt.(*ast.BranchStatement)
+		branch, ok := stmt.(*ast.BranchStmt)
 		if !ok {
 			if current != nil {
 				current.Body.Statements = append(current.Body.Statements, stmt)
@@ -945,7 +945,7 @@ func (reducer *Reducer) groupBranches(
 			}
 
 			subStmt := current.Body.Statements[0]
-			nestedBranch, ok := subStmt.(*ast.BranchStatement)
+			nestedBranch, ok := subStmt.(*ast.BranchStmt)
 			if !ok {
 				current.Body.EndPos = subStmt.End()
 				current.EndPos = subStmt.End()

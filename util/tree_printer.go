@@ -251,18 +251,18 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		}
 		printer.push(labels...)
 
-	case *ast.ImportStatement:
-		printer.list("[ImportStatement:", "ImportClause", len(node.ImportClauses))
-	case *ast.JumpStatement:
-		printer.write("[JumpStatement: Op=%s Label=%s", node.Op, node.Label)
+	case *ast.ImportStmt:
+		printer.list("[ImportStmt:", "ImportClause", len(node.ImportClauses))
+	case *ast.JumpStmt:
+		printer.write("[JumpStmt: Op=%s Label=%s", node.Op, node.Label)
 		if node.Value != nil {
 			printer.push("Value=")
 		} else {
 			printer.write("]")
 		}
-	case *ast.UnsafeStatement:
+	case *ast.UnsafeStmt:
 		printer.write(
-			"[UnsafeStatement: Language=%s VerbatimSource\n",
+			"[UnsafeStmt: Language=%s VerbatimSource\n",
 			node.Language)
 		for _, line := range strings.Split(node.VerbatimSource, "\n") {
 			printer.write(printer.indent)
@@ -272,12 +272,21 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		}
 		printer.write(printer.indent)
 		printer.write("]")
-	case *ast.BranchStatement:
-		printer.write("[BranchStatement: IsDefault=%v", node.IsDefault)
+	case *ast.BranchStmt:
+		printer.write("[BranchStmt: IsDefault=%v", node.IsDefault)
 		if node.CasePatterns != nil {
 			printer.push("CasePatterns=", "Body=")
 		} else {
 			printer.push("Body=")
+		}
+	case *ast.ConditionBranchStmt:
+		printer.write(
+      "[ConditionBranchStmt: IsDefaultBranch=%v",
+      node.IsDefaultBranch)
+		if node.Condition != nil {
+			printer.push("Condition=", "Branch=")
+		} else {
+			printer.push("Branch=")
 		}
 
 	case *ast.FloatingComment:
@@ -337,13 +346,6 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			"[ImportClause: Alias=%s Package=%s]",
 			node.Alias,
 			node.Package)
-	case *ast.ConditionBranch:
-		printer.write("[ConditionBranch: IsDefaultBranch=%v", node.IsDefaultBranch)
-		if node.Condition != nil {
-			printer.push("Condition=", "Branch=")
-		} else {
-			printer.push("Branch=")
-		}
 
 	case *ast.DefinitionList:
 		printer.list("[DefinitionList:", "Definition", len(node.Elements))
@@ -423,13 +425,15 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.FuncSignature:
 		printer.endNode()
 
-	case *ast.ImportStatement:
+	case *ast.ImportStmt:
 		printer.endList(len(node.ImportClauses))
-	case *ast.JumpStatement:
+	case *ast.JumpStmt:
 		if node.Value != nil {
 			printer.endNode()
 		}
-	case *ast.BranchStatement:
+	case *ast.BranchStmt:
+		printer.endNode()
+	case *ast.ConditionBranchStmt:
 		printer.endNode()
 
 	case *ast.PackageDef:
@@ -453,8 +457,6 @@ func (printer *treePrinter) Exit(n ast.Node) {
 		if node.Constraint != nil {
 			printer.endNode()
 		}
-	case *ast.ConditionBranch:
-		printer.endNode()
 
 	case *ast.DefinitionList:
 		printer.endList(len(node.Elements))

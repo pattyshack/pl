@@ -135,10 +135,10 @@ func NewTypePropertyList() *TypePropertyList {
 	return &NodeList[TypeProperty]{}
 }
 
-type ConditionBranchList = NodeList[*ConditionBranch]
+type ConditionBranchStmtList = NodeList[*ConditionBranchStmt]
 
-func NewConditionBranchList() *ConditionBranchList {
-	return &NodeList[*ConditionBranch]{}
+func NewConditionBranchStmtList() *ConditionBranchStmtList {
+	return &NodeList[*ConditionBranchStmt]{}
 }
 
 type ImportClauseList = NodeList[*ImportClause]
