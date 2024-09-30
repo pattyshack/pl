@@ -821,7 +821,7 @@ func (reducer *Reducer) LabelledToIfExpr(
 func (reducer *Reducer) ElseToIfElseExpr(
 	ifExpr *ast.IfExpr,
 	elseKW *lr.TokenValue,
-	branch ast.Expression,
+	branch *ast.StatementsExpr,
 ) (
 	*ast.IfExpr,
 	error,
@@ -848,7 +848,7 @@ func (reducer *Reducer) ElifToIfElifExpr(
 	elseKW *lr.TokenValue,
 	ifKW *lr.TokenValue,
 	condition ast.Expression,
-	branch ast.Expression,
+	branch *ast.StatementsExpr,
 ) (
 	*ast.IfExpr,
 	error,
@@ -875,7 +875,7 @@ func (reducer *Reducer) ElifToIfElifExpr(
 func (reducer *Reducer) ToIfOnlyExpr(
 	ifKW *lr.TokenValue,
 	condition ast.Expression,
-	branch ast.Expression,
+	branch *ast.StatementsExpr,
 ) (
 	*ast.IfExpr,
 	error,
@@ -955,53 +955,39 @@ func (reducer *Reducer) groupBranches(
 
 func (reducer *Reducer) LabelledToSwitchExpr(
 	labelDecl *lr.TokenValue,
-	expr ast.Expression,
+	switchExpr *ast.SwitchExpr,
 ) (
 	ast.Expression,
 	error,
 ) {
-	switch switchExpr := expr.(type) {
-	case *ast.SwitchExpr:
-		switchExpr.StartPos = labelDecl.Loc()
-		switchExpr.PrependToLeading(labelDecl.TakeTrailing())
-		switchExpr.PrependToLeading(labelDecl.TakeLeading())
-		switchExpr.LabelDecl = labelDecl.Value
-		return switchExpr, nil
-	case *ast.ParseErrorNode:
-		return expr, nil
-	}
-
-	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+	switchExpr.StartPos = labelDecl.Loc()
+	switchExpr.PrependToLeading(labelDecl.TakeTrailing())
+	switchExpr.PrependToLeading(labelDecl.TakeLeading())
+	switchExpr.LabelDecl = labelDecl.Value
+	return switchExpr, nil
 }
 
 func (reducer *Reducer) ToSwitchExprBody(
 	switchKW *lr.TokenValue,
 	operand ast.Expression,
-	expr ast.Expression,
+	branches *ast.StatementsExpr,
 ) (
-	ast.Expression,
+	*ast.SwitchExpr,
 	error,
 ) {
-	switch branches := expr.(type) {
-	case *ast.StatementsExpr:
-		reducer.groupBranches(branches)
+	reducer.groupBranches(branches)
 
-		switchExpr := &ast.SwitchExpr{
-			StartEndPos: ast.NewStartEndPos(switchKW.Loc(), branches.End()),
-			Operand:     operand,
-			Branches:    branches,
-		}
-
-		switchExpr.LeadingComment = switchKW.TakeLeading()
-		operand.PrependToLeading(switchKW.TakeTrailing())
-		switchExpr.TrailingComment = branches.TakeTrailing()
-
-		return switchExpr, nil
-	case *ast.ParseErrorNode:
-		return expr, nil
+	switchExpr := &ast.SwitchExpr{
+		StartEndPos: ast.NewStartEndPos(switchKW.Loc(), branches.End()),
+		Operand:     operand,
+		Branches:    branches,
 	}
 
-	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+	switchExpr.LeadingComment = switchKW.TakeLeading()
+	operand.PrependToLeading(switchKW.TakeTrailing())
+	switchExpr.TrailingComment = branches.TakeTrailing()
+
+	return switchExpr, nil
 }
 
 //
@@ -1010,51 +996,37 @@ func (reducer *Reducer) ToSwitchExprBody(
 
 func (reducer *Reducer) LabelledToSelectExpr(
 	labelDecl *lr.TokenValue,
-	expr ast.Expression,
+	selectExpr *ast.SelectExpr,
 ) (
 	ast.Expression,
 	error,
 ) {
-	switch selectExpr := expr.(type) {
-	case *ast.SelectExpr:
-		selectExpr.StartPos = labelDecl.Loc()
-		selectExpr.PrependToLeading(labelDecl.TakeTrailing())
-		selectExpr.PrependToLeading(labelDecl.TakeLeading())
-		selectExpr.LabelDecl = labelDecl.Value
-		return selectExpr, nil
-	case *ast.ParseErrorNode:
-		return expr, nil
-	}
-
-	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+	selectExpr.StartPos = labelDecl.Loc()
+	selectExpr.PrependToLeading(labelDecl.TakeTrailing())
+	selectExpr.PrependToLeading(labelDecl.TakeLeading())
+	selectExpr.LabelDecl = labelDecl.Value
+	return selectExpr, nil
 }
 
 func (reducer *Reducer) ToSelectExprBody(
 	switchKW *lr.TokenValue,
-	expr ast.Expression,
+	branches *ast.StatementsExpr,
 ) (
-	ast.Expression,
+	*ast.SelectExpr,
 	error,
 ) {
-	switch branches := expr.(type) {
-	case *ast.StatementsExpr:
-		reducer.groupBranches(branches)
+	reducer.groupBranches(branches)
 
-		selectExpr := &ast.SelectExpr{
-			StartEndPos: ast.NewStartEndPos(switchKW.Loc(), branches.End()),
-			Branches:    branches,
-		}
-
-		selectExpr.LeadingComment = switchKW.TakeLeading()
-		branches.PrependToLeading(switchKW.TakeTrailing())
-		selectExpr.TrailingComment = branches.TakeTrailing()
-
-		return selectExpr, nil
-	case *ast.ParseErrorNode:
-		return expr, nil
+	selectExpr := &ast.SelectExpr{
+		StartEndPos: ast.NewStartEndPos(switchKW.Loc(), branches.End()),
+		Branches:    branches,
 	}
 
-	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+	selectExpr.LeadingComment = switchKW.TakeLeading()
+	branches.PrependToLeading(switchKW.TakeTrailing())
+	selectExpr.TrailingComment = branches.TakeTrailing()
+
+	return selectExpr, nil
 }
 
 //
@@ -1063,113 +1035,85 @@ func (reducer *Reducer) ToSelectExprBody(
 
 func (reducer *Reducer) LabelledToLoopExpr(
 	labelDecl *lr.TokenValue,
-	expr ast.Expression,
+	loop *ast.LoopExpr,
 ) (
 	ast.Expression,
 	error,
 ) {
-	switch loop := expr.(type) {
-	case *ast.LoopExpr:
-		loop.StartPos = labelDecl.Loc()
-		loop.PrependToLeading(labelDecl.TakeTrailing())
-		loop.PrependToLeading(labelDecl.TakeLeading())
-		loop.LabelDecl = labelDecl.Value
-		return loop, nil
-	case *ast.ParseErrorNode:
-		return expr, nil
-	}
-
-	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+	loop.StartPos = labelDecl.Loc()
+	loop.PrependToLeading(labelDecl.TakeTrailing())
+	loop.PrependToLeading(labelDecl.TakeLeading())
+	loop.LabelDecl = labelDecl.Value
+	return loop, nil
 }
 
 func (reducer *Reducer) InfiniteToLoopExprBody(
-	bodyExpr ast.Expression,
+	body *ast.StatementsExpr,
 ) (
-	ast.Expression,
+	*ast.LoopExpr,
 	error,
 ) {
-	switch body := bodyExpr.(type) {
-	case *ast.StatementsExpr:
-		leading := body.TakeLeading()
-		trailing := body.TakeTrailing()
+	leading := body.TakeLeading()
+	trailing := body.TakeTrailing()
 
-		loop := &ast.LoopExpr{
-			StartEndPos: ast.NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
-			LoopKind:    ast.InfiniteLoop,
-			Body:        body,
-		}
-		loop.LeadingComment = leading
-		loop.TrailingComment = trailing
-
-		return loop, nil
-	case *ast.ParseErrorNode:
-		return bodyExpr, nil
+	loop := &ast.LoopExpr{
+		StartEndPos: ast.NewStartEndPos(body.Loc(), body.End()),
+		LoopKind:    ast.InfiniteLoop,
+		Body:        body,
 	}
+	loop.LeadingComment = leading
+	loop.TrailingComment = trailing
 
-	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
+	return loop, nil
 }
 
 func (reducer *Reducer) DoWhileToLoopExprBody(
-	bodyExpr ast.Expression,
+	body *ast.StatementsExpr,
 	forKW *lr.TokenValue,
 	condition ast.Expression,
 ) (
-	ast.Expression,
+	*ast.LoopExpr,
 	error,
 ) {
-	switch body := bodyExpr.(type) {
-	case *ast.StatementsExpr:
-		leading := body.TakeLeading()
-		body.AppendToTrailing(forKW.TakeLeading())
-		condition.PrependToLeading(forKW.TakeTrailing())
-		trailing := condition.TakeTrailing()
+	leading := body.TakeLeading()
+	body.AppendToTrailing(forKW.TakeLeading())
+	condition.PrependToLeading(forKW.TakeTrailing())
+	trailing := condition.TakeTrailing()
 
-		loop := &ast.LoopExpr{
-			StartEndPos: ast.NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
-			LoopKind:    ast.DoWhileLoop,
-			Condition:   condition,
-			Body:        body,
-		}
-		loop.LeadingComment = leading
-		loop.TrailingComment = trailing
-
-		return loop, nil
-	case *ast.ParseErrorNode:
-		return bodyExpr, nil
+	loop := &ast.LoopExpr{
+		StartEndPos: ast.NewStartEndPos(body.Loc(), body.End()),
+		LoopKind:    ast.DoWhileLoop,
+		Condition:   condition,
+		Body:        body,
 	}
+	loop.LeadingComment = leading
+	loop.TrailingComment = trailing
 
-	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
+	return loop, nil
 }
 
 func (reducer *Reducer) WhileToLoopExprBody(
 	forKW *lr.TokenValue,
 	condition ast.Expression,
-	bodyExpr ast.Expression,
+	body *ast.StatementsExpr,
 ) (
-	ast.Expression,
+	*ast.LoopExpr,
 	error,
 ) {
-	switch body := bodyExpr.(type) {
-	case *ast.StatementsExpr:
-		leading := forKW.TakeLeading()
-		condition.PrependToLeading(forKW.TakeTrailing())
-		trailing := bodyExpr.TakeTrailing()
+	leading := forKW.TakeLeading()
+	condition.PrependToLeading(forKW.TakeTrailing())
+	trailing := body.TakeTrailing()
 
-		loop := &ast.LoopExpr{
-			StartEndPos: ast.NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
-			LoopKind:    ast.WhileLoop,
-			Condition:   condition,
-			Body:        body,
-		}
-		loop.LeadingComment = leading
-		loop.TrailingComment = trailing
-
-		return loop, nil
-	case *ast.ParseErrorNode:
-		return bodyExpr, nil
+	loop := &ast.LoopExpr{
+		StartEndPos: ast.NewStartEndPos(body.Loc(), body.End()),
+		LoopKind:    ast.WhileLoop,
+		Condition:   condition,
+		Body:        body,
 	}
+	loop.LeadingComment = leading
+	loop.TrailingComment = trailing
 
-	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
+	return loop, nil
 }
 
 func (reducer *Reducer) IteratorToLoopExprBody(
@@ -1177,31 +1121,24 @@ func (reducer *Reducer) IteratorToLoopExprBody(
 	assignPattern ast.Expression,
 	in *lr.TokenValue,
 	iterator ast.Expression,
-	bodyExpr ast.Expression,
+	body *ast.StatementsExpr,
 ) (
-	ast.Expression,
+	*ast.LoopExpr,
 	error,
 ) {
-	switch body := bodyExpr.(type) {
-	case *ast.StatementsExpr:
-		leading := forKW.TakeLeading()
-		trailing := bodyExpr.TakeTrailing()
+	leading := forKW.TakeLeading()
+	trailing := body.TakeTrailing()
 
-		loop := &ast.LoopExpr{
-			StartEndPos: ast.NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
-			LoopKind:    ast.IteratorLoop,
-			Condition:   reducer.toBinaryExpr(assignPattern, in, iterator),
-			Body:        body,
-		}
-		loop.LeadingComment = leading
-		loop.TrailingComment = trailing
-
-		return loop, nil
-	case *ast.ParseErrorNode:
-		return bodyExpr, nil
+	loop := &ast.LoopExpr{
+		StartEndPos: ast.NewStartEndPos(body.Loc(), body.End()),
+		LoopKind:    ast.IteratorLoop,
+		Condition:   reducer.toBinaryExpr(assignPattern, in, iterator),
+		Body:        body,
 	}
+	loop.LeadingComment = leading
+	loop.TrailingComment = trailing
 
-	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
+	return loop, nil
 }
 
 func (reducer *Reducer) ForToLoopExprBody(
@@ -1211,55 +1148,48 @@ func (reducer *Reducer) ForToLoopExprBody(
 	condition ast.Expression,
 	semicolon2 *lr.TokenValue,
 	post ast.Statement,
-	bodyExpr ast.Expression,
+	body *ast.StatementsExpr,
 ) (
-	ast.Expression,
+	*ast.LoopExpr,
 	error,
 ) {
-	switch body := bodyExpr.(type) {
-	case *ast.StatementsExpr:
-		var last ast.Node = body
-		if post != nil {
-			last = post
-		}
-
-		last.PrependToLeading(semicolon2.TakeTrailing())
-		if condition == nil {
-			last.PrependToLeading(semicolon2.TakeLeading())
-		} else {
-			condition.AppendToTrailing(semicolon2.TakeLeading())
-			last = condition
-		}
-
-		last.PrependToLeading(semicolon1.TakeTrailing())
-		if init == nil {
-			last.PrependToLeading(semicolon1.TakeLeading())
-		} else {
-			init.AppendToTrailing(semicolon1.TakeLeading())
-			last = init
-		}
-
-		leading := forKW.TakeLeading()
-		last.PrependToLeading(forKW.TakeTrailing())
-		trailing := body.TakeTrailing()
-
-		loop := &ast.LoopExpr{
-			StartEndPos: ast.NewStartEndPos(bodyExpr.Loc(), bodyExpr.End()),
-			LoopKind:    ast.ForLoop,
-			Init:        init,
-			Condition:   condition,
-			Post:        post,
-			Body:        body,
-		}
-		loop.LeadingComment = leading
-		loop.TrailingComment = trailing
-
-		return loop, nil
-	case *ast.ParseErrorNode:
-		return bodyExpr, nil
+	var last ast.Node = body
+	if post != nil {
+		last = post
 	}
 
-	panic(fmt.Sprintf("Unexpected expression: %v", bodyExpr))
+	last.PrependToLeading(semicolon2.TakeTrailing())
+	if condition == nil {
+		last.PrependToLeading(semicolon2.TakeLeading())
+	} else {
+		condition.AppendToTrailing(semicolon2.TakeLeading())
+		last = condition
+	}
+
+	last.PrependToLeading(semicolon1.TakeTrailing())
+	if init == nil {
+		last.PrependToLeading(semicolon1.TakeLeading())
+	} else {
+		init.AppendToTrailing(semicolon1.TakeLeading())
+		last = init
+	}
+
+	leading := forKW.TakeLeading()
+	last.PrependToLeading(forKW.TakeTrailing())
+	trailing := body.TakeTrailing()
+
+	loop := &ast.LoopExpr{
+		StartEndPos: ast.NewStartEndPos(body.Loc(), body.End()),
+		LoopKind:    ast.ForLoop,
+		Init:        init,
+		Condition:   condition,
+		Post:        post,
+		Body:        body,
+	}
+	loop.LeadingComment = leading
+	loop.TrailingComment = trailing
+
+	return loop, nil
 }
 
 func (reducer *Reducer) NilToOptionalStatement() (
@@ -1278,26 +1208,19 @@ func (reducer *Reducer) NilToOptionalExpr() (
 
 func (reducer *Reducer) toLoopBody(
 	kw *lr.TokenValue,
-	expr ast.Expression,
-) ast.Expression {
-	switch body := expr.(type) {
-	case *ast.StatementsExpr:
-		body.StartPos = kw.Loc()
-		body.PrependToLeading(kw.TakeTrailing())
-		body.PrependToLeading(kw.TakeLeading())
-		return body
-	case *ast.ParseErrorNode:
-		return expr
-	}
-
-	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+	body *ast.StatementsExpr,
+) *ast.StatementsExpr {
+	body.StartPos = kw.Loc()
+	body.PrependToLeading(kw.TakeTrailing())
+	body.PrependToLeading(kw.TakeLeading())
+	return body
 }
 
 func (reducer *Reducer) ToRepeatLoopBody(
 	repeat *lr.TokenValue,
-	expr ast.Expression,
+	expr *ast.StatementsExpr,
 ) (
-	ast.Expression,
+	*ast.StatementsExpr,
 	error,
 ) {
 	return reducer.toLoopBody(repeat, expr), nil
@@ -1305,9 +1228,9 @@ func (reducer *Reducer) ToRepeatLoopBody(
 
 func (reducer *Reducer) ToForLoopBody(
 	do *lr.TokenValue,
-	expr ast.Expression,
+	expr *ast.StatementsExpr,
 ) (
-	ast.Expression,
+	*ast.StatementsExpr,
 	error,
 ) {
 	return reducer.toLoopBody(do, expr), nil

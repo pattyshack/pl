@@ -565,7 +565,7 @@ statements_expr<Expression> ->
 // Note: statements's value type can be either the statements's
 // real value type, i.e., *StatementsExpr, or PARSE_ERROR's value type,
 // i.e., *ParseErrorSymbol
-statements<Expression> -> LBRACE statement_list RBRACE
+statements<StatementsExpr> -> LBRACE statement_list RBRACE
 
 proper_statement_list<StatementList> ->
   add_implicit: proper_statement_list NEWLINES statement |
@@ -623,13 +623,13 @@ switch_expr<Expression> ->
   = switch_expr_body |
   labelled: LABEL_DECL switch_expr_body
 
-switch_expr_body<Expression> -> SWITCH expr statements
+switch_expr_body<SwitchExpr> -> SWITCH expr statements
 
 select_expr<Expression> ->
   = select_expr_body |
   labelled: LABEL_DECL select_expr_body
 
-select_expr_body<Expression> -> SELECT statements
+select_expr_body<SelectExpr> -> SELECT statements
 
 // NOTE: Since we use {} for expression grouping, we need the extra DO keyword
 // to help the parser figure out which block is the loop's body.
@@ -637,7 +637,7 @@ loop_expr<Expression> ->
   = loop_expr_body |
   labelled: LABEL_DECL loop_expr_body
 
-loop_expr_body<Expression> ->
+loop_expr_body<LoopExpr> ->
   infinite: repeat_loop_body |
   do_while: repeat_loop_body FOR expr |
   while: FOR expr for_loop_body |
@@ -652,9 +652,9 @@ optional_expr<Expression> ->
   = expr |
   nil:
 
-repeat_loop_body<Expression> -> REPEAT statements
+repeat_loop_body<StatementsExpr> -> REPEAT statements
 
-for_loop_body<Expression> -> DO statements
+for_loop_body<StatementsExpr> -> DO statements
 
 //
 // Returnable expressions (This is purely syntactic sugar)
@@ -972,6 +972,10 @@ go:
     ExpressionList: "*github.com/pattyshack/pl/ast.ExpressionList"
     IfExpr: "*github.com/pattyshack/pl/ast.IfExpr"
     ColonExpr: "*github.com/pattyshack/pl/ast.ColonExpr"
+    StatementsExpr: "*github.com/pattyshack/pl/ast.StatementsExpr"
+    LoopExpr: "*github.com/pattyshack/pl/ast.LoopExpr"
+    SelectExpr: "*github.com/pattyshack/pl/ast.SelectExpr"
+    SwitchExpr: "*github.com/pattyshack/pl/ast.SwitchExpr"
     Parameter: "*github.com/pattyshack/pl/ast.Parameter"
     Parameters: "*github.com/pattyshack/pl/ast.ParameterList"
     Argument: "*github.com/pattyshack/pl/ast.Argument"

@@ -1,8 +1,6 @@
 package reducer
 
 import (
-	"fmt"
-
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
@@ -71,25 +69,18 @@ func (reducer *Reducer) ToFloatingComment(
 
 func (reducer *Reducer) ToPackageDef(
 	pkg *lr.TokenValue,
-	expr ast.Expression,
+	body *ast.StatementsExpr,
 ) (
 	ast.Definition,
 	error,
 ) {
-	switch body := expr.(type) {
-	case *ast.StatementsExpr:
-		body.PrependToLeading(pkg.TakeTrailing())
-		def := &ast.PackageDef{
-			StartEndPos: ast.NewStartEndPos(pkg.Loc(), expr.End()),
-			Body:        body,
-		}
-		def.LeadingComment = pkg.TakeLeading()
-		return def, nil
-	case *ast.ParseErrorNode:
-		return expr, nil
+	body.PrependToLeading(pkg.TakeTrailing())
+	def := &ast.PackageDef{
+		StartEndPos: ast.NewStartEndPos(pkg.Loc(), body.End()),
+		Body:        body,
 	}
-
-	panic(fmt.Sprintf("Unexpected expression: %v", expr))
+	def.LeadingComment = pkg.TakeLeading()
+	return def, nil
 }
 
 //

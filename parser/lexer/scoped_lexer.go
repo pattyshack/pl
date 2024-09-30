@@ -119,7 +119,10 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 			if currentLevel != len(lexer.stack)+1 { // sanity check
 				panic("Should never happen")
 			}
-			return &lr.Symbol{SymbolId_: lr.StatementsType, Expression: block}, nil
+			return &lr.Symbol{
+				SymbolId_:      lr.StatementsType,
+				StatementsExpr: block,
+			}, nil
 		}
 
 		// TODO emit error
@@ -139,7 +142,7 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 
 			peeked, err := lexer.buffered.Peek(1)
 			if err != nil || len(peeked) == 0 {
-        break
+				break
 			}
 
 			switch peeked[0].Id() {
@@ -167,7 +170,10 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 		}
 
 		stmts.EndPos = lexer.CurrentLocation()
-		return &lr.Symbol{SymbolId_: lr.StatementsType, Expression: stmts}, nil
+		return &lr.Symbol{
+			SymbolId_:      lr.StatementsType,
+			StatementsExpr: stmts,
+		}, nil
 	case lr.RbraceToken:
 		lexer.endCurrentScope()
 	}

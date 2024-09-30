@@ -1,8 +1,6 @@
 package reducer
 
 import (
-	"fmt"
-
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
@@ -76,7 +74,7 @@ func (reducer *Reducer) ToStatements(
 	list *ast.StatementList,
 	rbrace *lr.TokenValue,
 ) (
-	ast.Expression,
+	*ast.StatementsExpr,
 	error,
 ) {
 	if list == nil {
@@ -96,23 +94,16 @@ func (reducer *Reducer) ToStatements(
 
 func (reducer *Reducer) LabelledToStatementsExpr(
 	labelDecl *lr.TokenValue,
-	statementsExprOrParseError ast.Expression,
+	expr *ast.StatementsExpr,
 ) (
 	ast.Expression,
 	error,
 ) {
-	switch expr := statementsExprOrParseError.(type) {
-	case *ast.ParseErrorNode:
-		return expr, nil
-	case *ast.StatementsExpr:
-		expr.StartPos = labelDecl.Loc()
-		expr.LabelDecl = labelDecl.Value
-		expr.PrependToLeading(labelDecl.TakeTrailing())
-		expr.PrependToLeading(labelDecl.TakeLeading())
-		return expr, nil
-	}
-
-	panic(fmt.Sprintf("Unexpected expression: %v", statementsExprOrParseError))
+	expr.StartPos = labelDecl.Loc()
+	expr.LabelDecl = labelDecl.Value
+	expr.PrependToLeading(labelDecl.TakeTrailing())
+	expr.PrependToLeading(labelDecl.TakeLeading())
+	return expr, nil
 }
 
 //

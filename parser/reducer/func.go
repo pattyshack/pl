@@ -60,7 +60,7 @@ func (reducer *Reducer) toFuncDefinition(
 	genericParameters *ast.GenericParameterList,
 	parameters *ast.ParameterList,
 	returnType ast.TypeExpression,
-	body ast.Expression,
+	body *ast.StatementsExpr,
 ) *ast.FuncDefinition {
 	sig := reducer.toFuncSignature(
 		funcKW,
@@ -123,7 +123,7 @@ func (reducer *Reducer) FuncDefToNamedFuncDef(
 	genericParameters *ast.GenericParameterList,
 	parameters *ast.ParameterList,
 	returnType ast.TypeExpression,
-	body ast.Expression,
+	body *ast.StatementsExpr,
 ) (
 	ast.Definition,
 	error,
@@ -148,7 +148,7 @@ func (reducer *Reducer) MethodDefToNamedFuncDef(
 	name *lr.TokenValue,
 	parameters *ast.ParameterList,
 	returnType ast.TypeExpression,
-	body ast.Expression,
+	body *ast.StatementsExpr,
 ) (
 	ast.Definition,
 	error,
@@ -173,7 +173,7 @@ func (reducer *Reducer) ToAnonymousFuncExpr(
 	funcKW *lr.TokenValue,
 	parameters *ast.ParameterList,
 	returnType ast.TypeExpression,
-	body ast.Expression,
+	body *ast.StatementsExpr,
 ) (
 	ast.Expression,
 	error,

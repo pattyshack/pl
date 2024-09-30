@@ -475,12 +475,12 @@ type BinaryAssignOpExprReducer interface {
 type StatementsExprReducer interface {
 
 	// 551:2: statements_expr -> labelled: ...
-	LabelledToStatementsExpr(LabelDecl_ *TokenValue, Statements_ ast.Expression) (ast.Expression, error)
+	LabelledToStatementsExpr(LabelDecl_ *TokenValue, Statements_ *ast.StatementsExpr) (ast.Expression, error)
 }
 
 type StatementsReducer interface {
-	// 568:26: statements -> ...
-	ToStatements(Lbrace_ *TokenValue, StatementList_ *ast.StatementList, Rbrace_ *TokenValue) (ast.Expression, error)
+	// 568:30: statements -> ...
+	ToStatements(Lbrace_ *TokenValue, StatementList_ *ast.StatementList, Rbrace_ *TokenValue) (*ast.StatementsExpr, error)
 }
 
 type ProperStatementListReducer interface {
@@ -517,18 +517,18 @@ type IfExprReducer interface {
 type IfElseExprReducer interface {
 
 	// 590:2: if_else_expr -> else: ...
-	ElseToIfElseExpr(IfElifExpr_ *ast.IfExpr, Else_ *TokenValue, Statements_ ast.Expression) (*ast.IfExpr, error)
+	ElseToIfElseExpr(IfElifExpr_ *ast.IfExpr, Else_ *TokenValue, Statements_ *ast.StatementsExpr) (*ast.IfExpr, error)
 }
 
 type IfElifExprReducer interface {
 
 	// 594:2: if_elif_expr -> elif: ...
-	ElifToIfElifExpr(IfElifExpr_ *ast.IfExpr, Else_ *TokenValue, If_ *TokenValue, Condition_ ast.Expression, Statements_ ast.Expression) (*ast.IfExpr, error)
+	ElifToIfElifExpr(IfElifExpr_ *ast.IfExpr, Else_ *TokenValue, If_ *TokenValue, Condition_ ast.Expression, Statements_ *ast.StatementsExpr) (*ast.IfExpr, error)
 }
 
 type IfOnlyExprReducer interface {
 	// 597:2: if_only_expr -> ...
-	ToIfOnlyExpr(If_ *TokenValue, Condition_ ast.Expression, Statements_ ast.Expression) (*ast.IfExpr, error)
+	ToIfOnlyExpr(If_ *TokenValue, Condition_ ast.Expression, Statements_ *ast.StatementsExpr) (*ast.IfExpr, error)
 }
 
 type CaseConditionReducer interface {
@@ -539,46 +539,46 @@ type CaseConditionReducer interface {
 type SwitchExprReducer interface {
 
 	// 624:2: switch_expr -> labelled: ...
-	LabelledToSwitchExpr(LabelDecl_ *TokenValue, SwitchExprBody_ ast.Expression) (ast.Expression, error)
+	LabelledToSwitchExpr(LabelDecl_ *TokenValue, SwitchExprBody_ *ast.SwitchExpr) (ast.Expression, error)
 }
 
 type SwitchExprBodyReducer interface {
 	// 626:32: switch_expr_body -> ...
-	ToSwitchExprBody(Switch_ *TokenValue, Expr_ ast.Expression, Statements_ ast.Expression) (ast.Expression, error)
+	ToSwitchExprBody(Switch_ *TokenValue, Expr_ ast.Expression, Statements_ *ast.StatementsExpr) (*ast.SwitchExpr, error)
 }
 
 type SelectExprReducer interface {
 
 	// 630:2: select_expr -> labelled: ...
-	LabelledToSelectExpr(LabelDecl_ *TokenValue, SelectExprBody_ ast.Expression) (ast.Expression, error)
+	LabelledToSelectExpr(LabelDecl_ *TokenValue, SelectExprBody_ *ast.SelectExpr) (ast.Expression, error)
 }
 
 type SelectExprBodyReducer interface {
 	// 632:32: select_expr_body -> ...
-	ToSelectExprBody(Select_ *TokenValue, Statements_ ast.Expression) (ast.Expression, error)
+	ToSelectExprBody(Select_ *TokenValue, Statements_ *ast.StatementsExpr) (*ast.SelectExpr, error)
 }
 
 type LoopExprReducer interface {
 
 	// 638:2: loop_expr -> labelled: ...
-	LabelledToLoopExpr(LabelDecl_ *TokenValue, LoopExprBody_ ast.Expression) (ast.Expression, error)
+	LabelledToLoopExpr(LabelDecl_ *TokenValue, LoopExprBody_ *ast.LoopExpr) (ast.Expression, error)
 }
 
 type LoopExprBodyReducer interface {
 	// 641:2: loop_expr_body -> infinite: ...
-	InfiniteToLoopExprBody(RepeatLoopBody_ ast.Expression) (ast.Expression, error)
+	InfiniteToLoopExprBody(RepeatLoopBody_ *ast.StatementsExpr) (*ast.LoopExpr, error)
 
 	// 642:2: loop_expr_body -> do_while: ...
-	DoWhileToLoopExprBody(RepeatLoopBody_ ast.Expression, For_ *TokenValue, Expr_ ast.Expression) (ast.Expression, error)
+	DoWhileToLoopExprBody(RepeatLoopBody_ *ast.StatementsExpr, For_ *TokenValue, Expr_ ast.Expression) (*ast.LoopExpr, error)
 
 	// 643:2: loop_expr_body -> while: ...
-	WhileToLoopExprBody(For_ *TokenValue, Expr_ ast.Expression, ForLoopBody_ ast.Expression) (ast.Expression, error)
+	WhileToLoopExprBody(For_ *TokenValue, Expr_ ast.Expression, ForLoopBody_ *ast.StatementsExpr) (*ast.LoopExpr, error)
 
 	// 644:2: loop_expr_body -> iterator: ...
-	IteratorToLoopExprBody(For_ *TokenValue, ReturnableExpr_ ast.Expression, In_ *TokenValue, Expr_ ast.Expression, ForLoopBody_ ast.Expression) (ast.Expression, error)
+	IteratorToLoopExprBody(For_ *TokenValue, ReturnableExpr_ ast.Expression, In_ *TokenValue, Expr_ ast.Expression, ForLoopBody_ *ast.StatementsExpr) (*ast.LoopExpr, error)
 
 	// 645:2: loop_expr_body -> for: ...
-	ForToLoopExprBody(For_ *TokenValue, OptionalStatement_ ast.Statement, Semicolon_ *TokenValue, OptionalExpr_ ast.Expression, Semicolon_2 *TokenValue, OptionalStatement_2 ast.Statement, ForLoopBody_ ast.Expression) (ast.Expression, error)
+	ForToLoopExprBody(For_ *TokenValue, OptionalStatement_ ast.Statement, Semicolon_ *TokenValue, OptionalExpr_ ast.Expression, Semicolon_2 *TokenValue, OptionalStatement_2 ast.Statement, ForLoopBody_ *ast.StatementsExpr) (*ast.LoopExpr, error)
 }
 
 type OptionalStatementReducer interface {
@@ -594,13 +594,13 @@ type OptionalExprReducer interface {
 }
 
 type RepeatLoopBodyReducer interface {
-	// 655:32: repeat_loop_body -> ...
-	ToRepeatLoopBody(Repeat_ *TokenValue, Statements_ ast.Expression) (ast.Expression, error)
+	// 655:36: repeat_loop_body -> ...
+	ToRepeatLoopBody(Repeat_ *TokenValue, Statements_ *ast.StatementsExpr) (*ast.StatementsExpr, error)
 }
 
 type ForLoopBodyReducer interface {
-	// 657:29: for_loop_body -> ...
-	ToForLoopBody(Do_ *TokenValue, Statements_ ast.Expression) (ast.Expression, error)
+	// 657:33: for_loop_body -> ...
+	ToForLoopBody(Do_ *TokenValue, Statements_ *ast.StatementsExpr) (*ast.StatementsExpr, error)
 }
 
 type ImproperExprStructReducer interface {
@@ -940,20 +940,20 @@ type MethodSignatureReducer interface {
 
 type NamedFuncDefReducer interface {
 	// 947:2: named_func_def -> func_def: ...
-	FuncDefToNamedFuncDef(Func_ *TokenValue, Identifier_ *TokenValue, GenericParameters_ *ast.GenericParameterList, ParameterDefs_ *ast.ParameterList, ReturnType_ ast.TypeExpression, Statements_ ast.Expression) (ast.Definition, error)
+	FuncDefToNamedFuncDef(Func_ *TokenValue, Identifier_ *TokenValue, GenericParameters_ *ast.GenericParameterList, ParameterDefs_ *ast.ParameterList, ReturnType_ ast.TypeExpression, Statements_ *ast.StatementsExpr) (ast.Definition, error)
 
 	// 948:2: named_func_def -> method_def: ...
-	MethodDefToNamedFuncDef(Func_ *TokenValue, Lparen_ *TokenValue, ParameterDef_ *ast.Parameter, Rparen_ *TokenValue, Identifier_ *TokenValue, ParameterDefs_ *ast.ParameterList, ReturnType_ ast.TypeExpression, Statements_ ast.Expression) (ast.Definition, error)
+	MethodDefToNamedFuncDef(Func_ *TokenValue, Lparen_ *TokenValue, ParameterDef_ *ast.Parameter, Rparen_ *TokenValue, Identifier_ *TokenValue, ParameterDefs_ *ast.ParameterList, ReturnType_ ast.TypeExpression, Statements_ *ast.StatementsExpr) (ast.Definition, error)
 }
 
 type AnonymousFuncExprReducer interface {
 	// 951:2: anonymous_func_expr -> ...
-	ToAnonymousFuncExpr(Func_ *TokenValue, ParameterDefs_ *ast.ParameterList, ReturnType_ ast.TypeExpression, Statements_ ast.Expression) (ast.Expression, error)
+	ToAnonymousFuncExpr(Func_ *TokenValue, ParameterDefs_ *ast.ParameterList, ReturnType_ ast.TypeExpression, Statements_ *ast.StatementsExpr) (ast.Expression, error)
 }
 
 type PackageDefReducer interface {
 	// 962:27: package_def -> ...
-	ToPackageDef(Package_ *TokenValue, Statements_ ast.Expression) (ast.Definition, error)
+	ToPackageDef(Package_ *TokenValue, Statements_ *ast.StatementsExpr) (ast.Definition, error)
 }
 
 type Reducer interface {
@@ -1458,7 +1458,7 @@ func ParseTypeExprWithCustomErrorHandler(
 	return item.TypeExpression, nil
 }
 
-func ParseStatements(lexer Lexer, reducer Reducer) (ast.Expression, error) {
+func ParseStatements(lexer Lexer, reducer Reducer) (*ast.StatementsExpr, error) {
 
 	return ParseStatementsWithCustomErrorHandler(
 		lexer,
@@ -1470,15 +1470,15 @@ func ParseStatementsWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
 	errHandler ParseErrorHandler) (
-	ast.Expression,
+	*ast.StatementsExpr,
 	error) {
 
 	item, err := _Parse(lexer, reducer, errHandler, _State6)
 	if err != nil {
-		var errRetVal ast.Expression
+		var errRetVal *ast.StatementsExpr
 		return errRetVal, err
 	}
-	return item.Expression, nil
+	return item.StatementsExpr, nil
 }
 
 // ================================================================
@@ -3540,11 +3540,15 @@ type Symbol struct {
 	ImplicitStruct       *ast.ImplicitStructExpr
 	ImportClause         *ast.ImportClause
 	ImportClauseList     *ast.ImportClauseList
+	LoopExpr             *ast.LoopExpr
 	Parameter            *ast.Parameter
 	Parameters           *ast.ParameterList
 	ParseError           ParseErrorSymbol
+	SelectExpr           *ast.SelectExpr
 	Statement            ast.Statement
 	StatementList        *ast.StatementList
+	StatementsExpr       *ast.StatementsExpr
+	SwitchExpr           *ast.SwitchExpr
 	TypeExpression       ast.TypeExpression
 	TypeExpressionList   *ast.TypeExpressionList
 	TypeProperties       *ast.TypePropertyList
@@ -3662,7 +3666,7 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case DeclVarPatternType, VarPatternType, TuplePatternType, AssignSelectablePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, StatementsType, IfExprType, ConditionType, CaseConditionType, SwitchExprType, SwitchExprBodyType, SelectExprType, SelectExprBodyType, LoopExprType, LoopExprBodyType, OptionalExprType, RepeatLoopBodyType, ForLoopBodyType, ReturnableExprType, AnonymousFuncExprType:
+	case DeclVarPatternType, VarPatternType, TuplePatternType, AssignSelectablePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, IfExprType, ConditionType, CaseConditionType, SwitchExprType, SelectExprType, LoopExprType, OptionalExprType, ReturnableExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
 		if ok {
 			return loc.Loc()
@@ -3707,6 +3711,11 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
+	case LoopExprBodyType:
+		loc, ok := interface{}(s.LoopExpr).(locator)
+		if ok {
+			return loc.Loc()
+		}
 	case ProperParameterDefType, ParameterDeclType, ParameterDefType:
 		loc, ok := interface{}(s.Parameter).(locator)
 		if ok {
@@ -3722,6 +3731,11 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
+	case SelectExprBodyType:
+		loc, ok := interface{}(s.SelectExpr).(locator)
+		if ok {
+			return loc.Loc()
+		}
 	case StatementType, BranchStatementType, JumpStatementType, AssignStatementType, ImportStatementType, OptionalStatementType:
 		loc, ok := interface{}(s.Statement).(locator)
 		if ok {
@@ -3729,6 +3743,16 @@ func (s *Symbol) Loc() Location {
 		}
 	case ProperStatementListType, StatementListType:
 		loc, ok := interface{}(s.StatementList).(locator)
+		if ok {
+			return loc.Loc()
+		}
+	case StatementsType, RepeatLoopBodyType, ForLoopBodyType:
+		loc, ok := interface{}(s.StatementsExpr).(locator)
+		if ok {
+			return loc.Loc()
+		}
+	case SwitchExprBodyType:
+		loc, ok := interface{}(s.SwitchExpr).(locator)
 		if ok {
 			return loc.Loc()
 		}
@@ -3804,7 +3828,7 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case DeclVarPatternType, VarPatternType, TuplePatternType, AssignSelectablePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, StatementsType, IfExprType, ConditionType, CaseConditionType, SwitchExprType, SwitchExprBodyType, SelectExprType, SelectExprBodyType, LoopExprType, LoopExprBodyType, OptionalExprType, RepeatLoopBodyType, ForLoopBodyType, ReturnableExprType, AnonymousFuncExprType:
+	case DeclVarPatternType, VarPatternType, TuplePatternType, AssignSelectablePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, IfExprType, ConditionType, CaseConditionType, SwitchExprType, SelectExprType, LoopExprType, OptionalExprType, ReturnableExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
 		if ok {
 			return loc.End()
@@ -3849,6 +3873,11 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
+	case LoopExprBodyType:
+		loc, ok := interface{}(s.LoopExpr).(locator)
+		if ok {
+			return loc.End()
+		}
 	case ProperParameterDefType, ParameterDeclType, ParameterDefType:
 		loc, ok := interface{}(s.Parameter).(locator)
 		if ok {
@@ -3864,6 +3893,11 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
+	case SelectExprBodyType:
+		loc, ok := interface{}(s.SelectExpr).(locator)
+		if ok {
+			return loc.End()
+		}
 	case StatementType, BranchStatementType, JumpStatementType, AssignStatementType, ImportStatementType, OptionalStatementType:
 		loc, ok := interface{}(s.Statement).(locator)
 		if ok {
@@ -3871,6 +3905,16 @@ func (s *Symbol) End() Location {
 		}
 	case ProperStatementListType, StatementListType:
 		loc, ok := interface{}(s.StatementList).(locator)
+		if ok {
+			return loc.End()
+		}
+	case StatementsType, RepeatLoopBodyType, ForLoopBodyType:
+		loc, ok := interface{}(s.StatementsExpr).(locator)
+		if ok {
+			return loc.End()
+		}
+	case SwitchExprBodyType:
+		loc, ok := interface{}(s.SwitchExpr).(locator)
 		if ok {
 			return loc.End()
 		}
@@ -4044,7 +4088,7 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = DefinitionType
 		//line grammar.lr:79:4
-		symbol.Definition = args[0].Expression
+		symbol.Definition = args[0].StatementsExpr
 		err = nil
 	case _ReduceParseErrorExprToDefinition:
 		args := stack[len(stack)-1:]
@@ -5125,18 +5169,18 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = StatementsExprType
 		//line grammar.lr:550:4
-		symbol.Expression = args[0].Expression
+		symbol.Expression = args[0].StatementsExpr
 		err = nil
 	case _ReduceLabelledToStatementsExpr:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = StatementsExprType
-		symbol.Expression, err = reducer.LabelledToStatementsExpr(args[0].Value, args[1].Expression)
+		symbol.Expression, err = reducer.LabelledToStatementsExpr(args[0].Value, args[1].StatementsExpr)
 	case _ReduceToStatements:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = StatementsType
-		symbol.Expression, err = reducer.ToStatements(args[0].Value, args[1].StatementList, args[2].Value)
+		symbol.StatementsExpr, err = reducer.ToStatements(args[0].Value, args[1].StatementList, args[2].Value)
 	case _ReduceAddImplicitToProperStatementList:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -5193,7 +5237,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = IfElseExprType
-		symbol.IfExpr, err = reducer.ElseToIfElseExpr(args[0].IfExpr, args[1].Value, args[2].Expression)
+		symbol.IfExpr, err = reducer.ElseToIfElseExpr(args[0].IfExpr, args[1].Value, args[2].StatementsExpr)
 	case _ReduceIfOnlyExprToIfElifExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -5205,12 +5249,12 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-5:]
 		stack = stack[:len(stack)-5]
 		symbol.SymbolId_ = IfElifExprType
-		symbol.IfExpr, err = reducer.ElifToIfElifExpr(args[0].IfExpr, args[1].Value, args[2].Value, args[3].Expression, args[4].Expression)
+		symbol.IfExpr, err = reducer.ElifToIfElifExpr(args[0].IfExpr, args[1].Value, args[2].Value, args[3].Expression, args[4].StatementsExpr)
 	case _ReduceToIfOnlyExpr:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = IfOnlyExprType
-		symbol.IfExpr, err = reducer.ToIfOnlyExpr(args[0].Value, args[1].Expression, args[2].Expression)
+		symbol.IfExpr, err = reducer.ToIfOnlyExpr(args[0].Value, args[1].Expression, args[2].StatementsExpr)
 	case _ReduceExprToCondition:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -5235,72 +5279,72 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SwitchExprType
 		//line grammar.lr:623:4
-		symbol.Expression = args[0].Expression
+		symbol.Expression = args[0].SwitchExpr
 		err = nil
 	case _ReduceLabelledToSwitchExpr:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = SwitchExprType
-		symbol.Expression, err = reducer.LabelledToSwitchExpr(args[0].Value, args[1].Expression)
+		symbol.Expression, err = reducer.LabelledToSwitchExpr(args[0].Value, args[1].SwitchExpr)
 	case _ReduceToSwitchExprBody:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = SwitchExprBodyType
-		symbol.Expression, err = reducer.ToSwitchExprBody(args[0].Value, args[1].Expression, args[2].Expression)
+		symbol.SwitchExpr, err = reducer.ToSwitchExprBody(args[0].Value, args[1].Expression, args[2].StatementsExpr)
 	case _ReduceSelectExprBodyToSelectExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SelectExprType
 		//line grammar.lr:629:4
-		symbol.Expression = args[0].Expression
+		symbol.Expression = args[0].SelectExpr
 		err = nil
 	case _ReduceLabelledToSelectExpr:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = SelectExprType
-		symbol.Expression, err = reducer.LabelledToSelectExpr(args[0].Value, args[1].Expression)
+		symbol.Expression, err = reducer.LabelledToSelectExpr(args[0].Value, args[1].SelectExpr)
 	case _ReduceToSelectExprBody:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = SelectExprBodyType
-		symbol.Expression, err = reducer.ToSelectExprBody(args[0].Value, args[1].Expression)
+		symbol.SelectExpr, err = reducer.ToSelectExprBody(args[0].Value, args[1].StatementsExpr)
 	case _ReduceLoopExprBodyToLoopExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = LoopExprType
 		//line grammar.lr:637:4
-		symbol.Expression = args[0].Expression
+		symbol.Expression = args[0].LoopExpr
 		err = nil
 	case _ReduceLabelledToLoopExpr:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = LoopExprType
-		symbol.Expression, err = reducer.LabelledToLoopExpr(args[0].Value, args[1].Expression)
+		symbol.Expression, err = reducer.LabelledToLoopExpr(args[0].Value, args[1].LoopExpr)
 	case _ReduceInfiniteToLoopExprBody:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = LoopExprBodyType
-		symbol.Expression, err = reducer.InfiniteToLoopExprBody(args[0].Expression)
+		symbol.LoopExpr, err = reducer.InfiniteToLoopExprBody(args[0].StatementsExpr)
 	case _ReduceDoWhileToLoopExprBody:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = LoopExprBodyType
-		symbol.Expression, err = reducer.DoWhileToLoopExprBody(args[0].Expression, args[1].Value, args[2].Expression)
+		symbol.LoopExpr, err = reducer.DoWhileToLoopExprBody(args[0].StatementsExpr, args[1].Value, args[2].Expression)
 	case _ReduceWhileToLoopExprBody:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = LoopExprBodyType
-		symbol.Expression, err = reducer.WhileToLoopExprBody(args[0].Value, args[1].Expression, args[2].Expression)
+		symbol.LoopExpr, err = reducer.WhileToLoopExprBody(args[0].Value, args[1].Expression, args[2].StatementsExpr)
 	case _ReduceIteratorToLoopExprBody:
 		args := stack[len(stack)-5:]
 		stack = stack[:len(stack)-5]
 		symbol.SymbolId_ = LoopExprBodyType
-		symbol.Expression, err = reducer.IteratorToLoopExprBody(args[0].Value, args[1].Expression, args[2].Value, args[3].Expression, args[4].Expression)
+		symbol.LoopExpr, err = reducer.IteratorToLoopExprBody(args[0].Value, args[1].Expression, args[2].Value, args[3].Expression, args[4].StatementsExpr)
 	case _ReduceForToLoopExprBody:
 		args := stack[len(stack)-7:]
 		stack = stack[:len(stack)-7]
 		symbol.SymbolId_ = LoopExprBodyType
-		symbol.Expression, err = reducer.ForToLoopExprBody(args[0].Value, args[1].Statement, args[2].Value, args[3].Expression, args[4].Value, args[5].Statement, args[6].Expression)
+		symbol.LoopExpr, err = reducer.ForToLoopExprBody(args[0].Value, args[1].Statement, args[2].Value, args[3].Expression, args[4].Value, args[5].Statement, args[6].StatementsExpr)
 	case _ReduceStatementToOptionalStatement:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -5325,12 +5369,12 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = RepeatLoopBodyType
-		symbol.Expression, err = reducer.ToRepeatLoopBody(args[0].Value, args[1].Expression)
+		symbol.StatementsExpr, err = reducer.ToRepeatLoopBody(args[0].Value, args[1].StatementsExpr)
 	case _ReduceToForLoopBody:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ForLoopBodyType
-		symbol.Expression, err = reducer.ToForLoopBody(args[0].Value, args[1].Expression)
+		symbol.StatementsExpr, err = reducer.ToForLoopBody(args[0].Value, args[1].StatementsExpr)
 	case _ReduceExprToReturnableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -5992,22 +6036,22 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-6:]
 		stack = stack[:len(stack)-6]
 		symbol.SymbolId_ = NamedFuncDefType
-		symbol.Definition, err = reducer.FuncDefToNamedFuncDef(args[0].Value, args[1].Value, args[2].GenericParameterList, args[3].Parameters, args[4].TypeExpression, args[5].Expression)
+		symbol.Definition, err = reducer.FuncDefToNamedFuncDef(args[0].Value, args[1].Value, args[2].GenericParameterList, args[3].Parameters, args[4].TypeExpression, args[5].StatementsExpr)
 	case _ReduceMethodDefToNamedFuncDef:
 		args := stack[len(stack)-8:]
 		stack = stack[:len(stack)-8]
 		symbol.SymbolId_ = NamedFuncDefType
-		symbol.Definition, err = reducer.MethodDefToNamedFuncDef(args[0].Value, args[1].Value, args[2].Parameter, args[3].Value, args[4].Value, args[5].Parameters, args[6].TypeExpression, args[7].Expression)
+		symbol.Definition, err = reducer.MethodDefToNamedFuncDef(args[0].Value, args[1].Value, args[2].Parameter, args[3].Value, args[4].Value, args[5].Parameters, args[6].TypeExpression, args[7].StatementsExpr)
 	case _ReduceToAnonymousFuncExpr:
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = AnonymousFuncExprType
-		symbol.Expression, err = reducer.ToAnonymousFuncExpr(args[0].Value, args[1].Parameters, args[2].TypeExpression, args[3].Expression)
+		symbol.Expression, err = reducer.ToAnonymousFuncExpr(args[0].Value, args[1].Parameters, args[2].TypeExpression, args[3].StatementsExpr)
 	case _ReduceToPackageDef:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = PackageDefType
-		symbol.Definition, err = reducer.ToPackageDef(args[0].Value, args[1].Expression)
+		symbol.Definition, err = reducer.ToPackageDef(args[0].Value, args[1].StatementsExpr)
 	default:
 		panic("Unknown reduce type: " + act.ReduceType.String())
 	}
