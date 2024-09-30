@@ -925,8 +925,10 @@ func (reducer *Reducer) groupBranches(
 				current.Branch.EndPos = stmt.End()
 				current.EndPos = stmt.End()
 			} else {
-				// This is a parse error.  The error is detected in post analysis
-				newStatements = append(newStatements, stmt)
+				reducer.Emit(
+					"%s: unexpected statement. "+
+						"expected case or default branch statement",
+					stmt.Loc())
 			}
 			continue
 		}

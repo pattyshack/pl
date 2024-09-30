@@ -108,29 +108,13 @@ func (detector *unexpectedStatementsDetector) checkSwitchSelectExpr(
 	detector.processed[stmts] = struct{}{}
 
 	for _, node := range stmts.Statements {
-		invalidStmtType := ""
-		switch stmt := node.(type) {
-		case *ast.ParseErrorExpr: // ok
-		case *ast.UnsafeStmt: // ok
-		case *ast.ConditionBranchStmt:
-			detector.checkStmtsExpr(stmt.Branch, true)
-			detector.processed[stmt.Branch] = struct{}{}
-		case *ast.ImportStmt:
-			invalidStmtType = "import statement"
-		case *ast.JumpStmt:
-			invalidStmtType = "jump statement"
-		case ast.Expression:
-			invalidStmtType = "expression statement"
-		default:
-			invalidStmtType = "statement type"
+		stmt, ok := node.(*ast.ConditionBranchStmt)
+		if !ok {
+			panic("should never happen")
 		}
 
-		if invalidStmtType != "" {
-			detector.Emit(
-				"%s: unexpected %s. expected case or default branch statement",
-				node.Loc(),
-				invalidStmtType)
-		}
+		detector.checkStmtsExpr(stmt.Branch, true)
+		detector.processed[stmt.Branch] = struct{}{}
 	}
 }
 
