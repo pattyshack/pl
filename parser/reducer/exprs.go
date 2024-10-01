@@ -390,8 +390,8 @@ func (reducer *Reducer) ToAssignSelectablePattern(
 		expr = &ast.ImplicitStructExpr{
 			StartEndPos:             exprList.StartEnd(),
 			LeadingTrailingComments: exprList.TakeComments(),
+			Kind:                    ast.ImproperImplicitStruct,
 			Arguments:               args,
-			IsImproper:              true,
 		}
 	}
 
@@ -416,6 +416,7 @@ func (reducer *Reducer) toImplicitStructExpr(
 	return &ast.ImplicitStructExpr{
 		StartEndPos:             args.StartEndPos,
 		LeadingTrailingComments: args.TakeComments(),
+		Kind:                    ast.ProperImplicitStruct,
 		Arguments:               args.Elements,
 	}
 }
@@ -445,8 +446,8 @@ func (reducer *Reducer) PairToImproperExprStruct(
 
 	expr := &ast.ImplicitStructExpr{
 		StartEndPos: ast.NewStartEndPos(expr1.Loc(), expr2.End()),
+		Kind:        ast.ImproperImplicitStruct,
 		Arguments:   list,
-		IsImproper:  true,
 	}
 
 	return expr, nil
@@ -486,26 +487,27 @@ func (reducer *Reducer) ToTuplePattern(
 func (Reducer) UnitUnitPairToColonExpr(
 	colon *lr.TokenValue,
 ) (
-	*ast.ColonExpr,
+	*ast.ImplicitStructExpr,
 	error,
 ) {
-	args := []*ast.Argument{
-		&ast.Argument{
-			StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
-			Kind:        ast.IsImplicitUnitArgument,
+	args := ast.ReduceAdd(
+		[]*ast.Argument{
+			ast.NewPositionalArgument(
+				&ast.ImplicitStructExpr{
+					StartEndPos: colon.StartEnd(),
+					Kind:        ast.ImproperImplicitStruct,
+				}),
 		},
-	}
-
-	args = ast.ReduceAdd(
-		args,
 		colon,
-		&ast.Argument{
-			StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
-			Kind:        ast.IsImplicitUnitArgument,
-		})
+		ast.NewPositionalArgument(
+			&ast.ImplicitStructExpr{
+				StartEndPos: colon.StartEnd(),
+				Kind:        ast.ImproperImplicitStruct,
+			}))
 
-	return &ast.ColonExpr{
+	return &ast.ImplicitStructExpr{
 		StartEndPos: colon.StartEnd(),
+		Kind:        ast.ColonImplicitStruct,
 		Arguments:   args,
 	}, nil
 }
@@ -514,28 +516,21 @@ func (Reducer) ExprUnitPairToColonExpr(
 	leftExpr ast.Expression,
 	colon *lr.TokenValue,
 ) (
-	*ast.ColonExpr,
+	*ast.ImplicitStructExpr,
 	error,
 ) {
-	leftArg := &ast.Argument{
-		StartEndPos: ast.NewStartEndPos(leftExpr.Loc(), leftExpr.End()),
-		Kind:        ast.PositionalArgument,
-		Expr:        leftExpr,
-	}
-	leftArg.LeadingTrailingComments = leftExpr.TakeComments()
-
-	args := []*ast.Argument{leftArg}
-
-	args = ast.ReduceAdd(
-		args,
+	args := ast.ReduceAdd(
+		[]*ast.Argument{ast.NewPositionalArgument(leftExpr)},
 		colon,
-		&ast.Argument{
-			StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
-			Kind:        ast.IsImplicitUnitArgument,
-		})
+		ast.NewPositionalArgument(
+			&ast.ImplicitStructExpr{
+				StartEndPos: colon.StartEnd(),
+				Kind:        ast.ImproperImplicitStruct,
+			}))
 
-	return &ast.ColonExpr{
+	return &ast.ImplicitStructExpr{
 		StartEndPos: ast.NewStartEndPos(leftExpr.Loc(), colon.End()),
+		Kind:        ast.ColonImplicitStruct,
 		Arguments:   args,
 	}, nil
 }
@@ -544,27 +539,23 @@ func (reducer *Reducer) UnitExprPairToColonExpr(
 	colon *lr.TokenValue,
 	rightExpr ast.Expression,
 ) (
-	*ast.ColonExpr,
+	*ast.ImplicitStructExpr,
 	error,
 ) {
-	args := []*ast.Argument{
-		&ast.Argument{
-			StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
-			Kind:        ast.IsImplicitUnitArgument,
+	args := ast.ReduceAdd(
+		[]*ast.Argument{
+			ast.NewPositionalArgument(
+				&ast.ImplicitStructExpr{
+					StartEndPos: colon.StartEnd(),
+					Kind:        ast.ImproperImplicitStruct,
+				}),
 		},
-	}
-
-	args = ast.ReduceAdd(
-		args,
 		colon,
-		&ast.Argument{
-			StartEndPos: ast.NewStartEndPos(rightExpr.Loc(), rightExpr.End()),
-			Kind:        ast.PositionalArgument,
-			Expr:        rightExpr,
-		})
+		ast.NewPositionalArgument(rightExpr))
 
-	return &ast.ColonExpr{
+	return &ast.ImplicitStructExpr{
 		StartEndPos: ast.NewStartEndPos(colon.Loc(), rightExpr.End()),
+		Kind:        ast.ColonImplicitStruct,
 		Arguments:   args,
 	}, nil
 }
@@ -574,68 +565,52 @@ func (reducer *Reducer) ExprExprPairToColonExpr(
 	colon *lr.TokenValue,
 	rightExpr ast.Expression,
 ) (
-	*ast.ColonExpr,
+	*ast.ImplicitStructExpr,
 	error,
 ) {
-	leftArg := &ast.Argument{
-		StartEndPos: ast.NewStartEndPos(leftExpr.Loc(), leftExpr.End()),
-		Kind:        ast.PositionalArgument,
-		Expr:        leftExpr,
-	}
-	leftArg.LeadingComment = leftExpr.TakeLeading()
-	leftArg.TrailingComment = leftExpr.TakeTrailing()
+	args := ast.ReduceAdd(
+		[]*ast.Argument{ast.NewPositionalArgument(leftExpr)},
+		colon,
+		ast.NewPositionalArgument(rightExpr))
 
-	rightArg := &ast.Argument{
-		StartEndPos: ast.NewStartEndPos(rightExpr.Loc(), rightExpr.End()),
-		Kind:        ast.PositionalArgument,
-		Expr:        rightExpr,
-	}
-	rightArg.LeadingComment = rightExpr.TakeLeading()
-	rightArg.TrailingComment = rightExpr.TakeTrailing()
-
-	args := []*ast.Argument{leftArg}
-	args = ast.ReduceAdd(args, colon, rightArg)
-
-	return &ast.ColonExpr{
+	return &ast.ImplicitStructExpr{
 		StartEndPos: ast.NewStartEndPos(leftExpr.Loc(), rightExpr.End()),
+		Kind:        ast.ColonImplicitStruct,
 		Arguments:   args,
 	}, nil
 }
 
 func (reducer *Reducer) ColonExprUnitTupleToColonExpr(
-	colonExpr *ast.ColonExpr,
+	colonExpr *ast.ImplicitStructExpr,
 	colon *lr.TokenValue,
 ) (
-	*ast.ColonExpr,
+	*ast.ImplicitStructExpr,
 	error,
 ) {
-	arg := &ast.Argument{
-		StartEndPos: ast.NewStartEndPos(colon.Loc(), colon.End()),
-		Kind:        ast.IsImplicitUnitArgument,
-	}
-
-	colonExpr.Arguments = ast.ReduceAdd(colonExpr.Arguments, colon, arg)
+	colonExpr.Arguments = ast.ReduceAdd(
+		colonExpr.Arguments,
+		colon,
+		ast.NewPositionalArgument(
+			&ast.ImplicitStructExpr{
+				StartEndPos: colon.StartEnd(),
+				Kind:        ast.ImproperImplicitStruct,
+			}))
 	colonExpr.EndPos = colon.End()
 	return colonExpr, nil
 }
 
 func (reducer *Reducer) ColonExprExprTupleToColonExpr(
-	colonExpr *ast.ColonExpr,
+	colonExpr *ast.ImplicitStructExpr,
 	colon *lr.TokenValue,
 	expr ast.Expression,
 ) (
-	*ast.ColonExpr,
+	*ast.ImplicitStructExpr,
 	error,
 ) {
-	arg := &ast.Argument{
-		StartEndPos: ast.NewStartEndPos(expr.Loc(), expr.End()),
-		Kind:        ast.PositionalArgument,
-		Expr:        expr,
-	}
-	arg.LeadingComment = expr.TakeLeading()
-	arg.TrailingComment = expr.TakeTrailing()
-
-	colonExpr.Arguments = ast.ReduceAdd(colonExpr.Arguments, colon, arg)
+	colonExpr.Arguments = ast.ReduceAdd(
+		colonExpr.Arguments,
+		colon,
+		ast.NewPositionalArgument(expr))
 	colonExpr.EndPos = expr.End()
 	return colonExpr, nil
 }

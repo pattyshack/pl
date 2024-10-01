@@ -380,21 +380,12 @@ func (Reducer) PositionalToArgument(
 }
 
 func (Reducer) ColonExprToArgument(
-	expr *ast.ColonExpr,
+	expr *ast.ImplicitStructExpr,
 ) (
 	*ast.Argument,
 	error,
 ) {
-	return &ast.Argument{
-		StartEndPos: ast.NewStartEndPos(expr.Loc(), expr.End()),
-		LeadingTrailingComments: ast.LeadingTrailingComments{
-			LeadingComment:  expr.TakeLeading(),
-			TrailingComment: expr.TakeTrailing(),
-		},
-		Kind:        ast.ColonExprArgument,
-		Expr:        expr,
-		HasEllipsis: false,
-	}, nil
+	return ast.NewPositionalArgument(expr), nil
 }
 
 func (Reducer) NamedAssignmentToArgument(

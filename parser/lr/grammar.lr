@@ -344,7 +344,7 @@ argument<Argument> ->
   skip_pattern: ELLIPSIS
 
 // An (n >= 2)-tuple expression usable only as an argument
-colon_expr<ColonExpr> ->
+colon_expr<ImplicitStructExpr> ->
   unit_unit_pair: COLON |
   expr_unit_pair: expr COLON |
   unit_expr_pair: COLON expr |
@@ -665,7 +665,7 @@ returnable_expr<Expression> ->
   = improper_expr_struct
 
 // improper in the sense that the expression list is not bounded by '(' and ')'
-improper_expr_struct<ImplicitStruct> ->
+improper_expr_struct<ImplicitStructExpr> ->
   pair: expr COMMA expr |
   add: improper_expr_struct COMMA expr
 
@@ -971,7 +971,7 @@ go:
     Expression: "github.com/pattyshack/pl/ast.Expression"
     ExpressionList: "*github.com/pattyshack/pl/ast.ExpressionList"
     IfExpr: "*github.com/pattyshack/pl/ast.IfExpr"
-    ColonExpr: "*github.com/pattyshack/pl/ast.ColonExpr"
+    ImplicitStructExpr: "*github.com/pattyshack/pl/ast.ImplicitStructExpr"
     StatementsExpr: "*github.com/pattyshack/pl/ast.StatementsExpr"
     LoopExpr: "*github.com/pattyshack/pl/ast.LoopExpr"
     SelectExpr: "*github.com/pattyshack/pl/ast.SelectExpr"
@@ -993,7 +993,6 @@ go:
     FieldDef: "*github.com/pattyshack/pl/ast.FieldDef"
     ImportClause: "*github.com/pattyshack/pl/ast.ImportClause"
     ImportClauseList: "*github.com/pattyshack/pl/ast.ImportClauseList"
-    ImplicitStruct: "*github.com/pattyshack/pl/ast.ImplicitStructExpr"
     UnsafeStmt: "*github.com/pattyshack/pl/ast.UnsafeStmt"
     CommentGroups: "CommentGroupsTok"
   generate_end_pos: True

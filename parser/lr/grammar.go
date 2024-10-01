@@ -390,7 +390,7 @@ type ArgumentReducer interface {
 	PositionalToArgument(Expr_ ast.Expression) (*ast.Argument, error)
 
 	// 336:2: argument -> colon_expr: ...
-	ColonExprToArgument(ColonExpr_ *ast.ColonExpr) (*ast.Argument, error)
+	ColonExprToArgument(ColonExpr_ *ast.ImplicitStructExpr) (*ast.Argument, error)
 
 	// 337:2: argument -> named_assignment: ...
 	NamedAssignmentToArgument(Identifier_ *TokenValue, Assign_ *TokenValue, Expr_ ast.Expression) (*ast.Argument, error)
@@ -404,22 +404,22 @@ type ArgumentReducer interface {
 
 type ColonExprReducer interface {
 	// 348:2: colon_expr -> unit_unit_pair: ...
-	UnitUnitPairToColonExpr(Colon_ *TokenValue) (*ast.ColonExpr, error)
+	UnitUnitPairToColonExpr(Colon_ *TokenValue) (*ast.ImplicitStructExpr, error)
 
 	// 349:2: colon_expr -> expr_unit_pair: ...
-	ExprUnitPairToColonExpr(Expr_ ast.Expression, Colon_ *TokenValue) (*ast.ColonExpr, error)
+	ExprUnitPairToColonExpr(Expr_ ast.Expression, Colon_ *TokenValue) (*ast.ImplicitStructExpr, error)
 
 	// 350:2: colon_expr -> unit_expr_pair: ...
-	UnitExprPairToColonExpr(Colon_ *TokenValue, Expr_ ast.Expression) (*ast.ColonExpr, error)
+	UnitExprPairToColonExpr(Colon_ *TokenValue, Expr_ ast.Expression) (*ast.ImplicitStructExpr, error)
 
 	// 351:2: colon_expr -> expr_expr_pair: ...
-	ExprExprPairToColonExpr(Expr_ ast.Expression, Colon_ *TokenValue, Expr_2 ast.Expression) (*ast.ColonExpr, error)
+	ExprExprPairToColonExpr(Expr_ ast.Expression, Colon_ *TokenValue, Expr_2 ast.Expression) (*ast.ImplicitStructExpr, error)
 
 	// 352:2: colon_expr -> colon_expr_unit_tuple: ...
-	ColonExprUnitTupleToColonExpr(ColonExpr_ *ast.ColonExpr, Colon_ *TokenValue) (*ast.ColonExpr, error)
+	ColonExprUnitTupleToColonExpr(ColonExpr_ *ast.ImplicitStructExpr, Colon_ *TokenValue) (*ast.ImplicitStructExpr, error)
 
 	// 353:2: colon_expr -> colon_expr_expr_tuple: ...
-	ColonExprExprTupleToColonExpr(ColonExpr_ *ast.ColonExpr, Colon_ *TokenValue, Expr_ ast.Expression) (*ast.ColonExpr, error)
+	ColonExprExprTupleToColonExpr(ColonExpr_ *ast.ImplicitStructExpr, Colon_ *TokenValue, Expr_ ast.Expression) (*ast.ImplicitStructExpr, error)
 }
 
 type PostfixUnaryExprReducer interface {
@@ -3526,7 +3526,6 @@ type Symbol struct {
 
 	Argument             *ast.Argument
 	ArgumentList         *ast.ArgumentList
-	ColonExpr            *ast.ColonExpr
 	CommentGroups        CommentGroupsTok
 	Count                TokenCount
 	Definition           ast.Definition
@@ -3537,7 +3536,7 @@ type Symbol struct {
 	GenericParameter     *ast.GenericParameter
 	GenericParameterList *ast.GenericParameterList
 	IfExpr               *ast.IfExpr
-	ImplicitStruct       *ast.ImplicitStructExpr
+	ImplicitStructExpr   *ast.ImplicitStructExpr
 	ImportClause         *ast.ImportClause
 	ImportClauseList     *ast.ImportClauseList
 	LoopExpr             *ast.LoopExpr
@@ -3641,11 +3640,6 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case ColonExprType:
-		loc, ok := interface{}(s.ColonExpr).(locator)
-		if ok {
-			return loc.Loc()
-		}
 	case CommentGroupsToken:
 		loc, ok := interface{}(s.CommentGroups).(locator)
 		if ok {
@@ -3696,8 +3690,8 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case ImproperExprStructType:
-		loc, ok := interface{}(s.ImplicitStruct).(locator)
+	case ColonExprType, ImproperExprStructType:
+		loc, ok := interface{}(s.ImplicitStructExpr).(locator)
 		if ok {
 			return loc.Loc()
 		}
@@ -3803,11 +3797,6 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case ColonExprType:
-		loc, ok := interface{}(s.ColonExpr).(locator)
-		if ok {
-			return loc.End()
-		}
 	case CommentGroupsToken:
 		loc, ok := interface{}(s.CommentGroups).(locator)
 		if ok {
@@ -3858,8 +3847,8 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case ImproperExprStructType:
-		loc, ok := interface{}(s.ImplicitStruct).(locator)
+	case ColonExprType, ImproperExprStructType:
+		loc, ok := interface{}(s.ImplicitStructExpr).(locator)
 		if ok {
 			return loc.End()
 		}
@@ -4613,7 +4602,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ArgumentType
-		symbol.Argument, err = reducer.ColonExprToArgument(args[0].ColonExpr)
+		symbol.Argument, err = reducer.ColonExprToArgument(args[0].ImplicitStructExpr)
 	case _ReduceNamedAssignmentToArgument:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -4633,32 +4622,32 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ColonExprType
-		symbol.ColonExpr, err = reducer.UnitUnitPairToColonExpr(args[0].Value)
+		symbol.ImplicitStructExpr, err = reducer.UnitUnitPairToColonExpr(args[0].Value)
 	case _ReduceExprUnitPairToColonExpr:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ColonExprType
-		symbol.ColonExpr, err = reducer.ExprUnitPairToColonExpr(args[0].Expression, args[1].Value)
+		symbol.ImplicitStructExpr, err = reducer.ExprUnitPairToColonExpr(args[0].Expression, args[1].Value)
 	case _ReduceUnitExprPairToColonExpr:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ColonExprType
-		symbol.ColonExpr, err = reducer.UnitExprPairToColonExpr(args[0].Value, args[1].Expression)
+		symbol.ImplicitStructExpr, err = reducer.UnitExprPairToColonExpr(args[0].Value, args[1].Expression)
 	case _ReduceExprExprPairToColonExpr:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ColonExprType
-		symbol.ColonExpr, err = reducer.ExprExprPairToColonExpr(args[0].Expression, args[1].Value, args[2].Expression)
+		symbol.ImplicitStructExpr, err = reducer.ExprExprPairToColonExpr(args[0].Expression, args[1].Value, args[2].Expression)
 	case _ReduceColonExprUnitTupleToColonExpr:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = ColonExprType
-		symbol.ColonExpr, err = reducer.ColonExprUnitTupleToColonExpr(args[0].ColonExpr, args[1].Value)
+		symbol.ImplicitStructExpr, err = reducer.ColonExprUnitTupleToColonExpr(args[0].ImplicitStructExpr, args[1].Value)
 	case _ReduceColonExprExprTupleToColonExpr:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ColonExprType
-		symbol.ColonExpr, err = reducer.ColonExprExprTupleToColonExpr(args[0].ColonExpr, args[1].Value, args[2].Expression)
+		symbol.ImplicitStructExpr, err = reducer.ColonExprExprTupleToColonExpr(args[0].ImplicitStructExpr, args[1].Value, args[2].Expression)
 	case _ReduceAccessibleExprToPostfixableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -5387,18 +5376,18 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnableExprType
 		//line grammar.lr:665:4
-		symbol.Expression = args[0].ImplicitStruct
+		symbol.Expression = args[0].ImplicitStructExpr
 		err = nil
 	case _ReducePairToImproperExprStruct:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ImproperExprStructType
-		symbol.ImplicitStruct, err = reducer.PairToImproperExprStruct(args[0].Expression, args[1].Value, args[2].Expression)
+		symbol.ImplicitStructExpr, err = reducer.PairToImproperExprStruct(args[0].Expression, args[1].Value, args[2].Expression)
 	case _ReduceAddToImproperExprStruct:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = ImproperExprStructType
-		symbol.ImplicitStruct, err = reducer.AddToImproperExprStruct(args[0].ImplicitStruct, args[1].Value, args[2].Expression)
+		symbol.ImplicitStructExpr, err = reducer.AddToImproperExprStruct(args[0].ImplicitStructExpr, args[1].Value, args[2].Expression)
 	case _ReduceExplicitStructTypeExprToInitializableTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]

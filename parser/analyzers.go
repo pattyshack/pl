@@ -169,9 +169,7 @@ func (detector *unexpectedArgumentsDetector) Process(node ast.Node) {
 func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 	switch node := n.(type) {
 	case *ast.IndexExpr:
-		if node.Index.Kind != ast.PositionalArgument &&
-			node.Index.Kind != ast.ColonExprArgument {
-
+		if node.Index.Kind != ast.PositionalArgument {
 			detector.Emit(
 				"%s: unexpected %s argument",
 				node.Index.Loc(),

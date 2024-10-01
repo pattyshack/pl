@@ -52,11 +52,8 @@ const (
 	PositionalArgument       = ArgumentKind("positional")
 	NamedAssignmentArgument  = ArgumentKind("named-assigned")
 	VarargAssignmentArgument = ArgumentKind("vararg-assigned")
-	ColonExprArgument        = ArgumentKind("colon-expr")
 	// Only used by patterns
 	SkipPatternArgument = ArgumentKind("skip-pattern")
-	// Only used by ColonExpr
-	IsImplicitUnitArgument = ArgumentKind("implicit-unit")
 )
 
 type Argument struct {

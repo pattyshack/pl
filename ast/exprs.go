@@ -225,41 +225,30 @@ func (expr *BinaryExpr) Walk(visitor Visitor) {
 // ImplicitStructExpr
 //
 
+type ImplicitStructKind string
+
+const (
+	// Comma separated list of expressions left/right paren.
+	ProperImplicitStruct = ImplicitStructKind("proper")
+
+	// Comma separated list of expressions without left/right paren.
+	ImproperImplicitStruct = ImplicitStructKind("improper")
+
+	// Colon seperated list of (optional) expressions
+	ColonImplicitStruct = ImplicitStructKind("colon")
+)
+
 type ImplicitStructExpr struct {
 	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
-	// An improper struct is the a comma separated list of expressions without
-	// left/right paren.  e.g., return 1, 2, 3
-	IsImproper bool
+	Kind ImplicitStructKind
 
 	Arguments []*Argument
 }
 
 func (expr *ImplicitStructExpr) Walk(visitor Visitor) {
-	visitor.Enter(expr)
-	for _, arg := range expr.Arguments {
-		arg.Walk(visitor)
-	}
-	visitor.Exit(expr)
-}
-
-//
-// ColonExpr
-//
-
-type ColonExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Arguments []*Argument
-}
-
-var _ Expression = &ColonExpr{}
-
-func (expr *ColonExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	for _, arg := range expr.Arguments {
 		arg.Walk(visitor)

@@ -130,12 +130,10 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.push("Left=", "Right=")
 	case *ast.ImplicitStructExpr:
 		printer.list(
-			fmt.Sprintf("[ImplicitStructExpr: IsImproper=%v", node.IsImproper),
+			fmt.Sprintf("[ImplicitStructExpr: Kind=%v", node.Kind),
 			nil,
 			"Argument",
 			len(node.Arguments))
-	case *ast.ColonExpr:
-		printer.list("[ColonExpr:", nil, "Argument", len(node.Arguments))
 	case *ast.CallExpr:
 		argLabels := []string{"FuncExpr="}
 		if node.GenericArguments != nil {
@@ -379,8 +377,6 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.BinaryExpr:
 		printer.endNode()
 	case *ast.ImplicitStructExpr:
-		printer.endList(len(node.Arguments))
-	case *ast.ColonExpr:
 		printer.endList(len(node.Arguments))
 	case *ast.CallExpr:
 		printer.endNode()
