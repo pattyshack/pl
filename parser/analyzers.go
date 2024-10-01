@@ -168,13 +168,6 @@ func (detector *unexpectedArgumentsDetector) Process(node ast.Node) {
 
 func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 	switch node := n.(type) {
-	case *ast.IndexExpr:
-		if node.Index.Kind != ast.PositionalArgument {
-			detector.Emit(
-				"%s: unexpected %s argument",
-				node.Index.Loc(),
-				node.Index.Kind)
-		}
 	case *ast.CallExpr:
 		for _, arg := range node.Arguments {
 			if arg.Kind == ast.SkipPatternArgument {

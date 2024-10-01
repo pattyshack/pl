@@ -669,12 +669,30 @@ func (reducer *Reducer) ToCallExpr(
 func (reducer *Reducer) ToIndexExpr(
 	accessible ast.Expression,
 	lbracket *lr.TokenValue,
-	index *ast.Argument,
+	index ast.Expression,
 	rbracket *lr.TokenValue,
 ) (
 	ast.Expression,
 	error,
 ) {
+	args := []ast.Expression{}
+	implicitStruct, ok := index.(*ast.ImplicitStructExpr)
+	if ok && implicitStruct.Kind == ast.ColonImplicitStruct {
+		for _, arg := range implicitStruct.Arguments {
+			if arg.Kind != ast.PositionalArgument {
+				panic("Should never happen")
+			}
+
+			expr := arg.Expr
+			expr.PrependToLeading(arg.TakeLeading())
+			expr.AppendToTrailing(arg.TakeTrailing())
+
+			args = append(args, expr)
+		}
+	} else {
+		args = append(args, index)
+	}
+
 	accessible.AppendToTrailing(lbracket.TakeLeading())
 	index.PrependToLeading(lbracket.TakeTrailing())
 	index.AppendToTrailing(rbracket.TakeLeading())
@@ -682,7 +700,7 @@ func (reducer *Reducer) ToIndexExpr(
 	expr := &ast.IndexExpr{
 		StartEndPos: ast.NewStartEndPos(accessible.Loc(), rbracket.End()),
 		Accessible:  accessible,
-		Index:       index,
+		IndexArgs:   args,
 	}
 
 	expr.LeadingComment = accessible.TakeLeading()

@@ -355,604 +355,604 @@ type AccessExprReducer interface {
 
 type IndexExprReducer interface {
 	// 317:26: index_expr -> ...
-	ToIndexExpr(AccessibleExpr_ ast.Expression, Lbracket_ *TokenValue, Argument_ *ast.Argument, Rbracket_ *TokenValue) (ast.Expression, error)
+	ToIndexExpr(AccessibleExpr_ ast.Expression, Lbracket_ *TokenValue, Index_ ast.Expression, Rbracket_ *TokenValue) (ast.Expression, error)
 }
 
 type AsExprReducer interface {
-	// 320:23: as_expr -> ...
+	// 324:23: as_expr -> ...
 	ToAsExpr(AccessibleExpr_ ast.Expression, Dot_ *TokenValue, As_ *TokenValue, Lparen_ *TokenValue, TypeExpr_ ast.TypeExpression, Rparen_ *TokenValue) (ast.Expression, error)
 }
 
 type CallExprReducer interface {
-	// 323:2: call_expr -> ...
+	// 327:2: call_expr -> ...
 	ToCallExpr(AccessibleExpr_ ast.Expression, GenericArguments_ *ast.TypeExpressionList, Lparen_ *TokenValue, Arguments_ *ast.ArgumentList, Rparen_ *TokenValue) (ast.Expression, error)
 }
 
 type ProperArgumentsReducer interface {
-	// 326:2: proper_arguments -> add: ...
+	// 330:2: proper_arguments -> add: ...
 	AddToProperArguments(ProperArguments_ *ast.ArgumentList, Comma_ *TokenValue, Argument_ *ast.Argument) (*ast.ArgumentList, error)
 
-	// 327:2: proper_arguments -> argument: ...
+	// 331:2: proper_arguments -> argument: ...
 	ArgumentToProperArguments(Argument_ *ast.Argument) (*ast.ArgumentList, error)
 }
 
 type ArgumentsReducer interface {
 
-	// 331:2: arguments -> improper: ...
+	// 335:2: arguments -> improper: ...
 	ImproperToArguments(ProperArguments_ *ast.ArgumentList, Comma_ *TokenValue) (*ast.ArgumentList, error)
 
-	// 332:2: arguments -> nil: ...
+	// 336:2: arguments -> nil: ...
 	NilToArguments() (*ast.ArgumentList, error)
 }
 
 type ArgumentReducer interface {
-	// 335:2: argument -> positional: ...
+	// 339:2: argument -> positional: ...
 	PositionalToArgument(Expr_ ast.Expression) (*ast.Argument, error)
 
-	// 336:2: argument -> colon_expr: ...
+	// 340:2: argument -> colon_expr: ...
 	ColonExprToArgument(ColonExpr_ *ast.ImplicitStructExpr) (*ast.Argument, error)
 
-	// 337:2: argument -> named_assignment: ...
+	// 341:2: argument -> named_assignment: ...
 	NamedAssignmentToArgument(Identifier_ *TokenValue, Assign_ *TokenValue, Expr_ ast.Expression) (*ast.Argument, error)
 
-	// 341:2: argument -> vararg_assignment: ...
+	// 345:2: argument -> vararg_assignment: ...
 	VarargAssignmentToArgument(Expr_ ast.Expression, Ellipsis_ *TokenValue) (*ast.Argument, error)
 
-	// 344:2: argument -> skip_pattern: ...
+	// 348:2: argument -> skip_pattern: ...
 	SkipPatternToArgument(Ellipsis_ *TokenValue) (*ast.Argument, error)
 }
 
 type ColonExprReducer interface {
-	// 348:2: colon_expr -> unit_unit_pair: ...
+	// 352:2: colon_expr -> unit_unit_pair: ...
 	UnitUnitPairToColonExpr(Colon_ *TokenValue) (*ast.ImplicitStructExpr, error)
 
-	// 349:2: colon_expr -> expr_unit_pair: ...
+	// 353:2: colon_expr -> expr_unit_pair: ...
 	ExprUnitPairToColonExpr(Expr_ ast.Expression, Colon_ *TokenValue) (*ast.ImplicitStructExpr, error)
 
-	// 350:2: colon_expr -> unit_expr_pair: ...
+	// 354:2: colon_expr -> unit_expr_pair: ...
 	UnitExprPairToColonExpr(Colon_ *TokenValue, Expr_ ast.Expression) (*ast.ImplicitStructExpr, error)
 
-	// 351:2: colon_expr -> expr_expr_pair: ...
+	// 355:2: colon_expr -> expr_expr_pair: ...
 	ExprExprPairToColonExpr(Expr_ ast.Expression, Colon_ *TokenValue, Expr_2 ast.Expression) (*ast.ImplicitStructExpr, error)
 
-	// 352:2: colon_expr -> colon_expr_unit_tuple: ...
+	// 356:2: colon_expr -> colon_expr_unit_tuple: ...
 	ColonExprUnitTupleToColonExpr(ColonExpr_ *ast.ImplicitStructExpr, Colon_ *TokenValue) (*ast.ImplicitStructExpr, error)
 
-	// 353:2: colon_expr -> colon_expr_expr_tuple: ...
+	// 357:2: colon_expr -> colon_expr_expr_tuple: ...
 	ColonExprExprTupleToColonExpr(ColonExpr_ *ast.ImplicitStructExpr, Colon_ *TokenValue, Expr_ ast.Expression) (*ast.ImplicitStructExpr, error)
 }
 
 type PostfixUnaryExprReducer interface {
-	// 363:34: postfix_unary_expr -> ...
+	// 367:34: postfix_unary_expr -> ...
 	ToPostfixUnaryExpr(AccessibleExpr_ ast.Expression, PostfixUnaryOp_ *TokenValue) (ast.Expression, error)
 }
 
 type PrefixUnaryExprReducer interface {
-	// 382:33: prefix_unary_expr -> ...
+	// 386:33: prefix_unary_expr -> ...
 	ToPrefixUnaryExpr(PrefixUnaryOp_ *TokenValue, PrefixableExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryMulExprReducer interface {
-	// 432:31: binary_mul_expr -> ...
+	// 436:31: binary_mul_expr -> ...
 	ToBinaryMulExpr(MulExpr_ ast.Expression, MulOp_ *TokenValue, PrefixableExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryAddExprReducer interface {
-	// 450:31: binary_add_expr -> ...
+	// 454:31: binary_add_expr -> ...
 	ToBinaryAddExpr(AddExpr_ ast.Expression, AddOp_ *TokenValue, MulExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryCmpExprReducer interface {
-	// 466:31: binary_cmp_expr -> ...
+	// 470:31: binary_cmp_expr -> ...
 	ToBinaryCmpExpr(CmpExpr_ ast.Expression, CmpOp_ *TokenValue, AddExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryAndExprReducer interface {
-	// 484:31: binary_and_expr -> ...
+	// 488:31: binary_and_expr -> ...
 	ToBinaryAndExpr(AndExpr_ ast.Expression, And_ *TokenValue, CmpExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryOrExprReducer interface {
-	// 494:30: binary_or_expr -> ...
+	// 498:30: binary_or_expr -> ...
 	ToBinaryOrExpr(OrExpr_ ast.Expression, Or_ *TokenValue, AndExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type SendExprReducer interface {
-	// 505:25: send_expr -> ...
+	// 509:25: send_expr -> ...
 	ToSendExpr(SendRecvExpr_ ast.Expression, Arrow_ *TokenValue, OrExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type RecvExprReducer interface {
-	// 507:25: recv_expr -> ...
+	// 511:25: recv_expr -> ...
 	ToRecvExpr(Arrow_ *TokenValue, OrExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type BinaryAssignOpExprReducer interface {
-	// 520:2: binary_assign_op_expr -> ...
+	// 524:2: binary_assign_op_expr -> ...
 	ToBinaryAssignOpExpr(SendRecvExpr_ ast.Expression, BinaryAssignOp_ *TokenValue, SendRecvExpr_2 ast.Expression) (ast.Expression, error)
 }
 
 type StatementsExprReducer interface {
 
-	// 551:2: statements_expr -> labelled: ...
+	// 555:2: statements_expr -> labelled: ...
 	LabelledToStatementsExpr(LabelDecl_ *TokenValue, Statements_ *ast.StatementsExpr) (ast.Expression, error)
 }
 
 type StatementsReducer interface {
-	// 568:30: statements -> ...
+	// 572:30: statements -> ...
 	ToStatements(Lbrace_ *TokenValue, StatementList_ *ast.StatementList, Rbrace_ *TokenValue) (*ast.StatementsExpr, error)
 }
 
 type ProperStatementListReducer interface {
-	// 571:2: proper_statement_list -> add_implicit: ...
+	// 575:2: proper_statement_list -> add_implicit: ...
 	AddImplicitToProperStatementList(ProperStatementList_ *ast.StatementList, Newlines_ TokenCount, Statement_ ast.Statement) (*ast.StatementList, error)
 
-	// 572:2: proper_statement_list -> add_explicit: ...
+	// 576:2: proper_statement_list -> add_explicit: ...
 	AddExplicitToProperStatementList(ProperStatementList_ *ast.StatementList, Semicolon_ *TokenValue, Statement_ ast.Statement) (*ast.StatementList, error)
 
-	// 573:2: proper_statement_list -> statement: ...
+	// 577:2: proper_statement_list -> statement: ...
 	StatementToProperStatementList(Statement_ ast.Statement) (*ast.StatementList, error)
 }
 
 type StatementListReducer interface {
 
-	// 577:2: statement_list -> improper_implicit: ...
+	// 581:2: statement_list -> improper_implicit: ...
 	ImproperImplicitToStatementList(ProperStatementList_ *ast.StatementList, Newlines_ TokenCount) (*ast.StatementList, error)
 
-	// 578:2: statement_list -> improper_explicit: ...
+	// 582:2: statement_list -> improper_explicit: ...
 	ImproperExplicitToStatementList(ProperStatementList_ *ast.StatementList, Semicolon_ *TokenValue) (*ast.StatementList, error)
 
-	// 579:2: statement_list -> nil: ...
+	// 583:2: statement_list -> nil: ...
 	NilToStatementList() (*ast.StatementList, error)
 }
 
 type IfExprReducer interface {
-	// 585:2: if_expr -> unlabelled: ...
+	// 589:2: if_expr -> unlabelled: ...
 	UnlabelledToIfExpr(IfElseExpr_ *ast.IfExpr) (ast.Expression, error)
 
-	// 586:2: if_expr -> labelled: ...
+	// 590:2: if_expr -> labelled: ...
 	LabelledToIfExpr(LabelDecl_ *TokenValue, IfElseExpr_ *ast.IfExpr) (ast.Expression, error)
 }
 
 type IfElseExprReducer interface {
 
-	// 590:2: if_else_expr -> else: ...
+	// 594:2: if_else_expr -> else: ...
 	ElseToIfElseExpr(IfElifExpr_ *ast.IfExpr, Else_ *TokenValue, Statements_ *ast.StatementsExpr) (*ast.IfExpr, error)
 }
 
 type IfElifExprReducer interface {
 
-	// 594:2: if_elif_expr -> elif: ...
+	// 598:2: if_elif_expr -> elif: ...
 	ElifToIfElifExpr(IfElifExpr_ *ast.IfExpr, Else_ *TokenValue, If_ *TokenValue, Condition_ ast.Expression, Statements_ *ast.StatementsExpr) (*ast.IfExpr, error)
 }
 
 type IfOnlyExprReducer interface {
-	// 597:2: if_only_expr -> ...
+	// 601:2: if_only_expr -> ...
 	ToIfOnlyExpr(If_ *TokenValue, Condition_ ast.Expression, Statements_ *ast.StatementsExpr) (*ast.IfExpr, error)
 }
 
 type CasePatternExprReducer interface {
-	// 603:33: case_pattern_expr -> ...
+	// 607:33: case_pattern_expr -> ...
 	ToCasePatternExpr(Case_ *TokenValue, SwitchableCasePatterns_ *ast.ExpressionList, Assign_ *TokenValue, Expr_ ast.Expression) (ast.Expression, error)
 }
 
 type SwitchExprReducer interface {
 
-	// 624:2: switch_expr -> labelled: ...
+	// 628:2: switch_expr -> labelled: ...
 	LabelledToSwitchExpr(LabelDecl_ *TokenValue, SwitchExprBody_ *ast.SwitchExpr) (ast.Expression, error)
 }
 
 type SwitchExprBodyReducer interface {
-	// 626:32: switch_expr_body -> ...
+	// 630:32: switch_expr_body -> ...
 	ToSwitchExprBody(Switch_ *TokenValue, Expr_ ast.Expression, Statements_ *ast.StatementsExpr) (*ast.SwitchExpr, error)
 }
 
 type SelectExprReducer interface {
 
-	// 630:2: select_expr -> labelled: ...
+	// 634:2: select_expr -> labelled: ...
 	LabelledToSelectExpr(LabelDecl_ *TokenValue, SelectExprBody_ *ast.SelectExpr) (ast.Expression, error)
 }
 
 type SelectExprBodyReducer interface {
-	// 632:32: select_expr_body -> ...
+	// 636:32: select_expr_body -> ...
 	ToSelectExprBody(Select_ *TokenValue, Statements_ *ast.StatementsExpr) (*ast.SelectExpr, error)
 }
 
 type LoopExprReducer interface {
 
-	// 638:2: loop_expr -> labelled: ...
+	// 642:2: loop_expr -> labelled: ...
 	LabelledToLoopExpr(LabelDecl_ *TokenValue, LoopExprBody_ *ast.LoopExpr) (ast.Expression, error)
 }
 
 type LoopExprBodyReducer interface {
-	// 641:2: loop_expr_body -> infinite: ...
+	// 645:2: loop_expr_body -> infinite: ...
 	InfiniteToLoopExprBody(RepeatLoopBody_ *ast.StatementsExpr) (*ast.LoopExpr, error)
 
-	// 642:2: loop_expr_body -> do_while: ...
+	// 646:2: loop_expr_body -> do_while: ...
 	DoWhileToLoopExprBody(RepeatLoopBody_ *ast.StatementsExpr, For_ *TokenValue, Expr_ ast.Expression) (*ast.LoopExpr, error)
 
-	// 643:2: loop_expr_body -> while: ...
+	// 647:2: loop_expr_body -> while: ...
 	WhileToLoopExprBody(For_ *TokenValue, Expr_ ast.Expression, ForLoopBody_ *ast.StatementsExpr) (*ast.LoopExpr, error)
 
-	// 644:2: loop_expr_body -> iterator: ...
+	// 648:2: loop_expr_body -> iterator: ...
 	IteratorToLoopExprBody(For_ *TokenValue, ReturnableExpr_ ast.Expression, In_ *TokenValue, Expr_ ast.Expression, ForLoopBody_ *ast.StatementsExpr) (*ast.LoopExpr, error)
 
-	// 645:2: loop_expr_body -> for: ...
+	// 649:2: loop_expr_body -> for: ...
 	ForToLoopExprBody(For_ *TokenValue, OptionalStatement_ ast.Statement, Semicolon_ *TokenValue, OptionalExpr_ ast.Expression, Semicolon_2 *TokenValue, OptionalStatement_2 ast.Statement, ForLoopBody_ *ast.StatementsExpr) (*ast.LoopExpr, error)
 }
 
 type OptionalStatementReducer interface {
 
-	// 649:2: optional_statement -> nil: ...
+	// 653:2: optional_statement -> nil: ...
 	NilToOptionalStatement() (ast.Statement, error)
 }
 
 type OptionalExprReducer interface {
 
-	// 653:2: optional_expr -> nil: ...
+	// 657:2: optional_expr -> nil: ...
 	NilToOptionalExpr() (ast.Expression, error)
 }
 
 type RepeatLoopBodyReducer interface {
-	// 655:36: repeat_loop_body -> ...
+	// 659:36: repeat_loop_body -> ...
 	ToRepeatLoopBody(Repeat_ *TokenValue, Statements_ *ast.StatementsExpr) (*ast.StatementsExpr, error)
 }
 
 type ForLoopBodyReducer interface {
-	// 657:33: for_loop_body -> ...
+	// 661:33: for_loop_body -> ...
 	ToForLoopBody(Do_ *TokenValue, Statements_ *ast.StatementsExpr) (*ast.StatementsExpr, error)
 }
 
 type ImproperExprStructReducer interface {
-	// 669:2: improper_expr_struct -> pair: ...
+	// 673:2: improper_expr_struct -> pair: ...
 	PairToImproperExprStruct(Expr_ ast.Expression, Comma_ *TokenValue, Expr_2 ast.Expression) (*ast.ImplicitStructExpr, error)
 
-	// 670:2: improper_expr_struct -> add: ...
+	// 674:2: improper_expr_struct -> add: ...
 	AddToImproperExprStruct(ImproperExprStruct_ *ast.ImplicitStructExpr, Comma_ *TokenValue, Expr_ ast.Expression) (*ast.ImplicitStructExpr, error)
 }
 
 type SliceTypeExprReducer interface {
-	// 685:35: slice_type_expr -> ...
+	// 689:35: slice_type_expr -> ...
 	ToSliceTypeExpr(Lbracket_ *TokenValue, TypeExpr_ ast.TypeExpression, Rbracket_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ArrayTypeExprReducer interface {
-	// 688:2: array_type_expr -> ...
+	// 692:2: array_type_expr -> ...
 	ToArrayTypeExpr(Lbracket_ *TokenValue, TypeExpr_ ast.TypeExpression, Comma_ *TokenValue, IntegerLiteral_ *TokenValue, Rbracket_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type MapTypeExprReducer interface {
-	// 691:33: map_type_expr -> ...
+	// 695:33: map_type_expr -> ...
 	ToMapTypeExpr(Lbracket_ *TokenValue, TypeExpr_ ast.TypeExpression, Colon_ *TokenValue, TypeExpr_2 ast.TypeExpression, Rbracket_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type NamedTypeExprReducer interface {
-	// 704:2: named_type_expr -> local: ...
+	// 708:2: named_type_expr -> local: ...
 	LocalToNamedTypeExpr(Identifier_ *TokenValue, GenericArguments_ *ast.TypeExpressionList) (ast.TypeExpression, error)
 
-	// 705:2: named_type_expr -> external: ...
+	// 709:2: named_type_expr -> external: ...
 	ExternalToNamedTypeExpr(Identifier_ *TokenValue, Dot_ *TokenValue, Identifier_2 *TokenValue, GenericArguments_ *ast.TypeExpressionList) (ast.TypeExpression, error)
 }
 
 type InferredTypeExprReducer interface {
-	// 713:2: inferred_type_expr -> DOT: ...
+	// 717:2: inferred_type_expr -> DOT: ...
 	DotToInferredTypeExpr(Dot_ *TokenValue) (ast.TypeExpression, error)
 
-	// 714:2: inferred_type_expr -> UNDERSCORE: ...
+	// 718:2: inferred_type_expr -> UNDERSCORE: ...
 	UnderscoreToInferredTypeExpr(Underscore_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type PrefixUnaryTypeExprReducer interface {
-	// 724:2: prefix_unary_type_expr -> ...
+	// 728:2: prefix_unary_type_expr -> ...
 	ToPrefixUnaryTypeExpr(PrefixUnaryTypeOp_ *TokenValue, ReturnableTypeExpr_ ast.TypeExpression) (ast.TypeExpression, error)
 }
 
 type BinaryTypeExprReducer interface {
-	// 740:2: binary_type_expr -> ...
+	// 744:2: binary_type_expr -> ...
 	ToBinaryTypeExpr(TypeExpr_ ast.TypeExpression, BinaryTypeOp_ *TokenValue, ReturnableTypeExpr_ ast.TypeExpression) (ast.TypeExpression, error)
 }
 
 type TypeDefReducer interface {
-	// 748:2: type_def -> definition: ...
+	// 752:2: type_def -> definition: ...
 	DefinitionToTypeDef(Type_ *TokenValue, Identifier_ *TokenValue, GenericParameters_ *ast.GenericParameterList, TypeExpr_ ast.TypeExpression) (ast.Definition, error)
 
-	// 749:2: type_def -> constrained_def: ...
+	// 753:2: type_def -> constrained_def: ...
 	ConstrainedDefToTypeDef(Type_ *TokenValue, Identifier_ *TokenValue, GenericParameters_ *ast.GenericParameterList, TypeExpr_ ast.TypeExpression, Implements_ *TokenValue, TypeExpr_2 ast.TypeExpression) (ast.Definition, error)
 
-	// 750:2: type_def -> alias: ...
+	// 754:2: type_def -> alias: ...
 	AliasToTypeDef(Type_ *TokenValue, Identifier_ *TokenValue, Assign_ *TokenValue, TypeExpr_ ast.TypeExpression) (ast.Definition, error)
 }
 
 type GenericParameterReducer interface {
-	// 758:2: generic_parameter -> unconstrained: ...
+	// 762:2: generic_parameter -> unconstrained: ...
 	UnconstrainedToGenericParameter(Identifier_ *TokenValue) (*ast.GenericParameter, error)
 
-	// 759:2: generic_parameter -> constrained: ...
+	// 763:2: generic_parameter -> constrained: ...
 	ConstrainedToGenericParameter(Identifier_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.GenericParameter, error)
 }
 
 type GenericParametersReducer interface {
-	// 762:2: generic_parameters -> generic: ...
+	// 766:2: generic_parameters -> generic: ...
 	GenericToGenericParameters(DollarLbracket_ *TokenValue, GenericParameterList_ *ast.GenericParameterList, Rbracket_ *TokenValue) (*ast.GenericParameterList, error)
 
-	// 763:2: generic_parameters -> nil: ...
+	// 767:2: generic_parameters -> nil: ...
 	NilToGenericParameters() (*ast.GenericParameterList, error)
 }
 
 type ProperGenericParameterListReducer interface {
-	// 766:2: proper_generic_parameter_list -> add: ...
+	// 770:2: proper_generic_parameter_list -> add: ...
 	AddToProperGenericParameterList(ProperGenericParameterList_ *ast.GenericParameterList, Comma_ *TokenValue, GenericParameter_ *ast.GenericParameter) (*ast.GenericParameterList, error)
 
-	// 767:2: proper_generic_parameter_list -> generic_parameter: ...
+	// 771:2: proper_generic_parameter_list -> generic_parameter: ...
 	GenericParameterToProperGenericParameterList(GenericParameter_ *ast.GenericParameter) (*ast.GenericParameterList, error)
 }
 
 type GenericParameterListReducer interface {
 
-	// 771:2: generic_parameter_list -> improper: ...
+	// 775:2: generic_parameter_list -> improper: ...
 	ImproperToGenericParameterList(ProperGenericParameterList_ *ast.GenericParameterList, Comma_ *TokenValue) (*ast.GenericParameterList, error)
 
-	// 772:2: generic_parameter_list -> nil: ...
+	// 776:2: generic_parameter_list -> nil: ...
 	NilToGenericParameterList() (*ast.GenericParameterList, error)
 }
 
 type GenericArgumentsReducer interface {
-	// 775:2: generic_arguments -> binding: ...
+	// 779:2: generic_arguments -> binding: ...
 	BindingToGenericArguments(DollarLbracket_ *TokenValue, GenericArgumentList_ *ast.TypeExpressionList, Rbracket_ *TokenValue) (*ast.TypeExpressionList, error)
 
-	// 776:2: generic_arguments -> nil: ...
+	// 780:2: generic_arguments -> nil: ...
 	NilToGenericArguments() (*ast.TypeExpressionList, error)
 }
 
 type ProperGenericArgumentListReducer interface {
-	// 779:2: proper_generic_argument_list -> add: ...
+	// 783:2: proper_generic_argument_list -> add: ...
 	AddToProperGenericArgumentList(ProperGenericArgumentList_ *ast.TypeExpressionList, Comma_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.TypeExpressionList, error)
 
-	// 780:2: proper_generic_argument_list -> type_expr: ...
+	// 784:2: proper_generic_argument_list -> type_expr: ...
 	TypeExprToProperGenericArgumentList(TypeExpr_ ast.TypeExpression) (*ast.TypeExpressionList, error)
 }
 
 type GenericArgumentListReducer interface {
 
-	// 784:2: generic_argument_list -> improper: ...
+	// 788:2: generic_argument_list -> improper: ...
 	ImproperToGenericArgumentList(ProperGenericArgumentList_ *ast.TypeExpressionList, Comma_ *TokenValue) (*ast.TypeExpressionList, error)
 
-	// 785:2: generic_argument_list -> nil: ...
+	// 789:2: generic_argument_list -> nil: ...
 	NilToGenericArgumentList() (*ast.TypeExpressionList, error)
 }
 
 type FieldDefReducer interface {
-	// 792:2: field_def -> named: ...
+	// 796:2: field_def -> named: ...
 	NamedToFieldDef(Identifier_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.FieldDef, error)
 
-	// 793:2: field_def -> unnamed: ...
+	// 797:2: field_def -> unnamed: ...
 	UnnamedToFieldDef(TypeExpr_ ast.TypeExpression) (*ast.FieldDef, error)
 }
 
 type TypePropertyReducer interface {
 
-	// 804:2: type_property -> default_enum_field_def: ...
+	// 808:2: type_property -> default_enum_field_def: ...
 	DefaultEnumFieldDefToTypeProperty(Default_ *TokenValue, FieldDef_ *ast.FieldDef) (ast.TypeProperty, error)
 
-	// 805:2: type_property -> padding_field_def: ...
+	// 809:2: type_property -> padding_field_def: ...
 	PaddingFieldDefToTypeProperty(Underscore_ *TokenValue, TypeExpr_ ast.TypeExpression) (ast.TypeProperty, error)
 }
 
 type ProperImplicitTypePropertiesReducer interface {
-	// 810:2: proper_implicit_type_properties -> add: ...
+	// 814:2: proper_implicit_type_properties -> add: ...
 	AddToProperImplicitTypeProperties(ProperImplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 811:2: proper_implicit_type_properties -> type_property: ...
+	// 815:2: proper_implicit_type_properties -> type_property: ...
 	TypePropertyToProperImplicitTypeProperties(TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 }
 
 type ImplicitTypePropertiesReducer interface {
 
-	// 815:2: implicit_type_properties -> improper: ...
+	// 819:2: implicit_type_properties -> improper: ...
 	ImproperToImplicitTypeProperties(ProperImplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue) (*ast.TypePropertyList, error)
 
-	// 816:2: implicit_type_properties -> nil: ...
+	// 820:2: implicit_type_properties -> nil: ...
 	NilToImplicitTypeProperties() (*ast.TypePropertyList, error)
 }
 
 type ImplicitStructTypeExprReducer interface {
-	// 819:2: implicit_struct_type_expr -> ...
+	// 823:2: implicit_struct_type_expr -> ...
 	ToImplicitStructTypeExpr(Lparen_ *TokenValue, ImplicitTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ProperExplicitTypePropertiesReducer interface {
-	// 822:2: proper_explicit_type_properties -> add_implicit: ...
+	// 826:2: proper_explicit_type_properties -> add_implicit: ...
 	AddImplicitToProperExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 823:2: proper_explicit_type_properties -> add_explicit: ...
+	// 827:2: proper_explicit_type_properties -> add_explicit: ...
 	AddExplicitToProperExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 824:2: proper_explicit_type_properties -> type_property: ...
+	// 828:2: proper_explicit_type_properties -> type_property: ...
 	TypePropertyToProperExplicitTypeProperties(TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 }
 
 type ExplicitTypePropertiesReducer interface {
 
-	// 828:2: explicit_type_properties -> improper_implicit: ...
+	// 832:2: explicit_type_properties -> improper_implicit: ...
 	ImproperImplicitToExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount) (*ast.TypePropertyList, error)
 
-	// 829:2: explicit_type_properties -> improper_explicit: ...
+	// 833:2: explicit_type_properties -> improper_explicit: ...
 	ImproperExplicitToExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue) (*ast.TypePropertyList, error)
 
-	// 830:2: explicit_type_properties -> nil: ...
+	// 834:2: explicit_type_properties -> nil: ...
 	NilToExplicitTypeProperties() (*ast.TypePropertyList, error)
 }
 
 type ExplicitStructTypeExprReducer interface {
-	// 833:2: explicit_struct_type_expr -> ...
+	// 837:2: explicit_struct_type_expr -> ...
 	ToExplicitStructTypeExpr(Struct_ *TokenValue, Lparen_ *TokenValue, ExplicitTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type TraitTypeExprReducer interface {
-	// 836:2: trait_type_expr -> ...
+	// 840:2: trait_type_expr -> ...
 	ToTraitTypeExpr(Trait_ *TokenValue, Lparen_ *TokenValue, ExplicitTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ProperImplicitEnumTypePropertiesReducer interface {
-	// 847:2: proper_implicit_enum_type_properties -> pair: ...
+	// 851:2: proper_implicit_enum_type_properties -> pair: ...
 	PairToProperImplicitEnumTypeProperties(TypeProperty_ ast.TypeProperty, Or_ *TokenValue, TypeProperty_2 ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 848:2: proper_implicit_enum_type_properties -> add: ...
+	// 852:2: proper_implicit_enum_type_properties -> add: ...
 	AddToProperImplicitEnumTypeProperties(ProperImplicitEnumTypeProperties_ *ast.TypePropertyList, Or_ *TokenValue, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 }
 
 type ImplicitEnumTypePropertiesReducer interface {
 
-	// 853:2: implicit_enum_type_properties -> improper: ...
+	// 857:2: implicit_enum_type_properties -> improper: ...
 	ImproperToImplicitEnumTypeProperties(ProperImplicitEnumTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount) (*ast.TypePropertyList, error)
 }
 
 type ImplicitEnumTypeExprReducer interface {
-	// 856:2: implicit_enum_type_expr -> ...
+	// 860:2: implicit_enum_type_expr -> ...
 	ToImplicitEnumTypeExpr(Lparen_ *TokenValue, ImplicitEnumTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ProperExplicitEnumTypePropertiesReducer interface {
-	// 859:2: proper_explicit_enum_type_properties -> explicit_pair: ...
+	// 863:2: proper_explicit_enum_type_properties -> explicit_pair: ...
 	ExplicitPairToProperExplicitEnumTypeProperties(TypeProperty_ ast.TypeProperty, Or_ *TokenValue, TypeProperty_2 ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 860:2: proper_explicit_enum_type_properties -> implicit_pair: ...
+	// 864:2: proper_explicit_enum_type_properties -> implicit_pair: ...
 	ImplicitPairToProperExplicitEnumTypeProperties(TypeProperty_ ast.TypeProperty, Newlines_ TokenCount, TypeProperty_2 ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 861:2: proper_explicit_enum_type_properties -> explicit_add: ...
+	// 865:2: proper_explicit_enum_type_properties -> explicit_add: ...
 	ExplicitAddToProperExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *ast.TypePropertyList, Or_ *TokenValue, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 862:2: proper_explicit_enum_type_properties -> implicit_add: ...
+	// 866:2: proper_explicit_enum_type_properties -> implicit_add: ...
 	ImplicitAddToProperExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 }
 
 type ExplicitEnumTypePropertiesReducer interface {
 
-	// 867:2: explicit_enum_type_properties -> improper: ...
+	// 871:2: explicit_enum_type_properties -> improper: ...
 	ImproperToExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount) (*ast.TypePropertyList, error)
 }
 
 type ExplicitEnumTypeExprReducer interface {
-	// 870:2: explicit_enum_type_expr -> ...
+	// 874:2: explicit_enum_type_expr -> ...
 	ToExplicitEnumTypeExpr(Enum_ *TokenValue, Lparen_ *TokenValue, ExplicitEnumTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ReturnTypeReducer interface {
 
-	// 879:2: return_type -> nil: ...
+	// 883:2: return_type -> nil: ...
 	NilToReturnType() (ast.TypeExpression, error)
 }
 
 type ProperParameterDefReducer interface {
-	// 882:2: proper_parameter_def -> named_typed_arg: ...
+	// 886:2: proper_parameter_def -> named_typed_arg: ...
 	NamedTypedArgToProperParameterDef(Identifier_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 
-	// 883:2: proper_parameter_def -> named_typed_vararg: ...
+	// 887:2: proper_parameter_def -> named_typed_vararg: ...
 	NamedTypedVarargToProperParameterDef(Identifier_ *TokenValue, Ellipsis_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 
-	// 884:2: proper_parameter_def -> named_inferred_vararg: ...
+	// 888:2: proper_parameter_def -> named_inferred_vararg: ...
 	NamedInferredVarargToProperParameterDef(Identifier_ *TokenValue, Ellipsis_ *TokenValue) (*ast.Parameter, error)
 
-	// 885:2: proper_parameter_def -> ignore_typed_arg: ...
+	// 889:2: proper_parameter_def -> ignore_typed_arg: ...
 	IgnoreTypedArgToProperParameterDef(Underscore_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 
-	// 886:2: proper_parameter_def -> ignore_inferred_vararg: ...
+	// 890:2: proper_parameter_def -> ignore_inferred_vararg: ...
 	IgnoreInferredVarargToProperParameterDef(Underscore_ *TokenValue, Ellipsis_ *TokenValue) (*ast.Parameter, error)
 
-	// 887:2: proper_parameter_def -> ignore_typed_vararg: ...
+	// 891:2: proper_parameter_def -> ignore_typed_vararg: ...
 	IgnoreTypedVarargToProperParameterDef(Underscore_ *TokenValue, Ellipsis_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 }
 
 type ParameterDeclReducer interface {
 
-	// 893:2: parameter_decl -> unnamed_typed_arg: ...
+	// 897:2: parameter_decl -> unnamed_typed_arg: ...
 	UnnamedTypedArgToParameterDecl(TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 
-	// 894:2: parameter_decl -> unnamed_inferred_vararg: ...
+	// 898:2: parameter_decl -> unnamed_inferred_vararg: ...
 	UnnamedInferredVarargToParameterDecl(Ellipsis_ *TokenValue) (*ast.Parameter, error)
 
-	// 895:2: parameter_decl -> unnamed_typed_vararg: ...
+	// 899:2: parameter_decl -> unnamed_typed_vararg: ...
 	UnnamedTypedVarargToParameterDecl(Ellipsis_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 }
 
 type ParameterDefReducer interface {
 
-	// 903:2: parameter_def -> named_inferred_arg: ...
+	// 907:2: parameter_def -> named_inferred_arg: ...
 	NamedInferredArgToParameterDef(Identifier_ *TokenValue) (*ast.Parameter, error)
 
-	// 904:2: parameter_def -> ignore_inferred_arg: ...
+	// 908:2: parameter_def -> ignore_inferred_arg: ...
 	IgnoreInferredArgToParameterDef(Underscore_ *TokenValue) (*ast.Parameter, error)
 }
 
 type ProperParameterDeclListReducer interface {
-	// 907:2: proper_parameter_decl_list -> add: ...
+	// 911:2: proper_parameter_decl_list -> add: ...
 	AddToProperParameterDeclList(ProperParameterDeclList_ *ast.ParameterList, Comma_ *TokenValue, ParameterDecl_ *ast.Parameter) (*ast.ParameterList, error)
 
-	// 908:2: proper_parameter_decl_list -> parameter_decl: ...
+	// 912:2: proper_parameter_decl_list -> parameter_decl: ...
 	ParameterDeclToProperParameterDeclList(ParameterDecl_ *ast.Parameter) (*ast.ParameterList, error)
 }
 
 type ParameterDeclListReducer interface {
 
-	// 912:2: parameter_decl_list -> improper: ...
+	// 916:2: parameter_decl_list -> improper: ...
 	ImproperToParameterDeclList(ProperParameterDeclList_ *ast.ParameterList, Comma_ *TokenValue) (*ast.ParameterList, error)
 
-	// 913:2: parameter_decl_list -> nil: ...
+	// 917:2: parameter_decl_list -> nil: ...
 	NilToParameterDeclList() (*ast.ParameterList, error)
 }
 
 type ParameterDeclsReducer interface {
-	// 915:31: parameter_decls -> ...
+	// 919:31: parameter_decls -> ...
 	ToParameterDecls(Lparen_ *TokenValue, ParameterDeclList_ *ast.ParameterList, Rparen_ *TokenValue) (*ast.ParameterList, error)
 }
 
 type ProperParameterDefListReducer interface {
-	// 918:2: proper_parameter_def_list -> add: ...
+	// 922:2: proper_parameter_def_list -> add: ...
 	AddToProperParameterDefList(ProperParameterDefList_ *ast.ParameterList, Comma_ *TokenValue, ParameterDef_ *ast.Parameter) (*ast.ParameterList, error)
 
-	// 919:2: proper_parameter_def_list -> parameter_def: ...
+	// 923:2: proper_parameter_def_list -> parameter_def: ...
 	ParameterDefToProperParameterDefList(ParameterDef_ *ast.Parameter) (*ast.ParameterList, error)
 }
 
 type ParameterDefListReducer interface {
 
-	// 923:2: parameter_def_list -> improper: ...
+	// 927:2: parameter_def_list -> improper: ...
 	ImproperToParameterDefList(ProperParameterDefList_ *ast.ParameterList, Comma_ *TokenValue) (*ast.ParameterList, error)
 
-	// 924:2: parameter_def_list -> nil: ...
+	// 928:2: parameter_def_list -> nil: ...
 	NilToParameterDefList() (*ast.ParameterList, error)
 }
 
 type ParameterDefsReducer interface {
-	// 926:30: parameter_defs -> ...
+	// 930:30: parameter_defs -> ...
 	ToParameterDefs(Lparen_ *TokenValue, ParameterDefList_ *ast.ParameterList, Rparen_ *TokenValue) (*ast.ParameterList, error)
 }
 
 type FuncTypeExprReducer interface {
-	// 928:34: func_type_expr -> ...
+	// 932:34: func_type_expr -> ...
 	ToFuncTypeExpr(Func_ *TokenValue, ParameterDecls_ *ast.ParameterList, ReturnType_ ast.TypeExpression) (ast.TypeExpression, error)
 }
 
 type MethodSignatureReducer interface {
-	// 939:34: method_signature -> ...
+	// 943:34: method_signature -> ...
 	ToMethodSignature(Func_ *TokenValue, Identifier_ *TokenValue, ParameterDecls_ *ast.ParameterList, ReturnType_ ast.TypeExpression) (ast.TypeProperty, error)
 }
 
 type NamedFuncDefReducer interface {
-	// 947:2: named_func_def -> func_def: ...
+	// 951:2: named_func_def -> func_def: ...
 	FuncDefToNamedFuncDef(Func_ *TokenValue, Identifier_ *TokenValue, GenericParameters_ *ast.GenericParameterList, ParameterDefs_ *ast.ParameterList, ReturnType_ ast.TypeExpression, Statements_ *ast.StatementsExpr) (ast.Definition, error)
 
-	// 948:2: named_func_def -> method_def: ...
+	// 952:2: named_func_def -> method_def: ...
 	MethodDefToNamedFuncDef(Func_ *TokenValue, Lparen_ *TokenValue, ParameterDef_ *ast.Parameter, Rparen_ *TokenValue, Identifier_ *TokenValue, ParameterDefs_ *ast.ParameterList, ReturnType_ ast.TypeExpression, Statements_ *ast.StatementsExpr) (ast.Definition, error)
 }
 
 type AnonymousFuncExprReducer interface {
-	// 951:2: anonymous_func_expr -> ...
+	// 955:2: anonymous_func_expr -> ...
 	ToAnonymousFuncExpr(Func_ *TokenValue, ParameterDefs_ *ast.ParameterList, ReturnType_ ast.TypeExpression, Statements_ *ast.StatementsExpr) (ast.Expression, error)
 }
 
 type PackageDefReducer interface {
-	// 962:27: package_def -> ...
+	// 966:27: package_def -> ...
 	ToPackageDef(Package_ *TokenValue, Statements_ *ast.StatementsExpr) (ast.Definition, error)
 }
 
@@ -1191,7 +1191,7 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State93:
 		return []SymbolId{IdentifierToken, AsToken}
 	case _State94:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ColonToken, EllipsisToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ColonToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State95:
 		return []SymbolId{LparenToken}
 	case _State96:
@@ -1274,69 +1274,69 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 		return []SymbolId{RbracketToken}
 	case _State165:
 		return []SymbolId{LparenToken}
-	case _State166:
+	case _State168:
 		return []SymbolId{RbracketToken}
-	case _State171:
+	case _State173:
 		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, CaseToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
-	case _State172:
-		return []SymbolId{RparenToken}
-	case _State176:
+	case _State174:
 		return []SymbolId{RparenToken}
 	case _State178:
-		return []SymbolId{NewlinesToken, OrToken}
-	case _State182:
 		return []SymbolId{RparenToken}
-	case _State186:
+	case _State180:
+		return []SymbolId{NewlinesToken, OrToken}
+	case _State184:
+		return []SymbolId{RparenToken}
+	case _State188:
 		return []SymbolId{LparenToken}
-	case _State190:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State192:
 		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
-	case _State193:
-		return []SymbolId{RparenToken}
+	case _State194:
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State195:
-		return []SymbolId{RbracketToken}
-	case _State202:
-		return []SymbolId{IdentifierToken}
-	case _State205:
-		return []SymbolId{IdentifierToken, UnderscoreToken, LparenToken}
-	case _State207:
-		return []SymbolId{LparenToken}
-	case _State208:
-		return []SymbolId{SemicolonToken}
-	case _State209:
-		return []SymbolId{DoToken}
-	case _State211:
-		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
-	case _State214:
-		return []SymbolId{RbracketToken, AddToken, SubToken, MulToken}
-	case _State215:
-		return []SymbolId{RbracketToken}
-	case _State218:
-		return []SymbolId{StringLiteralToken}
-	case _State220:
-		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
-	case _State221:
 		return []SymbolId{RparenToken}
+	case _State197:
+		return []SymbolId{RbracketToken}
+	case _State204:
+		return []SymbolId{IdentifierToken}
+	case _State207:
+		return []SymbolId{IdentifierToken, UnderscoreToken, LparenToken}
+	case _State209:
+		return []SymbolId{LparenToken}
+	case _State210:
+		return []SymbolId{SemicolonToken}
+	case _State211:
+		return []SymbolId{DoToken}
+	case _State213:
+		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LabelDeclToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
+	case _State216:
+		return []SymbolId{RbracketToken, AddToken, SubToken, MulToken}
+	case _State217:
+		return []SymbolId{RbracketToken}
+	case _State220:
+		return []SymbolId{StringLiteralToken}
 	case _State222:
-		return []SymbolId{LbraceToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
+	case _State223:
+		return []SymbolId{RparenToken}
 	case _State224:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
-	case _State225:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
+		return []SymbolId{LbraceToken}
 	case _State226:
 		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
-	case _State232:
+	case _State227:
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
+	case _State228:
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
+	case _State234:
 		return []SymbolId{LbraceToken}
-	case _State235:
+	case _State237:
 		return []SymbolId{LparenToken}
-	case _State236:
+	case _State238:
 		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
-	case _State239:
+	case _State241:
 		return []SymbolId{RparenToken, AddToken, SubToken, MulToken}
-	case _State242:
+	case _State244:
 		return []SymbolId{DoToken}
-	case _State243:
+	case _State245:
 		return []SymbolId{LbraceToken}
 	}
 
@@ -1820,6 +1820,8 @@ func (i SymbolId) String() string {
 		return "access_expr"
 	case IndexExprType:
 		return "index_expr"
+	case IndexType:
+		return "index"
 	case AsExprType:
 		return "as_expr"
 	case CallExprType:
@@ -2076,111 +2078,112 @@ const (
 	AccessibleExprType                   = SymbolId(380)
 	AccessExprType                       = SymbolId(381)
 	IndexExprType                        = SymbolId(382)
-	AsExprType                           = SymbolId(383)
-	CallExprType                         = SymbolId(384)
-	ProperArgumentsType                  = SymbolId(385)
-	ArgumentsType                        = SymbolId(386)
-	ArgumentType                         = SymbolId(387)
-	ColonExprType                        = SymbolId(388)
-	PostfixableExprType                  = SymbolId(389)
-	PostfixUnaryExprType                 = SymbolId(390)
-	PostfixUnaryOpType                   = SymbolId(391)
-	PrefixableExprType                   = SymbolId(392)
-	PrefixUnaryExprType                  = SymbolId(393)
-	PrefixUnaryOpType                    = SymbolId(394)
-	MulExprType                          = SymbolId(395)
-	BinaryMulExprType                    = SymbolId(396)
-	MulOpType                            = SymbolId(397)
-	AddExprType                          = SymbolId(398)
-	BinaryAddExprType                    = SymbolId(399)
-	AddOpType                            = SymbolId(400)
-	CmpExprType                          = SymbolId(401)
-	BinaryCmpExprType                    = SymbolId(402)
-	CmpOpType                            = SymbolId(403)
-	AndExprType                          = SymbolId(404)
-	BinaryAndExprType                    = SymbolId(405)
-	OrExprType                           = SymbolId(406)
-	BinaryOrExprType                     = SymbolId(407)
-	SendRecvExprType                     = SymbolId(408)
-	SendExprType                         = SymbolId(409)
-	RecvExprType                         = SymbolId(410)
-	AssignOpExprType                     = SymbolId(411)
-	BinaryAssignOpExprType               = SymbolId(412)
-	BinaryAssignOpType                   = SymbolId(413)
-	ExprType                             = SymbolId(414)
-	StatementsExprType                   = SymbolId(415)
-	StatementsType                       = SymbolId(416)
-	ProperStatementListType              = SymbolId(417)
-	StatementListType                    = SymbolId(418)
-	IfExprType                           = SymbolId(419)
-	IfElseExprType                       = SymbolId(420)
-	IfElifExprType                       = SymbolId(421)
-	IfOnlyExprType                       = SymbolId(422)
-	ConditionType                        = SymbolId(423)
-	CasePatternExprType                  = SymbolId(424)
-	SwitchExprType                       = SymbolId(425)
-	SwitchExprBodyType                   = SymbolId(426)
-	SelectExprType                       = SymbolId(427)
-	SelectExprBodyType                   = SymbolId(428)
-	LoopExprType                         = SymbolId(429)
-	LoopExprBodyType                     = SymbolId(430)
-	OptionalStatementType                = SymbolId(431)
-	OptionalExprType                     = SymbolId(432)
-	RepeatLoopBodyType                   = SymbolId(433)
-	ForLoopBodyType                      = SymbolId(434)
-	ReturnableExprType                   = SymbolId(435)
-	ImproperExprStructType               = SymbolId(436)
-	InitializableTypeExprType            = SymbolId(437)
-	SliceTypeExprType                    = SymbolId(438)
-	ArrayTypeExprType                    = SymbolId(439)
-	MapTypeExprType                      = SymbolId(440)
-	AtomTypeExprType                     = SymbolId(441)
-	NamedTypeExprType                    = SymbolId(442)
-	InferredTypeExprType                 = SymbolId(443)
-	ReturnableTypeExprType               = SymbolId(444)
-	PrefixUnaryTypeExprType              = SymbolId(445)
-	PrefixUnaryTypeOpType                = SymbolId(446)
-	TypeExprType                         = SymbolId(447)
-	BinaryTypeExprType                   = SymbolId(448)
-	BinaryTypeOpType                     = SymbolId(449)
-	TypeDefType                          = SymbolId(450)
-	GenericParameterType                 = SymbolId(451)
-	GenericParametersType                = SymbolId(452)
-	ProperGenericParameterListType       = SymbolId(453)
-	GenericParameterListType             = SymbolId(454)
-	GenericArgumentsType                 = SymbolId(455)
-	ProperGenericArgumentListType        = SymbolId(456)
-	GenericArgumentListType              = SymbolId(457)
-	FieldDefType                         = SymbolId(458)
-	TypePropertyType                     = SymbolId(459)
-	ProperImplicitTypePropertiesType     = SymbolId(460)
-	ImplicitTypePropertiesType           = SymbolId(461)
-	ImplicitStructTypeExprType           = SymbolId(462)
-	ProperExplicitTypePropertiesType     = SymbolId(463)
-	ExplicitTypePropertiesType           = SymbolId(464)
-	ExplicitStructTypeExprType           = SymbolId(465)
-	TraitTypeExprType                    = SymbolId(466)
-	ProperImplicitEnumTypePropertiesType = SymbolId(467)
-	ImplicitEnumTypePropertiesType       = SymbolId(468)
-	ImplicitEnumTypeExprType             = SymbolId(469)
-	ProperExplicitEnumTypePropertiesType = SymbolId(470)
-	ExplicitEnumTypePropertiesType       = SymbolId(471)
-	ExplicitEnumTypeExprType             = SymbolId(472)
-	ReturnTypeType                       = SymbolId(473)
-	ProperParameterDefType               = SymbolId(474)
-	ParameterDeclType                    = SymbolId(475)
-	ParameterDefType                     = SymbolId(476)
-	ProperParameterDeclListType          = SymbolId(477)
-	ParameterDeclListType                = SymbolId(478)
-	ParameterDeclsType                   = SymbolId(479)
-	ProperParameterDefListType           = SymbolId(480)
-	ParameterDefListType                 = SymbolId(481)
-	ParameterDefsType                    = SymbolId(482)
-	FuncTypeExprType                     = SymbolId(483)
-	MethodSignatureType                  = SymbolId(484)
-	NamedFuncDefType                     = SymbolId(485)
-	AnonymousFuncExprType                = SymbolId(486)
-	PackageDefType                       = SymbolId(487)
+	IndexType                            = SymbolId(383)
+	AsExprType                           = SymbolId(384)
+	CallExprType                         = SymbolId(385)
+	ProperArgumentsType                  = SymbolId(386)
+	ArgumentsType                        = SymbolId(387)
+	ArgumentType                         = SymbolId(388)
+	ColonExprType                        = SymbolId(389)
+	PostfixableExprType                  = SymbolId(390)
+	PostfixUnaryExprType                 = SymbolId(391)
+	PostfixUnaryOpType                   = SymbolId(392)
+	PrefixableExprType                   = SymbolId(393)
+	PrefixUnaryExprType                  = SymbolId(394)
+	PrefixUnaryOpType                    = SymbolId(395)
+	MulExprType                          = SymbolId(396)
+	BinaryMulExprType                    = SymbolId(397)
+	MulOpType                            = SymbolId(398)
+	AddExprType                          = SymbolId(399)
+	BinaryAddExprType                    = SymbolId(400)
+	AddOpType                            = SymbolId(401)
+	CmpExprType                          = SymbolId(402)
+	BinaryCmpExprType                    = SymbolId(403)
+	CmpOpType                            = SymbolId(404)
+	AndExprType                          = SymbolId(405)
+	BinaryAndExprType                    = SymbolId(406)
+	OrExprType                           = SymbolId(407)
+	BinaryOrExprType                     = SymbolId(408)
+	SendRecvExprType                     = SymbolId(409)
+	SendExprType                         = SymbolId(410)
+	RecvExprType                         = SymbolId(411)
+	AssignOpExprType                     = SymbolId(412)
+	BinaryAssignOpExprType               = SymbolId(413)
+	BinaryAssignOpType                   = SymbolId(414)
+	ExprType                             = SymbolId(415)
+	StatementsExprType                   = SymbolId(416)
+	StatementsType                       = SymbolId(417)
+	ProperStatementListType              = SymbolId(418)
+	StatementListType                    = SymbolId(419)
+	IfExprType                           = SymbolId(420)
+	IfElseExprType                       = SymbolId(421)
+	IfElifExprType                       = SymbolId(422)
+	IfOnlyExprType                       = SymbolId(423)
+	ConditionType                        = SymbolId(424)
+	CasePatternExprType                  = SymbolId(425)
+	SwitchExprType                       = SymbolId(426)
+	SwitchExprBodyType                   = SymbolId(427)
+	SelectExprType                       = SymbolId(428)
+	SelectExprBodyType                   = SymbolId(429)
+	LoopExprType                         = SymbolId(430)
+	LoopExprBodyType                     = SymbolId(431)
+	OptionalStatementType                = SymbolId(432)
+	OptionalExprType                     = SymbolId(433)
+	RepeatLoopBodyType                   = SymbolId(434)
+	ForLoopBodyType                      = SymbolId(435)
+	ReturnableExprType                   = SymbolId(436)
+	ImproperExprStructType               = SymbolId(437)
+	InitializableTypeExprType            = SymbolId(438)
+	SliceTypeExprType                    = SymbolId(439)
+	ArrayTypeExprType                    = SymbolId(440)
+	MapTypeExprType                      = SymbolId(441)
+	AtomTypeExprType                     = SymbolId(442)
+	NamedTypeExprType                    = SymbolId(443)
+	InferredTypeExprType                 = SymbolId(444)
+	ReturnableTypeExprType               = SymbolId(445)
+	PrefixUnaryTypeExprType              = SymbolId(446)
+	PrefixUnaryTypeOpType                = SymbolId(447)
+	TypeExprType                         = SymbolId(448)
+	BinaryTypeExprType                   = SymbolId(449)
+	BinaryTypeOpType                     = SymbolId(450)
+	TypeDefType                          = SymbolId(451)
+	GenericParameterType                 = SymbolId(452)
+	GenericParametersType                = SymbolId(453)
+	ProperGenericParameterListType       = SymbolId(454)
+	GenericParameterListType             = SymbolId(455)
+	GenericArgumentsType                 = SymbolId(456)
+	ProperGenericArgumentListType        = SymbolId(457)
+	GenericArgumentListType              = SymbolId(458)
+	FieldDefType                         = SymbolId(459)
+	TypePropertyType                     = SymbolId(460)
+	ProperImplicitTypePropertiesType     = SymbolId(461)
+	ImplicitTypePropertiesType           = SymbolId(462)
+	ImplicitStructTypeExprType           = SymbolId(463)
+	ProperExplicitTypePropertiesType     = SymbolId(464)
+	ExplicitTypePropertiesType           = SymbolId(465)
+	ExplicitStructTypeExprType           = SymbolId(466)
+	TraitTypeExprType                    = SymbolId(467)
+	ProperImplicitEnumTypePropertiesType = SymbolId(468)
+	ImplicitEnumTypePropertiesType       = SymbolId(469)
+	ImplicitEnumTypeExprType             = SymbolId(470)
+	ProperExplicitEnumTypePropertiesType = SymbolId(471)
+	ExplicitEnumTypePropertiesType       = SymbolId(472)
+	ExplicitEnumTypeExprType             = SymbolId(473)
+	ReturnTypeType                       = SymbolId(474)
+	ProperParameterDefType               = SymbolId(475)
+	ParameterDeclType                    = SymbolId(476)
+	ParameterDefType                     = SymbolId(477)
+	ProperParameterDeclListType          = SymbolId(478)
+	ParameterDeclListType                = SymbolId(479)
+	ParameterDeclsType                   = SymbolId(480)
+	ProperParameterDefListType           = SymbolId(481)
+	ParameterDefListType                 = SymbolId(482)
+	ParameterDefsType                    = SymbolId(483)
+	FuncTypeExprType                     = SymbolId(484)
+	MethodSignatureType                  = SymbolId(485)
+	NamedFuncDefType                     = SymbolId(486)
+	AnonymousFuncExprType                = SymbolId(487)
+	PackageDefType                       = SymbolId(488)
 )
 
 type _ActionType int
@@ -2305,261 +2308,263 @@ const (
 	_ReduceAsExprToAccessibleExpr                                       = _ReduceType(92)
 	_ReduceToAccessExpr                                                 = _ReduceType(93)
 	_ReduceToIndexExpr                                                  = _ReduceType(94)
-	_ReduceToAsExpr                                                     = _ReduceType(95)
-	_ReduceToCallExpr                                                   = _ReduceType(96)
-	_ReduceAddToProperArguments                                         = _ReduceType(97)
-	_ReduceArgumentToProperArguments                                    = _ReduceType(98)
-	_ReduceProperArgumentsToArguments                                   = _ReduceType(99)
-	_ReduceImproperToArguments                                          = _ReduceType(100)
-	_ReduceNilToArguments                                               = _ReduceType(101)
-	_ReducePositionalToArgument                                         = _ReduceType(102)
-	_ReduceColonExprToArgument                                          = _ReduceType(103)
-	_ReduceNamedAssignmentToArgument                                    = _ReduceType(104)
-	_ReduceVarargAssignmentToArgument                                   = _ReduceType(105)
-	_ReduceSkipPatternToArgument                                        = _ReduceType(106)
-	_ReduceUnitUnitPairToColonExpr                                      = _ReduceType(107)
-	_ReduceExprUnitPairToColonExpr                                      = _ReduceType(108)
-	_ReduceUnitExprPairToColonExpr                                      = _ReduceType(109)
-	_ReduceExprExprPairToColonExpr                                      = _ReduceType(110)
-	_ReduceColonExprUnitTupleToColonExpr                                = _ReduceType(111)
-	_ReduceColonExprExprTupleToColonExpr                                = _ReduceType(112)
-	_ReduceAccessibleExprToPostfixableExpr                              = _ReduceType(113)
-	_ReducePostfixUnaryExprToPostfixableExpr                            = _ReduceType(114)
-	_ReduceToPostfixUnaryExpr                                           = _ReduceType(115)
-	_ReduceQuestionToPostfixUnaryOp                                     = _ReduceType(116)
-	_ReduceExclaimToPostfixUnaryOp                                      = _ReduceType(117)
-	_ReduceAddOneAssignToPostfixUnaryOp                                 = _ReduceType(118)
-	_ReduceSubOneAssignToPostfixUnaryOp                                 = _ReduceType(119)
-	_ReducePostfixableExprToPrefixableExpr                              = _ReduceType(120)
-	_ReducePrefixUnaryExprToPrefixableExpr                              = _ReduceType(121)
-	_ReduceToPrefixUnaryExpr                                            = _ReduceType(122)
-	_ReduceNotToPrefixUnaryOp                                           = _ReduceType(123)
-	_ReduceBitXorToPrefixUnaryOp                                        = _ReduceType(124)
-	_ReduceAddToPrefixUnaryOp                                           = _ReduceType(125)
-	_ReduceSubToPrefixUnaryOp                                           = _ReduceType(126)
-	_ReduceMulToPrefixUnaryOp                                           = _ReduceType(127)
-	_ReduceBitAndToPrefixUnaryOp                                        = _ReduceType(128)
-	_ReduceAsyncToPrefixUnaryOp                                         = _ReduceType(129)
-	_ReduceDeferToPrefixUnaryOp                                         = _ReduceType(130)
-	_ReduceGreaterToPrefixUnaryOp                                       = _ReduceType(131)
-	_ReducePrefixableExprToMulExpr                                      = _ReduceType(132)
-	_ReduceBinaryMulExprToMulExpr                                       = _ReduceType(133)
-	_ReduceToBinaryMulExpr                                              = _ReduceType(134)
-	_ReduceMulToMulOp                                                   = _ReduceType(135)
-	_ReduceDivToMulOp                                                   = _ReduceType(136)
-	_ReduceModToMulOp                                                   = _ReduceType(137)
-	_ReduceBitAndToMulOp                                                = _ReduceType(138)
-	_ReduceBitLshiftToMulOp                                             = _ReduceType(139)
-	_ReduceBitRshiftToMulOp                                             = _ReduceType(140)
-	_ReduceMulExprToAddExpr                                             = _ReduceType(141)
-	_ReduceBinaryAddExprToAddExpr                                       = _ReduceType(142)
-	_ReduceToBinaryAddExpr                                              = _ReduceType(143)
-	_ReduceAddToAddOp                                                   = _ReduceType(144)
-	_ReduceSubToAddOp                                                   = _ReduceType(145)
-	_ReduceBitOrToAddOp                                                 = _ReduceType(146)
-	_ReduceBitXorToAddOp                                                = _ReduceType(147)
-	_ReduceAddExprToCmpExpr                                             = _ReduceType(148)
-	_ReduceBinaryCmpExprToCmpExpr                                       = _ReduceType(149)
-	_ReduceToBinaryCmpExpr                                              = _ReduceType(150)
-	_ReduceEqualToCmpOp                                                 = _ReduceType(151)
-	_ReduceNotEqualToCmpOp                                              = _ReduceType(152)
-	_ReduceLessToCmpOp                                                  = _ReduceType(153)
-	_ReduceLessOrEqualToCmpOp                                           = _ReduceType(154)
-	_ReduceGreaterToCmpOp                                               = _ReduceType(155)
-	_ReduceGreaterOrEqualToCmpOp                                        = _ReduceType(156)
-	_ReduceCmpExprToAndExpr                                             = _ReduceType(157)
-	_ReduceBinaryAndExprToAndExpr                                       = _ReduceType(158)
-	_ReduceToBinaryAndExpr                                              = _ReduceType(159)
-	_ReduceAndExprToOrExpr                                              = _ReduceType(160)
-	_ReduceBinaryOrExprToOrExpr                                         = _ReduceType(161)
-	_ReduceToBinaryOrExpr                                               = _ReduceType(162)
-	_ReduceOrExprToSendRecvExpr                                         = _ReduceType(163)
-	_ReduceSendExprToSendRecvExpr                                       = _ReduceType(164)
-	_ReduceRecvExprToSendRecvExpr                                       = _ReduceType(165)
-	_ReduceToSendExpr                                                   = _ReduceType(166)
-	_ReduceToRecvExpr                                                   = _ReduceType(167)
-	_ReduceSendRecvExprToAssignOpExpr                                   = _ReduceType(168)
-	_ReduceBinaryAssignOpExprToAssignOpExpr                             = _ReduceType(169)
-	_ReduceToBinaryAssignOpExpr                                         = _ReduceType(170)
-	_ReduceAddAssignToBinaryAssignOp                                    = _ReduceType(171)
-	_ReduceSubAssignToBinaryAssignOp                                    = _ReduceType(172)
-	_ReduceMulAssignToBinaryAssignOp                                    = _ReduceType(173)
-	_ReduceDivAssignToBinaryAssignOp                                    = _ReduceType(174)
-	_ReduceModAssignToBinaryAssignOp                                    = _ReduceType(175)
-	_ReduceBitAndAssignToBinaryAssignOp                                 = _ReduceType(176)
-	_ReduceBitOrAssignToBinaryAssignOp                                  = _ReduceType(177)
-	_ReduceBitXorAssignToBinaryAssignOp                                 = _ReduceType(178)
-	_ReduceBitLshiftAssignToBinaryAssignOp                              = _ReduceType(179)
-	_ReduceBitRshiftAssignToBinaryAssignOp                              = _ReduceType(180)
-	_ReduceAssignOpExprToExpr                                           = _ReduceType(181)
-	_ReduceStatementsExprToExpr                                         = _ReduceType(182)
-	_ReduceIfExprToExpr                                                 = _ReduceType(183)
-	_ReduceSwitchExprToExpr                                             = _ReduceType(184)
-	_ReduceSelectExprToExpr                                             = _ReduceType(185)
-	_ReduceLoopExprToExpr                                               = _ReduceType(186)
-	_ReduceDeclVarPatternToExpr                                         = _ReduceType(187)
-	_ReduceStatementsToStatementsExpr                                   = _ReduceType(188)
-	_ReduceLabelledToStatementsExpr                                     = _ReduceType(189)
-	_ReduceToStatements                                                 = _ReduceType(190)
-	_ReduceAddImplicitToProperStatementList                             = _ReduceType(191)
-	_ReduceAddExplicitToProperStatementList                             = _ReduceType(192)
-	_ReduceStatementToProperStatementList                               = _ReduceType(193)
-	_ReduceProperStatementListToStatementList                           = _ReduceType(194)
-	_ReduceImproperImplicitToStatementList                              = _ReduceType(195)
-	_ReduceImproperExplicitToStatementList                              = _ReduceType(196)
-	_ReduceNilToStatementList                                           = _ReduceType(197)
-	_ReduceUnlabelledToIfExpr                                           = _ReduceType(198)
-	_ReduceLabelledToIfExpr                                             = _ReduceType(199)
-	_ReduceIfElifExprToIfElseExpr                                       = _ReduceType(200)
-	_ReduceElseToIfElseExpr                                             = _ReduceType(201)
-	_ReduceIfOnlyExprToIfElifExpr                                       = _ReduceType(202)
-	_ReduceElifToIfElifExpr                                             = _ReduceType(203)
-	_ReduceToIfOnlyExpr                                                 = _ReduceType(204)
-	_ReduceExprToCondition                                              = _ReduceType(205)
-	_ReduceCasePatternExprToCondition                                   = _ReduceType(206)
-	_ReduceToCasePatternExpr                                            = _ReduceType(207)
-	_ReduceSwitchExprBodyToSwitchExpr                                   = _ReduceType(208)
-	_ReduceLabelledToSwitchExpr                                         = _ReduceType(209)
-	_ReduceToSwitchExprBody                                             = _ReduceType(210)
-	_ReduceSelectExprBodyToSelectExpr                                   = _ReduceType(211)
-	_ReduceLabelledToSelectExpr                                         = _ReduceType(212)
-	_ReduceToSelectExprBody                                             = _ReduceType(213)
-	_ReduceLoopExprBodyToLoopExpr                                       = _ReduceType(214)
-	_ReduceLabelledToLoopExpr                                           = _ReduceType(215)
-	_ReduceInfiniteToLoopExprBody                                       = _ReduceType(216)
-	_ReduceDoWhileToLoopExprBody                                        = _ReduceType(217)
-	_ReduceWhileToLoopExprBody                                          = _ReduceType(218)
-	_ReduceIteratorToLoopExprBody                                       = _ReduceType(219)
-	_ReduceForToLoopExprBody                                            = _ReduceType(220)
-	_ReduceStatementToOptionalStatement                                 = _ReduceType(221)
-	_ReduceNilToOptionalStatement                                       = _ReduceType(222)
-	_ReduceExprToOptionalExpr                                           = _ReduceType(223)
-	_ReduceNilToOptionalExpr                                            = _ReduceType(224)
-	_ReduceToRepeatLoopBody                                             = _ReduceType(225)
-	_ReduceToForLoopBody                                                = _ReduceType(226)
-	_ReduceExprToReturnableExpr                                         = _ReduceType(227)
-	_ReduceImproperExprStructToReturnableExpr                           = _ReduceType(228)
-	_ReducePairToImproperExprStruct                                     = _ReduceType(229)
-	_ReduceAddToImproperExprStruct                                      = _ReduceType(230)
-	_ReduceExplicitStructTypeExprToInitializableTypeExpr                = _ReduceType(231)
-	_ReduceSliceTypeExprToInitializableTypeExpr                         = _ReduceType(232)
-	_ReduceArrayTypeExprToInitializableTypeExpr                         = _ReduceType(233)
-	_ReduceMapTypeExprToInitializableTypeExpr                           = _ReduceType(234)
-	_ReduceToSliceTypeExpr                                              = _ReduceType(235)
-	_ReduceToArrayTypeExpr                                              = _ReduceType(236)
-	_ReduceToMapTypeExpr                                                = _ReduceType(237)
-	_ReduceInitializableTypeExprToAtomTypeExpr                          = _ReduceType(238)
-	_ReduceNamedTypeExprToAtomTypeExpr                                  = _ReduceType(239)
-	_ReduceInferredTypeExprToAtomTypeExpr                               = _ReduceType(240)
-	_ReduceImplicitStructTypeExprToAtomTypeExpr                         = _ReduceType(241)
-	_ReduceExplicitEnumTypeExprToAtomTypeExpr                           = _ReduceType(242)
-	_ReduceImplicitEnumTypeExprToAtomTypeExpr                           = _ReduceType(243)
-	_ReduceTraitTypeExprToAtomTypeExpr                                  = _ReduceType(244)
-	_ReduceFuncTypeExprToAtomTypeExpr                                   = _ReduceType(245)
-	_ReduceLocalToNamedTypeExpr                                         = _ReduceType(246)
-	_ReduceExternalToNamedTypeExpr                                      = _ReduceType(247)
-	_ReduceDotToInferredTypeExpr                                        = _ReduceType(248)
-	_ReduceUnderscoreToInferredTypeExpr                                 = _ReduceType(249)
-	_ReduceAtomTypeExprToReturnableTypeExpr                             = _ReduceType(250)
-	_ReducePrefixUnaryTypeExprToReturnableTypeExpr                      = _ReduceType(251)
-	_ReduceToPrefixUnaryTypeExpr                                        = _ReduceType(252)
-	_ReduceQuestionToPrefixUnaryTypeOp                                  = _ReduceType(253)
-	_ReduceExclaimToPrefixUnaryTypeOp                                   = _ReduceType(254)
-	_ReduceBitAndToPrefixUnaryTypeOp                                    = _ReduceType(255)
-	_ReduceTildeToPrefixUnaryTypeOp                                     = _ReduceType(256)
-	_ReduceTildeTildeToPrefixUnaryTypeOp                                = _ReduceType(257)
-	_ReduceReturnableTypeExprToTypeExpr                                 = _ReduceType(258)
-	_ReduceBinaryTypeExprToTypeExpr                                     = _ReduceType(259)
-	_ReduceToBinaryTypeExpr                                             = _ReduceType(260)
-	_ReduceMulToBinaryTypeOp                                            = _ReduceType(261)
-	_ReduceAddToBinaryTypeOp                                            = _ReduceType(262)
-	_ReduceSubToBinaryTypeOp                                            = _ReduceType(263)
-	_ReduceDefinitionToTypeDef                                          = _ReduceType(264)
-	_ReduceConstrainedDefToTypeDef                                      = _ReduceType(265)
-	_ReduceAliasToTypeDef                                               = _ReduceType(266)
-	_ReduceUnconstrainedToGenericParameter                              = _ReduceType(267)
-	_ReduceConstrainedToGenericParameter                                = _ReduceType(268)
-	_ReduceGenericToGenericParameters                                   = _ReduceType(269)
-	_ReduceNilToGenericParameters                                       = _ReduceType(270)
-	_ReduceAddToProperGenericParameterList                              = _ReduceType(271)
-	_ReduceGenericParameterToProperGenericParameterList                 = _ReduceType(272)
-	_ReduceProperGenericParameterListToGenericParameterList             = _ReduceType(273)
-	_ReduceImproperToGenericParameterList                               = _ReduceType(274)
-	_ReduceNilToGenericParameterList                                    = _ReduceType(275)
-	_ReduceBindingToGenericArguments                                    = _ReduceType(276)
-	_ReduceNilToGenericArguments                                        = _ReduceType(277)
-	_ReduceAddToProperGenericArgumentList                               = _ReduceType(278)
-	_ReduceTypeExprToProperGenericArgumentList                          = _ReduceType(279)
-	_ReduceProperGenericArgumentListToGenericArgumentList               = _ReduceType(280)
-	_ReduceImproperToGenericArgumentList                                = _ReduceType(281)
-	_ReduceNilToGenericArgumentList                                     = _ReduceType(282)
-	_ReduceNamedToFieldDef                                              = _ReduceType(283)
-	_ReduceUnnamedToFieldDef                                            = _ReduceType(284)
-	_ReduceFieldDefToTypeProperty                                       = _ReduceType(285)
-	_ReduceDefaultEnumFieldDefToTypeProperty                            = _ReduceType(286)
-	_ReducePaddingFieldDefToTypeProperty                                = _ReduceType(287)
-	_ReduceMethodSignatureToTypeProperty                                = _ReduceType(288)
-	_ReduceUnsafeStmtToTypeProperty                                     = _ReduceType(289)
-	_ReduceAddToProperImplicitTypeProperties                            = _ReduceType(290)
-	_ReduceTypePropertyToProperImplicitTypeProperties                   = _ReduceType(291)
-	_ReduceProperImplicitTypePropertiesToImplicitTypeProperties         = _ReduceType(292)
-	_ReduceImproperToImplicitTypeProperties                             = _ReduceType(293)
-	_ReduceNilToImplicitTypeProperties                                  = _ReduceType(294)
-	_ReduceToImplicitStructTypeExpr                                     = _ReduceType(295)
-	_ReduceAddImplicitToProperExplicitTypeProperties                    = _ReduceType(296)
-	_ReduceAddExplicitToProperExplicitTypeProperties                    = _ReduceType(297)
-	_ReduceTypePropertyToProperExplicitTypeProperties                   = _ReduceType(298)
-	_ReduceProperExplicitTypePropertiesToExplicitTypeProperties         = _ReduceType(299)
-	_ReduceImproperImplicitToExplicitTypeProperties                     = _ReduceType(300)
-	_ReduceImproperExplicitToExplicitTypeProperties                     = _ReduceType(301)
-	_ReduceNilToExplicitTypeProperties                                  = _ReduceType(302)
-	_ReduceToExplicitStructTypeExpr                                     = _ReduceType(303)
-	_ReduceToTraitTypeExpr                                              = _ReduceType(304)
-	_ReducePairToProperImplicitEnumTypeProperties                       = _ReduceType(305)
-	_ReduceAddToProperImplicitEnumTypeProperties                        = _ReduceType(306)
-	_ReduceProperImplicitEnumTypePropertiesToImplicitEnumTypeProperties = _ReduceType(307)
-	_ReduceImproperToImplicitEnumTypeProperties                         = _ReduceType(308)
-	_ReduceToImplicitEnumTypeExpr                                       = _ReduceType(309)
-	_ReduceExplicitPairToProperExplicitEnumTypeProperties               = _ReduceType(310)
-	_ReduceImplicitPairToProperExplicitEnumTypeProperties               = _ReduceType(311)
-	_ReduceExplicitAddToProperExplicitEnumTypeProperties                = _ReduceType(312)
-	_ReduceImplicitAddToProperExplicitEnumTypeProperties                = _ReduceType(313)
-	_ReduceProperExplicitEnumTypePropertiesToExplicitEnumTypeProperties = _ReduceType(314)
-	_ReduceImproperToExplicitEnumTypeProperties                         = _ReduceType(315)
-	_ReduceToExplicitEnumTypeExpr                                       = _ReduceType(316)
-	_ReduceReturnableTypeExprToReturnType                               = _ReduceType(317)
-	_ReduceNilToReturnType                                              = _ReduceType(318)
-	_ReduceNamedTypedArgToProperParameterDef                            = _ReduceType(319)
-	_ReduceNamedTypedVarargToProperParameterDef                         = _ReduceType(320)
-	_ReduceNamedInferredVarargToProperParameterDef                      = _ReduceType(321)
-	_ReduceIgnoreTypedArgToProperParameterDef                           = _ReduceType(322)
-	_ReduceIgnoreInferredVarargToProperParameterDef                     = _ReduceType(323)
-	_ReduceIgnoreTypedVarargToProperParameterDef                        = _ReduceType(324)
-	_ReduceProperParameterDefToParameterDecl                            = _ReduceType(325)
-	_ReduceUnnamedTypedArgToParameterDecl                               = _ReduceType(326)
-	_ReduceUnnamedInferredVarargToParameterDecl                         = _ReduceType(327)
-	_ReduceUnnamedTypedVarargToParameterDecl                            = _ReduceType(328)
-	_ReduceProperParameterDefToParameterDef                             = _ReduceType(329)
-	_ReduceNamedInferredArgToParameterDef                               = _ReduceType(330)
-	_ReduceIgnoreInferredArgToParameterDef                              = _ReduceType(331)
-	_ReduceAddToProperParameterDeclList                                 = _ReduceType(332)
-	_ReduceParameterDeclToProperParameterDeclList                       = _ReduceType(333)
-	_ReduceProperParameterDeclListToParameterDeclList                   = _ReduceType(334)
-	_ReduceImproperToParameterDeclList                                  = _ReduceType(335)
-	_ReduceNilToParameterDeclList                                       = _ReduceType(336)
-	_ReduceToParameterDecls                                             = _ReduceType(337)
-	_ReduceAddToProperParameterDefList                                  = _ReduceType(338)
-	_ReduceParameterDefToProperParameterDefList                         = _ReduceType(339)
-	_ReduceProperParameterDefListToParameterDefList                     = _ReduceType(340)
-	_ReduceImproperToParameterDefList                                   = _ReduceType(341)
-	_ReduceNilToParameterDefList                                        = _ReduceType(342)
-	_ReduceToParameterDefs                                              = _ReduceType(343)
-	_ReduceToFuncTypeExpr                                               = _ReduceType(344)
-	_ReduceToMethodSignature                                            = _ReduceType(345)
-	_ReduceFuncDefToNamedFuncDef                                        = _ReduceType(346)
-	_ReduceMethodDefToNamedFuncDef                                      = _ReduceType(347)
-	_ReduceToAnonymousFuncExpr                                          = _ReduceType(348)
-	_ReduceToPackageDef                                                 = _ReduceType(349)
+	_ReduceExprToIndex                                                  = _ReduceType(95)
+	_ReduceColonExprToIndex                                             = _ReduceType(96)
+	_ReduceToAsExpr                                                     = _ReduceType(97)
+	_ReduceToCallExpr                                                   = _ReduceType(98)
+	_ReduceAddToProperArguments                                         = _ReduceType(99)
+	_ReduceArgumentToProperArguments                                    = _ReduceType(100)
+	_ReduceProperArgumentsToArguments                                   = _ReduceType(101)
+	_ReduceImproperToArguments                                          = _ReduceType(102)
+	_ReduceNilToArguments                                               = _ReduceType(103)
+	_ReducePositionalToArgument                                         = _ReduceType(104)
+	_ReduceColonExprToArgument                                          = _ReduceType(105)
+	_ReduceNamedAssignmentToArgument                                    = _ReduceType(106)
+	_ReduceVarargAssignmentToArgument                                   = _ReduceType(107)
+	_ReduceSkipPatternToArgument                                        = _ReduceType(108)
+	_ReduceUnitUnitPairToColonExpr                                      = _ReduceType(109)
+	_ReduceExprUnitPairToColonExpr                                      = _ReduceType(110)
+	_ReduceUnitExprPairToColonExpr                                      = _ReduceType(111)
+	_ReduceExprExprPairToColonExpr                                      = _ReduceType(112)
+	_ReduceColonExprUnitTupleToColonExpr                                = _ReduceType(113)
+	_ReduceColonExprExprTupleToColonExpr                                = _ReduceType(114)
+	_ReduceAccessibleExprToPostfixableExpr                              = _ReduceType(115)
+	_ReducePostfixUnaryExprToPostfixableExpr                            = _ReduceType(116)
+	_ReduceToPostfixUnaryExpr                                           = _ReduceType(117)
+	_ReduceQuestionToPostfixUnaryOp                                     = _ReduceType(118)
+	_ReduceExclaimToPostfixUnaryOp                                      = _ReduceType(119)
+	_ReduceAddOneAssignToPostfixUnaryOp                                 = _ReduceType(120)
+	_ReduceSubOneAssignToPostfixUnaryOp                                 = _ReduceType(121)
+	_ReducePostfixableExprToPrefixableExpr                              = _ReduceType(122)
+	_ReducePrefixUnaryExprToPrefixableExpr                              = _ReduceType(123)
+	_ReduceToPrefixUnaryExpr                                            = _ReduceType(124)
+	_ReduceNotToPrefixUnaryOp                                           = _ReduceType(125)
+	_ReduceBitXorToPrefixUnaryOp                                        = _ReduceType(126)
+	_ReduceAddToPrefixUnaryOp                                           = _ReduceType(127)
+	_ReduceSubToPrefixUnaryOp                                           = _ReduceType(128)
+	_ReduceMulToPrefixUnaryOp                                           = _ReduceType(129)
+	_ReduceBitAndToPrefixUnaryOp                                        = _ReduceType(130)
+	_ReduceAsyncToPrefixUnaryOp                                         = _ReduceType(131)
+	_ReduceDeferToPrefixUnaryOp                                         = _ReduceType(132)
+	_ReduceGreaterToPrefixUnaryOp                                       = _ReduceType(133)
+	_ReducePrefixableExprToMulExpr                                      = _ReduceType(134)
+	_ReduceBinaryMulExprToMulExpr                                       = _ReduceType(135)
+	_ReduceToBinaryMulExpr                                              = _ReduceType(136)
+	_ReduceMulToMulOp                                                   = _ReduceType(137)
+	_ReduceDivToMulOp                                                   = _ReduceType(138)
+	_ReduceModToMulOp                                                   = _ReduceType(139)
+	_ReduceBitAndToMulOp                                                = _ReduceType(140)
+	_ReduceBitLshiftToMulOp                                             = _ReduceType(141)
+	_ReduceBitRshiftToMulOp                                             = _ReduceType(142)
+	_ReduceMulExprToAddExpr                                             = _ReduceType(143)
+	_ReduceBinaryAddExprToAddExpr                                       = _ReduceType(144)
+	_ReduceToBinaryAddExpr                                              = _ReduceType(145)
+	_ReduceAddToAddOp                                                   = _ReduceType(146)
+	_ReduceSubToAddOp                                                   = _ReduceType(147)
+	_ReduceBitOrToAddOp                                                 = _ReduceType(148)
+	_ReduceBitXorToAddOp                                                = _ReduceType(149)
+	_ReduceAddExprToCmpExpr                                             = _ReduceType(150)
+	_ReduceBinaryCmpExprToCmpExpr                                       = _ReduceType(151)
+	_ReduceToBinaryCmpExpr                                              = _ReduceType(152)
+	_ReduceEqualToCmpOp                                                 = _ReduceType(153)
+	_ReduceNotEqualToCmpOp                                              = _ReduceType(154)
+	_ReduceLessToCmpOp                                                  = _ReduceType(155)
+	_ReduceLessOrEqualToCmpOp                                           = _ReduceType(156)
+	_ReduceGreaterToCmpOp                                               = _ReduceType(157)
+	_ReduceGreaterOrEqualToCmpOp                                        = _ReduceType(158)
+	_ReduceCmpExprToAndExpr                                             = _ReduceType(159)
+	_ReduceBinaryAndExprToAndExpr                                       = _ReduceType(160)
+	_ReduceToBinaryAndExpr                                              = _ReduceType(161)
+	_ReduceAndExprToOrExpr                                              = _ReduceType(162)
+	_ReduceBinaryOrExprToOrExpr                                         = _ReduceType(163)
+	_ReduceToBinaryOrExpr                                               = _ReduceType(164)
+	_ReduceOrExprToSendRecvExpr                                         = _ReduceType(165)
+	_ReduceSendExprToSendRecvExpr                                       = _ReduceType(166)
+	_ReduceRecvExprToSendRecvExpr                                       = _ReduceType(167)
+	_ReduceToSendExpr                                                   = _ReduceType(168)
+	_ReduceToRecvExpr                                                   = _ReduceType(169)
+	_ReduceSendRecvExprToAssignOpExpr                                   = _ReduceType(170)
+	_ReduceBinaryAssignOpExprToAssignOpExpr                             = _ReduceType(171)
+	_ReduceToBinaryAssignOpExpr                                         = _ReduceType(172)
+	_ReduceAddAssignToBinaryAssignOp                                    = _ReduceType(173)
+	_ReduceSubAssignToBinaryAssignOp                                    = _ReduceType(174)
+	_ReduceMulAssignToBinaryAssignOp                                    = _ReduceType(175)
+	_ReduceDivAssignToBinaryAssignOp                                    = _ReduceType(176)
+	_ReduceModAssignToBinaryAssignOp                                    = _ReduceType(177)
+	_ReduceBitAndAssignToBinaryAssignOp                                 = _ReduceType(178)
+	_ReduceBitOrAssignToBinaryAssignOp                                  = _ReduceType(179)
+	_ReduceBitXorAssignToBinaryAssignOp                                 = _ReduceType(180)
+	_ReduceBitLshiftAssignToBinaryAssignOp                              = _ReduceType(181)
+	_ReduceBitRshiftAssignToBinaryAssignOp                              = _ReduceType(182)
+	_ReduceAssignOpExprToExpr                                           = _ReduceType(183)
+	_ReduceStatementsExprToExpr                                         = _ReduceType(184)
+	_ReduceIfExprToExpr                                                 = _ReduceType(185)
+	_ReduceSwitchExprToExpr                                             = _ReduceType(186)
+	_ReduceSelectExprToExpr                                             = _ReduceType(187)
+	_ReduceLoopExprToExpr                                               = _ReduceType(188)
+	_ReduceDeclVarPatternToExpr                                         = _ReduceType(189)
+	_ReduceStatementsToStatementsExpr                                   = _ReduceType(190)
+	_ReduceLabelledToStatementsExpr                                     = _ReduceType(191)
+	_ReduceToStatements                                                 = _ReduceType(192)
+	_ReduceAddImplicitToProperStatementList                             = _ReduceType(193)
+	_ReduceAddExplicitToProperStatementList                             = _ReduceType(194)
+	_ReduceStatementToProperStatementList                               = _ReduceType(195)
+	_ReduceProperStatementListToStatementList                           = _ReduceType(196)
+	_ReduceImproperImplicitToStatementList                              = _ReduceType(197)
+	_ReduceImproperExplicitToStatementList                              = _ReduceType(198)
+	_ReduceNilToStatementList                                           = _ReduceType(199)
+	_ReduceUnlabelledToIfExpr                                           = _ReduceType(200)
+	_ReduceLabelledToIfExpr                                             = _ReduceType(201)
+	_ReduceIfElifExprToIfElseExpr                                       = _ReduceType(202)
+	_ReduceElseToIfElseExpr                                             = _ReduceType(203)
+	_ReduceIfOnlyExprToIfElifExpr                                       = _ReduceType(204)
+	_ReduceElifToIfElifExpr                                             = _ReduceType(205)
+	_ReduceToIfOnlyExpr                                                 = _ReduceType(206)
+	_ReduceExprToCondition                                              = _ReduceType(207)
+	_ReduceCasePatternExprToCondition                                   = _ReduceType(208)
+	_ReduceToCasePatternExpr                                            = _ReduceType(209)
+	_ReduceSwitchExprBodyToSwitchExpr                                   = _ReduceType(210)
+	_ReduceLabelledToSwitchExpr                                         = _ReduceType(211)
+	_ReduceToSwitchExprBody                                             = _ReduceType(212)
+	_ReduceSelectExprBodyToSelectExpr                                   = _ReduceType(213)
+	_ReduceLabelledToSelectExpr                                         = _ReduceType(214)
+	_ReduceToSelectExprBody                                             = _ReduceType(215)
+	_ReduceLoopExprBodyToLoopExpr                                       = _ReduceType(216)
+	_ReduceLabelledToLoopExpr                                           = _ReduceType(217)
+	_ReduceInfiniteToLoopExprBody                                       = _ReduceType(218)
+	_ReduceDoWhileToLoopExprBody                                        = _ReduceType(219)
+	_ReduceWhileToLoopExprBody                                          = _ReduceType(220)
+	_ReduceIteratorToLoopExprBody                                       = _ReduceType(221)
+	_ReduceForToLoopExprBody                                            = _ReduceType(222)
+	_ReduceStatementToOptionalStatement                                 = _ReduceType(223)
+	_ReduceNilToOptionalStatement                                       = _ReduceType(224)
+	_ReduceExprToOptionalExpr                                           = _ReduceType(225)
+	_ReduceNilToOptionalExpr                                            = _ReduceType(226)
+	_ReduceToRepeatLoopBody                                             = _ReduceType(227)
+	_ReduceToForLoopBody                                                = _ReduceType(228)
+	_ReduceExprToReturnableExpr                                         = _ReduceType(229)
+	_ReduceImproperExprStructToReturnableExpr                           = _ReduceType(230)
+	_ReducePairToImproperExprStruct                                     = _ReduceType(231)
+	_ReduceAddToImproperExprStruct                                      = _ReduceType(232)
+	_ReduceExplicitStructTypeExprToInitializableTypeExpr                = _ReduceType(233)
+	_ReduceSliceTypeExprToInitializableTypeExpr                         = _ReduceType(234)
+	_ReduceArrayTypeExprToInitializableTypeExpr                         = _ReduceType(235)
+	_ReduceMapTypeExprToInitializableTypeExpr                           = _ReduceType(236)
+	_ReduceToSliceTypeExpr                                              = _ReduceType(237)
+	_ReduceToArrayTypeExpr                                              = _ReduceType(238)
+	_ReduceToMapTypeExpr                                                = _ReduceType(239)
+	_ReduceInitializableTypeExprToAtomTypeExpr                          = _ReduceType(240)
+	_ReduceNamedTypeExprToAtomTypeExpr                                  = _ReduceType(241)
+	_ReduceInferredTypeExprToAtomTypeExpr                               = _ReduceType(242)
+	_ReduceImplicitStructTypeExprToAtomTypeExpr                         = _ReduceType(243)
+	_ReduceExplicitEnumTypeExprToAtomTypeExpr                           = _ReduceType(244)
+	_ReduceImplicitEnumTypeExprToAtomTypeExpr                           = _ReduceType(245)
+	_ReduceTraitTypeExprToAtomTypeExpr                                  = _ReduceType(246)
+	_ReduceFuncTypeExprToAtomTypeExpr                                   = _ReduceType(247)
+	_ReduceLocalToNamedTypeExpr                                         = _ReduceType(248)
+	_ReduceExternalToNamedTypeExpr                                      = _ReduceType(249)
+	_ReduceDotToInferredTypeExpr                                        = _ReduceType(250)
+	_ReduceUnderscoreToInferredTypeExpr                                 = _ReduceType(251)
+	_ReduceAtomTypeExprToReturnableTypeExpr                             = _ReduceType(252)
+	_ReducePrefixUnaryTypeExprToReturnableTypeExpr                      = _ReduceType(253)
+	_ReduceToPrefixUnaryTypeExpr                                        = _ReduceType(254)
+	_ReduceQuestionToPrefixUnaryTypeOp                                  = _ReduceType(255)
+	_ReduceExclaimToPrefixUnaryTypeOp                                   = _ReduceType(256)
+	_ReduceBitAndToPrefixUnaryTypeOp                                    = _ReduceType(257)
+	_ReduceTildeToPrefixUnaryTypeOp                                     = _ReduceType(258)
+	_ReduceTildeTildeToPrefixUnaryTypeOp                                = _ReduceType(259)
+	_ReduceReturnableTypeExprToTypeExpr                                 = _ReduceType(260)
+	_ReduceBinaryTypeExprToTypeExpr                                     = _ReduceType(261)
+	_ReduceToBinaryTypeExpr                                             = _ReduceType(262)
+	_ReduceMulToBinaryTypeOp                                            = _ReduceType(263)
+	_ReduceAddToBinaryTypeOp                                            = _ReduceType(264)
+	_ReduceSubToBinaryTypeOp                                            = _ReduceType(265)
+	_ReduceDefinitionToTypeDef                                          = _ReduceType(266)
+	_ReduceConstrainedDefToTypeDef                                      = _ReduceType(267)
+	_ReduceAliasToTypeDef                                               = _ReduceType(268)
+	_ReduceUnconstrainedToGenericParameter                              = _ReduceType(269)
+	_ReduceConstrainedToGenericParameter                                = _ReduceType(270)
+	_ReduceGenericToGenericParameters                                   = _ReduceType(271)
+	_ReduceNilToGenericParameters                                       = _ReduceType(272)
+	_ReduceAddToProperGenericParameterList                              = _ReduceType(273)
+	_ReduceGenericParameterToProperGenericParameterList                 = _ReduceType(274)
+	_ReduceProperGenericParameterListToGenericParameterList             = _ReduceType(275)
+	_ReduceImproperToGenericParameterList                               = _ReduceType(276)
+	_ReduceNilToGenericParameterList                                    = _ReduceType(277)
+	_ReduceBindingToGenericArguments                                    = _ReduceType(278)
+	_ReduceNilToGenericArguments                                        = _ReduceType(279)
+	_ReduceAddToProperGenericArgumentList                               = _ReduceType(280)
+	_ReduceTypeExprToProperGenericArgumentList                          = _ReduceType(281)
+	_ReduceProperGenericArgumentListToGenericArgumentList               = _ReduceType(282)
+	_ReduceImproperToGenericArgumentList                                = _ReduceType(283)
+	_ReduceNilToGenericArgumentList                                     = _ReduceType(284)
+	_ReduceNamedToFieldDef                                              = _ReduceType(285)
+	_ReduceUnnamedToFieldDef                                            = _ReduceType(286)
+	_ReduceFieldDefToTypeProperty                                       = _ReduceType(287)
+	_ReduceDefaultEnumFieldDefToTypeProperty                            = _ReduceType(288)
+	_ReducePaddingFieldDefToTypeProperty                                = _ReduceType(289)
+	_ReduceMethodSignatureToTypeProperty                                = _ReduceType(290)
+	_ReduceUnsafeStmtToTypeProperty                                     = _ReduceType(291)
+	_ReduceAddToProperImplicitTypeProperties                            = _ReduceType(292)
+	_ReduceTypePropertyToProperImplicitTypeProperties                   = _ReduceType(293)
+	_ReduceProperImplicitTypePropertiesToImplicitTypeProperties         = _ReduceType(294)
+	_ReduceImproperToImplicitTypeProperties                             = _ReduceType(295)
+	_ReduceNilToImplicitTypeProperties                                  = _ReduceType(296)
+	_ReduceToImplicitStructTypeExpr                                     = _ReduceType(297)
+	_ReduceAddImplicitToProperExplicitTypeProperties                    = _ReduceType(298)
+	_ReduceAddExplicitToProperExplicitTypeProperties                    = _ReduceType(299)
+	_ReduceTypePropertyToProperExplicitTypeProperties                   = _ReduceType(300)
+	_ReduceProperExplicitTypePropertiesToExplicitTypeProperties         = _ReduceType(301)
+	_ReduceImproperImplicitToExplicitTypeProperties                     = _ReduceType(302)
+	_ReduceImproperExplicitToExplicitTypeProperties                     = _ReduceType(303)
+	_ReduceNilToExplicitTypeProperties                                  = _ReduceType(304)
+	_ReduceToExplicitStructTypeExpr                                     = _ReduceType(305)
+	_ReduceToTraitTypeExpr                                              = _ReduceType(306)
+	_ReducePairToProperImplicitEnumTypeProperties                       = _ReduceType(307)
+	_ReduceAddToProperImplicitEnumTypeProperties                        = _ReduceType(308)
+	_ReduceProperImplicitEnumTypePropertiesToImplicitEnumTypeProperties = _ReduceType(309)
+	_ReduceImproperToImplicitEnumTypeProperties                         = _ReduceType(310)
+	_ReduceToImplicitEnumTypeExpr                                       = _ReduceType(311)
+	_ReduceExplicitPairToProperExplicitEnumTypeProperties               = _ReduceType(312)
+	_ReduceImplicitPairToProperExplicitEnumTypeProperties               = _ReduceType(313)
+	_ReduceExplicitAddToProperExplicitEnumTypeProperties                = _ReduceType(314)
+	_ReduceImplicitAddToProperExplicitEnumTypeProperties                = _ReduceType(315)
+	_ReduceProperExplicitEnumTypePropertiesToExplicitEnumTypeProperties = _ReduceType(316)
+	_ReduceImproperToExplicitEnumTypeProperties                         = _ReduceType(317)
+	_ReduceToExplicitEnumTypeExpr                                       = _ReduceType(318)
+	_ReduceReturnableTypeExprToReturnType                               = _ReduceType(319)
+	_ReduceNilToReturnType                                              = _ReduceType(320)
+	_ReduceNamedTypedArgToProperParameterDef                            = _ReduceType(321)
+	_ReduceNamedTypedVarargToProperParameterDef                         = _ReduceType(322)
+	_ReduceNamedInferredVarargToProperParameterDef                      = _ReduceType(323)
+	_ReduceIgnoreTypedArgToProperParameterDef                           = _ReduceType(324)
+	_ReduceIgnoreInferredVarargToProperParameterDef                     = _ReduceType(325)
+	_ReduceIgnoreTypedVarargToProperParameterDef                        = _ReduceType(326)
+	_ReduceProperParameterDefToParameterDecl                            = _ReduceType(327)
+	_ReduceUnnamedTypedArgToParameterDecl                               = _ReduceType(328)
+	_ReduceUnnamedInferredVarargToParameterDecl                         = _ReduceType(329)
+	_ReduceUnnamedTypedVarargToParameterDecl                            = _ReduceType(330)
+	_ReduceProperParameterDefToParameterDef                             = _ReduceType(331)
+	_ReduceNamedInferredArgToParameterDef                               = _ReduceType(332)
+	_ReduceIgnoreInferredArgToParameterDef                              = _ReduceType(333)
+	_ReduceAddToProperParameterDeclList                                 = _ReduceType(334)
+	_ReduceParameterDeclToProperParameterDeclList                       = _ReduceType(335)
+	_ReduceProperParameterDeclListToParameterDeclList                   = _ReduceType(336)
+	_ReduceImproperToParameterDeclList                                  = _ReduceType(337)
+	_ReduceNilToParameterDeclList                                       = _ReduceType(338)
+	_ReduceToParameterDecls                                             = _ReduceType(339)
+	_ReduceAddToProperParameterDefList                                  = _ReduceType(340)
+	_ReduceParameterDefToProperParameterDefList                         = _ReduceType(341)
+	_ReduceProperParameterDefListToParameterDefList                     = _ReduceType(342)
+	_ReduceImproperToParameterDefList                                   = _ReduceType(343)
+	_ReduceNilToParameterDefList                                        = _ReduceType(344)
+	_ReduceToParameterDefs                                              = _ReduceType(345)
+	_ReduceToFuncTypeExpr                                               = _ReduceType(346)
+	_ReduceToMethodSignature                                            = _ReduceType(347)
+	_ReduceFuncDefToNamedFuncDef                                        = _ReduceType(348)
+	_ReduceMethodDefToNamedFuncDef                                      = _ReduceType(349)
+	_ReduceToAnonymousFuncExpr                                          = _ReduceType(350)
+	_ReduceToPackageDef                                                 = _ReduceType(351)
 )
 
 func (i _ReduceType) String() string {
@@ -2752,6 +2757,10 @@ func (i _ReduceType) String() string {
 		return "ToAccessExpr"
 	case _ReduceToIndexExpr:
 		return "ToIndexExpr"
+	case _ReduceExprToIndex:
+		return "ExprToIndex"
+	case _ReduceColonExprToIndex:
+		return "ColonExprToIndex"
 	case _ReduceToAsExpr:
 		return "ToAsExpr"
 	case _ReduceToCallExpr:
@@ -3517,6 +3526,8 @@ const (
 	_State241 = _StateId(241)
 	_State242 = _StateId(242)
 	_State243 = _StateId(243)
+	_State244 = _StateId(244)
+	_State245 = _StateId(245)
 )
 
 type Symbol struct {
@@ -3660,7 +3671,7 @@ func (s *Symbol) Loc() Location {
 		if ok {
 			return loc.Loc()
 		}
-	case DeclVarPatternType, VarPatternType, TuplePatternType, AssignSelectablePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, IfExprType, ConditionType, CasePatternExprType, SwitchExprType, SelectExprType, LoopExprType, OptionalExprType, ReturnableExprType, AnonymousFuncExprType:
+	case DeclVarPatternType, VarPatternType, TuplePatternType, AssignSelectablePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, IndexType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, IfExprType, ConditionType, CasePatternExprType, SwitchExprType, SelectExprType, LoopExprType, OptionalExprType, ReturnableExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
 		if ok {
 			return loc.Loc()
@@ -3817,7 +3828,7 @@ func (s *Symbol) End() Location {
 		if ok {
 			return loc.End()
 		}
-	case DeclVarPatternType, VarPatternType, TuplePatternType, AssignSelectablePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, IfExprType, ConditionType, CasePatternExprType, SwitchExprType, SelectExprType, LoopExprType, OptionalExprType, ReturnableExprType, AnonymousFuncExprType:
+	case DeclVarPatternType, VarPatternType, TuplePatternType, AssignSelectablePatternType, SwitchableCasePatternType, CaseEnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, IndexType, AsExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, StatementsExprType, IfExprType, ConditionType, CasePatternExprType, SwitchExprType, SelectExprType, LoopExprType, OptionalExprType, ReturnableExprType, AnonymousFuncExprType:
 		loc, ok := interface{}(s.Expression).(locator)
 		if ok {
 			return loc.End()
@@ -4557,7 +4568,21 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-4:]
 		stack = stack[:len(stack)-4]
 		symbol.SymbolId_ = IndexExprType
-		symbol.Expression, err = reducer.ToIndexExpr(args[0].Expression, args[1].Value, args[2].Argument, args[3].Value)
+		symbol.Expression, err = reducer.ToIndexExpr(args[0].Expression, args[1].Value, args[2].Expression, args[3].Value)
+	case _ReduceExprToIndex:
+		args := stack[len(stack)-1:]
+		stack = stack[:len(stack)-1]
+		symbol.SymbolId_ = IndexType
+		//line grammar.lr:320:4
+		symbol.Expression = args[0].Expression
+		err = nil
+	case _ReduceColonExprToIndex:
+		args := stack[len(stack)-1:]
+		stack = stack[:len(stack)-1]
+		symbol.SymbolId_ = IndexType
+		//line grammar.lr:321:4
+		symbol.Expression = args[0].ImplicitStructExpr
+		err = nil
 	case _ReduceToAsExpr:
 		args := stack[len(stack)-6:]
 		stack = stack[:len(stack)-6]
@@ -4582,7 +4607,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ArgumentsType
-		//line grammar.lr:330:4
+		//line grammar.lr:334:4
 		symbol.ArgumentList = args[0].ArgumentList
 		err = nil
 	case _ReduceImproperToArguments:
@@ -4652,14 +4677,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixableExprType
-		//line grammar.lr:360:4
+		//line grammar.lr:364:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReducePostfixUnaryExprToPostfixableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixableExprType
-		//line grammar.lr:361:4
+		//line grammar.lr:365:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToPostfixUnaryExpr:
@@ -4671,42 +4696,42 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixUnaryOpType
-		//line grammar.lr:366:4
+		//line grammar.lr:370:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceExclaimToPostfixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixUnaryOpType
-		//line grammar.lr:367:4
+		//line grammar.lr:371:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAddOneAssignToPostfixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixUnaryOpType
-		//line grammar.lr:371:4
+		//line grammar.lr:375:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubOneAssignToPostfixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PostfixUnaryOpType
-		//line grammar.lr:372:4
+		//line grammar.lr:376:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReducePostfixableExprToPrefixableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixableExprType
-		//line grammar.lr:379:4
+		//line grammar.lr:383:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReducePrefixUnaryExprToPrefixableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixableExprType
-		//line grammar.lr:380:4
+		//line grammar.lr:384:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToPrefixUnaryExpr:
@@ -4718,77 +4743,77 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:385:4
+		//line grammar.lr:389:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitXorToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:386:4
+		//line grammar.lr:390:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAddToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:387:4
+		//line grammar.lr:391:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:388:4
+		//line grammar.lr:392:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceMulToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:391:4
+		//line grammar.lr:395:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:394:4
+		//line grammar.lr:398:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAsyncToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:412:4
+		//line grammar.lr:416:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDeferToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:413:4
+		//line grammar.lr:417:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceGreaterToPrefixUnaryOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryOpType
-		//line grammar.lr:422:4
+		//line grammar.lr:426:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReducePrefixableExprToMulExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulExprType
-		//line grammar.lr:429:4
+		//line grammar.lr:433:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryMulExprToMulExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulExprType
-		//line grammar.lr:430:4
+		//line grammar.lr:434:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryMulExpr:
@@ -4800,56 +4825,56 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:435:4
+		//line grammar.lr:439:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDivToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:436:4
+		//line grammar.lr:440:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceModToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:437:4
+		//line grammar.lr:441:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:438:4
+		//line grammar.lr:442:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitLshiftToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:439:4
+		//line grammar.lr:443:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitRshiftToMulOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = MulOpType
-		//line grammar.lr:440:4
+		//line grammar.lr:444:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceMulExprToAddExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddExprType
-		//line grammar.lr:447:4
+		//line grammar.lr:451:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryAddExprToAddExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddExprType
-		//line grammar.lr:448:4
+		//line grammar.lr:452:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryAddExpr:
@@ -4861,42 +4886,42 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:453:4
+		//line grammar.lr:457:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:454:4
+		//line grammar.lr:458:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitOrToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:455:4
+		//line grammar.lr:459:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitXorToAddOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AddOpType
-		//line grammar.lr:456:4
+		//line grammar.lr:460:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAddExprToCmpExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpExprType
-		//line grammar.lr:463:4
+		//line grammar.lr:467:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryCmpExprToCmpExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpExprType
-		//line grammar.lr:464:4
+		//line grammar.lr:468:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryCmpExpr:
@@ -4908,56 +4933,56 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:469:4
+		//line grammar.lr:473:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceNotEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:470:4
+		//line grammar.lr:474:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceLessToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:471:4
+		//line grammar.lr:475:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceLessOrEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:472:4
+		//line grammar.lr:476:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceGreaterToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:473:4
+		//line grammar.lr:477:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceGreaterOrEqualToCmpOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = CmpOpType
-		//line grammar.lr:474:4
+		//line grammar.lr:478:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceCmpExprToAndExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AndExprType
-		//line grammar.lr:481:4
+		//line grammar.lr:485:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryAndExprToAndExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AndExprType
-		//line grammar.lr:482:4
+		//line grammar.lr:486:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryAndExpr:
@@ -4969,14 +4994,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OrExprType
-		//line grammar.lr:491:4
+		//line grammar.lr:495:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryOrExprToOrExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OrExprType
-		//line grammar.lr:492:4
+		//line grammar.lr:496:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryOrExpr:
@@ -4988,21 +5013,21 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SendRecvExprType
-		//line grammar.lr:501:4
+		//line grammar.lr:505:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceSendExprToSendRecvExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SendRecvExprType
-		//line grammar.lr:502:4
+		//line grammar.lr:506:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceRecvExprToSendRecvExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SendRecvExprType
-		//line grammar.lr:503:4
+		//line grammar.lr:507:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToSendExpr:
@@ -5019,14 +5044,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AssignOpExprType
-		//line grammar.lr:516:4
+		//line grammar.lr:520:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceBinaryAssignOpExprToAssignOpExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AssignOpExprType
-		//line grammar.lr:517:4
+		//line grammar.lr:521:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToBinaryAssignOpExpr:
@@ -5038,126 +5063,126 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:523:4
+		//line grammar.lr:527:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubAssignToBinaryAssignOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:524:4
+		//line grammar.lr:528:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceMulAssignToBinaryAssignOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:525:4
+		//line grammar.lr:529:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDivAssignToBinaryAssignOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:526:4
+		//line grammar.lr:530:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceModAssignToBinaryAssignOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:527:4
+		//line grammar.lr:531:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndAssignToBinaryAssignOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:528:4
+		//line grammar.lr:532:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitOrAssignToBinaryAssignOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:529:4
+		//line grammar.lr:533:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitXorAssignToBinaryAssignOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:530:4
+		//line grammar.lr:534:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitLshiftAssignToBinaryAssignOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:531:4
+		//line grammar.lr:535:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitRshiftAssignToBinaryAssignOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryAssignOpType
-		//line grammar.lr:532:4
+		//line grammar.lr:536:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAssignOpExprToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ExprType
-		//line grammar.lr:539:4
+		//line grammar.lr:543:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceStatementsExprToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ExprType
-		//line grammar.lr:540:4
+		//line grammar.lr:544:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceIfExprToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ExprType
-		//line grammar.lr:541:4
+		//line grammar.lr:545:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceSwitchExprToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ExprType
-		//line grammar.lr:542:4
+		//line grammar.lr:546:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceSelectExprToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ExprType
-		//line grammar.lr:543:4
+		//line grammar.lr:547:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceLoopExprToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ExprType
-		//line grammar.lr:544:4
+		//line grammar.lr:548:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceDeclVarPatternToExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ExprType
-		//line grammar.lr:547:4
+		//line grammar.lr:551:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceStatementsToStatementsExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = StatementsExprType
-		//line grammar.lr:550:4
+		//line grammar.lr:554:4
 		symbol.Expression = args[0].StatementsExpr
 		err = nil
 	case _ReduceLabelledToStatementsExpr:
@@ -5189,7 +5214,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = StatementListType
-		//line grammar.lr:576:4
+		//line grammar.lr:580:4
 		symbol.StatementList = args[0].StatementList
 		err = nil
 	case _ReduceImproperImplicitToStatementList:
@@ -5219,7 +5244,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = IfElseExprType
-		//line grammar.lr:589:4
+		//line grammar.lr:593:4
 		symbol.IfExpr = args[0].IfExpr
 		err = nil
 	case _ReduceElseToIfElseExpr:
@@ -5231,7 +5256,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = IfElifExprType
-		//line grammar.lr:593:4
+		//line grammar.lr:597:4
 		symbol.IfExpr = args[0].IfExpr
 		err = nil
 	case _ReduceElifToIfElifExpr:
@@ -5248,14 +5273,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ConditionType
-		//line grammar.lr:600:4
+		//line grammar.lr:604:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceCasePatternExprToCondition:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ConditionType
-		//line grammar.lr:601:4
+		//line grammar.lr:605:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceToCasePatternExpr:
@@ -5267,7 +5292,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SwitchExprType
-		//line grammar.lr:623:4
+		//line grammar.lr:627:4
 		symbol.Expression = args[0].SwitchExpr
 		err = nil
 	case _ReduceLabelledToSwitchExpr:
@@ -5284,7 +5309,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = SelectExprType
-		//line grammar.lr:629:4
+		//line grammar.lr:633:4
 		symbol.Expression = args[0].SelectExpr
 		err = nil
 	case _ReduceLabelledToSelectExpr:
@@ -5301,7 +5326,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = LoopExprType
-		//line grammar.lr:637:4
+		//line grammar.lr:641:4
 		symbol.Expression = args[0].LoopExpr
 		err = nil
 	case _ReduceLabelledToLoopExpr:
@@ -5338,7 +5363,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OptionalStatementType
-		//line grammar.lr:648:4
+		//line grammar.lr:652:4
 		symbol.Statement = args[0].Statement
 		err = nil
 	case _ReduceNilToOptionalStatement:
@@ -5348,7 +5373,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = OptionalExprType
-		//line grammar.lr:652:4
+		//line grammar.lr:656:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceNilToOptionalExpr:
@@ -5368,14 +5393,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnableExprType
-		//line grammar.lr:664:4
+		//line grammar.lr:668:4
 		symbol.Expression = args[0].Expression
 		err = nil
 	case _ReduceImproperExprStructToReturnableExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnableExprType
-		//line grammar.lr:665:4
+		//line grammar.lr:669:4
 		symbol.Expression = args[0].ImplicitStructExpr
 		err = nil
 	case _ReducePairToImproperExprStruct:
@@ -5392,28 +5417,28 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = InitializableTypeExprType
-		//line grammar.lr:679:4
+		//line grammar.lr:683:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceSliceTypeExprToInitializableTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = InitializableTypeExprType
-		//line grammar.lr:680:4
+		//line grammar.lr:684:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceArrayTypeExprToInitializableTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = InitializableTypeExprType
-		//line grammar.lr:681:4
+		//line grammar.lr:685:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceMapTypeExprToInitializableTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = InitializableTypeExprType
-		//line grammar.lr:682:4
+		//line grammar.lr:686:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceToSliceTypeExpr:
@@ -5435,56 +5460,56 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:694:4
+		//line grammar.lr:698:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceNamedTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:695:4
+		//line grammar.lr:699:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceInferredTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:696:4
+		//line grammar.lr:700:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceImplicitStructTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:697:4
+		//line grammar.lr:701:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceExplicitEnumTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:698:4
+		//line grammar.lr:702:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceImplicitEnumTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:699:4
+		//line grammar.lr:703:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceTraitTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:700:4
+		//line grammar.lr:704:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceFuncTypeExprToAtomTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = AtomTypeExprType
-		//line grammar.lr:701:4
+		//line grammar.lr:705:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceLocalToNamedTypeExpr:
@@ -5511,14 +5536,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnableTypeExprType
-		//line grammar.lr:720:4
+		//line grammar.lr:724:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReducePrefixUnaryTypeExprToReturnableTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnableTypeExprType
-		//line grammar.lr:721:4
+		//line grammar.lr:725:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceToPrefixUnaryTypeExpr:
@@ -5530,49 +5555,49 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryTypeOpType
-		//line grammar.lr:727:4
+		//line grammar.lr:731:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceExclaimToPrefixUnaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryTypeOpType
-		//line grammar.lr:728:4
+		//line grammar.lr:732:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceBitAndToPrefixUnaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryTypeOpType
-		//line grammar.lr:729:4
+		//line grammar.lr:733:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceTildeToPrefixUnaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryTypeOpType
-		//line grammar.lr:730:4
+		//line grammar.lr:734:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceTildeTildeToPrefixUnaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = PrefixUnaryTypeOpType
-		//line grammar.lr:731:4
+		//line grammar.lr:735:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceReturnableTypeExprToTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TypeExprType
-		//line grammar.lr:736:4
+		//line grammar.lr:740:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceBinaryTypeExprToTypeExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TypeExprType
-		//line grammar.lr:737:4
+		//line grammar.lr:741:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceToBinaryTypeExpr:
@@ -5584,21 +5609,21 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryTypeOpType
-		//line grammar.lr:743:4
+		//line grammar.lr:747:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceAddToBinaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryTypeOpType
-		//line grammar.lr:744:4
+		//line grammar.lr:748:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceSubToBinaryTypeOp:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = BinaryTypeOpType
-		//line grammar.lr:745:4
+		//line grammar.lr:749:4
 		symbol.Value = args[0].Value
 		err = nil
 	case _ReduceDefinitionToTypeDef:
@@ -5648,7 +5673,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = GenericParameterListType
-		//line grammar.lr:770:4
+		//line grammar.lr:774:4
 		symbol.GenericParameterList = args[0].GenericParameterList
 		err = nil
 	case _ReduceImproperToGenericParameterList:
@@ -5681,7 +5706,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = GenericArgumentListType
-		//line grammar.lr:783:4
+		//line grammar.lr:787:4
 		symbol.TypeExpressionList = args[0].TypeExpressionList
 		err = nil
 	case _ReduceImproperToGenericArgumentList:
@@ -5706,7 +5731,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TypePropertyType
-		//line grammar.lr:803:4
+		//line grammar.lr:807:4
 		symbol.TypeProperty = args[0].FieldDef
 		err = nil
 	case _ReduceDefaultEnumFieldDefToTypeProperty:
@@ -5723,14 +5748,14 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TypePropertyType
-		//line grammar.lr:806:4
+		//line grammar.lr:810:4
 		symbol.TypeProperty = args[0].TypeProperty
 		err = nil
 	case _ReduceUnsafeStmtToTypeProperty:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = TypePropertyType
-		//line grammar.lr:807:4
+		//line grammar.lr:811:4
 		symbol.TypeProperty = args[0].UnsafeStmt
 		err = nil
 	case _ReduceAddToProperImplicitTypeProperties:
@@ -5747,7 +5772,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ImplicitTypePropertiesType
-		//line grammar.lr:814:4
+		//line grammar.lr:818:4
 		symbol.TypeProperties = args[0].TypeProperties
 		err = nil
 	case _ReduceImproperToImplicitTypeProperties:
@@ -5782,7 +5807,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ExplicitTypePropertiesType
-		//line grammar.lr:827:4
+		//line grammar.lr:831:4
 		symbol.TypeProperties = args[0].TypeProperties
 		err = nil
 	case _ReduceImproperImplicitToExplicitTypeProperties:
@@ -5822,7 +5847,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ImplicitEnumTypePropertiesType
-		//line grammar.lr:851:4
+		//line grammar.lr:855:4
 		symbol.TypeProperties = args[0].TypeProperties
 		err = nil
 	case _ReduceImproperToImplicitEnumTypeProperties:
@@ -5859,7 +5884,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ExplicitEnumTypePropertiesType
-		//line grammar.lr:865:4
+		//line grammar.lr:869:4
 		symbol.TypeProperties = args[0].TypeProperties
 		err = nil
 	case _ReduceImproperToExplicitEnumTypeProperties:
@@ -5876,7 +5901,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnTypeType
-		//line grammar.lr:878:4
+		//line grammar.lr:882:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceNilToReturnType:
@@ -5916,7 +5941,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ParameterDeclType
-		//line grammar.lr:892:4
+		//line grammar.lr:896:4
 		symbol.Parameter = args[0].Parameter
 		err = nil
 	case _ReduceUnnamedTypedArgToParameterDecl:
@@ -5938,7 +5963,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ParameterDefType
-		//line grammar.lr:902:4
+		//line grammar.lr:906:4
 		symbol.Parameter = args[0].Parameter
 		err = nil
 	case _ReduceNamedInferredArgToParameterDef:
@@ -5965,7 +5990,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ParameterDeclListType
-		//line grammar.lr:911:4
+		//line grammar.lr:915:4
 		symbol.Parameters = args[0].Parameters
 		err = nil
 	case _ReduceImproperToParameterDeclList:
@@ -5995,7 +6020,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ParameterDefListType
-		//line grammar.lr:922:4
+		//line grammar.lr:926:4
 		symbol.Parameters = args[0].Parameters
 		err = nil
 	case _ReduceImproperToParameterDefList:
@@ -10098,8 +10123,6 @@ func (_ActionTableType) Get(
 		}
 	case _State94:
 		switch symbolId {
-		case IdentifierToken:
-			return _Action{_ShiftAction, _State84, 0}, true
 		case IfToken:
 			return _Action{_ShiftAction, _State25, 0}, true
 		case SwitchToken:
@@ -10130,10 +10153,10 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State19, 0}, true
 		case AccessibleExprType:
 			return _Action{_ShiftAction, _State35, 0}, true
-		case ArgumentType:
-			return _Action{_ShiftAction, _State166, 0}, true
+		case IndexType:
+			return _Action{_ShiftAction, _State168, 0}, true
 		case ColonExprType:
-			return _Action{_ShiftAction, _State86, 0}, true
+			return _Action{_ShiftAction, _State166, 0}, true
 		case PrefixUnaryOpType:
 			return _Action{_ShiftAction, _State46, 0}, true
 		case MulExprType:
@@ -10149,7 +10172,7 @@ func (_ActionTableType) Get(
 		case SendRecvExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
 		case ExprType:
-			return _Action{_ShiftAction, _State87, 0}, true
+			return _Action{_ShiftAction, _State167, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -10164,6 +10187,8 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceRuneLiteralToLiteralExpr}, true
 		case StringLiteralToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceStringLiteralToLiteralExpr}, true
+		case IdentifierToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceIdentifierToNamedExpr}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToNamedExpr}, true
 		case TrueToken:
@@ -10180,8 +10205,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceLetToVarType}, true
 		case NotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNotToPrefixUnaryOp}, true
-		case EllipsisToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSkipPatternToArgument}, true
 		case AddToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToPrefixUnaryOp}, true
 		case SubToken:
@@ -10280,7 +10303,7 @@ func (_ActionTableType) Get(
 	case _State95:
 		switch symbolId {
 		case LparenToken:
-			return _Action{_ShiftAction, _State167, 0}, true
+			return _Action{_ShiftAction, _State169, 0}, true
 		}
 	case _State96:
 		switch symbolId {
@@ -10297,7 +10320,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryOpType:
 			return _Action{_ShiftAction, _State46, 0}, true
 		case MulExprType:
-			return _Action{_ShiftAction, _State168, 0}, true
+			return _Action{_ShiftAction, _State170, 0}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAction, _State42, 0}, true
 		case IntegerLiteralToken:
@@ -10396,7 +10419,7 @@ func (_ActionTableType) Get(
 		case AddExprType:
 			return _Action{_ShiftAction, _State36, 0}, true
 		case CmpExprType:
-			return _Action{_ShiftAction, _State169, 0}, true
+			return _Action{_ShiftAction, _State171, 0}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAction, _State42, 0}, true
 		case IntegerLiteralToken:
@@ -10497,7 +10520,7 @@ func (_ActionTableType) Get(
 		case MulExprType:
 			return _Action{_ShiftAction, _State44, 0}, true
 		case AddExprType:
-			return _Action{_ShiftAction, _State170, 0}, true
+			return _Action{_ShiftAction, _State172, 0}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAction, _State42, 0}, true
 		case IntegerLiteralToken:
@@ -10755,7 +10778,7 @@ func (_ActionTableType) Get(
 	case _State100:
 		switch symbolId {
 		case IfToken:
-			return _Action{_ShiftAction, _State171, 0}, true
+			return _Action{_ShiftAction, _State173, 0}, true
 		case LbraceToken:
 			return _Action{_ShiftAction, _State14, 0}, true
 		case StatementsType:
@@ -10971,7 +10994,7 @@ func (_ActionTableType) Get(
 		case ProperArgumentsType:
 			return _Action{_ShiftAction, _State88, 0}, true
 		case ArgumentsType:
-			return _Action{_ShiftAction, _State172, 0}, true
+			return _Action{_ShiftAction, _State174, 0}, true
 		case ColonExprType:
 			return _Action{_ShiftAction, _State86, 0}, true
 		case PrefixUnaryOpType:
@@ -11414,7 +11437,7 @@ func (_ActionTableType) Get(
 		case CmpExprType:
 			return _Action{_ShiftAction, _State38, 0}, true
 		case AndExprType:
-			return _Action{_ShiftAction, _State173, 0}, true
+			return _Action{_ShiftAction, _State175, 0}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAction, _State42, 0}, true
 		case IntegerLiteralToken:
@@ -11873,7 +11896,7 @@ func (_ActionTableType) Get(
 		case AndExprType:
 			return _Action{_ShiftAction, _State37, 0}, true
 		case OrExprType:
-			return _Action{_ShiftAction, _State174, 0}, true
+			return _Action{_ShiftAction, _State176, 0}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAction, _State42, 0}, true
 		case IntegerLiteralToken:
@@ -11988,7 +12011,7 @@ func (_ActionTableType) Get(
 		case OrExprType:
 			return _Action{_ShiftAction, _State45, 0}, true
 		case SendRecvExprType:
-			return _Action{_ShiftAction, _State175, 0}, true
+			return _Action{_ShiftAction, _State177, 0}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAction, _State42, 0}, true
 		case IntegerLiteralToken:
@@ -12107,11 +12130,11 @@ func (_ActionTableType) Get(
 		case TypeExprType:
 			return _Action{_ShiftAction, _State122, 0}, true
 		case TypePropertyType:
-			return _Action{_ShiftAction, _State178, 0}, true
+			return _Action{_ShiftAction, _State180, 0}, true
 		case ProperExplicitEnumTypePropertiesType:
-			return _Action{_ShiftAction, _State177, 0}, true
+			return _Action{_ShiftAction, _State179, 0}, true
 		case ExplicitEnumTypePropertiesType:
-			return _Action{_ShiftAction, _State176, 0}, true
+			return _Action{_ShiftAction, _State178, 0}, true
 		case DotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDotToInferredTypeExpr}, true
 		case QuestionToken:
@@ -12166,9 +12189,9 @@ func (_ActionTableType) Get(
 	case _State111:
 		switch symbolId {
 		case IdentifierToken:
-			return _Action{_ShiftAction, _State180, 0}, true
+			return _Action{_ShiftAction, _State182, 0}, true
 		case UnderscoreToken:
-			return _Action{_ShiftAction, _State181, 0}, true
+			return _Action{_ShiftAction, _State183, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State32, 0}, true
 		case EnumToken:
@@ -12182,15 +12205,15 @@ func (_ActionTableType) Get(
 		case LbracketToken:
 			return _Action{_ShiftAction, _State28, 0}, true
 		case EllipsisToken:
-			return _Action{_ShiftAction, _State179, 0}, true
+			return _Action{_ShiftAction, _State181, 0}, true
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State184, 0}, true
+			return _Action{_ShiftAction, _State186, 0}, true
 		case ProperParameterDeclListType:
-			return _Action{_ShiftAction, _State183, 0}, true
+			return _Action{_ShiftAction, _State185, 0}, true
 		case ParameterDeclListType:
-			return _Action{_ShiftAction, _State182, 0}, true
+			return _Action{_ShiftAction, _State184, 0}, true
 		case DotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDotToInferredTypeExpr}, true
 		case QuestionToken:
@@ -12314,7 +12337,7 @@ func (_ActionTableType) Get(
 	case _State113:
 		switch symbolId {
 		case IdentifierToken:
-			return _Action{_ShiftAction, _State185, 0}, true
+			return _Action{_ShiftAction, _State187, 0}, true
 		}
 	case _State114:
 		switch symbolId {
@@ -12388,7 +12411,7 @@ func (_ActionTableType) Get(
 	case _State115:
 		switch symbolId {
 		case IdentifierToken:
-			return _Action{_ShiftAction, _State186, 0}, true
+			return _Action{_ShiftAction, _State188, 0}, true
 		case LparenToken:
 			return _Action{_ShiftAction, _State111, 0}, true
 		case ParameterDeclsType:
@@ -12411,13 +12434,13 @@ func (_ActionTableType) Get(
 		case LbracketToken:
 			return _Action{_ShiftAction, _State28, 0}, true
 		case DotToken:
-			return _Action{_ShiftAction, _State187, 0}, true
+			return _Action{_ShiftAction, _State189, 0}, true
 		case DollarLbracketToken:
 			return _Action{_ShiftAction, _State92, 0}, true
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State188, 0}, true
+			return _Action{_ShiftAction, _State190, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case QuestionToken:
@@ -12487,7 +12510,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State189, 0}, true
+			return _Action{_ShiftAction, _State191, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -12551,7 +12574,7 @@ func (_ActionTableType) Get(
 	case _State120:
 		switch symbolId {
 		case OrToken:
-			return _Action{_ShiftAction, _State190, 0}, true
+			return _Action{_ShiftAction, _State192, 0}, true
 		case NewlinesToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceImproperToImplicitEnumTypeProperties}, true
 
@@ -12561,7 +12584,7 @@ func (_ActionTableType) Get(
 	case _State121:
 		switch symbolId {
 		case CommaToken:
-			return _Action{_ShiftAction, _State191, 0}, true
+			return _Action{_ShiftAction, _State193, 0}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceProperImplicitTypePropertiesToImplicitTypeProperties}, true
@@ -12583,7 +12606,7 @@ func (_ActionTableType) Get(
 	case _State123:
 		switch symbolId {
 		case OrToken:
-			return _Action{_ShiftAction, _State192, 0}, true
+			return _Action{_ShiftAction, _State194, 0}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceTypePropertyToProperImplicitTypeProperties}, true
@@ -12617,7 +12640,7 @@ func (_ActionTableType) Get(
 		case ProperExplicitTypePropertiesType:
 			return _Action{_ShiftAction, _State160, 0}, true
 		case ExplicitTypePropertiesType:
-			return _Action{_ShiftAction, _State193, 0}, true
+			return _Action{_ShiftAction, _State195, 0}, true
 		case DotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDotToInferredTypeExpr}, true
 		case QuestionToken:
@@ -12740,11 +12763,11 @@ func (_ActionTableType) Get(
 	case _State126:
 		switch symbolId {
 		case IdentifierToken:
-			return _Action{_ShiftAction, _State194, 0}, true
-		case ProperGenericParameterListType:
 			return _Action{_ShiftAction, _State196, 0}, true
+		case ProperGenericParameterListType:
+			return _Action{_ShiftAction, _State198, 0}, true
 		case GenericParameterListType:
-			return _Action{_ShiftAction, _State195, 0}, true
+			return _Action{_ShiftAction, _State197, 0}, true
 		case GenericParameterType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGenericParameterToProperGenericParameterList}, true
 
@@ -12756,81 +12779,9 @@ func (_ActionTableType) Get(
 		case LparenToken:
 			return _Action{_ShiftAction, _State74, 0}, true
 		case ParameterDefsType:
-			return _Action{_ShiftAction, _State197, 0}, true
+			return _Action{_ShiftAction, _State199, 0}, true
 		}
 	case _State128:
-		switch symbolId {
-		case IdentifierToken:
-			return _Action{_ShiftAction, _State52, 0}, true
-		case StructToken:
-			return _Action{_ShiftAction, _State32, 0}, true
-		case EnumToken:
-			return _Action{_ShiftAction, _State50, 0}, true
-		case TraitToken:
-			return _Action{_ShiftAction, _State54, 0}, true
-		case FuncToken:
-			return _Action{_ShiftAction, _State51, 0}, true
-		case LparenToken:
-			return _Action{_ShiftAction, _State53, 0}, true
-		case LbracketToken:
-			return _Action{_ShiftAction, _State28, 0}, true
-		case EllipsisToken:
-			return _Action{_ShiftAction, _State198, 0}, true
-		case PrefixUnaryTypeOpType:
-			return _Action{_ShiftAction, _State55, 0}, true
-		case TypeExprType:
-			return _Action{_ShiftAction, _State199, 0}, true
-		case UnderscoreToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
-		case DotToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceDotToInferredTypeExpr}, true
-		case QuestionToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
-		case ExclaimToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
-		case TildeToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
-		case TildeTildeToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
-		case BitAndToken:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case InitializableTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
-		case SliceTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
-		case ArrayTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceArrayTypeExprToInitializableTypeExpr}, true
-		case MapTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceMapTypeExprToInitializableTypeExpr}, true
-		case AtomTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomTypeExprToReturnableTypeExpr}, true
-		case NamedTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceNamedTypeExprToAtomTypeExpr}, true
-		case InferredTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceInferredTypeExprToAtomTypeExpr}, true
-		case ReturnableTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnableTypeExprToTypeExpr}, true
-		case PrefixUnaryTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixUnaryTypeExprToReturnableTypeExpr}, true
-		case BinaryTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryTypeExprToTypeExpr}, true
-		case ImplicitStructTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceImplicitStructTypeExprToAtomTypeExpr}, true
-		case ExplicitStructTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceExplicitStructTypeExprToInitializableTypeExpr}, true
-		case TraitTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceTraitTypeExprToAtomTypeExpr}, true
-		case ImplicitEnumTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceImplicitEnumTypeExprToAtomTypeExpr}, true
-		case ExplicitEnumTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceExplicitEnumTypeExprToAtomTypeExpr}, true
-		case FuncTypeExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceFuncTypeExprToAtomTypeExpr}, true
-
-		default:
-			return _Action{_ReduceAction, 0, _ReduceNamedInferredArgToParameterDef}, true
-		}
-	case _State129:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State52, 0}, true
@@ -12900,12 +12851,84 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFuncTypeExprToAtomTypeExpr}, true
 
 		default:
+			return _Action{_ReduceAction, 0, _ReduceNamedInferredArgToParameterDef}, true
+		}
+	case _State129:
+		switch symbolId {
+		case IdentifierToken:
+			return _Action{_ShiftAction, _State52, 0}, true
+		case StructToken:
+			return _Action{_ShiftAction, _State32, 0}, true
+		case EnumToken:
+			return _Action{_ShiftAction, _State50, 0}, true
+		case TraitToken:
+			return _Action{_ShiftAction, _State54, 0}, true
+		case FuncToken:
+			return _Action{_ShiftAction, _State51, 0}, true
+		case LparenToken:
+			return _Action{_ShiftAction, _State53, 0}, true
+		case LbracketToken:
+			return _Action{_ShiftAction, _State28, 0}, true
+		case EllipsisToken:
+			return _Action{_ShiftAction, _State202, 0}, true
+		case PrefixUnaryTypeOpType:
+			return _Action{_ShiftAction, _State55, 0}, true
+		case TypeExprType:
+			return _Action{_ShiftAction, _State203, 0}, true
+		case UnderscoreToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
+		case DotToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceDotToInferredTypeExpr}, true
+		case QuestionToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceQuestionToPrefixUnaryTypeOp}, true
+		case ExclaimToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceExclaimToPrefixUnaryTypeOp}, true
+		case TildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeToPrefixUnaryTypeOp}, true
+		case TildeTildeToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
+		case BitAndToken:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
+		case InitializableTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
+		case SliceTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceSliceTypeExprToInitializableTypeExpr}, true
+		case ArrayTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceArrayTypeExprToInitializableTypeExpr}, true
+		case MapTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceMapTypeExprToInitializableTypeExpr}, true
+		case AtomTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceAtomTypeExprToReturnableTypeExpr}, true
+		case NamedTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceNamedTypeExprToAtomTypeExpr}, true
+		case InferredTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceInferredTypeExprToAtomTypeExpr}, true
+		case ReturnableTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceReturnableTypeExprToTypeExpr}, true
+		case PrefixUnaryTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReducePrefixUnaryTypeExprToReturnableTypeExpr}, true
+		case BinaryTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceBinaryTypeExprToTypeExpr}, true
+		case ImplicitStructTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceImplicitStructTypeExprToAtomTypeExpr}, true
+		case ExplicitStructTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceExplicitStructTypeExprToInitializableTypeExpr}, true
+		case TraitTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceTraitTypeExprToAtomTypeExpr}, true
+		case ImplicitEnumTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceImplicitEnumTypeExprToAtomTypeExpr}, true
+		case ExplicitEnumTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceExplicitEnumTypeExprToAtomTypeExpr}, true
+		case FuncTypeExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceFuncTypeExprToAtomTypeExpr}, true
+
+		default:
 			return _Action{_ReduceAction, 0, _ReduceIgnoreInferredArgToParameterDef}, true
 		}
 	case _State130:
 		switch symbolId {
 		case RparenToken:
-			return _Action{_ShiftAction, _State202, 0}, true
+			return _Action{_ShiftAction, _State204, 0}, true
 		}
 	case _State131:
 		switch symbolId {
@@ -13346,7 +13369,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State203, 0}, true
+			return _Action{_ShiftAction, _State205, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -13413,7 +13436,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State204, 0}, true
+			return _Action{_ShiftAction, _State206, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -13464,7 +13487,7 @@ func (_ActionTableType) Get(
 	case _State135:
 		switch symbolId {
 		case AssignToken:
-			return _Action{_ShiftAction, _State205, 0}, true
+			return _Action{_ShiftAction, _State207, 0}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceIdentifierToNamedExpr}, true
@@ -13477,7 +13500,7 @@ func (_ActionTableType) Get(
 	case _State137:
 		switch symbolId {
 		case CommaToken:
-			return _Action{_ShiftAction, _State206, 0}, true
+			return _Action{_ShiftAction, _State208, 0}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceProperFieldVarPatternsToFieldVarPatterns}, true
@@ -14073,7 +14096,7 @@ func (_ActionTableType) Get(
 	case _State143:
 		switch symbolId {
 		case IdentifierToken:
-			return _Action{_ShiftAction, _State207, 0}, true
+			return _Action{_ShiftAction, _State209, 0}, true
 		}
 	case _State144:
 		switch symbolId {
@@ -14129,7 +14152,7 @@ func (_ActionTableType) Get(
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case OptionalExprType:
-			return _Action{_ShiftAction, _State208, 0}, true
+			return _Action{_ShiftAction, _State210, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
 		case InitializableTypeExprType:
@@ -14305,7 +14328,7 @@ func (_ActionTableType) Get(
 		case SendRecvExprType:
 			return _Action{_ShiftAction, _State49, 0}, true
 		case ExprType:
-			return _Action{_ShiftAction, _State209, 0}, true
+			return _Action{_ShiftAction, _State211, 0}, true
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case RepeatLoopBodyType:
@@ -14441,7 +14464,7 @@ func (_ActionTableType) Get(
 	case _State148:
 		switch symbolId {
 		case CommaToken:
-			return _Action{_ShiftAction, _State210, 0}, true
+			return _Action{_ShiftAction, _State212, 0}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceProperParameterDefListToParameterDefList}, true
@@ -14458,7 +14481,7 @@ func (_ActionTableType) Get(
 		case CommaToken:
 			return _Action{_ShiftAction, _State142, 0}, true
 		case AssignToken:
-			return _Action{_ShiftAction, _State211, 0}, true
+			return _Action{_ShiftAction, _State213, 0}, true
 		}
 	case _State151:
 		switch symbolId {
@@ -14468,9 +14491,9 @@ func (_ActionTableType) Get(
 	case _State152:
 		switch symbolId {
 		case NewlinesToken:
-			return _Action{_ShiftAction, _State213, 0}, true
+			return _Action{_ShiftAction, _State215, 0}, true
 		case CommaToken:
-			return _Action{_ShiftAction, _State212, 0}, true
+			return _Action{_ShiftAction, _State214, 0}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceProperImportClausesToImportClauses}, true
@@ -14494,7 +14517,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State214, 0}, true
+			return _Action{_ShiftAction, _State216, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -14545,7 +14568,7 @@ func (_ActionTableType) Get(
 	case _State154:
 		switch symbolId {
 		case IntegerLiteralToken:
-			return _Action{_ShiftAction, _State215, 0}, true
+			return _Action{_ShiftAction, _State217, 0}, true
 		}
 	case _State155:
 		switch symbolId {
@@ -15264,9 +15287,9 @@ func (_ActionTableType) Get(
 	case _State160:
 		switch symbolId {
 		case NewlinesToken:
-			return _Action{_ShiftAction, _State217, 0}, true
+			return _Action{_ShiftAction, _State219, 0}, true
 		case CommaToken:
-			return _Action{_ShiftAction, _State216, 0}, true
+			return _Action{_ShiftAction, _State218, 0}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceProperExplicitTypePropertiesToExplicitTypeProperties}, true
@@ -15274,7 +15297,7 @@ func (_ActionTableType) Get(
 	case _State161:
 		switch symbolId {
 		case GreaterToken:
-			return _Action{_ShiftAction, _State218, 0}, true
+			return _Action{_ShiftAction, _State220, 0}, true
 		}
 	case _State162:
 		switch symbolId {
@@ -15284,7 +15307,7 @@ func (_ActionTableType) Get(
 	case _State163:
 		switch symbolId {
 		case CommaToken:
-			return _Action{_ShiftAction, _State219, 0}, true
+			return _Action{_ShiftAction, _State221, 0}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceProperGenericArgumentListToGenericArgumentList}, true
@@ -15306,14 +15329,30 @@ func (_ActionTableType) Get(
 	case _State165:
 		switch symbolId {
 		case LparenToken:
-			return _Action{_ShiftAction, _State220, 0}, true
+			return _Action{_ShiftAction, _State222, 0}, true
 		}
 	case _State166:
+		switch symbolId {
+		case ColonToken:
+			return _Action{_ShiftAction, _State156, 0}, true
+
+		default:
+			return _Action{_ReduceAction, 0, _ReduceColonExprToIndex}, true
+		}
+	case _State167:
+		switch symbolId {
+		case ColonToken:
+			return _Action{_ShiftAction, _State157, 0}, true
+
+		default:
+			return _Action{_ReduceAction, 0, _ReduceExprToIndex}, true
+		}
+	case _State168:
 		switch symbolId {
 		case RbracketToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToIndexExpr}, true
 		}
-	case _State167:
+	case _State169:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State84, 0}, true
@@ -15350,7 +15389,7 @@ func (_ActionTableType) Get(
 		case ProperArgumentsType:
 			return _Action{_ShiftAction, _State88, 0}, true
 		case ArgumentsType:
-			return _Action{_ShiftAction, _State221, 0}, true
+			return _Action{_ShiftAction, _State223, 0}, true
 		case ColonExprType:
 			return _Action{_ShiftAction, _State86, 0}, true
 		case PrefixUnaryOpType:
@@ -15501,7 +15540,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceNilToArguments}, true
 		}
-	case _State168:
+	case _State170:
 		switch symbolId {
 		case MulOpType:
 			return _Action{_ShiftAction, _State104, 0}, true
@@ -15521,7 +15560,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceToBinaryAddExpr}, true
 		}
-	case _State169:
+	case _State171:
 		switch symbolId {
 		case CmpOpType:
 			return _Action{_ShiftAction, _State98, 0}, true
@@ -15541,7 +15580,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceToBinaryAndExpr}, true
 		}
-	case _State170:
+	case _State172:
 		switch symbolId {
 		case AddOpType:
 			return _Action{_ShiftAction, _State96, 0}, true
@@ -15557,7 +15596,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceToBinaryCmpExpr}, true
 		}
-	case _State171:
+	case _State173:
 		switch symbolId {
 		case IfToken:
 			return _Action{_ShiftAction, _State25, 0}, true
@@ -15606,7 +15645,7 @@ func (_ActionTableType) Get(
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case ConditionType:
-			return _Action{_ShiftAction, _State222, 0}, true
+			return _Action{_ShiftAction, _State224, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
 		case InitializableTypeExprType:
@@ -15736,12 +15775,12 @@ func (_ActionTableType) Get(
 		case AnonymousFuncExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAnonymousFuncExprToAtomExpr}, true
 		}
-	case _State172:
+	case _State174:
 		switch symbolId {
 		case RparenToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToInitializeExpr}, true
 		}
-	case _State173:
+	case _State175:
 		switch symbolId {
 		case AndToken:
 			return _Action{_ShiftAction, _State97, 0}, true
@@ -15749,7 +15788,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceToBinaryOrExpr}, true
 		}
-	case _State174:
+	case _State176:
 		switch symbolId {
 		case OrToken:
 			return _Action{_ShiftAction, _State105, 0}, true
@@ -15757,7 +15796,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceToSendExpr}, true
 		}
-	case _State175:
+	case _State177:
 		switch symbolId {
 		case ArrowToken:
 			return _Action{_ShiftAction, _State108, 0}, true
@@ -15765,29 +15804,29 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceToBinaryAssignOpExpr}, true
 		}
-	case _State176:
+	case _State178:
 		switch symbolId {
 		case RparenToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToExplicitEnumTypeExpr}, true
 		}
-	case _State177:
-		switch symbolId {
-		case NewlinesToken:
-			return _Action{_ShiftAction, _State223, 0}, true
-		case OrToken:
-			return _Action{_ShiftAction, _State224, 0}, true
-
-		default:
-			return _Action{_ReduceAction, 0, _ReduceProperExplicitEnumTypePropertiesToExplicitEnumTypeProperties}, true
-		}
-	case _State178:
+	case _State179:
 		switch symbolId {
 		case NewlinesToken:
 			return _Action{_ShiftAction, _State225, 0}, true
 		case OrToken:
 			return _Action{_ShiftAction, _State226, 0}, true
+
+		default:
+			return _Action{_ReduceAction, 0, _ReduceProperExplicitEnumTypePropertiesToExplicitEnumTypeProperties}, true
 		}
-	case _State179:
+	case _State180:
+		switch symbolId {
+		case NewlinesToken:
+			return _Action{_ShiftAction, _State227, 0}, true
+		case OrToken:
+			return _Action{_ShiftAction, _State228, 0}, true
+		}
+	case _State181:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State52, 0}, true
@@ -15806,7 +15845,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State227, 0}, true
+			return _Action{_ShiftAction, _State229, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -15857,7 +15896,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceUnnamedInferredVarargToParameterDecl}, true
 		}
-	case _State180:
+	case _State182:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State52, 0}, true
@@ -15874,15 +15913,15 @@ func (_ActionTableType) Get(
 		case LbracketToken:
 			return _Action{_ShiftAction, _State28, 0}, true
 		case DotToken:
-			return _Action{_ShiftAction, _State187, 0}, true
+			return _Action{_ShiftAction, _State189, 0}, true
 		case DollarLbracketToken:
 			return _Action{_ShiftAction, _State92, 0}, true
 		case EllipsisToken:
-			return _Action{_ShiftAction, _State198, 0}, true
+			return _Action{_ShiftAction, _State200, 0}, true
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State199, 0}, true
+			return _Action{_ShiftAction, _State201, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case QuestionToken:
@@ -15933,7 +15972,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceNilToGenericArguments}, true
 		}
-	case _State181:
+	case _State183:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State52, 0}, true
@@ -15950,11 +15989,11 @@ func (_ActionTableType) Get(
 		case LbracketToken:
 			return _Action{_ShiftAction, _State28, 0}, true
 		case EllipsisToken:
-			return _Action{_ShiftAction, _State200, 0}, true
+			return _Action{_ShiftAction, _State202, 0}, true
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State201, 0}, true
+			return _Action{_ShiftAction, _State203, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -16005,20 +16044,20 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		}
-	case _State182:
+	case _State184:
 		switch symbolId {
 		case RparenToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToParameterDecls}, true
 		}
-	case _State183:
+	case _State185:
 		switch symbolId {
 		case CommaToken:
-			return _Action{_ShiftAction, _State228, 0}, true
+			return _Action{_ShiftAction, _State230, 0}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceProperParameterDeclListToParameterDeclList}, true
 		}
-	case _State184:
+	case _State186:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -16032,7 +16071,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceUnnamedTypedArgToParameterDecl}, true
 		}
-	case _State185:
+	case _State187:
 		switch symbolId {
 		case DollarLbracketToken:
 			return _Action{_ShiftAction, _State92, 0}, true
@@ -16042,22 +16081,22 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceNilToGenericArguments}, true
 		}
-	case _State186:
+	case _State188:
 		switch symbolId {
 		case LparenToken:
 			return _Action{_ShiftAction, _State111, 0}, true
 		case ParameterDeclsType:
-			return _Action{_ShiftAction, _State229, 0}, true
+			return _Action{_ShiftAction, _State231, 0}, true
 		}
-	case _State187:
+	case _State189:
 		switch symbolId {
 		case IdentifierToken:
-			return _Action{_ShiftAction, _State185, 0}, true
+			return _Action{_ShiftAction, _State187, 0}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceDotToInferredTypeExpr}, true
 		}
-	case _State188:
+	case _State190:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -16071,7 +16110,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceNamedToFieldDef}, true
 		}
-	case _State189:
+	case _State191:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -16085,7 +16124,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReducePaddingFieldDefToTypeProperty}, true
 		}
-	case _State190:
+	case _State192:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State116, 0}, true
@@ -16164,7 +16203,7 @@ func (_ActionTableType) Get(
 		case MethodSignatureType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMethodSignatureToTypeProperty}, true
 		}
-	case _State191:
+	case _State193:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State116, 0}, true
@@ -16246,7 +16285,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceImproperToImplicitTypeProperties}, true
 		}
-	case _State192:
+	case _State194:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State116, 0}, true
@@ -16325,12 +16364,12 @@ func (_ActionTableType) Get(
 		case MethodSignatureType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMethodSignatureToTypeProperty}, true
 		}
-	case _State193:
+	case _State195:
 		switch symbolId {
 		case RparenToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToTraitTypeExpr}, true
 		}
-	case _State194:
+	case _State196:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State52, 0}, true
@@ -16349,7 +16388,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State230, 0}, true
+			return _Action{_ShiftAction, _State232, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -16400,20 +16439,20 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceUnconstrainedToGenericParameter}, true
 		}
-	case _State195:
+	case _State197:
 		switch symbolId {
 		case RbracketToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceGenericToGenericParameters}, true
 		}
-	case _State196:
+	case _State198:
 		switch symbolId {
 		case CommaToken:
-			return _Action{_ShiftAction, _State231, 0}, true
+			return _Action{_ShiftAction, _State233, 0}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceProperGenericParameterListToGenericParameterList}, true
 		}
-	case _State197:
+	case _State199:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State52, 0}, true
@@ -16432,7 +16471,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case ReturnTypeType:
-			return _Action{_ShiftAction, _State232, 0}, true
+			return _Action{_ShiftAction, _State234, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -16481,7 +16520,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceNilToReturnType}, true
 		}
-	case _State198:
+	case _State200:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State52, 0}, true
@@ -16500,7 +16539,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State233, 0}, true
+			return _Action{_ShiftAction, _State235, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -16551,7 +16590,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceNamedInferredVarargToProperParameterDef}, true
 		}
-	case _State199:
+	case _State201:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -16565,7 +16604,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceNamedTypedArgToProperParameterDef}, true
 		}
-	case _State200:
+	case _State202:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State52, 0}, true
@@ -16584,7 +16623,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State234, 0}, true
+			return _Action{_ShiftAction, _State236, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -16635,7 +16674,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceIgnoreInferredVarargToProperParameterDef}, true
 		}
-	case _State201:
+	case _State203:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -16649,12 +16688,12 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceIgnoreTypedArgToProperParameterDef}, true
 		}
-	case _State202:
+	case _State204:
 		switch symbolId {
 		case IdentifierToken:
-			return _Action{_ShiftAction, _State235, 0}, true
+			return _Action{_ShiftAction, _State237, 0}, true
 		}
-	case _State203:
+	case _State205:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -16668,10 +16707,10 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceAliasToTypeDef}, true
 		}
-	case _State204:
+	case _State206:
 		switch symbolId {
 		case ImplementsToken:
-			return _Action{_ShiftAction, _State236, 0}, true
+			return _Action{_ShiftAction, _State238, 0}, true
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
 		case AddToken:
@@ -16684,7 +16723,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceDefinitionToTypeDef}, true
 		}
-	case _State205:
+	case _State207:
 		switch symbolId {
 		case LparenToken:
 			return _Action{_ShiftAction, _State63, 0}, true
@@ -16699,7 +16738,7 @@ func (_ActionTableType) Get(
 		case NamedExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceNamedExprToVarPattern}, true
 		}
-	case _State206:
+	case _State208:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State135, 0}, true
@@ -16721,26 +16760,26 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceImproperToFieldVarPatterns}, true
 		}
-	case _State207:
+	case _State209:
 		switch symbolId {
 		case LparenToken:
 			return _Action{_ShiftAction, _State63, 0}, true
 		case TuplePatternType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceEnumDeclVarPatternToCaseEnumPattern}, true
 		}
-	case _State208:
+	case _State210:
 		switch symbolId {
 		case SemicolonToken:
-			return _Action{_ShiftAction, _State237, 0}, true
+			return _Action{_ShiftAction, _State239, 0}, true
 		}
-	case _State209:
+	case _State211:
 		switch symbolId {
 		case DoToken:
 			return _Action{_ShiftAction, _State144, 0}, true
 		case ForLoopBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceIteratorToLoopExprBody}, true
 		}
-	case _State210:
+	case _State212:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State128, 0}, true
@@ -16754,7 +16793,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceImproperToParameterDefList}, true
 		}
-	case _State211:
+	case _State213:
 		switch symbolId {
 		case IfToken:
 			return _Action{_ShiftAction, _State25, 0}, true
@@ -16927,7 +16966,7 @@ func (_ActionTableType) Get(
 		case AnonymousFuncExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAnonymousFuncExprToAtomExpr}, true
 		}
-	case _State212:
+	case _State214:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State79, 0}, true
@@ -16943,7 +16982,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceExplicitToImportClauses}, true
 		}
-	case _State213:
+	case _State215:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State79, 0}, true
@@ -16959,7 +16998,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceImplicitToImportClauses}, true
 		}
-	case _State214:
+	case _State216:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -16972,12 +17011,12 @@ func (_ActionTableType) Get(
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToBinaryTypeOp}, true
 		}
-	case _State215:
+	case _State217:
 		switch symbolId {
 		case RbracketToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToArrayTypeExpr}, true
 		}
-	case _State216:
+	case _State218:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State116, 0}, true
@@ -17059,7 +17098,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceImproperExplicitToExplicitTypeProperties}, true
 		}
-	case _State217:
+	case _State219:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State116, 0}, true
@@ -17141,12 +17180,12 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceImproperImplicitToExplicitTypeProperties}, true
 		}
-	case _State218:
+	case _State220:
 		switch symbolId {
 		case StringLiteralToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToUnsafeStmt}, true
 		}
-	case _State219:
+	case _State221:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State52, 0}, true
@@ -17165,7 +17204,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State238, 0}, true
+			return _Action{_ShiftAction, _State240, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -17216,7 +17255,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceImproperToGenericArgumentList}, true
 		}
-	case _State220:
+	case _State222:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State52, 0}, true
@@ -17235,7 +17274,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State239, 0}, true
+			return _Action{_ShiftAction, _State241, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -17283,19 +17322,19 @@ func (_ActionTableType) Get(
 		case FuncTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFuncTypeExprToAtomTypeExpr}, true
 		}
-	case _State221:
+	case _State223:
 		switch symbolId {
 		case RparenToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceToCallExpr}, true
 		}
-	case _State222:
+	case _State224:
 		switch symbolId {
 		case LbraceToken:
 			return _Action{_ShiftAction, _State14, 0}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceElifToIfElifExpr}, true
 		}
-	case _State223:
+	case _State225:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State116, 0}, true
@@ -17377,7 +17416,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceImproperToExplicitEnumTypeProperties}, true
 		}
-	case _State224:
+	case _State226:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State116, 0}, true
@@ -17456,7 +17495,7 @@ func (_ActionTableType) Get(
 		case MethodSignatureType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMethodSignatureToTypeProperty}, true
 		}
-	case _State225:
+	case _State227:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State116, 0}, true
@@ -17535,7 +17574,7 @@ func (_ActionTableType) Get(
 		case MethodSignatureType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMethodSignatureToTypeProperty}, true
 		}
-	case _State226:
+	case _State228:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State116, 0}, true
@@ -17614,7 +17653,7 @@ func (_ActionTableType) Get(
 		case MethodSignatureType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMethodSignatureToTypeProperty}, true
 		}
-	case _State227:
+	case _State229:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -17628,12 +17667,12 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceUnnamedTypedVarargToParameterDecl}, true
 		}
-	case _State228:
+	case _State230:
 		switch symbolId {
 		case IdentifierToken:
-			return _Action{_ShiftAction, _State180, 0}, true
+			return _Action{_ShiftAction, _State182, 0}, true
 		case UnderscoreToken:
-			return _Action{_ShiftAction, _State181, 0}, true
+			return _Action{_ShiftAction, _State183, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State32, 0}, true
 		case EnumToken:
@@ -17647,11 +17686,11 @@ func (_ActionTableType) Get(
 		case LbracketToken:
 			return _Action{_ShiftAction, _State28, 0}, true
 		case EllipsisToken:
-			return _Action{_ShiftAction, _State179, 0}, true
+			return _Action{_ShiftAction, _State181, 0}, true
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State184, 0}, true
+			return _Action{_ShiftAction, _State186, 0}, true
 		case DotToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceDotToInferredTypeExpr}, true
 		case QuestionToken:
@@ -17704,7 +17743,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceImproperToParameterDeclList}, true
 		}
-	case _State229:
+	case _State231:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State52, 0}, true
@@ -17772,7 +17811,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceNilToReturnType}, true
 		}
-	case _State230:
+	case _State232:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -17786,24 +17825,24 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceConstrainedToGenericParameter}, true
 		}
-	case _State231:
+	case _State233:
 		switch symbolId {
 		case IdentifierToken:
-			return _Action{_ShiftAction, _State194, 0}, true
+			return _Action{_ShiftAction, _State196, 0}, true
 		case GenericParameterType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceAddToProperGenericParameterList}, true
 
 		default:
 			return _Action{_ReduceAction, 0, _ReduceImproperToGenericParameterList}, true
 		}
-	case _State232:
+	case _State234:
 		switch symbolId {
 		case LbraceToken:
 			return _Action{_ShiftAction, _State14, 0}, true
 		case StatementsType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFuncDefToNamedFuncDef}, true
 		}
-	case _State233:
+	case _State235:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -17817,7 +17856,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceNamedTypedVarargToProperParameterDef}, true
 		}
-	case _State234:
+	case _State236:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -17831,14 +17870,14 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceIgnoreTypedVarargToProperParameterDef}, true
 		}
-	case _State235:
+	case _State237:
 		switch symbolId {
 		case LparenToken:
 			return _Action{_ShiftAction, _State74, 0}, true
 		case ParameterDefsType:
-			return _Action{_ShiftAction, _State240, 0}, true
+			return _Action{_ShiftAction, _State242, 0}, true
 		}
-	case _State236:
+	case _State238:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State52, 0}, true
@@ -17857,7 +17896,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case TypeExprType:
-			return _Action{_ShiftAction, _State241, 0}, true
+			return _Action{_ShiftAction, _State243, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -17905,7 +17944,7 @@ func (_ActionTableType) Get(
 		case FuncTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceFuncTypeExprToAtomTypeExpr}, true
 		}
-	case _State237:
+	case _State239:
 		switch symbolId {
 		case IfToken:
 			return _Action{_ShiftAction, _State25, 0}, true
@@ -17964,7 +18003,7 @@ func (_ActionTableType) Get(
 		case IfElifExprType:
 			return _Action{_ShiftAction, _State40, 0}, true
 		case OptionalStatementType:
-			return _Action{_ShiftAction, _State242, 0}, true
+			return _Action{_ShiftAction, _State244, 0}, true
 		case RepeatLoopBodyType:
 			return _Action{_ShiftAction, _State47, 0}, true
 		case ReturnableExprType:
@@ -18117,7 +18156,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceNilToOptionalStatement}, true
 		}
-	case _State238:
+	case _State240:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -18131,7 +18170,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceAddToProperGenericArgumentList}, true
 		}
-	case _State239:
+	case _State241:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -18144,7 +18183,7 @@ func (_ActionTableType) Get(
 		case MulToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceMulToBinaryTypeOp}, true
 		}
-	case _State240:
+	case _State242:
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State52, 0}, true
@@ -18163,7 +18202,7 @@ func (_ActionTableType) Get(
 		case PrefixUnaryTypeOpType:
 			return _Action{_ShiftAction, _State55, 0}, true
 		case ReturnTypeType:
-			return _Action{_ShiftAction, _State243, 0}, true
+			return _Action{_ShiftAction, _State245, 0}, true
 		case UnderscoreToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceUnderscoreToInferredTypeExpr}, true
 		case DotToken:
@@ -18212,7 +18251,7 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceNilToReturnType}, true
 		}
-	case _State241:
+	case _State243:
 		switch symbolId {
 		case BinaryTypeOpType:
 			return _Action{_ShiftAction, _State125, 0}, true
@@ -18226,14 +18265,14 @@ func (_ActionTableType) Get(
 		default:
 			return _Action{_ReduceAction, 0, _ReduceConstrainedDefToTypeDef}, true
 		}
-	case _State242:
+	case _State244:
 		switch symbolId {
 		case DoToken:
 			return _Action{_ShiftAction, _State144, 0}, true
 		case ForLoopBodyType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceForToLoopExprBody}, true
 		}
-	case _State243:
+	case _State245:
 		switch symbolId {
 		case LbraceToken:
 			return _Action{_ShiftAction, _State14, 0}, true
@@ -19514,7 +19553,7 @@ Parser Debug States:
   State 35:
     Kernel Items:
       access_expr: accessible_expr.DOT IDENTIFIER
-      index_expr: accessible_expr.LBRACKET argument RBRACKET
+      index_expr: accessible_expr.LBRACKET index RBRACKET
       as_expr: accessible_expr.DOT AS LPAREN type_expr RPAREN
       call_expr: accessible_expr.generic_arguments LPAREN arguments RPAREN
       postfixable_expr: accessible_expr., *
@@ -20923,7 +20962,7 @@ Parser Debug States:
 
   State 94:
     Kernel Items:
-      index_expr: accessible_expr LBRACKET.argument RBRACKET
+      index_expr: accessible_expr LBRACKET.index RBRACKET
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -20931,6 +20970,7 @@ Parser Debug States:
       FLOAT_LITERAL -> [literal_expr]
       RUNE_LITERAL -> [literal_expr]
       STRING_LITERAL -> [literal_expr]
+      IDENTIFIER -> [named_expr]
       UNDERSCORE -> [named_expr]
       TRUE -> [literal_expr]
       FALSE -> [literal_expr]
@@ -20939,7 +20979,6 @@ Parser Debug States:
       VAR -> [var_type]
       LET -> [var_type]
       NOT -> [prefix_unary_op]
-      ELLIPSIS -> [argument]
       ADD -> [prefix_unary_op]
       SUB -> [prefix_unary_op]
       MUL -> [prefix_unary_op]
@@ -20988,7 +21027,6 @@ Parser Debug States:
       explicit_struct_type_expr -> [initializable_type_expr]
       anonymous_func_expr -> [atom_expr]
     Goto:
-      IDENTIFIER -> State 84
       IF -> State 25
       SWITCH -> State 33
       REPEAT -> State 30
@@ -21004,8 +21042,8 @@ Parser Debug States:
       ARROW -> State 20
       var_type -> State 19
       accessible_expr -> State 35
-      argument -> State 166
-      colon_expr -> State 86
+      index -> State 168
+      colon_expr -> State 166
       prefix_unary_op -> State 46
       mul_expr -> State 44
       add_expr -> State 36
@@ -21013,7 +21051,7 @@ Parser Debug States:
       and_expr -> State 37
       or_expr -> State 45
       send_recv_expr -> State 49
-      expr -> State 87
+      expr -> State 167
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -21026,7 +21064,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      LPAREN -> State 167
+      LPAREN -> State 169
 
   State 96:
     Kernel Items:
@@ -21079,7 +21117,7 @@ Parser Debug States:
       LBRACKET -> State 28
       accessible_expr -> State 35
       prefix_unary_op -> State 46
-      mul_expr -> State 168
+      mul_expr -> State 170
       initializable_type_expr -> State 42
 
   State 97:
@@ -21137,7 +21175,7 @@ Parser Debug States:
       prefix_unary_op -> State 46
       mul_expr -> State 44
       add_expr -> State 36
-      cmp_expr -> State 169
+      cmp_expr -> State 171
       initializable_type_expr -> State 42
 
   State 98:
@@ -21193,7 +21231,7 @@ Parser Debug States:
       accessible_expr -> State 35
       prefix_unary_op -> State 46
       mul_expr -> State 44
-      add_expr -> State 170
+      add_expr -> State 172
       initializable_type_expr -> State 42
 
   State 99:
@@ -21298,7 +21336,7 @@ Parser Debug States:
     ShiftAndReduce:
       statements -> [if_else_expr]
     Goto:
-      IF -> State 171
+      IF -> State 173
       LBRACE -> State 14
 
   State 101:
@@ -21479,7 +21517,7 @@ Parser Debug States:
       var_type -> State 19
       accessible_expr -> State 35
       proper_arguments -> State 88
-      arguments -> State 172
+      arguments -> State 174
       colon_expr -> State 86
       prefix_unary_op -> State 46
       mul_expr -> State 44
@@ -21698,7 +21736,7 @@ Parser Debug States:
       mul_expr -> State 44
       add_expr -> State 36
       cmp_expr -> State 38
-      and_expr -> State 173
+      and_expr -> State 175
       initializable_type_expr -> State 42
 
   State 106:
@@ -21948,7 +21986,7 @@ Parser Debug States:
       add_expr -> State 36
       cmp_expr -> State 38
       and_expr -> State 37
-      or_expr -> State 174
+      or_expr -> State 176
       initializable_type_expr -> State 42
 
   State 109:
@@ -22014,7 +22052,7 @@ Parser Debug States:
       cmp_expr -> State 38
       and_expr -> State 37
       or_expr -> State 45
-      send_recv_expr -> State 175
+      send_recv_expr -> State 177
       initializable_type_expr -> State 42
 
   State 110:
@@ -22061,9 +22099,9 @@ Parser Debug States:
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
       type_expr -> State 122
-      type_property -> State 178
-      proper_explicit_enum_type_properties -> State 177
-      explicit_enum_type_properties -> State 176
+      type_property -> State 180
+      proper_explicit_enum_type_properties -> State 179
+      explicit_enum_type_properties -> State 178
 
   State 111:
     Kernel Items:
@@ -22096,19 +22134,19 @@ Parser Debug States:
       parameter_decl -> [proper_parameter_decl_list]
       func_type_expr -> [atom_type_expr]
     Goto:
-      IDENTIFIER -> State 180
-      UNDERSCORE -> State 181
+      IDENTIFIER -> State 182
+      UNDERSCORE -> State 183
       STRUCT -> State 32
       ENUM -> State 50
       TRAIT -> State 54
       FUNC -> State 51
       LPAREN -> State 53
       LBRACKET -> State 28
-      ELLIPSIS -> State 179
+      ELLIPSIS -> State 181
       prefix_unary_type_op -> State 55
-      type_expr -> State 184
-      proper_parameter_decl_list -> State 183
-      parameter_decl_list -> State 182
+      type_expr -> State 186
+      proper_parameter_decl_list -> State 185
+      parameter_decl_list -> State 184
 
   State 112:
     Kernel Items:
@@ -22157,7 +22195,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 185
+      IDENTIFIER -> State 187
 
   State 114:
     Kernel Items:
@@ -22209,7 +22247,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 186
+      IDENTIFIER -> State 188
       LPAREN -> State 111
       parameter_decls -> State 112
 
@@ -22252,10 +22290,10 @@ Parser Debug States:
       FUNC -> State 51
       LPAREN -> State 53
       LBRACKET -> State 28
-      DOT -> State 187
+      DOT -> State 189
       DOLLAR_LBRACKET -> State 92
       prefix_unary_type_op -> State 55
-      type_expr -> State 188
+      type_expr -> State 190
 
   State 117:
     Kernel Items:
@@ -22296,7 +22334,7 @@ Parser Debug States:
       LPAREN -> State 53
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
-      type_expr -> State 189
+      type_expr -> State 191
 
   State 118:
     Kernel Items:
@@ -22328,7 +22366,7 @@ Parser Debug States:
     ShiftAndReduce:
       NEWLINES -> [implicit_enum_type_properties]
     Goto:
-      OR -> State 190
+      OR -> State 192
 
   State 121:
     Kernel Items:
@@ -22340,7 +22378,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      COMMA -> State 191
+      COMMA -> State 193
 
   State 122:
     Kernel Items:
@@ -22364,7 +22402,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      OR -> State 192
+      OR -> State 194
 
   State 124:
     Kernel Items:
@@ -22412,7 +22450,7 @@ Parser Debug States:
       prefix_unary_type_op -> State 55
       type_expr -> State 122
       proper_explicit_type_properties -> State 160
-      explicit_type_properties -> State 193
+      explicit_type_properties -> State 195
 
   State 125:
     Kernel Items:
@@ -22460,9 +22498,9 @@ Parser Debug States:
     ShiftAndReduce:
       generic_parameter -> [proper_generic_parameter_list]
     Goto:
-      IDENTIFIER -> State 194
-      proper_generic_parameter_list -> State 196
-      generic_parameter_list -> State 195
+      IDENTIFIER -> State 196
+      proper_generic_parameter_list -> State 198
+      generic_parameter_list -> State 197
 
   State 127:
     Kernel Items:
@@ -22473,7 +22511,7 @@ Parser Debug States:
       (nil)
     Goto:
       LPAREN -> State 74
-      parameter_defs -> State 197
+      parameter_defs -> State 199
 
   State 128:
     Kernel Items:
@@ -22515,9 +22553,9 @@ Parser Debug States:
       FUNC -> State 51
       LPAREN -> State 53
       LBRACKET -> State 28
-      ELLIPSIS -> State 198
+      ELLIPSIS -> State 200
       prefix_unary_type_op -> State 55
-      type_expr -> State 199
+      type_expr -> State 201
 
   State 129:
     Kernel Items:
@@ -22559,9 +22597,9 @@ Parser Debug States:
       FUNC -> State 51
       LPAREN -> State 53
       LBRACKET -> State 28
-      ELLIPSIS -> State 200
+      ELLIPSIS -> State 202
       prefix_unary_type_op -> State 55
-      type_expr -> State 201
+      type_expr -> State 203
 
   State 130:
     Kernel Items:
@@ -22571,7 +22609,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      RPAREN -> State 202
+      RPAREN -> State 204
 
   State 131:
     Kernel Items:
@@ -22833,7 +22871,7 @@ Parser Debug States:
       LPAREN -> State 53
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
-      type_expr -> State 203
+      type_expr -> State 205
 
   State 134:
     Kernel Items:
@@ -22874,7 +22912,7 @@ Parser Debug States:
       LPAREN -> State 53
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
-      type_expr -> State 204
+      type_expr -> State 206
 
   State 135:
     Kernel Items:
@@ -22885,7 +22923,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      ASSIGN -> State 205
+      ASSIGN -> State 207
 
   State 136:
     Kernel Items:
@@ -22907,7 +22945,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      COMMA -> State 206
+      COMMA -> State 208
 
   State 138:
     Kernel Items:
@@ -23241,7 +23279,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 207
+      IDENTIFIER -> State 209
 
   State 144:
     Kernel Items:
@@ -23343,7 +23381,7 @@ Parser Debug States:
       or_expr -> State 45
       send_recv_expr -> State 49
       if_elif_expr -> State 40
-      optional_expr -> State 208
+      optional_expr -> State 210
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
 
@@ -23435,7 +23473,7 @@ Parser Debug States:
       and_expr -> State 37
       or_expr -> State 45
       send_recv_expr -> State 49
-      expr -> State 209
+      expr -> State 211
       if_elif_expr -> State 40
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
@@ -23460,7 +23498,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      COMMA -> State 210
+      COMMA -> State 212
 
   State 149:
     Kernel Items:
@@ -23482,7 +23520,7 @@ Parser Debug States:
       (nil)
     Goto:
       COMMA -> State 142
-      ASSIGN -> State 211
+      ASSIGN -> State 213
 
   State 151:
     Kernel Items:
@@ -23506,8 +23544,8 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      NEWLINES -> State 213
-      COMMA -> State 212
+      NEWLINES -> State 215
+      COMMA -> State 214
 
   State 153:
     Kernel Items:
@@ -23547,7 +23585,7 @@ Parser Debug States:
       LPAREN -> State 53
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
-      type_expr -> State 214
+      type_expr -> State 216
 
   State 154:
     Kernel Items:
@@ -23557,7 +23595,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      INTEGER_LITERAL -> State 215
+      INTEGER_LITERAL -> State 217
 
   State 155:
     Kernel Items:
@@ -23960,8 +23998,8 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      NEWLINES -> State 217
-      COMMA -> State 216
+      NEWLINES -> State 219
+      COMMA -> State 218
 
   State 161:
     Kernel Items:
@@ -23971,7 +24009,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      GREATER -> State 218
+      GREATER -> State 220
 
   State 162:
     Kernel Items:
@@ -23993,7 +24031,7 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      COMMA -> State 219
+      COMMA -> State 221
 
   State 164:
     Kernel Items:
@@ -24016,11 +24054,35 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      LPAREN -> State 220
+      LPAREN -> State 222
 
   State 166:
     Kernel Items:
-      index_expr: accessible_expr LBRACKET argument.RBRACKET
+      index: colon_expr., *
+      colon_expr: colon_expr.COLON
+      colon_expr: colon_expr.COLON expr
+    Reduce:
+      * -> [index]
+    ShiftAndReduce:
+      (nil)
+    Goto:
+      COLON -> State 156
+
+  State 167:
+    Kernel Items:
+      index: expr., *
+      colon_expr: expr.COLON
+      colon_expr: expr.COLON expr
+    Reduce:
+      * -> [index]
+    ShiftAndReduce:
+      (nil)
+    Goto:
+      COLON -> State 157
+
+  State 168:
+    Kernel Items:
+      index_expr: accessible_expr LBRACKET index.RBRACKET
     Reduce:
       (nil)
     ShiftAndReduce:
@@ -24028,7 +24090,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 167:
+  State 169:
     Kernel Items:
       call_expr: accessible_expr generic_arguments LPAREN.arguments RPAREN
     Reduce:
@@ -24113,7 +24175,7 @@ Parser Debug States:
       var_type -> State 19
       accessible_expr -> State 35
       proper_arguments -> State 88
-      arguments -> State 221
+      arguments -> State 223
       colon_expr -> State 86
       prefix_unary_op -> State 46
       mul_expr -> State 44
@@ -24127,7 +24189,7 @@ Parser Debug States:
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
 
-  State 168:
+  State 170:
     Kernel Items:
       binary_mul_expr: mul_expr.mul_op prefixable_expr
       binary_add_expr: add_expr add_op mul_expr., *
@@ -24143,7 +24205,7 @@ Parser Debug States:
     Goto:
       mul_op -> State 104
 
-  State 169:
+  State 171:
     Kernel Items:
       binary_cmp_expr: cmp_expr.cmp_op add_expr
       binary_and_expr: and_expr AND cmp_expr., *
@@ -24159,7 +24221,7 @@ Parser Debug States:
     Goto:
       cmp_op -> State 98
 
-  State 170:
+  State 172:
     Kernel Items:
       binary_add_expr: add_expr.add_op mul_expr
       binary_cmp_expr: cmp_expr cmp_op add_expr., *
@@ -24173,7 +24235,7 @@ Parser Debug States:
     Goto:
       add_op -> State 96
 
-  State 171:
+  State 173:
     Kernel Items:
       if_elif_expr: if_elif_expr ELSE IF.condition statements
     Reduce:
@@ -24265,11 +24327,11 @@ Parser Debug States:
       or_expr -> State 45
       send_recv_expr -> State 49
       if_elif_expr -> State 40
-      condition -> State 222
+      condition -> State 224
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
 
-  State 172:
+  State 174:
     Kernel Items:
       initialize_expr: initializable_type_expr LPAREN arguments.RPAREN
     Reduce:
@@ -24279,7 +24341,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 173:
+  State 175:
     Kernel Items:
       binary_and_expr: and_expr.AND cmp_expr
       binary_or_expr: or_expr OR and_expr., *
@@ -24290,7 +24352,7 @@ Parser Debug States:
     Goto:
       AND -> State 97
 
-  State 174:
+  State 176:
     Kernel Items:
       binary_or_expr: or_expr.OR and_expr
       send_expr: send_recv_expr ARROW or_expr., *
@@ -24301,7 +24363,7 @@ Parser Debug States:
     Goto:
       OR -> State 105
 
-  State 175:
+  State 177:
     Kernel Items:
       send_expr: send_recv_expr.ARROW or_expr
       binary_assign_op_expr: send_recv_expr binary_assign_op send_recv_expr., *
@@ -24312,7 +24374,7 @@ Parser Debug States:
     Goto:
       ARROW -> State 108
 
-  State 176:
+  State 178:
     Kernel Items:
       explicit_enum_type_expr: ENUM LPAREN explicit_enum_type_properties.RPAREN
     Reduce:
@@ -24322,7 +24384,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 177:
+  State 179:
     Kernel Items:
       proper_explicit_enum_type_properties: proper_explicit_enum_type_properties.OR type_property
       proper_explicit_enum_type_properties: proper_explicit_enum_type_properties.NEWLINES type_property
@@ -24333,10 +24395,10 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      NEWLINES -> State 223
-      OR -> State 224
+      NEWLINES -> State 225
+      OR -> State 226
 
-  State 178:
+  State 180:
     Kernel Items:
       proper_explicit_enum_type_properties: type_property.OR type_property
       proper_explicit_enum_type_properties: type_property.NEWLINES type_property
@@ -24345,10 +24407,10 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      NEWLINES -> State 225
-      OR -> State 226
+      NEWLINES -> State 227
+      OR -> State 228
 
-  State 179:
+  State 181:
     Kernel Items:
       parameter_decl: ELLIPSIS., *
       parameter_decl: ELLIPSIS.type_expr
@@ -24387,9 +24449,9 @@ Parser Debug States:
       LPAREN -> State 53
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
-      type_expr -> State 227
+      type_expr -> State 229
 
-  State 180:
+  State 182:
     Kernel Items:
       named_type_expr: IDENTIFIER.generic_arguments
       named_type_expr: IDENTIFIER.DOT IDENTIFIER generic_arguments
@@ -24430,13 +24492,13 @@ Parser Debug States:
       FUNC -> State 51
       LPAREN -> State 53
       LBRACKET -> State 28
-      DOT -> State 187
+      DOT -> State 189
       DOLLAR_LBRACKET -> State 92
-      ELLIPSIS -> State 198
+      ELLIPSIS -> State 200
       prefix_unary_type_op -> State 55
-      type_expr -> State 199
+      type_expr -> State 201
 
-  State 181:
+  State 183:
     Kernel Items:
       inferred_type_expr: UNDERSCORE., *
       proper_parameter_def: UNDERSCORE.type_expr
@@ -24476,11 +24538,11 @@ Parser Debug States:
       FUNC -> State 51
       LPAREN -> State 53
       LBRACKET -> State 28
-      ELLIPSIS -> State 200
+      ELLIPSIS -> State 202
       prefix_unary_type_op -> State 55
-      type_expr -> State 201
+      type_expr -> State 203
 
-  State 182:
+  State 184:
     Kernel Items:
       parameter_decls: LPAREN parameter_decl_list.RPAREN
     Reduce:
@@ -24490,7 +24552,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 183:
+  State 185:
     Kernel Items:
       proper_parameter_decl_list: proper_parameter_decl_list.COMMA parameter_decl
       parameter_decl_list: proper_parameter_decl_list., *
@@ -24500,9 +24562,9 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      COMMA -> State 228
+      COMMA -> State 230
 
-  State 184:
+  State 186:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
       parameter_decl: type_expr., *
@@ -24515,7 +24577,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 185:
+  State 187:
     Kernel Items:
       named_type_expr: IDENTIFIER DOT IDENTIFIER.generic_arguments
     Reduce:
@@ -24525,7 +24587,7 @@ Parser Debug States:
     Goto:
       DOLLAR_LBRACKET -> State 92
 
-  State 186:
+  State 188:
     Kernel Items:
       method_signature: FUNC IDENTIFIER.parameter_decls return_type
     Reduce:
@@ -24534,9 +24596,9 @@ Parser Debug States:
       (nil)
     Goto:
       LPAREN -> State 111
-      parameter_decls -> State 229
+      parameter_decls -> State 231
 
-  State 187:
+  State 189:
     Kernel Items:
       named_type_expr: IDENTIFIER DOT.IDENTIFIER generic_arguments
       inferred_type_expr: DOT., *
@@ -24545,9 +24607,9 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 185
+      IDENTIFIER -> State 187
 
-  State 188:
+  State 190:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
       field_def: IDENTIFIER type_expr., *
@@ -24560,7 +24622,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 189:
+  State 191:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
       type_property: UNDERSCORE type_expr., *
@@ -24573,7 +24635,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 190:
+  State 192:
     Kernel Items:
       proper_implicit_enum_type_properties: proper_implicit_enum_type_properties OR.type_property
     Reduce:
@@ -24619,7 +24681,7 @@ Parser Debug States:
       prefix_unary_type_op -> State 55
       type_expr -> State 122
 
-  State 191:
+  State 193:
     Kernel Items:
       proper_implicit_type_properties: proper_implicit_type_properties COMMA.type_property
       implicit_type_properties: proper_implicit_type_properties COMMA., *
@@ -24666,7 +24728,7 @@ Parser Debug States:
       prefix_unary_type_op -> State 55
       type_expr -> State 122
 
-  State 192:
+  State 194:
     Kernel Items:
       proper_implicit_enum_type_properties: type_property OR.type_property
     Reduce:
@@ -24712,7 +24774,7 @@ Parser Debug States:
       prefix_unary_type_op -> State 55
       type_expr -> State 122
 
-  State 193:
+  State 195:
     Kernel Items:
       trait_type_expr: TRAIT LPAREN explicit_type_properties.RPAREN
     Reduce:
@@ -24722,7 +24784,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 194:
+  State 196:
     Kernel Items:
       generic_parameter: IDENTIFIER., *
       generic_parameter: IDENTIFIER.type_expr
@@ -24761,9 +24823,9 @@ Parser Debug States:
       LPAREN -> State 53
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
-      type_expr -> State 230
+      type_expr -> State 232
 
-  State 195:
+  State 197:
     Kernel Items:
       generic_parameters: DOLLAR_LBRACKET generic_parameter_list.RBRACKET
     Reduce:
@@ -24773,7 +24835,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 196:
+  State 198:
     Kernel Items:
       proper_generic_parameter_list: proper_generic_parameter_list.COMMA generic_parameter
       generic_parameter_list: proper_generic_parameter_list., *
@@ -24783,9 +24845,9 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      COMMA -> State 231
+      COMMA -> State 233
 
-  State 197:
+  State 199:
     Kernel Items:
       named_func_def: FUNC IDENTIFIER generic_parameters parameter_defs.return_type statements
     Reduce:
@@ -24822,9 +24884,9 @@ Parser Debug States:
       LPAREN -> State 53
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
-      return_type -> State 232
+      return_type -> State 234
 
-  State 198:
+  State 200:
     Kernel Items:
       proper_parameter_def: IDENTIFIER ELLIPSIS.type_expr
       proper_parameter_def: IDENTIFIER ELLIPSIS., *
@@ -24863,9 +24925,9 @@ Parser Debug States:
       LPAREN -> State 53
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
-      type_expr -> State 233
+      type_expr -> State 235
 
-  State 199:
+  State 201:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
       proper_parameter_def: IDENTIFIER type_expr., *
@@ -24878,7 +24940,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 200:
+  State 202:
     Kernel Items:
       proper_parameter_def: UNDERSCORE ELLIPSIS., *
       proper_parameter_def: UNDERSCORE ELLIPSIS.type_expr
@@ -24917,9 +24979,9 @@ Parser Debug States:
       LPAREN -> State 53
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
-      type_expr -> State 234
+      type_expr -> State 236
 
-  State 201:
+  State 203:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
       proper_parameter_def: UNDERSCORE type_expr., *
@@ -24932,7 +24994,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 202:
+  State 204:
     Kernel Items:
       named_func_def: FUNC LPAREN parameter_def RPAREN.IDENTIFIER parameter_defs return_type statements
     Reduce:
@@ -24940,9 +25002,9 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      IDENTIFIER -> State 235
+      IDENTIFIER -> State 237
 
-  State 203:
+  State 205:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
       type_def: TYPE IDENTIFIER ASSIGN type_expr., *
@@ -24955,7 +25017,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 204:
+  State 206:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
       type_def: TYPE IDENTIFIER generic_parameters type_expr., *
@@ -24967,10 +25029,10 @@ Parser Debug States:
       SUB -> [binary_type_op]
       MUL -> [binary_type_op]
     Goto:
-      IMPLEMENTS -> State 236
+      IMPLEMENTS -> State 238
       binary_type_op -> State 125
 
-  State 205:
+  State 207:
     Kernel Items:
       field_var_pattern: IDENTIFIER ASSIGN.var_pattern
     Reduce:
@@ -24984,7 +25046,7 @@ Parser Debug States:
     Goto:
       LPAREN -> State 63
 
-  State 206:
+  State 208:
     Kernel Items:
       proper_field_var_patterns: proper_field_var_patterns COMMA.field_var_pattern
       field_var_patterns: proper_field_var_patterns COMMA., *
@@ -25001,7 +25063,7 @@ Parser Debug States:
       IDENTIFIER -> State 135
       LPAREN -> State 63
 
-  State 207:
+  State 209:
     Kernel Items:
       case_enum_pattern: var_type DOT IDENTIFIER.tuple_pattern
     Reduce:
@@ -25011,7 +25073,7 @@ Parser Debug States:
     Goto:
       LPAREN -> State 63
 
-  State 208:
+  State 210:
     Kernel Items:
       loop_expr_body: FOR optional_statement SEMICOLON optional_expr.SEMICOLON optional_statement for_loop_body
     Reduce:
@@ -25019,9 +25081,9 @@ Parser Debug States:
     ShiftAndReduce:
       (nil)
     Goto:
-      SEMICOLON -> State 237
+      SEMICOLON -> State 239
 
-  State 209:
+  State 211:
     Kernel Items:
       loop_expr_body: FOR returnable_expr IN expr.for_loop_body
     Reduce:
@@ -25031,7 +25093,7 @@ Parser Debug States:
     Goto:
       DO -> State 144
 
-  State 210:
+  State 212:
     Kernel Items:
       proper_parameter_def_list: proper_parameter_def_list COMMA.parameter_def
       parameter_def_list: proper_parameter_def_list COMMA., *
@@ -25044,7 +25106,7 @@ Parser Debug States:
       IDENTIFIER -> State 128
       UNDERSCORE -> State 129
 
-  State 211:
+  State 213:
     Kernel Items:
       case_pattern_expr: CASE switchable_case_patterns ASSIGN.expr
     Reduce:
@@ -25137,7 +25199,7 @@ Parser Debug States:
       repeat_loop_body -> State 47
       initializable_type_expr -> State 42
 
-  State 212:
+  State 214:
     Kernel Items:
       proper_import_clauses: proper_import_clauses COMMA.import_clause
       import_clauses: proper_import_clauses COMMA., *
@@ -25151,7 +25213,7 @@ Parser Debug States:
       UNDERSCORE -> State 81
       DOT -> State 78
 
-  State 213:
+  State 215:
     Kernel Items:
       proper_import_clauses: proper_import_clauses NEWLINES.import_clause
       import_clauses: proper_import_clauses NEWLINES., *
@@ -25165,7 +25227,7 @@ Parser Debug States:
       UNDERSCORE -> State 81
       DOT -> State 78
 
-  State 214:
+  State 216:
     Kernel Items:
       map_type_expr: LBRACKET type_expr COLON type_expr.RBRACKET
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
@@ -25179,7 +25241,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 215:
+  State 217:
     Kernel Items:
       array_type_expr: LBRACKET type_expr COMMA INTEGER_LITERAL.RBRACKET
     Reduce:
@@ -25189,7 +25251,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 216:
+  State 218:
     Kernel Items:
       proper_explicit_type_properties: proper_explicit_type_properties COMMA.type_property
       explicit_type_properties: proper_explicit_type_properties COMMA., *
@@ -25236,7 +25298,7 @@ Parser Debug States:
       prefix_unary_type_op -> State 55
       type_expr -> State 122
 
-  State 217:
+  State 219:
     Kernel Items:
       proper_explicit_type_properties: proper_explicit_type_properties NEWLINES.type_property
       explicit_type_properties: proper_explicit_type_properties NEWLINES., *
@@ -25283,7 +25345,7 @@ Parser Debug States:
       prefix_unary_type_op -> State 55
       type_expr -> State 122
 
-  State 218:
+  State 220:
     Kernel Items:
       unsafe_stmt: UNSAFE LESS IDENTIFIER GREATER.STRING_LITERAL
     Reduce:
@@ -25293,7 +25355,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 219:
+  State 221:
     Kernel Items:
       proper_generic_argument_list: proper_generic_argument_list COMMA.type_expr
       generic_argument_list: proper_generic_argument_list COMMA., *
@@ -25332,9 +25394,9 @@ Parser Debug States:
       LPAREN -> State 53
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
-      type_expr -> State 238
+      type_expr -> State 240
 
-  State 220:
+  State 222:
     Kernel Items:
       as_expr: accessible_expr DOT AS LPAREN.type_expr RPAREN
     Reduce:
@@ -25372,9 +25434,9 @@ Parser Debug States:
       LPAREN -> State 53
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
-      type_expr -> State 239
+      type_expr -> State 241
 
-  State 221:
+  State 223:
     Kernel Items:
       call_expr: accessible_expr generic_arguments LPAREN arguments.RPAREN
     Reduce:
@@ -25384,7 +25446,7 @@ Parser Debug States:
     Goto:
       (nil)
 
-  State 222:
+  State 224:
     Kernel Items:
       if_elif_expr: if_elif_expr ELSE IF condition.statements
     Reduce:
@@ -25394,7 +25456,7 @@ Parser Debug States:
     Goto:
       LBRACE -> State 14
 
-  State 223:
+  State 225:
     Kernel Items:
       proper_explicit_enum_type_properties: proper_explicit_enum_type_properties NEWLINES.type_property
       explicit_enum_type_properties: proper_explicit_enum_type_properties NEWLINES., *
@@ -25441,7 +25503,7 @@ Parser Debug States:
       prefix_unary_type_op -> State 55
       type_expr -> State 122
 
-  State 224:
+  State 226:
     Kernel Items:
       proper_explicit_enum_type_properties: proper_explicit_enum_type_properties OR.type_property
     Reduce:
@@ -25487,7 +25549,7 @@ Parser Debug States:
       prefix_unary_type_op -> State 55
       type_expr -> State 122
 
-  State 225:
+  State 227:
     Kernel Items:
       proper_explicit_enum_type_properties: type_property NEWLINES.type_property
     Reduce:
@@ -25533,7 +25595,7 @@ Parser Debug States:
       prefix_unary_type_op -> State 55
       type_expr -> State 122
 
-  State 226:
+  State 228:
     Kernel Items:
       proper_explicit_enum_type_properties: type_property OR.type_property
     Reduce:
@@ -25579,7 +25641,7 @@ Parser Debug States:
       prefix_unary_type_op -> State 55
       type_expr -> State 122
 
-  State 227:
+  State 229:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
       parameter_decl: ELLIPSIS type_expr., *
@@ -25592,7 +25654,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 228:
+  State 230:
     Kernel Items:
       proper_parameter_decl_list: proper_parameter_decl_list COMMA.parameter_decl
       parameter_decl_list: proper_parameter_decl_list COMMA., *
@@ -25624,19 +25686,19 @@ Parser Debug States:
       parameter_decl -> [proper_parameter_decl_list]
       func_type_expr -> [atom_type_expr]
     Goto:
-      IDENTIFIER -> State 180
-      UNDERSCORE -> State 181
+      IDENTIFIER -> State 182
+      UNDERSCORE -> State 183
       STRUCT -> State 32
       ENUM -> State 50
       TRAIT -> State 54
       FUNC -> State 51
       LPAREN -> State 53
       LBRACKET -> State 28
-      ELLIPSIS -> State 179
+      ELLIPSIS -> State 181
       prefix_unary_type_op -> State 55
-      type_expr -> State 184
+      type_expr -> State 186
 
-  State 229:
+  State 231:
     Kernel Items:
       method_signature: FUNC IDENTIFIER parameter_decls.return_type
     Reduce:
@@ -25675,7 +25737,7 @@ Parser Debug States:
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
 
-  State 230:
+  State 232:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
       generic_parameter: IDENTIFIER type_expr., *
@@ -25688,7 +25750,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 231:
+  State 233:
     Kernel Items:
       proper_generic_parameter_list: proper_generic_parameter_list COMMA.generic_parameter
       generic_parameter_list: proper_generic_parameter_list COMMA., *
@@ -25697,9 +25759,9 @@ Parser Debug States:
     ShiftAndReduce:
       generic_parameter -> [proper_generic_parameter_list]
     Goto:
-      IDENTIFIER -> State 194
+      IDENTIFIER -> State 196
 
-  State 232:
+  State 234:
     Kernel Items:
       named_func_def: FUNC IDENTIFIER generic_parameters parameter_defs return_type.statements
     Reduce:
@@ -25709,7 +25771,7 @@ Parser Debug States:
     Goto:
       LBRACE -> State 14
 
-  State 233:
+  State 235:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
       proper_parameter_def: IDENTIFIER ELLIPSIS type_expr., *
@@ -25722,7 +25784,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 234:
+  State 236:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
       proper_parameter_def: UNDERSCORE ELLIPSIS type_expr., *
@@ -25735,7 +25797,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 235:
+  State 237:
     Kernel Items:
       named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER.parameter_defs return_type statements
     Reduce:
@@ -25744,9 +25806,9 @@ Parser Debug States:
       (nil)
     Goto:
       LPAREN -> State 74
-      parameter_defs -> State 240
+      parameter_defs -> State 242
 
-  State 236:
+  State 238:
     Kernel Items:
       type_def: TYPE IDENTIFIER generic_parameters type_expr IMPLEMENTS.type_expr
     Reduce:
@@ -25784,9 +25846,9 @@ Parser Debug States:
       LPAREN -> State 53
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
-      type_expr -> State 241
+      type_expr -> State 243
 
-  State 237:
+  State 239:
     Kernel Items:
       loop_expr_body: FOR optional_statement SEMICOLON optional_expr SEMICOLON.optional_statement for_loop_body
     Reduce:
@@ -25891,13 +25953,13 @@ Parser Debug States:
       send_recv_expr -> State 49
       expr -> State 39
       if_elif_expr -> State 40
-      optional_statement -> State 242
+      optional_statement -> State 244
       repeat_loop_body -> State 47
       returnable_expr -> State 48
       improper_expr_struct -> State 41
       initializable_type_expr -> State 42
 
-  State 238:
+  State 240:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
       proper_generic_argument_list: proper_generic_argument_list COMMA type_expr., *
@@ -25910,7 +25972,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 239:
+  State 241:
     Kernel Items:
       as_expr: accessible_expr DOT AS LPAREN type_expr.RPAREN
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
@@ -25924,7 +25986,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 240:
+  State 242:
     Kernel Items:
       named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER parameter_defs.return_type statements
     Reduce:
@@ -25961,9 +26023,9 @@ Parser Debug States:
       LPAREN -> State 53
       LBRACKET -> State 28
       prefix_unary_type_op -> State 55
-      return_type -> State 243
+      return_type -> State 245
 
-  State 241:
+  State 243:
     Kernel Items:
       binary_type_expr: type_expr.binary_type_op returnable_type_expr
       type_def: TYPE IDENTIFIER generic_parameters type_expr IMPLEMENTS type_expr., *
@@ -25976,7 +26038,7 @@ Parser Debug States:
     Goto:
       binary_type_op -> State 125
 
-  State 242:
+  State 244:
     Kernel Items:
       loop_expr_body: FOR optional_statement SEMICOLON optional_expr SEMICOLON optional_statement.for_loop_body
     Reduce:
@@ -25986,7 +26048,7 @@ Parser Debug States:
     Goto:
       DO -> State 144
 
-  State 243:
+  State 245:
     Kernel Items:
       named_func_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER parameter_defs return_type.statements
     Reduce:
@@ -25996,13 +26058,13 @@ Parser Debug States:
     Goto:
       LBRACE -> State 14
 
-Number of states: 243
-Number of shift actions: 1710
-Number of reduce actions: 123
+Number of states: 245
+Number of shift actions: 1711
+Number of reduce actions: 125
 Number of shift-and-reduce actions: 3831
 Number of shift/reduce conflicts: 0
 Number of reduce/reduce conflicts: 0
-Number of unoptimized states: 9215
-Number of unoptimized shift actions: 102585
-Number of unoptimized reduce actions: 89363
+Number of unoptimized states: 8655
+Number of unoptimized shift actions: 95658
+Number of unoptimized reduce actions: 82727
 */

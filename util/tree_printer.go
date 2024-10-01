@@ -106,7 +106,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 
 	switch node := n.(type) {
 	case *ast.ParseErrorExpr:
-		printer.write("[ParseErrorExpr: %s %s]", node.Error, node.StartPos)
+		printer.write("[ParseErrorExpr: %s]", node.Error)
 	case *ast.LiteralExpr:
 		printer.write("[LiteralExpr: Kind=%s Value=%s]", node.Kind, node.Value)
 	case *ast.NamedExpr:
@@ -133,8 +133,11 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		}
 		printer.list("[CallExpr", argLabels, "Argument", len(node.Arguments))
 	case *ast.IndexExpr:
-		printer.write("[IndexExpr:")
-		printer.push("Accessible=", "Argument=")
+		printer.list(
+			"[IndexExpr:",
+			[]string{"Accessible="},
+			"IndexArg",
+			len(node.IndexArgs))
 	case *ast.AsExpr:
 		printer.write("[AsExpr:")
 		printer.push("Accessible=", "CastType=")

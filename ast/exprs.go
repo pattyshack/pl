@@ -254,13 +254,17 @@ type IndexExpr struct {
 	LeadingTrailingComments
 
 	Accessible Expression
-	Index      *Argument
+
+	// NOTE: colon expression is decomposed back into expression list.
+	IndexArgs []Expression
 }
 
 func (expr *IndexExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Accessible.Walk(visitor)
-	expr.Index.Walk(visitor)
+	for _, arg := range expr.IndexArgs {
+		arg.Walk(visitor)
+	}
 	visitor.Exit(expr)
 }
 

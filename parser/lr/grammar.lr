@@ -314,7 +314,11 @@ access_expr<Expression> -> accessible_expr DOT IDENTIFIER
 
 // Note: post analysis need to check to ensure argument either a positional
 // or colon expressions argument.
-index_expr<Expression> -> accessible_expr LBRACKET argument RBRACKET
+index_expr<Expression> -> accessible_expr LBRACKET index RBRACKET
+
+index<Expression> ->
+  = expr |
+  = colon_expr
 
 // eqv to golang's "s, ok := expr.(SomeType)".
 as_expr<Expression> -> accessible_expr DOT AS LPAREN type_expr RPAREN
