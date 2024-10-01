@@ -68,7 +68,16 @@ func (detector *unexpectedStatementsDetector) Enter(n ast.Node) {
 		if ok {
 			return
 		}
-		detector.checkStmtsExpr(node, false)
+		detector.checkStmts(node.Statements, false)
+	case *ast.LoopExpr:
+		stmts := []ast.Statement{}
+		if node.Init != nil {
+			stmts = append(stmts, node.Init)
+		}
+		if node.Post != nil {
+			stmts = append(stmts, node.Post)
+		}
+		detector.checkStmts(stmts, false)
 	}
 }
 
@@ -106,16 +115,16 @@ func (detector *unexpectedStatementsDetector) checkSwitchSelectExpr(
 	conditionBranches []*ast.ConditionBranchStmt,
 ) {
 	for _, stmt := range conditionBranches {
-		detector.checkStmtsExpr(stmt.Branch, true)
+		detector.checkStmts(stmt.Branch.Statements, true)
 		detector.processed[stmt.Branch] = struct{}{}
 	}
 }
 
-func (detector *unexpectedStatementsDetector) checkStmtsExpr(
-	stmts *ast.StatementsExpr,
+func (detector *unexpectedStatementsDetector) checkStmts(
+	stmts []ast.Statement,
 	allowFallthrough bool,
 ) {
-	for _, node := range stmts.Statements {
+	for _, node := range stmts {
 		invalidStmtType := ""
 		switch stmt := node.(type) {
 		case *ast.ParseErrorExpr: // ok
