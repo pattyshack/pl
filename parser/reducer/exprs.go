@@ -29,9 +29,10 @@ func (reducer *Reducer) TrueToLiteralExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.BoolLiteralExpr{
+	expr := &ast.LiteralExpr{
 		StartEndPos:             value.StartEndPos,
 		LeadingTrailingComments: value.LeadingTrailingComments,
+		Kind:                    ast.BoolLiteral,
 		Value:                   value.Value,
 	}
 	return expr, nil
@@ -43,9 +44,10 @@ func (reducer *Reducer) FalseToLiteralExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.BoolLiteralExpr{
+	expr := &ast.LiteralExpr{
 		StartEndPos:             value.StartEndPos,
 		LeadingTrailingComments: value.LeadingTrailingComments,
+		Kind:                    ast.BoolLiteral,
 		Value:                   value.Value,
 	}
 	return expr, nil
@@ -57,9 +59,10 @@ func (reducer *Reducer) IntegerLiteralToLiteralExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.IntLiteralExpr{
+	expr := &ast.LiteralExpr{
 		StartEndPos:             value.StartEndPos,
 		LeadingTrailingComments: value.LeadingTrailingComments,
+		Kind:                    ast.IntLiteral,
 		Value:                   value.Value,
 	}
 	return expr, nil
@@ -71,9 +74,10 @@ func (reducer *Reducer) FloatLiteralToLiteralExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.FloatLiteralExpr{
+	expr := &ast.LiteralExpr{
 		StartEndPos:             value.StartEndPos,
 		LeadingTrailingComments: value.LeadingTrailingComments,
+		Kind:                    ast.FloatLiteral,
 		Value:                   value.Value,
 	}
 	return expr, nil
@@ -85,9 +89,10 @@ func (reducer *Reducer) RuneLiteralToLiteralExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.RuneLiteralExpr{
+	expr := &ast.LiteralExpr{
 		StartEndPos:             value.StartEndPos,
 		LeadingTrailingComments: value.LeadingTrailingComments,
+		Kind:                    ast.RuneLiteral,
 		Value:                   value.Value,
 	}
 	return expr, nil
@@ -99,9 +104,10 @@ func (reducer *Reducer) StringLiteralToLiteralExpr(
 	ast.Expression,
 	error,
 ) {
-	expr := &ast.StringLiteralExpr{
+	expr := &ast.LiteralExpr{
 		StartEndPos:             value.StartEndPos,
 		LeadingTrailingComments: value.LeadingTrailingComments,
+		Kind:                    ast.StringLiteral,
 		Value:                   value.Value,
 	}
 	return expr, nil

@@ -22,67 +22,27 @@ func (s *ParseErrorExpr) Walk(visitor Visitor) {
 // (Bool/Int/Float/Rune/String)LiteralExpr
 //
 
-type BoolLiteralExpr struct {
+type LiteralKind string
+
+const (
+	BoolLiteral   = LiteralKind("bool")
+	IntLiteral    = LiteralKind("int")
+	FloatLiteral  = LiteralKind("float")
+	RuneLiteral   = LiteralKind("rune")
+	StringLiteral = LiteralKind("string")
+)
+
+type LiteralExpr struct {
 	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
-	Value string
-}
-
-func (expr *BoolLiteralExpr) Walk(visitor Visitor) {
-	visitor.Enter(expr)
-	visitor.Exit(expr)
-}
-
-type IntLiteralExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
+	Kind LiteralKind
 
 	Value string
 }
 
-func (expr *IntLiteralExpr) Walk(visitor Visitor) {
-	visitor.Enter(expr)
-	visitor.Exit(expr)
-}
-
-type FloatLiteralExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Value string
-}
-
-func (expr *FloatLiteralExpr) Walk(visitor Visitor) {
-	visitor.Enter(expr)
-	visitor.Exit(expr)
-}
-
-type RuneLiteralExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Value string
-}
-
-func (expr *RuneLiteralExpr) Walk(visitor Visitor) {
-	visitor.Enter(expr)
-	visitor.Exit(expr)
-}
-
-type StringLiteralExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Value string
-}
-
-func (expr *StringLiteralExpr) Walk(visitor Visitor) {
+func (expr *LiteralExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	visitor.Exit(expr)
 }
