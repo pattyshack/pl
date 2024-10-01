@@ -206,34 +206,31 @@ func (detector *unexpectedArgumentsDetector) Exit(node ast.Node) {
 
 // This verifies:
 //   - default branch (if existing) is the last branch
-//   - switch's case don't include assign expr
-//   - select's case don't include multiple switch cases, expr is either
-//     send/recv expr (and assign pattern don't include case enum pattern; this
-//     is check by a different pass)
-type unexpectedSelectSwitchBranchesDetector struct {
+type unexpectedDefaultBranchesDetector struct {
 	util.ErrorEmitter
 }
 
-func detectUnexpectedSelectSwitchBranches() util.Pass {
-	return &unexpectedSelectSwitchBranchesDetector{}
+func detectUnexpectedDefaultBranches() util.Pass {
+	return &unexpectedDefaultBranchesDetector{}
 }
 
-func (detector *unexpectedSelectSwitchBranchesDetector) Process(node ast.Node) {
+func (detector *unexpectedDefaultBranchesDetector) Process(node ast.Node) {
 	node.Walk(detector)
 }
 
-func (detector *unexpectedSelectSwitchBranchesDetector) Enter(node ast.Node) {
+func (detector *unexpectedDefaultBranchesDetector) Enter(node ast.Node) {
 	switch expr := node.(type) {
+	case *ast.IfExpr:
+		detector.checkBranches(expr.ConditionBranches)
 	case *ast.SwitchExpr:
-		detector.checkBranches(expr.ConditionBranches, true)
+		detector.checkBranches(expr.ConditionBranches)
 	case *ast.SelectExpr:
-		detector.checkBranches(expr.ConditionBranches, false)
+		detector.checkBranches(expr.ConditionBranches)
 	}
 }
 
-func (detector *unexpectedSelectSwitchBranchesDetector) checkBranches(
+func (detector *unexpectedDefaultBranchesDetector) checkBranches(
 	condBranches []*ast.ConditionBranchStmt,
-	isSwitch bool,
 ) {
 	last := len(condBranches) - 1
 	for idx, branch := range condBranches {
@@ -241,52 +238,9 @@ func (detector *unexpectedSelectSwitchBranchesDetector) checkBranches(
 			if idx != last {
 				detector.Emit("%s: default branch is not the last branch", branch.Loc())
 			}
-			continue
-		}
-
-		if isSwitch {
-			casePatternExpr, ok := branch.Condition.(*ast.CasePatternExpr)
-			if !ok {
-				detector.Emit("%s: unexpected expression", branch.Condition.Loc())
-			} else {
-				for _, pattern := range casePatternExpr.Patterns {
-					binary, ok := pattern.(*ast.BinaryExpr)
-					if ok && binary.Op == ast.BinaryAssignOp {
-						detector.Emit("%s: unexpected assignment pattern", binary.Loc())
-					}
-				}
-			}
-		} else {
-			_, ok := branch.Condition.(*ast.CasePatternExpr)
-			if ok {
-				detector.Emit(
-					"%s: unexpected pattern list, expecting only one pattern per case",
-					branch.Condition.Loc())
-			} else {
-				expr := branch.Condition
-
-				binary, ok := expr.(*ast.BinaryExpr)
-				if ok && binary.Op == ast.BinaryAssignOp {
-					expr = binary.Right
-				}
-
-				isValid := false
-				switch nary := expr.(type) {
-				case *ast.UnaryExpr:
-					isValid = nary.Op == ast.UnaryRecvOp
-				case *ast.BinaryExpr:
-					isValid = nary.Op == ast.BinarySendOp
-				}
-
-				if !isValid {
-					detector.Emit(
-						"%s: unexpected expression, expecting send/recv expression",
-						expr.Loc())
-				}
-			}
 		}
 	}
 }
 
-func (detector *unexpectedSelectSwitchBranchesDetector) Exit(node ast.Node) {
+func (detector *unexpectedDefaultBranchesDetector) Exit(node ast.Node) {
 }
