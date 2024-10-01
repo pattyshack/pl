@@ -42,6 +42,8 @@ type LiteralExpr struct {
 	Value string
 }
 
+var _ Expression = &LiteralExpr{}
+
 func (expr *LiteralExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	visitor.Exit(expr)
@@ -58,6 +60,8 @@ type NamedExpr struct {
 
 	Name string
 }
+
+var _ Expression = &NamedExpr{}
 
 func (expr *NamedExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
@@ -76,6 +80,8 @@ type AccessExpr struct {
 	Operand Expression
 	Field   string
 }
+
+var _ Expression = &AccessExpr{}
 
 func (expr *AccessExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
@@ -117,6 +123,8 @@ type UnaryExpr struct {
 	Op      UnaryOp
 	Operand Expression
 }
+
+var _ Expression = &UnaryExpr{}
 
 func (expr *UnaryExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
@@ -174,6 +182,8 @@ type BinaryExpr struct {
 	Right Expression
 }
 
+var _ Expression = &BinaryExpr{}
+
 func (expr *BinaryExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Left.Walk(visitor)
@@ -207,6 +217,8 @@ type ImplicitStructExpr struct {
 
 	Arguments []*Argument
 }
+
+var _ Expression = &ImplicitStructExpr{}
 
 func (expr *ImplicitStructExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
@@ -259,6 +271,8 @@ type IndexExpr struct {
 	IndexArgs []Expression
 }
 
+var _ Expression = &IndexExpr{}
+
 func (expr *IndexExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Accessible.Walk(visitor)
@@ -281,14 +295,14 @@ type AsExpr struct {
 	CastType   TypeExpression
 }
 
+var _ Expression = &AsExpr{}
+
 func (expr *AsExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Accessible.Walk(visitor)
 	expr.CastType.Walk(visitor)
 	visitor.Exit(expr)
 }
-
-var _ Expression = &AsExpr{}
 
 //
 // InitializeExpr
@@ -313,26 +327,31 @@ func (expr *InitializeExpr) Walk(visitor Visitor) {
 }
 
 //
-// IfExpr
+// StatementsExpr
 //
 
-type CasePatternExpr struct {
+type StatementsExpr struct {
 	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
-	Patterns []Expression
+	LabelDecl  string // optional
+	Statements []Statement
 }
 
-var _ Expression = &CasePatternExpr{}
+var _ Expression = &StatementsExpr{}
 
-func (cond *CasePatternExpr) Walk(visitor Visitor) {
-	visitor.Enter(cond)
-	for _, pattern := range cond.Patterns {
-		pattern.Walk(visitor)
+func (expr *StatementsExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	for _, stmt := range expr.Statements {
+		stmt.Walk(visitor)
 	}
-	visitor.Exit(cond)
+	visitor.Exit(expr)
 }
+
+//
+// IfExpr
+//
 
 type IfExpr struct {
 	IsExpr

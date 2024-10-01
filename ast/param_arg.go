@@ -65,7 +65,7 @@ type Argument struct {
 	// Only set for named assignment
 	OptionalName string
 
-	// NOTE: Expr may be nil for SkipPatternArgument or IsImplicitUnit.
+	// NOTE: Expr may be nil for SkipPatternArgument
 	Expr Expression
 
 	HasEllipsis bool

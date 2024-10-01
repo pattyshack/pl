@@ -57,10 +57,32 @@ func (pattern *VarPattern) Walk(visitor Visitor) {
 }
 
 //
-// CaseEnumPattern
+// CasePatterns
 //
 
-type CaseEnumPattern struct {
+type CasePatterns struct {
+	IsExpr
+	StartEndPos
+	LeadingTrailingComments
+
+	Patterns []Expression
+}
+
+var _ Expression = &CasePatterns{}
+
+func (cond *CasePatterns) Walk(visitor Visitor) {
+	visitor.Enter(cond)
+	for _, pattern := range cond.Patterns {
+		pattern.Walk(visitor)
+	}
+	visitor.Exit(cond)
+}
+
+//
+// EnumPattern
+//
+
+type EnumPattern struct {
 	IsExpr
 	StartEndPos
 	LeadingTrailingComments
@@ -69,9 +91,9 @@ type CaseEnumPattern struct {
 	VarPattern Expression // optional.  either implicit struct or VarPattern
 }
 
-var _ Expression = &CaseEnumPattern{}
+var _ Expression = &EnumPattern{}
 
-func (pattern *CaseEnumPattern) Walk(visitor Visitor) {
+func (pattern *EnumPattern) Walk(visitor Visitor) {
 	visitor.Enter(pattern)
 	if pattern.VarPattern != nil {
 		pattern.VarPattern.Walk(visitor)

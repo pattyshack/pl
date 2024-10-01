@@ -377,7 +377,7 @@ func (reducer *Reducer) ToAssignSelectablePattern(
 	if len(exprList.Elements) == 1 {
 		expr = exprList.Elements[0]
 		// TODO: move error check into pattern analyzer
-		_, ok := expr.(*ast.CaseEnumPattern)
+		_, ok := expr.(*ast.EnumPattern)
 		if ok {
 			reducer.Emit("%s: unexpected case enum pattern", expr.Loc())
 		}
@@ -386,7 +386,7 @@ func (reducer *Reducer) ToAssignSelectablePattern(
 		args := make([]*ast.Argument, 0, len(exprList.Elements))
 		for _, item := range exprList.Elements {
 			// TODO: move error check into pattern analyzer
-			_, ok := item.(*ast.CaseEnumPattern)
+			_, ok := item.(*ast.EnumPattern)
 			if ok {
 				reducer.Emit("%s: unexpected case enum pattern", item.Loc())
 			}
@@ -790,19 +790,19 @@ func (reducer *Reducer) ToCasePatternExpr(
 ) {
 	leading := caseKW.TakeLeading()
 
-	pattern := &ast.CasePatternExpr{
+	patterns := &ast.CasePatterns{
 		StartEndPos: switchablePatterns.StartEnd(),
 		Patterns:    switchablePatterns.Elements,
 	}
-	pattern.LeadingComment = caseKW.TakeTrailing()
-	pattern.TrailingComment = assign.TakeLeading()
+	patterns.LeadingComment = caseKW.TakeTrailing()
+	patterns.TrailingComment = assign.TakeLeading()
 
 	value.PrependToLeading(assign.TakeTrailing())
 	trailing := value.TakeTrailing()
 
 	cond := &ast.BinaryExpr{
 		StartEndPos: ast.NewStartEndPos(caseKW.Loc(), value.End()),
-		Left:        pattern,
+		Left:        patterns,
 		Op:          ast.BinaryAssignOp,
 		Right:       value,
 	}
@@ -1042,7 +1042,7 @@ func (reducer *Reducer) ToSelectExprBody(
 	branches := reducer.groupBranches(stmts)
 
 	for _, branch := range branches {
-		expr, ok := branch.Condition.(*ast.CasePatternExpr)
+		expr, ok := branch.Condition.(*ast.CasePatterns)
 		if !ok {
 			continue
 		}

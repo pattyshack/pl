@@ -1,27 +1,6 @@
 package ast
 
 //
-// StatementsExpr
-//
-
-type StatementsExpr struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	LabelDecl  string // optional
-	Statements []Statement
-}
-
-func (expr *StatementsExpr) Walk(visitor Visitor) {
-	visitor.Enter(expr)
-	for _, stmt := range expr.Statements {
-		stmt.Walk(visitor)
-	}
-	visitor.Exit(expr)
-}
-
-//
 // ImportClause
 //
 

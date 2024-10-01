@@ -400,7 +400,7 @@ func (reducer *Reducer) CaseBranchToBranchStmt(
 	lastPattern.AppendToTrailing(colon.TakeLeading())
 	lastPattern.AppendToTrailing(colon.TakeTrailing())
 
-	cond := &ast.CasePatternExpr{
+	cond := &ast.CasePatterns{
 		StartEndPos: casePatterns.StartEnd(),
 		Patterns:    casePatterns.Elements,
 	}
