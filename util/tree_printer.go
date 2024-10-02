@@ -197,8 +197,8 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		}
 	case *ast.EnumPattern:
 		printer.write("[EnumPattern: EnumValue=%s", node.EnumValue)
-		if node.VarPattern != nil {
-			printer.push("VarPattern=")
+		if node.Pattern != nil {
+			printer.push("Pattern=")
 		} else {
 			printer.write("]")
 		}
@@ -394,7 +394,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.VarPattern:
 		printer.endNode()
 	case *ast.EnumPattern:
-		if node.VarPattern != nil {
+		if node.Pattern != nil {
 			printer.endNode()
 		}
 	case *ast.CasePatterns:

@@ -75,7 +75,7 @@ func (Reducer) AddToSwitchableCasePatterns(
 func (Reducer) EnumMatchPatternToCaseEnumPattern(
 	dot *lr.TokenValue,
 	enumValue *lr.TokenValue,
-	varPattern ast.Expression,
+	pattern ast.Expression,
 ) (
 	ast.Expression,
 	error,
@@ -83,17 +83,17 @@ func (Reducer) EnumMatchPatternToCaseEnumPattern(
 	leading := dot.TakeLeading()
 	leading.Append(dot.TakeTrailing())
 	leading.Append(enumValue.TakeLeading())
-	varPattern.PrependToLeading(enumValue.TakeTrailing())
-	trailing := varPattern.TakeTrailing()
+	pattern.PrependToLeading(enumValue.TakeTrailing())
+	trailing := pattern.TakeTrailing()
 
-	pattern := &ast.EnumPattern{
+	enum := &ast.EnumPattern{
 		StartEndPos: ast.NewStartEndPos(dot.Loc(), enumValue.End()),
 		EnumValue:   enumValue.Value,
-		VarPattern:  varPattern,
+		Pattern:     pattern,
 	}
-	pattern.LeadingComment = leading
-	pattern.TrailingComment = trailing
-	return pattern, nil
+	enum.LeadingComment = leading
+	enum.TrailingComment = trailing
+	return enum, nil
 }
 
 func (Reducer) EnumNondataMatchPattenToCaseEnumPattern(
@@ -140,7 +140,7 @@ func (Reducer) EnumDeclVarPatternToCaseEnumPattern(
 	pattern := &ast.EnumPattern{
 		StartEndPos: ast.NewStartEndPos(varType.Loc(), enumValue.End()),
 		EnumValue:   enumValue.Value,
-		VarPattern:  varPattern,
+		Pattern:     varPattern,
 	}
 	pattern.LeadingComment = leading
 	pattern.TrailingComment = trailing

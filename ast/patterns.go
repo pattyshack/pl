@@ -87,16 +87,16 @@ type EnumPattern struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	EnumValue  string
-	VarPattern Expression // optional.  either implicit struct or VarPattern
+	EnumValue string
+	Pattern   Expression // optional.  either implicit struct or VarPattern
 }
 
 var _ Expression = &EnumPattern{}
 
 func (pattern *EnumPattern) Walk(visitor Visitor) {
 	visitor.Enter(pattern)
-	if pattern.VarPattern != nil {
-		pattern.VarPattern.Walk(visitor)
+	if pattern.Pattern != nil {
+		pattern.Pattern.Walk(visitor)
 	}
 	visitor.Exit(pattern)
 }
