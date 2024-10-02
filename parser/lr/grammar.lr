@@ -82,8 +82,8 @@ definition<Definition> ->
 
 // Global variable dependencies must be topologically sortable.
 global_var_def<Definition> ->
-  = decl_var_pattern |
-  def: decl_var_pattern ASSIGN returnable_expr
+  = address_pattern |
+  def: address_pattern ASSIGN returnable_expr
 
 // Free floating comment is not part of any other symbol. This can happen if
 // the source file only has comments, or if there are comments at the end of
@@ -189,11 +189,11 @@ import_clause<ImportClause> ->
 // VAR declares a reassignable variable. LET declares a non-reassignable
 // variable.  A "constant" is a LET variable associated with a type with no
 // public access to fields, and no mutation methods.
-decl_var_pattern<Expression> ->
-  inferred: var_type var_pattern |
-  typed: var_type var_pattern type_expr
+address_pattern<Expression> ->
+  inferred: new_var_type var_pattern |
+  typed: new_var_type var_pattern type_expr
 
-var_type<Value> ->
+new_var_type<Value> ->
   = VAR |
   = LET
 
@@ -221,7 +221,7 @@ case_patterns<ExpressionList> ->
   = switchable_case_patterns |
   assign_selectable_pattern
 
-// switchable_case_patterns must be a valid assign_pattern (case_enum_pattern
+// switchable_case_patterns must be a valid assign_pattern (enum_pattern
 // in switchable_case_patterns are rejected by post analysis).
 // expr must be either a send_expr or an recv_expr
 assign_selectable_pattern<Expression> ->
@@ -231,7 +231,7 @@ switchable_case_patterns<ExpressionList> ->
   switchable_case_pattern |
   add: switchable_case_patterns COMMA switchable_case_pattern
 
-// REMINDER TO SELF: allow top level decl_var_pattern to conditionally
+// REMINDER TO SELF: allow top level address_pattern to conditionally
 // type match rather than type check error. e.g.,
 //
 // type Expression trait {...}
@@ -253,17 +253,18 @@ switchable_case_patterns<ExpressionList> ->
 // }
 switchable_case_pattern<Expression> ->
   = expr |
-  = case_enum_pattern
+  = enum_pattern
 
-case_enum_pattern<Expression> ->
+enum_pattern<Expression> ->
   // Note: parsing VAR <pkg>.<enum type>.<enum value>(...) is painful using
   // context free grammar (e.g, need to make VAR a prefix op expression instead
-  // of decl_var_pattern), hence we won't support this form. (the expression
+  // of address_pattern), hence we won't support this form. (the expression
   // actually parses explicit enum match pattern, where VARs are inside the
   // data list, but we should reject this form for consistency)
-  enum_match_pattern: DOT IDENTIFIER implicit_struct_expr |
-  enum_nondata_match_patten: DOT IDENTIFIER |
-  enum_decl_var_pattern: var_type DOT IDENTIFIER tuple_pattern
+  match: DOT IDENTIFIER implicit_struct_expr |
+  nondata: DOT IDENTIFIER |
+  new_address: new_var_type DOT IDENTIFIER tuple_pattern
+  // TODO assign to existing address
 
 //
 // Expressions (in decrasing order precedence) ================================
@@ -548,7 +549,7 @@ expr<Expression> ->
   = loop_expr |
   // NOTE: *_pattern are not a real expression.  Unexpected usage in real
   // expressions are rejected during type checking.
-  = decl_var_pattern
+  = address_pattern
 
 statements_expr<Expression> ->
   = statements |

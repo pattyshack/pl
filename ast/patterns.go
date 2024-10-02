@@ -54,43 +54,43 @@ func (cond *CasePatterns) Walk(visitor Visitor) {
 }
 
 //
-// VarPattern
+// AddressPattern
 //
 
-type VarPatternKind string
+type AddressPatternKind string
 
 const (
-	VarDecl     = VarPatternKind("var")
-	LetDecl     = VarPatternKind("let")
-	AssignToVar = VarPatternKind(">")
+	VarDecl     = AddressPatternKind("var")
+	LetDecl     = AddressPatternKind("let")
+	AssignToVar = AddressPatternKind(">")
 )
 
-type VarPattern struct {
+type AddressPattern struct {
 	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
-	Kind       VarPatternKind
-	VarPattern Expression
-	Type       TypeExpression // optional
+	Kind    AddressPatternKind
+	Pattern Expression
+	Type    TypeExpression // optional
 }
 
-var _ Expression = &VarPattern{}
+var _ Expression = &AddressPattern{}
 
-func NewVarPattern(
+func NewAddressPattern(
 	varType TokenValue,
 	pattern Expression,
 	typeExpr TypeExpression,
-) *VarPattern {
+) *AddressPattern {
 	var end Node = pattern
 	if typeExpr != nil {
 		end = typeExpr
 	}
 
-	expr := &VarPattern{
+	expr := &AddressPattern{
 		StartEndPos: NewStartEndPos(varType.Loc(), end.End()),
-		Kind:        VarPatternKind(varType.Val()),
-		VarPattern:  pattern,
+		Kind:        AddressPatternKind(varType.Val()),
+		Pattern:     pattern,
 		Type:        typeExpr,
 	}
 
@@ -100,9 +100,9 @@ func NewVarPattern(
 	return expr
 }
 
-func (pattern *VarPattern) Walk(visitor Visitor) {
+func (pattern *AddressPattern) Walk(visitor Visitor) {
 	visitor.Enter(pattern)
-	pattern.VarPattern.Walk(visitor)
+	pattern.Pattern.Walk(visitor)
 	if pattern.Type != nil {
 		pattern.Type.Walk(visitor)
 	}

@@ -115,20 +115,20 @@ func (reducer *Reducer) ToCasePatternExpr(
 }
 
 //
-// VarPattern
+// AddressPattern
 //
 
-func (reducer *Reducer) InferredToDeclVarPattern(
+func (reducer *Reducer) InferredToAddressPattern(
 	varType *lr.TokenValue,
 	pattern ast.Expression,
 ) (
 	ast.Expression,
 	error,
 ) {
-	return ast.NewVarPattern(varType, pattern, nil), nil
+	return ast.NewAddressPattern(varType, pattern, nil), nil
 }
 
-func (Reducer) TypedToDeclVarPattern(
+func (Reducer) TypedToAddressPattern(
 	varType *lr.TokenValue,
 	pattern ast.Expression,
 	typeExpr ast.TypeExpression,
@@ -136,7 +136,7 @@ func (Reducer) TypedToDeclVarPattern(
 	ast.Expression,
 	error,
 ) {
-	return ast.NewVarPattern(varType, pattern, typeExpr), nil
+	return ast.NewAddressPattern(varType, pattern, typeExpr), nil
 }
 
 //
@@ -178,10 +178,10 @@ func (Reducer) AddToSwitchableCasePatterns(
 }
 
 //
-// CaseEnumPattern
+// EnumPattern
 //
 
-func (Reducer) EnumMatchPatternToCaseEnumPattern(
+func (Reducer) MatchToEnumPattern(
 	dot *lr.TokenValue,
 	enumValue *lr.TokenValue,
 	pattern ast.Expression,
@@ -205,7 +205,7 @@ func (Reducer) EnumMatchPatternToCaseEnumPattern(
 	return enum, nil
 }
 
-func (Reducer) EnumNondataMatchPattenToCaseEnumPattern(
+func (Reducer) NondataToEnumPattern(
 	dot *lr.TokenValue,
 	enumValue *lr.TokenValue,
 ) (
@@ -226,7 +226,7 @@ func (Reducer) EnumNondataMatchPattenToCaseEnumPattern(
 	return pattern, nil
 }
 
-func (Reducer) EnumDeclVarPatternToCaseEnumPattern(
+func (Reducer) NewAddressToEnumPattern(
 	varType *lr.TokenValue,
 	dot *lr.TokenValue,
 	enumValue *lr.TokenValue,
@@ -241,7 +241,7 @@ func (Reducer) EnumDeclVarPatternToCaseEnumPattern(
 	leading.Append(dot.TakeTrailing())
 	leading.Append(enumValue.TakeTrailing())
 
-	varPattern := ast.NewVarPattern(varType, tuplePattern, nil)
+	varPattern := ast.NewAddressPattern(varType, tuplePattern, nil)
 	varPattern.PrependToLeading(enumValue.TakeTrailing())
 
 	trailing := tuplePattern.TakeTrailing()

@@ -193,12 +193,12 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.push("Pattern=", "Value=")
 	case *ast.CasePatterns:
 		printer.list("[CasePatterns:", nil, "Pattern", len(node.Patterns))
-	case *ast.VarPattern:
-		printer.write("[VarPattern: Kind=%s", node.Kind)
+	case *ast.AddressPattern:
+		printer.write("[AddressPattern: Kind=%s", node.Kind)
 		if node.Type != nil {
-			printer.push("VarPattern=", "TypeExpr=")
+			printer.push("Pattern=", "TypeExpr=")
 		} else {
-			printer.push("VarPattern=")
+			printer.push("Pattern=")
 		}
 	case *ast.EnumPattern:
 		printer.write("[EnumPattern: EnumValue=%s", node.EnumValue)
@@ -394,7 +394,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 		printer.endNode()
 	case *ast.StatementsExpr:
 		printer.endList(len(node.Statements))
-	case *ast.VarPattern:
+	case *ast.AddressPattern:
 		printer.endNode()
 	case *ast.AssignPattern:
 		printer.endNode()
