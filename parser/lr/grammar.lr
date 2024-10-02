@@ -190,31 +190,17 @@ import_clause<ImportClause> ->
 // variable.  A "constant" is a LET variable associated with a type with no
 // public access to fields, and no mutation methods.
 address_pattern<Expression> ->
-  inferred: new_var_type var_pattern |
-  typed: new_var_type var_pattern type_expr
+  new_inferred: new_var_type new_addressable |
+  new_typed: new_var_type new_addressable type_expr |
+  existing: GREATER expr
 
 new_var_type<Value> ->
   = VAR |
   = LET
 
-var_pattern<Expression> ->
+new_addressable<Expression> ->
   = named_expr |
-  = tuple_pattern
-
-tuple_pattern<Expression> -> LPAREN field_var_patterns RPAREN
-
-proper_field_var_patterns<ArgumentList> ->
-  field_var_pattern |
-  add: proper_field_var_patterns COMMA field_var_pattern
-
-field_var_patterns<ArgumentList> ->
-  = proper_field_var_patterns |
-  improper: proper_field_var_patterns COMMA
-
-field_var_pattern<Argument> ->
-  positional: var_pattern |
-  named_assignment: IDENTIFIER ASSIGN var_pattern |
-  skip_pattern: ELLIPSIS
+  = implicit_struct_expr
 
 case_patterns<ExpressionList> ->
   // In select expr, must verify the list has exactly one recv/send expression.
@@ -263,8 +249,8 @@ enum_pattern<Expression> ->
   // data list, but we should reject this form for consistency)
   match: DOT IDENTIFIER implicit_struct_expr |
   nondata: DOT IDENTIFIER |
-  new_address: new_var_type DOT IDENTIFIER tuple_pattern
-  // TODO assign to existing address
+  assign_to_new_address: new_var_type DOT IDENTIFIER implicit_struct_expr |
+  assign_to_existing_address: GREATER DOT IDENTIFIER implicit_struct_expr
 
 //
 // Expressions (in decrasing order precedence) ================================
@@ -415,16 +401,7 @@ prefix_unary_op<Value> ->
   // NOTE: call_expr's accessible_expr and its arguments are evaluated
   // immediately. Only the call itself is applicable to the callback_op.
   = ASYNC |
-  = DEFER |
-  // NOTE: "assign to", aka unary GREATER, operator is not a real expression.
-  //
-  // This is only used by case pattern, which need to disambiguate between
-  // using an expression for pattern matching vs assigning values to evaluated
-  // expression address (This is optional in assign statement since it's
-  // unambiguous).
-  //
-  // Unexpected usage in real expressions are rejected.
-  = GREATER
+  = DEFER
 
 //
 // Mul expressions

@@ -414,17 +414,6 @@ func (reducer *Reducer) AddToImproperExprStruct(
 	return structExpr, nil
 }
 
-func (reducer *Reducer) ToTuplePattern(
-	lparen *lr.TokenValue,
-	list *ast.ArgumentList,
-	rparen *lr.TokenValue,
-) (
-	ast.Expression,
-	error,
-) {
-	return reducer.toImplicitStructExpr(lparen, list, rparen), nil
-}
-
 //
 // ColonExpr
 //

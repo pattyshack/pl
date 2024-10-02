@@ -428,35 +428,6 @@ func (Reducer) SkipPatternToArgument(
 	return ast.NewSkipPatternArgument(ellipsis), nil
 }
 
-func (Reducer) PositionalToFieldVarPattern(
-	expr ast.Expression,
-) (
-	*ast.Argument,
-	error,
-) {
-	return ast.NewPositionalArgument(expr), nil
-}
-
-func (Reducer) NamedAssignmentToFieldVarPattern(
-	name *lr.TokenValue,
-	assign *lr.TokenValue,
-	expr ast.Expression,
-) (
-	*ast.Argument,
-	error,
-) {
-	return ast.NewNamedArgument(name, assign, expr), nil
-}
-
-func (Reducer) SkipPatternToFieldVarPattern(
-	ellipsis *lr.TokenValue,
-) (
-	*ast.Argument,
-	error,
-) {
-	return ast.NewSkipPatternArgument(ellipsis), nil
-}
-
 //
 // Argument list
 //
@@ -500,38 +471,4 @@ func (reducer *Reducer) NilToArguments() (
 	error,
 ) {
 	return nil, nil
-}
-
-func (reducer *Reducer) FieldVarPatternToProperFieldVarPatterns(
-	pattern *ast.Argument,
-) (
-	*ast.ArgumentList,
-	error,
-) {
-	list := ast.NewArgumentList()
-	list.Add(pattern)
-	return list, nil
-}
-
-func (reducer *Reducer) AddToProperFieldVarPatterns(
-	list *ast.ArgumentList,
-	comma *lr.TokenValue,
-	pattern *ast.Argument,
-) (
-	*ast.ArgumentList,
-	error,
-) {
-	list.ReduceAdd(comma, pattern)
-	return list, nil
-}
-
-func (reducer *Reducer) ImproperToFieldVarPatterns(
-	list *ast.ArgumentList,
-	comma *lr.TokenValue,
-) (
-	*ast.ArgumentList,
-	error,
-) {
-	list.ReduceImproper(comma)
-	return list, nil
 }
