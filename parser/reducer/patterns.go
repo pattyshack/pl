@@ -6,6 +6,115 @@ import (
 )
 
 //
+// AssignPattern
+//
+
+func (reducer *Reducer) toAssignPattern(
+	pattern ast.Expression,
+	op *lr.TokenValue,
+	value ast.Expression,
+) *ast.AssignPattern {
+	expr := &ast.AssignPattern{
+		StartEndPos: ast.NewStartEndPos(pattern.Loc(), value.End()),
+		Kind:        ast.AssignKind(op.Value),
+		Pattern:     pattern,
+		Value:       value,
+	}
+
+	expr.LeadingComment = pattern.TakeLeading()
+	pattern.AppendToTrailing(op.TakeLeading())
+	value.PrependToLeading(op.TakeTrailing())
+	expr.TrailingComment = value.TakeTrailing()
+
+	return expr
+}
+
+func (reducer *Reducer) ToAssignStmt(
+	pattern ast.Expression,
+	assign *lr.TokenValue,
+	value ast.Expression,
+) (
+	ast.Statement,
+	error,
+) {
+	return reducer.toAssignPattern(pattern, assign, value), nil
+}
+
+func (reducer *Reducer) DefToGlobalVarDef(
+	pattern ast.Expression,
+	assign *lr.TokenValue,
+	value ast.Expression,
+) (
+	ast.Definition,
+	error,
+) {
+	return reducer.toAssignPattern(pattern, assign, value), nil
+}
+
+func (reducer *Reducer) ToAssignSelectablePattern(
+	exprList *ast.ExpressionList,
+	assign *lr.TokenValue,
+	value ast.Expression,
+) (
+	ast.Expression,
+	error,
+) {
+	var expr ast.Expression
+	if len(exprList.Elements) == 1 {
+		expr = exprList.Elements[0]
+		// TODO: move error check into pattern analyzer
+		_, ok := expr.(*ast.EnumPattern)
+		if ok {
+			reducer.Emit("%s: unexpected case enum pattern", expr.Loc())
+		}
+
+	} else {
+		args := make([]*ast.Argument, 0, len(exprList.Elements))
+		for _, item := range exprList.Elements {
+			// TODO: move error check into pattern analyzer
+			_, ok := item.(*ast.EnumPattern)
+			if ok {
+				reducer.Emit("%s: unexpected case enum pattern", item.Loc())
+			}
+			args = append(args, ast.NewPositionalArgument(item))
+		}
+
+		expr = &ast.ImplicitStructExpr{
+			StartEndPos:             exprList.StartEnd(),
+			LeadingTrailingComments: exprList.TakeComments(),
+			Kind:                    ast.ImproperImplicitStruct,
+			Arguments:               args,
+		}
+	}
+
+	return reducer.toAssignPattern(expr, assign, value), nil
+}
+
+func (reducer *Reducer) ToCasePatternExpr(
+	caseKW *lr.TokenValue,
+	switchablePatterns *ast.ExpressionList,
+	assign *lr.TokenValue,
+	value ast.Expression,
+) (
+	ast.Expression,
+	error,
+) {
+	pattern := reducer.toAssignPattern(
+		&ast.CasePatterns{
+			StartEndPos: switchablePatterns.StartEnd(),
+			Patterns:    switchablePatterns.Elements,
+		},
+		assign,
+		value)
+
+	pattern.PrependToLeading(caseKW.TakeTrailing())
+	pattern.PrependToLeading(caseKW.TakeLeading())
+	pattern.StartPos = caseKW.Loc()
+
+	return pattern, nil
+}
+
+//
 // VarPattern
 //
 

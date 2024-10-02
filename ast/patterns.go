@@ -1,6 +1,59 @@
 package ast
 
 //
+// AssignPattern
+//
+
+type AssignKind string
+
+const (
+	EqualAssign = AssignKind("=")
+	InAssign    = AssignKind("in")
+)
+
+type AssignPattern struct {
+	IsExpr
+	StartEndPos
+	LeadingTrailingComments
+
+	Kind AssignKind
+
+	Pattern Expression
+	Value   Expression
+}
+
+var _ Expression = &AssignPattern{}
+
+func (assign *AssignPattern) Walk(visitor Visitor) {
+	visitor.Enter(assign)
+	assign.Pattern.Walk(visitor)
+	assign.Value.Walk(visitor)
+	visitor.Exit(assign)
+}
+
+//
+// CasePatterns
+//
+
+type CasePatterns struct {
+	IsExpr
+	StartEndPos
+	LeadingTrailingComments
+
+	Patterns []Expression
+}
+
+var _ Expression = &CasePatterns{}
+
+func (cond *CasePatterns) Walk(visitor Visitor) {
+	visitor.Enter(cond)
+	for _, pattern := range cond.Patterns {
+		pattern.Walk(visitor)
+	}
+	visitor.Exit(cond)
+}
+
+//
 // VarPattern
 //
 
@@ -54,28 +107,6 @@ func (pattern *VarPattern) Walk(visitor Visitor) {
 		pattern.Type.Walk(visitor)
 	}
 	visitor.Exit(pattern)
-}
-
-//
-// CasePatterns
-//
-
-type CasePatterns struct {
-	IsExpr
-	StartEndPos
-	LeadingTrailingComments
-
-	Patterns []Expression
-}
-
-var _ Expression = &CasePatterns{}
-
-func (cond *CasePatterns) Walk(visitor Visitor) {
-	visitor.Enter(cond)
-	for _, pattern := range cond.Patterns {
-		pattern.Walk(visitor)
-	}
-	visitor.Exit(cond)
 }
 
 //

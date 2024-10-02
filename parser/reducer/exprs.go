@@ -250,7 +250,7 @@ func (reducer *Reducer) toBinaryExpr(
 	left ast.Expression,
 	op *lr.TokenValue,
 	right ast.Expression,
-) ast.Expression {
+) *ast.BinaryExpr {
 	expr := &ast.BinaryExpr{
 		StartEndPos: ast.NewStartEndPos(left.Loc(), right.End()),
 		Left:        left,
@@ -341,67 +341,6 @@ func (reducer *Reducer) ToBinaryAssignOpExpr(
 	error,
 ) {
 	return reducer.toBinaryExpr(address, op, value), nil
-}
-
-func (reducer *Reducer) ToAssignStmt(
-	pattern ast.Expression,
-	assign *lr.TokenValue,
-	value ast.Expression,
-) (
-	ast.Statement,
-	error,
-) {
-	return reducer.toBinaryExpr(pattern, assign, value), nil
-}
-
-func (reducer *Reducer) DefToGlobalVarDef(
-	pattern ast.Expression,
-	assign *lr.TokenValue,
-	value ast.Expression,
-) (
-	ast.Definition,
-	error,
-) {
-	return reducer.toBinaryExpr(pattern, assign, value), nil
-}
-
-func (reducer *Reducer) ToAssignSelectablePattern(
-	exprList *ast.ExpressionList,
-	assign *lr.TokenValue,
-	value ast.Expression,
-) (
-	ast.Expression,
-	error,
-) {
-	var expr ast.Expression
-	if len(exprList.Elements) == 1 {
-		expr = exprList.Elements[0]
-		// TODO: move error check into pattern analyzer
-		_, ok := expr.(*ast.EnumPattern)
-		if ok {
-			reducer.Emit("%s: unexpected case enum pattern", expr.Loc())
-		}
-
-	} else {
-		args := make([]*ast.Argument, 0, len(exprList.Elements))
-		for _, item := range exprList.Elements {
-			// TODO: move error check into pattern analyzer
-			_, ok := item.(*ast.EnumPattern)
-			if ok {
-				reducer.Emit("%s: unexpected case enum pattern", item.Loc())
-			}
-			args = append(args, ast.NewPositionalArgument(item))
-		}
-
-		expr = &ast.ImplicitStructExpr{
-			StartEndPos:             exprList.StartEnd(),
-			LeadingTrailingComments: exprList.TakeComments(),
-			Kind:                    ast.ImproperImplicitStruct,
-			Arguments:               args,
-		}
-	}
-
-	return reducer.toBinaryExpr(expr, assign, value), nil
 }
 
 //
@@ -779,39 +718,6 @@ func (reducer *Reducer) ToInitializeExpr(
 // IfExpr
 //
 
-func (reducer *Reducer) ToCasePatternExpr(
-	caseKW *lr.TokenValue,
-	switchablePatterns *ast.ExpressionList,
-	assign *lr.TokenValue,
-	value ast.Expression,
-) (
-	ast.Expression,
-	error,
-) {
-	leading := caseKW.TakeLeading()
-
-	patterns := &ast.CasePatterns{
-		StartEndPos: switchablePatterns.StartEnd(),
-		Patterns:    switchablePatterns.Elements,
-	}
-	patterns.LeadingComment = caseKW.TakeTrailing()
-	patterns.TrailingComment = assign.TakeLeading()
-
-	value.PrependToLeading(assign.TakeTrailing())
-	trailing := value.TakeTrailing()
-
-	cond := &ast.BinaryExpr{
-		StartEndPos: ast.NewStartEndPos(caseKW.Loc(), value.End()),
-		Left:        patterns,
-		Op:          ast.BinaryAssignOp,
-		Right:       value,
-	}
-	cond.LeadingComment = leading
-	cond.TrailingComment = trailing
-
-	return cond, nil
-}
-
 func (reducer *Reducer) UnlabelledToIfExpr(
 	ifExpr *ast.IfExpr,
 ) (
@@ -1168,7 +1074,7 @@ func (reducer *Reducer) IteratorToLoopExprBody(
 	loop := &ast.LoopExpr{
 		StartEndPos: ast.NewStartEndPos(body.Loc(), body.End()),
 		LoopKind:    ast.IteratorLoop,
-		Condition:   reducer.toBinaryExpr(assignPattern, in, iterator),
+		Condition:   reducer.toAssignPattern(assignPattern, in, iterator),
 		Body:        body,
 	}
 	loop.LeadingComment = leading
