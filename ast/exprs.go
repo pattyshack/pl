@@ -437,7 +437,7 @@ type LoopExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	LoopKind
+	Kind LoopKind
 
 	LabelDecl string
 

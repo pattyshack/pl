@@ -166,10 +166,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			"Branch",
 			len(node.ConditionBranches))
 	case *ast.LoopExpr:
-		printer.write(
-			"[LoopExpr: LoopKind=%s LabelDecl=%s",
-			node.LoopKind,
-			node.LabelDecl)
+		printer.write("[LoopExpr: Kind=%s LabelDecl=%s", node.Kind, node.LabelDecl)
 		labels := []string{}
 		if node.Init != nil {
 			labels = append(labels, "Init=")

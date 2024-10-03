@@ -32,47 +32,7 @@ func (cmd *Command) Setup() {
 		false,
 		"when true, use lr.ParseSource instead of parser.ParseSource for source")
 
-	exprCmd := cmd.AddSubcommand("expr", "print expression")
-	exprCmd.SetCommandFunc(
-		cmd.printExpr,
-		argparse.PositionalArgument{
-			Name:        "files",
-			Description: "list of expression file name paths",
-			NumExpected: 1,
-			VarArgs:     true,
-		})
-
-	exprCmd = cmd.AddSubcommand("type_expr", "print type expression")
-	exprCmd.SetCommandFunc(
-		cmd.printTypeExpr,
-		argparse.PositionalArgument{
-			Name:        "files",
-			Description: "list of expression file name paths",
-			NumExpected: 1,
-			VarArgs:     true,
-		})
-
-	exprCmd = cmd.AddSubcommand("statement", "print statement")
-	exprCmd.SetCommandFunc(
-		cmd.printStatement,
-		argparse.PositionalArgument{
-			Name:        "files",
-			Description: "list of expression file name paths",
-			NumExpected: 1,
-			VarArgs:     true,
-		})
-
-	exprCmd = cmd.AddSubcommand("definition", "print definition")
-	exprCmd.SetCommandFunc(
-		cmd.printDefinition,
-		argparse.PositionalArgument{
-			Name:        "files",
-			Description: "list of expression file name paths",
-			NumExpected: 1,
-			VarArgs:     true,
-		})
-
-	exprCmd = cmd.AddSubcommand("source", "print source")
+	exprCmd := cmd.AddSubcommand("source", "print source")
 	exprCmd.SetCommandFunc(
 		cmd.printSource,
 		argparse.PositionalArgument{
@@ -167,62 +127,6 @@ func (cmd *Command) printFunc(
 	}
 
 	return nil
-}
-
-func (cmd *Command) printExpr(args []string) error {
-	return cmd.printFunc(
-		func(
-			fileName string,
-		) (
-			ast.Node,
-			[]error,
-			error,
-		) {
-			return parser.ParseExpr(fileName, cmd.ParserOptions)
-		},
-		args)
-}
-
-func (cmd *Command) printTypeExpr(args []string) error {
-	return cmd.printFunc(
-		func(
-			fileName string,
-		) (
-			ast.Node,
-			[]error,
-			error,
-		) {
-			return parser.ParseTypeExpr(fileName, cmd.ParserOptions)
-		},
-		args)
-}
-
-func (cmd *Command) printStatement(args []string) error {
-	return cmd.printFunc(
-		func(
-			fileName string,
-		) (
-			ast.Node,
-			[]error,
-			error,
-		) {
-			return parser.ParseStatement(fileName, cmd.ParserOptions)
-		},
-		args)
-}
-
-func (cmd *Command) printDefinition(args []string) error {
-	return cmd.printFunc(
-		func(
-			fileName string,
-		) (
-			ast.Node,
-			[]error,
-			error,
-		) {
-			return parser.ParseDefinition(fileName, cmd.ParserOptions)
-		},
-		args)
 }
 
 func (cmd *Command) printSource(args []string) error {

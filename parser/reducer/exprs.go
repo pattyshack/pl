@@ -989,7 +989,7 @@ func (reducer *Reducer) InfiniteToLoopExprBody(
 
 	loop := &ast.LoopExpr{
 		StartEndPos: ast.NewStartEndPos(body.Loc(), body.End()),
-		LoopKind:    ast.InfiniteLoop,
+		Kind:        ast.InfiniteLoop,
 		Body:        body,
 	}
 	loop.LeadingComment = leading
@@ -1013,7 +1013,7 @@ func (reducer *Reducer) DoWhileToLoopExprBody(
 
 	loop := &ast.LoopExpr{
 		StartEndPos: ast.NewStartEndPos(body.Loc(), body.End()),
-		LoopKind:    ast.DoWhileLoop,
+		Kind:        ast.DoWhileLoop,
 		Condition:   condition,
 		Body:        body,
 	}
@@ -1037,7 +1037,7 @@ func (reducer *Reducer) WhileToLoopExprBody(
 
 	loop := &ast.LoopExpr{
 		StartEndPos: ast.NewStartEndPos(body.Loc(), body.End()),
-		LoopKind:    ast.WhileLoop,
+		Kind:        ast.WhileLoop,
 		Condition:   condition,
 		Body:        body,
 	}
@@ -1062,7 +1062,7 @@ func (reducer *Reducer) IteratorToLoopExprBody(
 
 	loop := &ast.LoopExpr{
 		StartEndPos: ast.NewStartEndPos(body.Loc(), body.End()),
-		LoopKind:    ast.IteratorLoop,
+		Kind:        ast.IteratorLoop,
 		Condition:   reducer.toAssignPattern(assignPattern, in, iterator),
 		Body:        body,
 	}
@@ -1111,7 +1111,7 @@ func (reducer *Reducer) ForToLoopExprBody(
 
 	loop := &ast.LoopExpr{
 		StartEndPos: ast.NewStartEndPos(body.Loc(), body.End()),
-		LoopKind:    ast.ForLoop,
+		Kind:        ast.ForLoop,
 		Init:        init,
 		Condition:   condition,
 		Post:        post,

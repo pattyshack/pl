@@ -133,17 +133,8 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 	}
 }
 
-func (parser *sourceParser) analyze(node ast.Node) {
-	passes := [][]util.Pass{
-		{
-			detectUnreachableStatements(),
-			detectUnexpectedStatements(),
-			detectUnexpectedArguments(),
-			detectUnexpectedDefaultBranches(),
-		},
-	}
-
-	parser.EmitErrors(util.Process(node, passes, 0)...)
+func (parser *sourceParser) validate(node ast.Node) {
+	parser.EmitErrors(Validate(node)...)
 }
 
 func (parser *sourceParser) parseSource() (
@@ -156,128 +147,8 @@ func (parser *sourceParser) parseSource() (
 		return nil, nil, err
 	}
 
-	parser.analyze(source)
+	parser.validate(source)
 	return source, parser.Errors(), nil
-}
-
-func (parser *sourceParser) parseExpr() (
-	ast.Expression,
-	[]error,
-	error,
-) {
-	expr, err := lr.ParseExpr(parser.lexer, parser)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	parser.analyze(expr)
-	return expr, parser.Errors(), nil
-}
-
-func (parser *sourceParser) parseTypeExpr() (
-	ast.TypeExpression,
-	[]error,
-	error,
-) {
-	typeExpr, err := lr.ParseTypeExpr(parser.lexer, parser)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	parser.analyze(typeExpr)
-	return typeExpr, parser.Errors(), nil
-}
-
-func (parser *sourceParser) parseStatement() (
-	ast.Statement,
-	[]error,
-	error,
-) {
-	stmt, err := lr.ParseStatement(parser.lexer, parser)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	parser.analyze(stmt)
-	return stmt, parser.Errors(), nil
-}
-
-func (parser *sourceParser) parseDefinition() (
-	ast.Definition,
-	[]error,
-	error,
-) {
-	def, err := lr.ParseDefinition(parser.lexer, parser)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	parser.analyze(def)
-	return def, parser.Errors(), nil
-}
-
-func ParseExpr(
-	fileName string,
-	options ParserOptions,
-) (
-	ast.Expression,
-	[]error,
-	error,
-) {
-	parser, err := newSourceParser(fileName, options)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return parser.parseExpr()
-}
-
-func ParseTypeExpr(
-	fileName string,
-	options ParserOptions,
-) (
-	ast.TypeExpression,
-	[]error,
-	error,
-) {
-	parser, err := newSourceParser(fileName, options)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return parser.parseTypeExpr()
-}
-
-func ParseStatement(
-	fileName string,
-	options ParserOptions,
-) (
-	ast.Statement,
-	[]error,
-	error,
-) {
-	parser, err := newSourceParser(fileName, options)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return parser.parseStatement()
-}
-
-func ParseDefinition(
-	fileName string,
-	options ParserOptions,
-) (
-	ast.Definition,
-	[]error,
-	error,
-) {
-	parser, err := newSourceParser(fileName, options)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return parser.parseDefinition()
 }
 
 func ParseSource(
@@ -294,4 +165,17 @@ func ParseSource(
 	}
 
 	return parser.parseSource()
+}
+
+func Validate(node ast.Node) []error {
+	passes := [][]util.Pass{
+		{
+			detectUnreachableStatements(),
+			detectUnexpectedStatements(),
+			detectUnexpectedArguments(),
+			detectUnexpectedDefaultBranches(),
+		},
+	}
+
+	return util.Process(node, passes, 0)
 }

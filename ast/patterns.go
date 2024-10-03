@@ -60,9 +60,9 @@ func (cond *CasePatterns) Walk(visitor Visitor) {
 type AddressPatternKind string
 
 const (
-	VarDecl     = AddressPatternKind("var")
-	LetDecl     = AddressPatternKind("let")
-	AssignToVar = AddressPatternKind(">")
+	VarAddressDecl  = AddressPatternKind("var")
+	LetAddressDecl  = AddressPatternKind("let")
+	AssignToAddress = AddressPatternKind(">")
 )
 
 type AddressPattern struct {
@@ -119,7 +119,7 @@ type EnumPattern struct {
 	LeadingTrailingComments
 
 	EnumValue string
-	Pattern   Expression // optional.  either implicit struct or VarPattern
+	Pattern   Expression // optional.  either implicit struct or AddressPattern
 }
 
 var _ Expression = &EnumPattern{}
