@@ -85,7 +85,7 @@ func NewParseErrorSymbol(
 ) *ParseErrorSymbol {
 	return &ParseErrorSymbol{
 		StartEndPos: ast.NewStartEndPos(start, end),
-		Error:       fmt.Errorf(format, args...),
+		Error:       lexutil.NewLocationError(start, format, args...),
 	}
 }
 

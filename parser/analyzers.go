@@ -32,7 +32,7 @@ func (detector *unreachableStatementsDetector) Enter(node ast.Node) {
 		}
 
 		if idx < len(stmts.Statements)-1 {
-			detector.Emit("%s: unreachable statement", stmts.Statements[idx+1].Loc())
+			detector.Emit(stmts.Statements[idx+1].Loc(), "unreachable statement")
 			break
 		}
 	}
@@ -104,10 +104,7 @@ func (detector *unexpectedStatementsDetector) checkTopLevelStmts(
 		}
 
 		if invalidStmtType != "" {
-			detector.Emit(
-				"%s: unexpected %s",
-				stmt.Loc(),
-				invalidStmtType)
+			detector.Emit(stmt.Loc(), "unexpected %s", invalidStmtType)
 		}
 	}
 }
@@ -149,8 +146,8 @@ func (detector *unexpectedStatementsDetector) checkExprStmts(
 
 		if invalidStmtType != "" {
 			detector.Emit(
-				"%s: unexpected %s. expected expression, assign or jump statement",
 				node.Loc(),
+				"unexpected %s. expected expression, assign or jump statement",
 				invalidStmtType)
 		}
 	}
@@ -178,15 +175,15 @@ func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 	case *ast.CallExpr:
 		for idx, arg := range node.Arguments {
 			if arg.Kind == ast.SkipPatternArgument {
-				detector.Emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
+				detector.Emit(arg.Loc(), "unexpected %s argument", arg.Kind)
 			}
 
 			if arg.Kind == ast.VariadicArgument &&
 				idx != len(node.Arguments)-1 {
 
 				detector.Emit(
-					"%s: %s argument must be the last argument in the list",
 					arg.Loc(),
+					"%s argument must be the last argument in the list",
 					arg.Kind)
 			}
 		}
@@ -195,7 +192,7 @@ func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 			if arg.Kind == ast.SkipPatternArgument ||
 				arg.Kind == ast.VariadicArgument {
 
-				detector.Emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
+				detector.Emit(arg.Loc(), "unexpected %s argument", arg.Kind)
 			}
 		}
 	}
@@ -236,7 +233,7 @@ func (detector *unexpectedDefaultBranchesDetector) checkBranches(
 	for idx, branch := range condBranches {
 		if branch.IsDefaultBranch {
 			if idx != last {
-				detector.Emit("%s: default branch is not the last branch", branch.Loc())
+				detector.Emit(branch.Loc(), "default branch is not the last branch")
 			}
 		}
 	}
@@ -306,8 +303,8 @@ func (detector *unexpectedFuncSignaturesDetector) processPropertiesTypeExpr(
 
 		if typeExpr.Kind != ast.TraitKind {
 			detector.Emit(
-				"%s: unexpected %s function signature in %s type",
 				property.Loc(),
+				"unexpected %s function signature in %s type",
 				sig.Kind,
 				typeExpr.Kind)
 			continue
@@ -323,15 +320,15 @@ func (detector *unexpectedFuncSignaturesDetector) processNamedSignature(
 ) {
 	if sig.Kind == ast.AnonymousFunc {
 		detector.Emit(
-			"%s: unexpected %s function signature",
 			sig.Loc(),
+			"unexpected %s function signature",
 			sig.Kind)
 	} else {
 		// manual ast construction
 		if sig.Name == "" {
 			detector.Emit(
-				"%s: unexpected empty name string in function signature",
-				sig.Loc())
+				sig.Loc(),
+				"unexpected empty name string in function signature")
 		}
 	}
 
@@ -343,23 +340,23 @@ func (detector *unexpectedFuncSignaturesDetector) processAnonymousSignature(
 ) {
 	if sig.Kind != ast.AnonymousFunc {
 		detector.Emit(
-			"%s: unexpected %s function signature",
 			sig.Loc(),
+			"unexpected %s function signature",
 			sig.Kind)
 	} else {
 		// manual ast construction
 		if sig.Name != "" {
 			detector.Emit(
-				"%s: unexpected name string (%s) in function signature",
 				sig.Loc(),
+				"unexpected name string (%s) in function signature",
 				sig.Name)
 		}
 
 		// manual ast construction
 		if sig.GenericParameters != nil {
 			detector.Emit(
-				"%s: unexpected generic parameters in function signature",
-				sig.Loc())
+				sig.Loc(),
+				"unexpected generic parameters in function signature")
 		}
 	}
 
@@ -374,17 +371,17 @@ func (detector *unexpectedFuncSignaturesDetector) processParameters(
 		if param.Kind == ast.VarargParameter {
 			if idx != len(sig.Parameters.Elements)-1 {
 				detector.Emit(
-					"%s: %s parameter must be the last parameter in the list",
 					param.Loc(),
+					"%s parameter must be the last parameter in the list",
 					param.Kind)
 			}
 		} else if param.Kind == ast.ReceiverParameter {
 			if !allowReceiver {
-				detector.Emit("%s: unexpect %s parameter", param.Loc(), param.Kind)
+				detector.Emit(param.Loc(), "unexpect %s parameter", param.Kind)
 			} else if idx != 0 {
 				detector.Emit(
-					"%s: %s parameter must be the first argument in the list",
 					param.Loc(),
+					"%s parameter must be the first argument in the list",
 					param.Kind)
 			}
 		}

@@ -50,6 +50,12 @@ type Node interface {
 	Walk(Visitor)
 }
 
+// A Node may optionally implement Validator, which non-recursively validate
+// the node's syntactic structure.
+type Validator interface {
+	Validate() []error
+}
+
 type Expression interface {
 	Node
 	Statement

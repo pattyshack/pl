@@ -931,9 +931,9 @@ type ParseErrorHandler interface {
 type DefaultParseErrorHandler struct{}
 
 func (DefaultParseErrorHandler) Error(nextToken Token, stack _Stack) error {
-	return fmt.Errorf(
-		"%s: syntax error: unexpected symbol %s. expecting %v",
+	return lexutil.NewLocationError(
 		nextToken.Loc(),
+		"syntax error: unexpected symbol %s. expecting %v",
 		nextToken.Id(),
 		ExpectedTerminals(stack[len(stack)-1].StateId))
 }
@@ -1188,10 +1188,11 @@ func ParseSource(lexer Lexer, reducer Reducer) (*ast.StatementList, error) {
 func ParseSourceWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
-	errHandler ParseErrorHandler) (
+	errHandler ParseErrorHandler,
+) (
 	*ast.StatementList,
-	error) {
-
+	error,
+) {
 	item, err := _Parse(lexer, reducer, errHandler, _State1)
 	if err != nil {
 		var errRetVal *ast.StatementList
@@ -1211,10 +1212,11 @@ func ParseStatement(lexer Lexer, reducer Reducer) (ast.Statement, error) {
 func ParseStatementWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
-	errHandler ParseErrorHandler) (
+	errHandler ParseErrorHandler,
+) (
 	ast.Statement,
-	error) {
-
+	error,
+) {
 	item, err := _Parse(lexer, reducer, errHandler, _State2)
 	if err != nil {
 		var errRetVal ast.Statement
@@ -1234,10 +1236,11 @@ func ParseStatements(lexer Lexer, reducer Reducer) (*ast.StatementsExpr, error) 
 func ParseStatementsWithCustomErrorHandler(
 	lexer Lexer,
 	reducer Reducer,
-	errHandler ParseErrorHandler) (
+	errHandler ParseErrorHandler,
+) (
 	*ast.StatementsExpr,
-	error) {
-
+	error,
+) {
 	item, err := _Parse(lexer, reducer, errHandler, _State3)
 	if err != nil {
 		var errRetVal *ast.StatementsExpr
@@ -1255,10 +1258,11 @@ func _Parse(
 	lexer Lexer,
 	reducer Reducer,
 	errHandler ParseErrorHandler,
-	startState _StateId) (
+	startState _StateId,
+) (
 	*_StackItem,
-	error) {
-
+	error,
+) {
 	stateStack := _Stack{
 		// Note: we don't have to populate the start symbol since its value
 		// is never accessed.
@@ -1291,7 +1295,8 @@ func _Parse(
 			var reduceSymbol *Symbol
 			stateStack, reduceSymbol, err = action.ReduceSymbol(
 				reducer,
-				stateStack)
+				stateStack,
+				nextSymbol.Loc())
 			if err != nil {
 				return nil, err
 			}
@@ -1308,7 +1313,8 @@ func _Parse(
 			var reduceSymbol *Symbol
 			stateStack, reduceSymbol, err = action.ReduceSymbol(
 				reducer,
-				stateStack)
+				stateStack,
+				nextSymbol.Loc())
 			if err != nil {
 				return nil, err
 			}
@@ -3131,57 +3137,57 @@ func NewSymbol(token Token) (*Symbol, error) {
 	case CommentGroupsToken:
 		val, ok := token.(CommentGroupsTok)
 		if !ok {
-			return nil, fmt.Errorf(
-				"%s: invalid value type for token %s. "+
-					"expecting CommentGroupsTok",
+			return nil, lexutil.NewLocationError(
 				token.Loc(),
+				"invalid value type for token %s. "+
+					"expecting CommentGroupsTok",
 				token.Id())
 		}
 		symbol.CommentGroups = val
 	case NewlinesToken:
 		val, ok := token.(TokenCount)
 		if !ok {
-			return nil, fmt.Errorf(
-				"%s: invalid value type for token %s. "+
-					"expecting TokenCount",
+			return nil, lexutil.NewLocationError(
 				token.Loc(),
+				"invalid value type for token %s. "+
+					"expecting TokenCount",
 				token.Id())
 		}
 		symbol.Count = val
 	case _EndMarker:
 		val, ok := token.(GenericSymbol)
 		if !ok {
-			return nil, fmt.Errorf(
-				"%s: invalid value type for token %s. "+
-					"expecting GenericSymbol",
+			return nil, lexutil.NewLocationError(
 				token.Loc(),
+				"invalid value type for token %s. "+
+					"expecting GenericSymbol",
 				token.Id())
 		}
 		symbol.Generic_ = val
 	case ParseErrorToken:
 		val, ok := token.(*ParseErrorSymbol)
 		if !ok {
-			return nil, fmt.Errorf(
-				"%s: invalid value type for token %s. "+
-					"expecting *ParseErrorSymbol",
+			return nil, lexutil.NewLocationError(
 				token.Loc(),
+				"invalid value type for token %s. "+
+					"expecting *ParseErrorSymbol",
 				token.Id())
 		}
 		symbol.ParseError = val
 	case IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, RepeatToken, ForToken, DoToken, InToken, SelectToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, ImportToken, UnsafeToken, TypeToken, ImplementsToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, AsToken, NotToken, AndToken, OrToken, AtToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarLbracketToken, EllipsisToken, TildeToken, TildeTildeToken, AssignToken, ArrowToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken:
 		val, ok := token.(*TokenValue)
 		if !ok {
-			return nil, fmt.Errorf(
-				"%s: invalid value type for token %s. "+
-					"expecting *TokenValue",
+			return nil, lexutil.NewLocationError(
 				token.Loc(),
+				"invalid value type for token %s. "+
+					"expecting *TokenValue",
 				token.Id())
 		}
 		symbol.Value = val
 	default:
-		return nil, fmt.Errorf(
-			"%s: unexpected token type: %s",
+		return nil, lexutil.NewLocationError(
 			token.Loc(),
+			"unexpected token type: %s",
 			token.Id())
 	}
 	return symbol, nil
@@ -3475,9 +3481,9 @@ func (stack *_PseudoSymbolStack) Top() (*Symbol, error) {
 		token, err := stack.lexer.Next()
 		if err != nil {
 			if err != io.EOF {
-				return nil, fmt.Errorf(
-					"%s: unexpected lex error: %s",
+				return nil, lexutil.NewLocationError(
 					stack.lexer.CurrentLocation(),
+					"unexpected lex error: %s",
 					err)
 			}
 			token = GenericSymbol{
@@ -3500,7 +3506,9 @@ func (stack *_PseudoSymbolStack) Push(symbol *Symbol) {
 
 func (stack *_PseudoSymbolStack) Pop() (*Symbol, error) {
 	if len(stack.top) == 0 {
-		return nil, fmt.Errorf("internal error: cannot pop an empty top")
+		return nil, lexutil.NewLocationError(
+			stack.lexer.CurrentLocation(),
+			"internal error: cannot pop an empty top")
 	}
 	ret := stack.top[len(stack.top)-1]
 	stack.top = stack.top[:len(stack.top)-1]
@@ -3528,11 +3536,13 @@ func (act *_Action) ShiftItem(symbol *Symbol) *_StackItem {
 
 func (act *_Action) ReduceSymbol(
 	reducer Reducer,
-	stack _Stack) (
+	stack _Stack,
+	nextLoc Location,
+) (
 	_Stack,
 	*Symbol,
-	error) {
-
+	error,
+) {
 	var err error
 	symbol := &Symbol{}
 	switch act.ReduceType {
@@ -5349,7 +5359,9 @@ func (act *_Action) ReduceSymbol(
 	}
 
 	if err != nil {
-		err = fmt.Errorf("unexpected %s reduce error: %s", act.ReduceType, err)
+		err = lexutil.NewLocationError(
+			nextLoc,
+			"unexpected %s reduce error: %s", act.ReduceType, err)
 	}
 
 	return stack, symbol, err

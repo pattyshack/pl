@@ -54,7 +54,7 @@ func (reducer *Reducer) ToAssignSelectablePattern(
 		// TODO: move error check into pattern analyzer
 		_, ok := expr.(*ast.EnumPattern)
 		if ok {
-			reducer.Emit("%s: unexpected case enum pattern", expr.Loc())
+			reducer.Emit(expr.Loc(), "unexpected case enum pattern")
 		}
 
 	} else {
@@ -63,7 +63,7 @@ func (reducer *Reducer) ToAssignSelectablePattern(
 			// TODO: move error check into pattern analyzer
 			_, ok := item.(*ast.EnumPattern)
 			if ok {
-				reducer.Emit("%s: unexpected case enum pattern", item.Loc())
+				reducer.Emit(item.Loc(), "unexpected case enum pattern")
 			}
 			args = append(args, ast.NewPositionalArgument(item))
 		}

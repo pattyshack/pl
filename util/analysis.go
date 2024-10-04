@@ -1,8 +1,9 @@
 package util
 
 import (
-	"fmt"
 	"sync"
+
+	"github.com/pattyshack/gt/lexutil"
 
 	"github.com/pattyshack/pl/ast"
 )
@@ -19,10 +20,14 @@ func (emitter *ErrorEmitter) MergeFrom(other *ErrorEmitter) {
 	emitter.Errs = append(emitter.Errs, other.Errs...)
 }
 
-func (emitter *ErrorEmitter) Emit(format string, args ...interface{}) {
+func (emitter *ErrorEmitter) Emit(
+	loc lexutil.Location,
+	format string,
+	args ...interface{}) {
+
 	emitter.Errs = append(
 		emitter.Errs,
-		fmt.Errorf(format, args...))
+		lexutil.NewLocationError(loc, format, args...))
 }
 
 func (emitter *ErrorEmitter) EmitErrors(errs ...error) {

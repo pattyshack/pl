@@ -807,9 +807,8 @@ func (reducer *Reducer) groupBranches(
 				current.EndPos = stmt.End()
 			} else {
 				reducer.Emit(
-					"%s: unexpected statement. "+
-						"expected case or default branch statement",
-					stmt.Loc())
+					stmt.Loc(),
+					"unexpected statement. expected case or default branch statement")
 			}
 			continue
 		}
