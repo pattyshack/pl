@@ -1,19 +1,19 @@
-package {
-  import (
-    "fmt"
-    _ "io"
-    . "context"
-    sys "os"
-  )
+import (
+  "fmt"
+  _ "io"
+  . "context"
+  sys "os"
+)
 
-  1 + 2
-  unsafe<go>"blah"
+1 + 2
+unsafe<go>"blah"
 
-  case 1:  fmt.Println()
+case 1:  fmt.Println()
 
-  import "bytes"
+import "bytes"
 
-  x = y
+x = y
 
-  return 5
-}
+return 5
+
+}  // mismatch

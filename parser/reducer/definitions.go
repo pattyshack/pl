@@ -6,54 +6,13 @@ import (
 )
 
 //
-// DefinitionList
-//
-
-func (reducer *Reducer) AddToProperDefinitions(
-	list *ast.DefinitionList,
-	newlines lr.TokenCount,
-	def ast.Definition,
-) (
-	*ast.DefinitionList,
-	error,
-) {
-	list.Add(def)
-	return list, nil
-}
-
-func (reducer *Reducer) DefinitionToProperDefinitions(
-	def ast.Definition,
-) (
-	*ast.DefinitionList,
-	error,
-) {
-	list := ast.NewDefinitionList()
-	list.Add(def)
-	return list, nil
-}
-
-func (reducer *Reducer) ImproperToDefinitions(
-	list *ast.DefinitionList,
-	newlines lr.TokenCount,
-) (
-	*ast.DefinitionList,
-	error,
-) {
-	return list, nil
-}
-
-func (reducer *Reducer) NilToDefinitions() (*ast.DefinitionList, error) {
-	return ast.NewDefinitionList(), nil
-}
-
-//
 // FloatingComment
 //
 
 func (reducer *Reducer) ToFloatingComment(
 	comments lr.CommentGroupsTok,
 ) (
-	ast.Definition,
+	ast.Statement,
 	error,
 ) {
 	floating := &ast.FloatingComment{
@@ -61,26 +20,6 @@ func (reducer *Reducer) ToFloatingComment(
 	}
 	floating.LeadingComment = comments.CommentGroups
 	return floating, nil
-}
-
-//
-// PackageDef
-//
-
-func (reducer *Reducer) ToPackageDef(
-	pkg *lr.TokenValue,
-	body *ast.StatementsExpr,
-) (
-	ast.Definition,
-	error,
-) {
-	body.PrependToLeading(pkg.TakeTrailing())
-	def := &ast.PackageDef{
-		StartEndPos: ast.NewStartEndPos(pkg.Loc(), body.End()),
-		Body:        body,
-	}
-	def.LeadingComment = pkg.TakeLeading()
-	return def, nil
 }
 
 //
@@ -93,7 +32,7 @@ func (reducer *Reducer) DefinitionToTypeDef(
 	genericParameters *ast.GenericParameterList,
 	baseType ast.TypeExpression,
 ) (
-	ast.Definition,
+	ast.Statement,
 	error,
 ) {
 	leading := typeKW.TakeLeading()
@@ -128,7 +67,7 @@ func (reducer *Reducer) ConstrainedDefToTypeDef(
 	implements *lr.TokenValue,
 	constraint ast.TypeExpression,
 ) (
-	ast.Definition,
+	ast.Statement,
 	error,
 ) {
 	leading := typeKW.TakeLeading()
@@ -165,7 +104,7 @@ func (reducer *Reducer) AliasToTypeDef(
 	assign *lr.TokenValue,
 	baseType ast.TypeExpression,
 ) (
-	ast.Definition,
+	ast.Statement,
 	error,
 ) {
 	leading := typeKW.TakeLeading()

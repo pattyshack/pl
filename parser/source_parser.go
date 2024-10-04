@@ -90,19 +90,19 @@ func (parser *sourceParser) readDefinitionSegment() ([]lr.Token, error) {
 	}
 }
 
-func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
+func (parser *sourceParser) _parseSource() (*ast.StatementList, error) {
 	if parser.UseLRParseSource {
 		return lr.ParseSource(parser.lexer, parser)
 	}
 
-	list := ast.NewDefinitionList()
+	list := ast.NewStatementList()
 	for {
 		start := parser.lexer.CurrentLocation()
 		segment, readErr := parser.readDefinitionSegment()
 		end := parser.lexer.CurrentLocation()
 
 		if len(segment) > 0 {
-			def, err := lr.ParseDefinition(
+			stmt, err := lr.ParseStatement(
 				&bufferLexer{
 					BufferedReader: lexutil.NewBufferedReaderFromSlice(segment),
 					end:            end,
@@ -110,17 +110,13 @@ func (parser *sourceParser) _parseSource() (*ast.DefinitionList, error) {
 				parser)
 			if err != nil {
 				parser.EmitErrors(err)
-				def = &ast.ParseErrorExpr{
+				stmt = &ast.ParseErrorExpr{
 					StartEndPos: ast.NewStartEndPos(start, end),
 					Error:       err,
 				}
 			}
 
-			if len(list.Elements) == 0 {
-				list.Add(def)
-			} else {
-				list.ReduceAdd(&lr.TokenValue{}, def)
-			}
+			list.Add(stmt)
 		}
 
 		if readErr != nil {
@@ -138,7 +134,7 @@ func (parser *sourceParser) validate(node ast.Node) {
 }
 
 func (parser *sourceParser) parseSource() (
-	*ast.DefinitionList,
+	*ast.StatementList,
 	[]error,
 	error,
 ) {
@@ -155,7 +151,7 @@ func ParseSource(
 	fileName string,
 	options ParserOptions,
 ) (
-	*ast.DefinitionList,
+	*ast.StatementList,
 	[]error,
 	error,
 ) {

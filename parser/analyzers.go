@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"fmt"
+
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/util"
 )
@@ -57,8 +59,8 @@ func (detector *unexpectedStatementsDetector) Process(node ast.Node) {
 
 func (detector *unexpectedStatementsDetector) Enter(n ast.Node) {
 	switch node := n.(type) {
-	case *ast.PackageDef:
-		detector.checkPkgDef(node.Body)
+	case *ast.StatementList:
+		detector.checkTopLevelStmts(node)
 	case *ast.SwitchExpr:
 		detector.checkSwitchSelectExpr(node.ConditionBranches)
 	case *ast.SelectExpr:
@@ -68,7 +70,7 @@ func (detector *unexpectedStatementsDetector) Enter(n ast.Node) {
 		if ok {
 			return
 		}
-		detector.checkStmts(node.Statements, false)
+		detector.checkExprStmts(node.Statements, false)
 	case *ast.LoopExpr:
 		stmts := []ast.Statement{}
 		if node.Init != nil {
@@ -77,34 +79,33 @@ func (detector *unexpectedStatementsDetector) Enter(n ast.Node) {
 		if node.Post != nil {
 			stmts = append(stmts, node.Post)
 		}
-		detector.checkStmts(stmts, false)
+		detector.checkExprStmts(stmts, false)
 	}
 }
 
-func (detector *unexpectedStatementsDetector) checkPkgDef(
-	stmts *ast.StatementsExpr,
+func (detector *unexpectedStatementsDetector) checkTopLevelStmts(
+	stmts *ast.StatementList,
 ) {
-	detector.processed[stmts] = struct{}{}
-
-	for _, stmt := range stmts.Statements {
+	for _, stmt := range stmts.Elements {
 		invalidStmtType := ""
 		switch stmt.(type) {
-		case *ast.ParseErrorExpr: // ok
 		case *ast.UnsafeStmt: // ok
 		case *ast.ImportStmt: // ok
+		case *ast.FloatingComment: // ok
+		case *ast.TypeDef: // ok
 		case *ast.ConditionBranchStmt:
 			invalidStmtType = "branch statement"
 		case *ast.JumpStmt:
 			invalidStmtType = "jump statement"
 		case ast.Expression:
-			invalidStmtType = "expression statement"
+			// TODO limit allowable top-level expression
 		default:
-			invalidStmtType = "statement type"
+			invalidStmtType = fmt.Sprintf("statement type (%v)", stmt)
 		}
 
 		if invalidStmtType != "" {
 			detector.Emit(
-				"%s: unexpected %s. expected import statement",
+				"%s: unexpected %s",
 				stmt.Loc(),
 				invalidStmtType)
 		}
@@ -115,29 +116,33 @@ func (detector *unexpectedStatementsDetector) checkSwitchSelectExpr(
 	conditionBranches []*ast.ConditionBranchStmt,
 ) {
 	for _, stmt := range conditionBranches {
-		detector.checkStmts(stmt.Branch.Statements, true)
+		detector.checkExprStmts(stmt.Branch.Statements, true)
 		detector.processed[stmt.Branch] = struct{}{}
 	}
 }
 
-func (detector *unexpectedStatementsDetector) checkStmts(
+func (detector *unexpectedStatementsDetector) checkExprStmts(
 	stmts []ast.Statement,
 	allowFallthrough bool,
 ) {
 	for _, node := range stmts {
 		invalidStmtType := ""
 		switch stmt := node.(type) {
-		case *ast.ParseErrorExpr: // ok
 		case *ast.UnsafeStmt: // ok
-		case ast.Expression: // ok
+		case *ast.ImportStmt:
+			invalidStmtType = "import statement"
+		case *ast.FloatingComment:
+			// This only happen in manually constructed tree.
+			invalidStmtType = "floating comment"
+		case *ast.TypeDef:
+			// XXX: ok for now. should check to ensure the type is used.
+		case *ast.ConditionBranchStmt:
+			invalidStmtType = "branch statement"
 		case *ast.JumpStmt:
 			if stmt.Op == ast.FallthroughOp && !allowFallthrough {
 				invalidStmtType = "fallthrough statement"
 			}
-		case *ast.ConditionBranchStmt:
-			invalidStmtType = "branch statement"
-		case *ast.ImportStmt:
-			invalidStmtType = "import statement"
+		case ast.Expression: // ok
 		default:
 			invalidStmtType = "statement type"
 		}
@@ -169,9 +174,18 @@ func (detector *unexpectedArgumentsDetector) Process(node ast.Node) {
 func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 	switch node := n.(type) {
 	case *ast.CallExpr:
-		for _, arg := range node.Arguments {
+		for idx, arg := range node.Arguments {
 			if arg.Kind == ast.SkipPatternArgument {
 				detector.Emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
+			}
+
+			if arg.Kind == ast.VarargAssignmentArgument &&
+				idx != len(node.Arguments)-1 {
+
+				detector.Emit(
+					"%s: %s argument must be the last argument in the list",
+					arg.Loc(),
+					arg.Kind)
 			}
 		}
 	case *ast.InitializeExpr:

@@ -283,9 +283,6 @@ func (printer *treePrinter) Enter(n ast.Node) {
 
 	case *ast.FloatingComment:
 		printer.write("[FloatingComment]")
-	case *ast.PackageDef:
-		printer.write("[PackageDef")
-		printer.push("Body=")
 	case *ast.FuncDefinition:
 		printer.write("[FuncDefinition")
 		printer.push("Signature=", "Body=")
@@ -331,8 +328,8 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			node.Alias,
 			node.Package)
 
-	case *ast.DefinitionList:
-		printer.list("[DefinitionList:", nil, "Definition", len(node.Elements))
+	case *ast.StatementList:
+		printer.list("[StatementList:", nil, "Statement", len(node.Elements))
 	case *ast.TypeExpressionList:
 		printer.list(
 			"[TypeExpressionList:",
@@ -418,8 +415,6 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.ConditionBranchStmt:
 		printer.endNode()
 
-	case *ast.PackageDef:
-		printer.endNode()
 	case *ast.FuncDefinition:
 		printer.endNode()
 	case *ast.TypeDef:
@@ -438,7 +433,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 			printer.endNode()
 		}
 
-	case *ast.DefinitionList:
+	case *ast.StatementList:
 		printer.endList(len(node.Elements))
 	case *ast.TypeExpressionList:
 		printer.endList(len(node.Elements))

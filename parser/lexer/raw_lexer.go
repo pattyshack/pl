@@ -52,7 +52,6 @@ var (
 		"break":       lr.BreakToken,
 		"continue":    lr.ContinueToken,
 		"fallthrough": lr.FallthroughToken,
-		"package":     lr.PackageToken,
 		"import":      lr.ImportToken,
 		"unsafe":      lr.UnsafeToken,
 		"type":        lr.TypeToken,

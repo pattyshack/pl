@@ -53,7 +53,6 @@ type Node interface {
 type Expression interface {
 	Node
 	Statement
-	Definition
 	IsExpression()
 }
 
@@ -83,24 +82,13 @@ func (IsTypeProp) IsTypeProperty() {}
 
 type Statement interface {
 	Node
-	Definition
 	IsStatement()
 }
 
 type IsStmt struct {
-	IsDef
 }
 
 func (IsStmt) IsStatement() {}
-
-type Definition interface {
-	Node
-	IsDefinition()
-}
-
-type IsDef struct{}
-
-func (IsDef) IsDefinition() {}
 
 // A comment group is a single block comment, or a group of line comments
 // separated by single newlines (ignoring spaces).

@@ -5,7 +5,7 @@ import (
 )
 
 type parseSourceResult struct {
-	Defs        *ast.DefinitionList
+	Stmts       *ast.StatementList
 	ParseErrors []error
 	Err         error
 }
@@ -17,7 +17,7 @@ func ParsePackage(
 	packageSources []string,
 	options ParserOptions,
 ) (
-	*ast.DefinitionList,
+	*ast.StatementList,
 	[]error,
 	error,
 ) {
@@ -26,7 +26,7 @@ func ParsePackage(
 		go func(fileName string) {
 			list, parseErrors, err := ParseSource(fileName, options)
 			sourceChan <- parseSourceResult{
-				Defs:        list,
+				Stmts:       list,
 				ParseErrors: parseErrors,
 				Err:         err,
 			}
@@ -34,7 +34,7 @@ func ParsePackage(
 	}
 
 	var parseErrors []error
-	var list *ast.DefinitionList
+	var list *ast.StatementList
 	for i := 0; i < len(packageSources); i++ {
 		result := <-sourceChan
 		if result.Err != nil {
@@ -42,10 +42,10 @@ func ParsePackage(
 		}
 
 		if i == 0 {
-			list = result.Defs
+			list = result.Stmts
 			parseErrors = result.ParseErrors
 		} else {
-			list.Elements = append(list.Elements, result.Defs.Elements...)
+			list.Elements = append(list.Elements, result.Stmts.Elements...)
 			parseErrors = append(parseErrors, result.ParseErrors...)
 		}
 	}

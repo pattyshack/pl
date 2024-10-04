@@ -5,35 +5,15 @@ package ast
 //
 
 type FloatingComment struct {
-	IsDef
+	IsStmt
 	StartEndPos
 	LeadingTrailingComments
 }
 
-var _ Definition = &FloatingComment{}
+var _ Statement = &FloatingComment{}
 
 func (def *FloatingComment) Walk(visitor Visitor) {
 	visitor.Enter(def)
-	visitor.Exit(def)
-}
-
-//
-// PackageDef
-//
-
-type PackageDef struct {
-	IsDef
-	StartEndPos
-	LeadingTrailingComments
-
-	Body *StatementsExpr
-}
-
-var _ Definition = &PackageDef{}
-
-func (def *PackageDef) Walk(visitor Visitor) {
-	visitor.Enter(def)
-	def.Body.Walk(visitor)
 	visitor.Exit(def)
 }
 
@@ -42,7 +22,7 @@ func (def *PackageDef) Walk(visitor Visitor) {
 //
 
 type TypeDef struct {
-	IsDef
+	IsStmt
 	StartEndPos
 	LeadingTrailingComments
 
@@ -53,7 +33,7 @@ type TypeDef struct {
 	Constraint        TypeExpression // optional
 }
 
-var _ Definition = &TypeDef{}
+var _ Statement = &TypeDef{}
 
 func (def *TypeDef) Walk(visitor Visitor) {
 	visitor.Enter(def)

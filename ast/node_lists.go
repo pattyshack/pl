@@ -65,13 +65,15 @@ func (list *NodeList[T]) ReduceMarkers(start TokenValue, end TokenValue) {
 }
 
 //
-// DefinitionList
+// StatementList
 //
 
-type DefinitionList = NodeList[Definition]
+// NOTE: StatementList is only used for top-level statements.  StatementExpr
+// uses []Statement directly.
+type StatementList = NodeList[Statement]
 
-func NewDefinitionList() *DefinitionList {
-	return &NodeList[Definition]{}
+func NewStatementList() *StatementList {
+	return &NodeList[Statement]{}
 }
 
 //
@@ -107,12 +109,6 @@ func NewGenericParameterList() *GenericParameterList {
 //
 // Intermediate representations only used during parsing.  Not real ast list
 //
-
-type StatementList = NodeList[Statement]
-
-func NewStatementList() *StatementList {
-	return &NodeList[Statement]{}
-}
 
 type TypePropertyList = NodeList[TypeProperty]
 

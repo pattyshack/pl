@@ -40,17 +40,6 @@ func (reducer *Reducer) ToAssignStmt(
 	return reducer.toAssignPattern(pattern, assign, value), nil
 }
 
-func (reducer *Reducer) DefToGlobalVarDef(
-	pattern ast.Expression,
-	assign *lr.TokenValue,
-	value ast.Expression,
-) (
-	ast.Definition,
-	error,
-) {
-	return reducer.toAssignPattern(pattern, assign, value), nil
-}
-
 func (reducer *Reducer) ToAssignSelectablePattern(
 	exprList *ast.ExpressionList,
 	assign *lr.TokenValue,

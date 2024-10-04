@@ -22,7 +22,7 @@
 %token<Value> IF ELSE SWITCH CASE DEFAULT REPEAT FOR DO IN SELECT
 %token<Value> RETURN BREAK CONTINUE FALLTHROUGH
 
-%token<Value> PACKAGE IMPORT
+%token<Value> IMPORT
 
 %token<Value> UNSAFE
 
@@ -54,41 +54,16 @@
 
 %token<ParseError> PARSE_ERROR
 
-%start source definition statement expr type_expr statements
+%start source statement expr type_expr statements
 
-source<Definitions> ->
-  = definitions
+// NOTE: the package name is taken from the directory name.  The compiler must
+// ensure the directory name is a valid IDENTIFIER.  The name cannot be
+// "internal" since that's special cased by go.  As an alternative to go's
+// internal, if the package name is a private, it can only be accessed by its
+// parent directory package.
 
-proper_definitions<Definitions> ->
-  add: proper_definitions NEWLINES definition |
-  definition
-
-definitions<Definitions> ->
-  = proper_definitions |
-  improper: proper_definitions NEWLINES |
-  nil:
-
-definition<Definition> ->
-  // There can only be at most one package_def per package
-  = package_def |
-  = type_def |
-  = func_def |
-  = global_var_def |
-  // There can only be at most one statements per package, which act as
-  // the package's init function
-  = statements |
-  = parse_error_expr |
-  = floating_comment
-
-// Global variable dependencies must be topologically sortable.
-global_var_def<Definition> ->
-  = address_pattern |
-  def: address_pattern ASSIGN returnable_expr
-
-// Free floating comment is not part of any other symbol. This can happen if
-// the source file only has comments, or if there are comments at the end of
-// the source.
-floating_comment<Definition> -> COMMENT_GROUPS
+source<StatementList> ->
+  = statement_list
 
 //
 // Statement ==================================================================
@@ -97,8 +72,11 @@ floating_comment<Definition> -> COMMENT_GROUPS
 statement<Statement> ->
   = unsafe_stmt |
 
-  // NOTE: Only applicable to package_def
+  // NOTE: The following are only applicable to top-level source definitions
+
   = import_stmt |
+  = floating_comment |
+  = type_def |
 
   // Note: Only applicable to switch / select body
   = branch_stmt |
@@ -111,6 +89,15 @@ statement<Statement> ->
   // NOTE: assignment can only operate on proper address values.  Additional
   // checks are applied during post analysis.
   = assign_stmt
+
+// Free floating comment is not part of any other symbol. This can happen if
+// the source file only has comments, or if there are comments at the end of
+// the source.
+floating_comment<Statement> -> COMMENT_GROUPS
+
+//
+// Branch statement
+//
 
 branch_stmt<Statement> ->
   // NOTE: case_branch and default_branch are applicable only to switch and
@@ -726,7 +713,7 @@ binary_type_op<Value> ->
   = ADD | // trait union
   = SUB // trait difference
 
-type_def<Definition> ->
+type_def<Statement> ->
   definition: TYPE IDENTIFIER generic_parameters type_expr |
   constrained_def: TYPE IDENTIFIER generic_parameters type_expr IMPLEMENTS type_expr |
   alias: TYPE IDENTIFIER ASSIGN type_expr
@@ -894,17 +881,6 @@ func_signature<FuncSignature> ->
 
 func_def<Expression> -> func_signature statements
 
-//
-// Package definition =========================================================
-//
-
-// NOTE: the package name is taken from the directory name.  The compiler must
-// ensure the directory name is a valid IDENTIFIER.  The name cannot be
-// "internal" since that's special cased by go.  As an alternative to go's
-// internal, if the package name is a private, it can only be accessed by its
-// parent directory package.
-package_def<Definition> -> PACKAGE statements
-
 %%lang_specs{
 go:
   package: lr
@@ -931,8 +907,6 @@ go:
     TypeExpressionList: "*github.com/pattyshack/pl/ast.TypeExpressionList"
     Statement: "github.com/pattyshack/pl/ast.Statement"
     StatementList: "*github.com/pattyshack/pl/ast.StatementList"
-    Definition: "github.com/pattyshack/pl/ast.Definition"
-    Definitions: "*github.com/pattyshack/pl/ast.DefinitionList"
     TypeProperty: "github.com/pattyshack/pl/ast.TypeProperty"
     TypeProperties: "*github.com/pattyshack/pl/ast.TypePropertyList"
     FieldDef: "*github.com/pattyshack/pl/ast.FieldDef"

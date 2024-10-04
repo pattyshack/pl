@@ -41,7 +41,6 @@ func (sig *FuncSignature) Walk(visitor Visitor) {
 
 type FuncDefinition struct {
 	IsExpr
-	IsDef
 	StartEndPos
 	LeadingTrailingComments
 
@@ -50,7 +49,6 @@ type FuncDefinition struct {
 }
 
 var _ Expression = &FuncDefinition{}
-var _ Definition = &FuncDefinition{}
 
 func (def *FuncDefinition) Walk(visitor Visitor) {
 	visitor.Enter(def)
