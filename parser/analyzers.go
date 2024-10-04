@@ -172,6 +172,8 @@ func (detector *unexpectedArgumentsDetector) Process(node ast.Node) {
 }
 
 func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
+	// NOTE: ImplicitStructExpr's arguments are handled by
+	// unexpectedPatternsDetector.
 	switch node := n.(type) {
 	case *ast.CallExpr:
 		for idx, arg := range node.Arguments {
@@ -193,13 +195,6 @@ func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 			if arg.Kind == ast.SkipPatternArgument ||
 				arg.Kind == ast.VarargAssignmentArgument {
 
-				detector.Emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
-			}
-		}
-	case *ast.ImplicitStructExpr:
-		// TODO detect invalid skip-pattern (...) usage in non-pattern expressions
-		for _, arg := range node.Arguments {
-			if arg.Kind == ast.VarargAssignmentArgument {
 				detector.Emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
 			}
 		}

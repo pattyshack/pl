@@ -129,10 +129,6 @@ func (parser *sourceParser) _parseSource() (*ast.StatementList, error) {
 	}
 }
 
-func (parser *sourceParser) validate(node ast.Node) {
-	parser.EmitErrors(Validate(node)...)
-}
-
 func (parser *sourceParser) parseSource() (
 	*ast.StatementList,
 	[]error,
@@ -143,7 +139,7 @@ func (parser *sourceParser) parseSource() (
 		return nil, nil, err
 	}
 
-	parser.validate(source)
+	parser.EmitErrors(Validate(source)...)
 	return source, parser.Errors(), nil
 }
 
