@@ -1,1 +1,1 @@
-io.Reader + io.Writer
+var _ io.Reader + io.Writer

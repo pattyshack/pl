@@ -1,4 +1,4 @@
-struct(
+var _ struct(
   field1 String
   Float
   _ Int // padding

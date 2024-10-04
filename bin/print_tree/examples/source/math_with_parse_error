@@ -29,3 +29,5 @@ func fact(i Int) Int {
 func bad() {+}
 
 {fallthrough}
+
+> badPattern

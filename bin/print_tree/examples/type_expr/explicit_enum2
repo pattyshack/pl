@@ -1,4 +1,4 @@
-enum(
+var _ enum(
   X Int or
   default ()
 )

@@ -1,1 +1,1 @@
-(x Int, Float, String, _ Bool)
+var _ (x Int, Float, String, _ Bool)

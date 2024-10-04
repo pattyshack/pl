@@ -1,1 +1,1 @@
-Blah$[Item, other.Foo$[Lol]]
+var _ Blah$[Item, other.Foo$[Lol]]
