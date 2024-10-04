@@ -1,16 +1,23 @@
 package ast
 
+type FuncSignatureKind string
+
+const (
+	AnonymousFunc = FuncSignatureKind("anonymous")
+	NamedFunc     = FuncSignatureKind("named")
+)
+
 type FuncSignature struct {
 	IsTypeExpr
 	IsTypeProp
 	StartEndPos
 	LeadingTrailingComments
 
-	// Optional. Only used by method definition
-	Receiver *Parameter
-	// Optional. Only used by trait method signature
+	Kind FuncSignatureKind
+
+	// Optional. Only used by named signature
 	Name string
-	// Optional.  Only used by function definition
+	// Optional.  Only used by named signature
 	GenericParameters *GenericParameterList
 
 	Parameters *ParameterList
@@ -22,9 +29,6 @@ var _ TypeProperty = &FuncSignature{}
 
 func (sig *FuncSignature) Walk(visitor Visitor) {
 	visitor.Enter(sig)
-	if sig.Receiver != nil {
-		sig.Receiver.Walk(visitor)
-	}
 	if sig.GenericParameters != nil {
 		sig.GenericParameters.Walk(visitor)
 	}
@@ -41,7 +45,7 @@ type FuncDefinition struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	Signature FuncSignature
+	Signature *FuncSignature
 	Body      Expression
 }
 

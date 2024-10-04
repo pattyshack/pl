@@ -239,11 +239,8 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			"Property",
 			len(node.Properties))
 	case *ast.FuncSignature:
-		printer.write("[FuncSignature: Name=%s", node.Name)
+		printer.write("[FuncSignature: Kind=%s Name=%s", node.Kind, node.Name)
 		labels := []string{}
-		if node.Receiver != nil {
-			labels = append(labels, "Receiver=")
-		}
 		if node.GenericParameters != nil {
 			labels = append(labels, "GenericParameters=")
 		}
@@ -305,16 +302,8 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.push(labels...)
 
 	case *ast.Parameter:
-		printer.write(
-			"[Parameter: Kind=%v Name=%s HasEllipsis=%v",
-			node.Kind,
-			node.Name,
-			node.HasEllipsis)
-		if node.Type != nil {
-			printer.push("Type=")
-		} else {
-			printer.write("]")
-		}
+		printer.write("[Parameter: Kind=%v Name=%s", node.Kind, node.Name)
+		printer.push("Type=")
 	case *ast.Argument:
 		printer.write(
 			"[Argument: Kind=%v OptionalName=%s HasEllipsis=%v",
@@ -437,9 +426,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 		printer.endNode()
 
 	case *ast.Parameter:
-		if node.Type != nil {
-			printer.endNode()
-		}
+		printer.endNode()
 	case *ast.Argument:
 		if node.Expr != nil {
 			printer.endNode()

@@ -11,7 +11,7 @@ type Fib struct(
   curr Int
 ) implements Iter
 
-func (f &Fact) next() {
+func next(f >&Fact) {
   var prev = f.curr
   f.curr += f.prev
   f.prev = prev
@@ -25,3 +25,7 @@ func fact(i Int) Int {
 
   return i * fact(i - 1)
 }
+
+func receiver(r >Obj, _ >Obj, >Obj) {}
+func arg(a Arg, _ Arg, Arg) {}
+func vararg(v ...Vararg, _ ...Vararg, ...Vararg) {}

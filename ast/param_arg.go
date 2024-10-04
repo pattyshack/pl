@@ -7,18 +7,9 @@ package ast
 type ParameterKind string
 
 const (
-	// NOTE: There is no implicit unnamed inferred arg variant
-	NamedTypedArgParameter         = ParameterKind("named-typed-arg")
-	NamedInferredArgParameter      = ParameterKind("named-inferred-arg")
-	NamedTypedVarargParameter      = ParameterKind("named-typed-vararg")
-	NamedInferredVarargParameter   = ParameterKind("named-inferred-vararg")
-	UnnamedTypedArgParameter       = ParameterKind("unnamed-typed-arg")
-	UnnamedTypedVarargParameter    = ParameterKind("unnamed-typed-vararg")
-	UnnamedInferredVarargParameter = ParameterKind("unnamed-inferred-vararg")
-	IgnoreTypedArgParameter        = ParameterKind("ignore-typed-arg")
-	IgnoreInferredArgParameter     = ParameterKind("ignore-inferred-arg")
-	IgnoreTypedVarargParameter     = ParameterKind("ignore-typed-vararg")
-	IgnoreInferredVarargParameter  = ParameterKind("ignore-inferred-vararg")
+	ArgParameter      = ParameterKind("arg")
+	ReceiverParameter = ParameterKind("receiver")
+	VarargParameter   = ParameterKind("vararg")
 )
 
 type Parameter struct {
@@ -27,9 +18,8 @@ type Parameter struct {
 
 	Kind ParameterKind
 
-	Name        string // optional
-	HasEllipsis bool
-	Type        TypeExpression // optional
+	Name string // optional. NOTE: "_" is converted to ""
+	Type TypeExpression
 }
 
 var _ Node = &Parameter{}

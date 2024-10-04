@@ -72,7 +72,7 @@ definition<Definition> ->
   // There can only be at most one package_def per package
   = package_def |
   = type_def |
-  = named_func_def |
+  = func_def |
   = global_var_def |
   // There can only be at most one statements per package, which act as
   // the package's init function
@@ -264,7 +264,7 @@ atom_expr<Expression> ->
   = parse_error_expr |
   = literal_expr |
   = named_expr |
-  = anonymous_func_expr |
+  = func_def |
   = initialize_expr |
   = implicit_struct_expr
 
@@ -680,7 +680,7 @@ atom_type_expr<TypeExpression> ->
   = explicit_enum_type_expr |
   = implicit_enum_type_expr |
   = trait_type_expr |
-  = func_type_expr
+  = func_signature
 
 named_type_expr<TypeExpression> ->
   local: IDENTIFIER generic_arguments |
@@ -770,12 +770,13 @@ generic_argument_list<TypeExpressionList> ->
 // Explicit/Implicit struct/enum/trait definition
 //
 
+// method signature (part of type_expr) is only usable in trait
 field_def<FieldDef> ->
   named: IDENTIFIER type_expr |
   unnamed: type_expr
 
-// NOTE: default_enum_field_def is only usable in enum.  method_signature is
-// only usable in trait.  struct_padding is only usable in struct.
+// NOTE: default_enum_field_def is only usable in enum. struct_padding is only
+// usable in struct.
 // These are checked post parsing.
 //
 // NOTE: In general, type_expr must be concrete (i.e., can't have any inferred
@@ -785,7 +786,6 @@ type_property<TypeProperty> ->
   = field_def |
   default_enum_field_def: DEFAULT field_def |
   padding_field_def: UNDERSCORE type_expr |
-  = method_signature |
   = unsafe_stmt
 
 proper_implicit_type_properties<TypeProperties> ->
@@ -860,77 +860,39 @@ return_type<TypeExpression> ->
   = returnable_type_expr |
   nil:
 
-proper_parameter_def<Parameter> ->
-  named_typed_arg: IDENTIFIER type_expr |
-  named_typed_vararg: IDENTIFIER ELLIPSIS type_expr |
-  named_inferred_vararg: IDENTIFIER ELLIPSIS |
-  ignore_typed_arg: UNDERSCORE type_expr |
-  ignore_inferred_vararg: UNDERSCORE ELLIPSIS |
-  ignore_typed_vararg: UNDERSCORE ELLIPSIS type_expr
+// NOTE: inferred mutable reference type is declared either as "_" or "&.".
+// copy-on-mutate reference is declared as "."
+parameter<Parameter> ->
+  named_arg: IDENTIFIER type_expr |
+  named_receiver: IDENTIFIER GREATER type_expr |
+  named_vararg: IDENTIFIER ELLIPSIS type_expr |
+  ignore_arg: UNDERSCORE type_expr |
+  ignore_receiver: UNDERSCORE GREATER type_expr |
+  ignore_vararg: UNDERSCORE ELLIPSIS type_expr |
+  unnamed_arg: type_expr |
+  unnamed_receiver: GREATER type_expr |
+  unnamed_vararg: ELLIPSIS type_expr
 
-// NOTE: inferred mutable reference is declared either as "_" or "IDENTIFIER _".
-// copy-on-mutate reference is declared either as "." or "IDENTIFIER ."
-parameter_decl<Parameter> ->
-  = proper_parameter_def |
-  unnamed_typed_arg: type_expr |
-  unnamed_inferred_vararg: ELLIPSIS |
-  unnamed_typed_vararg: ELLIPSIS type_expr
+proper_parameter_list<Parameters> ->
+  add: proper_parameter_list COMMA parameter |
+  parameter
 
-// NOTE: Parameter that don't specify any type, or has type "_",  will be
-// inferred as a mutable reference by default, i.e., equivalent to "&.".
-// Parameter that specify "." as its type will be inferred as copy-on-mutate
-// reference by default.
-parameter_def<Parameter> ->
-  = proper_parameter_def |
-  named_inferred_arg: IDENTIFIER |
-  ignore_inferred_arg: UNDERSCORE
-
-proper_parameter_decl_list<Parameters> ->
-  add: proper_parameter_decl_list COMMA parameter_decl |
-  parameter_decl
-
-parameter_decl_list<Parameters> ->
-  = proper_parameter_decl_list |
-  improper: proper_parameter_decl_list COMMA |
+parameter_list<Parameters> ->
+  = proper_parameter_list |
+  improper: proper_parameter_list COMMA |
   nil:
 
-parameter_decls<Parameters> -> LPAREN parameter_decl_list RPAREN
-
-proper_parameter_def_list<Parameters> ->
-  add: proper_parameter_def_list COMMA parameter_def |
-  parameter_def
-
-parameter_def_list<Parameters> ->
-  = proper_parameter_def_list |
-  improper: proper_parameter_def_list COMMA |
-  nil:
-
-parameter_defs<Parameters> -> LPAREN parameter_def_list RPAREN
-
-func_type_expr<TypeExpression> -> FUNC parameter_decls return_type
+parameters<Parameters> -> LPAREN parameter_list RPAREN
 
 // NOTE: FUNC is needed to disambiguate method signature from field def.
 // e.g., Foo (int, int) could mean a field named Foo with type
 // struct(int, int), or a method called Foo that takes two argument if func
 // is not present.
-//
-// XXX: allow generic parameters in method signature? No, for go transpiler.
-// Ideally yes.  We should allow function overloading as long as the functions
-// all conforms to the same (unconstrainted) generic parameterized signature.
-// Ambiguous usage would need to explicitly specify the generic parameter.
-method_signature<TypeProperty> -> FUNC IDENTIFIER parameter_decls return_type
+func_signature<FuncSignature> ->
+  anonymous: FUNC parameters return_type |
+  named: FUNC IDENTIFIER generic_parameters parameters return_type
 
-// XXX: allow generic parameters in method definition? No, for go transpiler.
-//
-// Note: there's no syntactic sugar for func alias.  use
-//  let <alias> = <original_func>
-// instead.
-named_func_def<Definition> ->
-  func_def: FUNC IDENTIFIER generic_parameters parameter_defs return_type statements |
-  method_def: FUNC LPAREN parameter_def RPAREN IDENTIFIER parameter_defs return_type statements
-
-anonymous_func_expr<Expression> ->
-  FUNC parameter_defs return_type statements
+func_def<Expression> -> func_signature statements
 
 //
 // Package definition =========================================================
@@ -963,6 +925,7 @@ go:
     Argument: "*github.com/pattyshack/pl/ast.Argument"
     ArgumentList: "*github.com/pattyshack/pl/ast.ArgumentList"
     TypeExpression: "github.com/pattyshack/pl/ast.TypeExpression"
+    FuncSignature: "*github.com/pattyshack/pl/ast.FuncSignature"
     GenericParameter: "*github.com/pattyshack/pl/ast.GenericParameter"
     GenericParameterList: "*github.com/pattyshack/pl/ast.GenericParameterList"
     TypeExpressionList: "*github.com/pattyshack/pl/ast.TypeExpressionList"

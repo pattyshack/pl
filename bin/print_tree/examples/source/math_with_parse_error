@@ -11,7 +11,7 @@ type Fib struct(
 
 1+2
 
-func (f &Fact) next() {
+func next(f &Fact) {
   var prev = f.curr
   f.curr += f.prev
   f.prev = prev
