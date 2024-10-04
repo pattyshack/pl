@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 
 	"github.com/pattyshack/gt/argparse"
+	"github.com/pattyshack/gt/lexutil"
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser"
@@ -89,6 +91,7 @@ func (cmd *Command) printPackage(
 		fmt.Println("---------------------")
 		fmt.Println("Parse errors:")
 		fmt.Println("---------------------")
+		sort.Sort(lexutil.ErrorsByLocation(parseErrors))
 		for idx, err := range parseErrors {
 			fmt.Printf("error %d: %s\n", idx, err)
 		}
@@ -121,6 +124,7 @@ func (cmd *Command) printFunc(
 		fmt.Println("---------------------")
 		fmt.Println("Parse errors:")
 		fmt.Println("---------------------")
+		sort.Sort(lexutil.ErrorsByLocation(parseErrors))
 		for idx, err := range parseErrors {
 			fmt.Printf("error %d: %s\n", idx, err)
 		}
