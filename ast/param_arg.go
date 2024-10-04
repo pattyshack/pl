@@ -39,9 +39,8 @@ func (param *Parameter) Walk(visitor Visitor) {
 type ArgumentKind string
 
 const (
-	PositionalArgument       = ArgumentKind("positional")
-	NamedAssignmentArgument  = ArgumentKind("named-assigned")
-	VarargAssignmentArgument = ArgumentKind("vararg-assigned")
+	SingularArgument = ArgumentKind("singular")
+	VariadicArgument = ArgumentKind("variadic")
 	// Only used by patterns
 	SkipPatternArgument = ArgumentKind("skip-pattern")
 )
@@ -52,13 +51,10 @@ type Argument struct {
 
 	Kind ArgumentKind
 
-	// Only set for named assignment
-	OptionalName string
+	Name string // only used by named singular argument
 
 	// NOTE: Expr may be nil for SkipPatternArgument
 	Expr Expression
-
-	HasEllipsis bool
 }
 
 var _ Node = &Argument{}
@@ -78,9 +74,8 @@ func NewPositionalArgument(expr Expression) *Argument {
 			LeadingComment:  expr.TakeLeading(),
 			TrailingComment: expr.TakeTrailing(),
 		},
-		Kind:        PositionalArgument,
-		Expr:        expr,
-		HasEllipsis: false,
+		Kind: SingularArgument,
+		Expr: expr,
 	}
 }
 
@@ -90,11 +85,10 @@ func NewNamedArgument(
 	expr Expression,
 ) *Argument {
 	arg := &Argument{
-		StartEndPos:  NewStartEndPos(name.Loc(), expr.End()),
-		Kind:         NamedAssignmentArgument,
-		OptionalName: name.Val(),
-		Expr:         expr,
-		HasEllipsis:  false,
+		StartEndPos: NewStartEndPos(name.Loc(), expr.End()),
+		Kind:        SingularArgument,
+		Name:        name.Val(),
+		Expr:        expr,
 	}
 
 	arg.LeadingComment = name.TakeLeading()
@@ -107,6 +101,23 @@ func NewNamedArgument(
 	return arg
 }
 
+func NewVariadicArgument(
+	expr Expression,
+	ellipsis TokenValue,
+) *Argument {
+	arg := &Argument{
+		StartEndPos: NewStartEndPos(expr.Loc(), ellipsis.End()),
+		Kind:        VariadicArgument,
+		Expr:        expr,
+	}
+
+	arg.LeadingComment = expr.TakeLeading()
+	expr.AppendToTrailing(ellipsis.TakeLeading())
+	arg.TrailingComment = ellipsis.TakeTrailing()
+
+	return arg
+}
+
 func NewSkipPatternArgument(
 	ellipsis TokenValue,
 ) *Argument {
@@ -114,7 +125,6 @@ func NewSkipPatternArgument(
 		StartEndPos: NewStartEndPos(ellipsis.Loc(), ellipsis.End()),
 		Kind:        SkipPatternArgument,
 		Expr:        nil,
-		HasEllipsis: true,
 	}
 	arg.LeadingComment = ellipsis.TakeLeading()
 	arg.TrailingComment = ellipsis.TakeTrailing()

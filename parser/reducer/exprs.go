@@ -607,7 +607,7 @@ func (reducer *Reducer) ToIndexExpr(
 	implicitStruct, ok := index.(*ast.ImplicitStructExpr)
 	if ok && implicitStruct.Kind == ast.ColonImplicitStruct {
 		for _, arg := range implicitStruct.Arguments {
-			if arg.Kind != ast.PositionalArgument {
+			if arg.Kind != ast.SingularArgument || arg.Name != "" {
 				panic("Should never happen")
 			}
 

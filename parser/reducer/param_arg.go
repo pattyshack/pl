@@ -291,17 +291,7 @@ func (Reducer) VarargAssignmentToArgument(
 	*ast.Argument,
 	error,
 ) {
-	arg := &ast.Argument{
-		StartEndPos: ast.NewStartEndPos(expr.Loc(), ellipsis.End()),
-		Kind:        ast.VarargAssignmentArgument,
-		Expr:        expr,
-		HasEllipsis: true,
-	}
-
-	arg.LeadingComment = expr.TakeLeading()
-	expr.AppendToTrailing(ellipsis.TakeLeading())
-	arg.TrailingComment = ellipsis.TakeTrailing()
-	return arg, nil
+	return ast.NewVariadicArgument(expr, ellipsis), nil
 }
 
 func (Reducer) SkipPatternToArgument(

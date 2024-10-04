@@ -181,7 +181,7 @@ func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 				detector.Emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
 			}
 
-			if arg.Kind == ast.VarargAssignmentArgument &&
+			if arg.Kind == ast.VariadicArgument &&
 				idx != len(node.Arguments)-1 {
 
 				detector.Emit(
@@ -193,7 +193,7 @@ func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
 	case *ast.InitializeExpr:
 		for _, arg := range node.Arguments {
 			if arg.Kind == ast.SkipPatternArgument ||
-				arg.Kind == ast.VarargAssignmentArgument {
+				arg.Kind == ast.VariadicArgument {
 
 				detector.Emit("%s: unexpected %s argument", arg.Loc(), arg.Kind)
 			}

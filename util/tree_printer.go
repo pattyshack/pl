@@ -302,11 +302,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.write("[Parameter: Kind=%v Name=%s", node.Kind, node.Name)
 		printer.push("Type=")
 	case *ast.Argument:
-		printer.write(
-			"[Argument: Kind=%v OptionalName=%s HasEllipsis=%v",
-			node.Kind,
-			node.OptionalName,
-			node.HasEllipsis)
+		printer.write("[Argument: Kind=%v Name=%s", node.Kind, node.Name)
 		if node.Expr != nil {
 			printer.push("Expr=")
 		} else {
