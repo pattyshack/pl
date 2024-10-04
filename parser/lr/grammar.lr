@@ -54,7 +54,7 @@
 
 %token<ParseError> PARSE_ERROR
 
-%start source statement expr type_expr statements
+%start source statement statements
 
 // NOTE: the package name is taken from the directory name.  The compiler must
 // ensure the directory name is a valid IDENTIFIER.  The name cannot be
