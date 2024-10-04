@@ -7,11 +7,9 @@ package ast
 type FieldDefKind string
 
 const (
-	NamedFieldDef              = FieldDefKind("named-field-def")
-	UnnamedFieldDef            = FieldDefKind("unnamed-field-def")
-	NamedDefaultEnumFieldDef   = FieldDefKind("named-default-enum-default-def")
-	UnnamedDefaultEnumFieldDef = FieldDefKind("unnamed-default-enum-default-def")
-	PaddingFieldDef            = FieldDefKind("padding-field-def")
+	NamedFieldDef   = FieldDefKind("named")
+	UnnamedFieldDef = FieldDefKind("unnamed")
+	PaddingFieldDef = FieldDefKind("padding")
 )
 
 type FieldDef struct {
@@ -19,7 +17,8 @@ type FieldDef struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	Kind FieldDefKind
+	Kind      FieldDefKind
+	IsDefault bool
 
 	Name string // Could be identifier, underscore, or ""
 	Type TypeExpression

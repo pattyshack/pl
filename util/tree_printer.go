@@ -309,7 +309,11 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			printer.write("]")
 		}
 	case *ast.FieldDef:
-		printer.write("FieldDef: Kind=%s Name=%s", node.Kind, node.Name)
+		printer.write(
+			"FieldDef: Kind=%s IsDefault=%v Name=%s",
+			node.Kind,
+			node.IsDefault,
+			node.Name)
 		printer.push("Type=")
 	case *ast.GenericParameter:
 		printer.write("GenericParameter: Name=%s", node.Name)
