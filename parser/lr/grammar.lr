@@ -504,20 +504,23 @@ binary_assign_op<Value> ->
 // Simple expressions
 //
 
+unlabelled_control_flow_expr<ControlFlowExpr> ->
+  = statements |
+  = if_else_expr |
+  = switch_expr_body |
+  = select_expr_body |
+  = loop_expr_body
+
+control_flow_expr<ControlFlowExpr> ->
+  = unlabelled_control_flow_expr |
+  labelled: LABEL_DECL unlabelled_control_flow_expr
+
 expr<Expression> ->
   = assign_op_expr |
-  = statements_expr |
-  = if_expr |
-  = switch_expr |
-  = select_expr |
-  = loop_expr |
+  = control_flow_expr |
   // NOTE: *_pattern are not a real expression.  Unexpected usage in real
   // expressions are rejected during type checking.
   = address_pattern
-
-statements_expr<Expression> ->
-  = statements |
-  labelled: LABEL_DECL statements
 
 // IMPORTANT NOTE!!!
 //
@@ -546,13 +549,6 @@ statement_list<StatementList> ->
   improper_implicit: proper_statement_list NEWLINES |
   improper_explicit: proper_statement_list SEMICOLON |
   nil:
-
-
-// NOTE: label is applied to the entire if expression rather than individual
-// branches.
-if_expr<Expression> ->
-  unlabelled: if_else_expr |
-  labelled: LABEL_DECL if_else_expr
 
 if_else_expr<IfExpr> ->
   = if_elif_expr |
@@ -588,25 +584,11 @@ case_pattern_expr<Expression> -> CASE switchable_case_patterns ASSIGN expr
 // case (_, var z): // do something
 // }
 
-switch_expr<Expression> ->
-  = switch_expr_body |
-  labelled: LABEL_DECL switch_expr_body
+switch_expr_body<ControlFlowExpr> -> SWITCH expr statements
 
-switch_expr_body<SwitchExpr> -> SWITCH expr statements
+select_expr_body<ControlFlowExpr> -> SELECT statements
 
-select_expr<Expression> ->
-  = select_expr_body |
-  labelled: LABEL_DECL select_expr_body
-
-select_expr_body<SelectExpr> -> SELECT statements
-
-// NOTE: Since we use {} for expression grouping, we need the extra DO keyword
-// to help the parser figure out which block is the loop's body.
-loop_expr<Expression> ->
-  = loop_expr_body |
-  labelled: LABEL_DECL loop_expr_body
-
-loop_expr_body<LoopExpr> ->
+loop_expr_body<ControlFlowExpr> ->
   infinite: repeat_loop_body |
   do_while: repeat_loop_body FOR expr |
   while: FOR expr for_loop_body |
@@ -887,12 +869,10 @@ go:
     Value: "*TokenValue"
     Expression: "github.com/pattyshack/pl/ast.Expression"
     ExpressionList: "*github.com/pattyshack/pl/ast.ExpressionList"
+    ControlFlowExpr: "github.com/pattyshack/pl/ast.ControlFlowExpr"
     IfExpr: "*github.com/pattyshack/pl/ast.IfExpr"
     ImplicitStructExpr: "*github.com/pattyshack/pl/ast.ImplicitStructExpr"
     StatementsExpr: "*github.com/pattyshack/pl/ast.StatementsExpr"
-    LoopExpr: "*github.com/pattyshack/pl/ast.LoopExpr"
-    SelectExpr: "*github.com/pattyshack/pl/ast.SelectExpr"
-    SwitchExpr: "*github.com/pattyshack/pl/ast.SwitchExpr"
     Parameter: "*github.com/pattyshack/pl/ast.Parameter"
     Parameters: "*github.com/pattyshack/pl/ast.ParameterList"
     Argument: "*github.com/pattyshack/pl/ast.Argument"

@@ -100,7 +100,7 @@ func (reducer *Reducer) LabelledToStatementsExpr(
 	error,
 ) {
 	expr.StartPos = labelDecl.Loc()
-	expr.LabelDecl = labelDecl.Value
+	expr.SetLabel(labelDecl.Value)
 	expr.PrependToLeading(labelDecl.TakeTrailing())
 	expr.PrependToLeading(labelDecl.TakeLeading())
 	return expr, nil

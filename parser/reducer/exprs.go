@@ -707,33 +707,6 @@ func (reducer *Reducer) ToInitializeExpr(
 // IfExpr
 //
 
-func (reducer *Reducer) UnlabelledToIfExpr(
-	ifExpr *ast.IfExpr,
-) (
-	ast.Expression,
-	error,
-) {
-	branches := ifExpr.ConditionBranches
-	ifExpr.TrailingComment = branches[len(branches)-1].TakeTrailing()
-	return ifExpr, nil
-}
-
-func (reducer *Reducer) LabelledToIfExpr(
-	labelDecl *lr.TokenValue,
-	ifExpr *ast.IfExpr,
-) (
-	ast.Expression,
-	error,
-) {
-	reducer.UnlabelledToIfExpr(ifExpr)
-
-	ifExpr.PrependToLeading(labelDecl.TakeTrailing())
-	ifExpr.PrependToLeading(labelDecl.TakeLeading())
-
-	ifExpr.LabelDecl = labelDecl.Value
-	return ifExpr, nil
-}
-
 func (reducer *Reducer) ElseToIfElseExpr(
 	ifExpr *ast.IfExpr,
 	elseKW *lr.TokenValue,
@@ -871,26 +844,12 @@ func (reducer *Reducer) groupBranches(
 	return branches
 }
 
-func (reducer *Reducer) LabelledToSwitchExpr(
-	labelDecl *lr.TokenValue,
-	switchExpr *ast.SwitchExpr,
-) (
-	ast.Expression,
-	error,
-) {
-	switchExpr.StartPos = labelDecl.Loc()
-	switchExpr.PrependToLeading(labelDecl.TakeTrailing())
-	switchExpr.PrependToLeading(labelDecl.TakeLeading())
-	switchExpr.LabelDecl = labelDecl.Value
-	return switchExpr, nil
-}
-
 func (reducer *Reducer) ToSwitchExprBody(
 	switchKW *lr.TokenValue,
 	operand ast.Expression,
 	stmts *ast.StatementsExpr,
 ) (
-	*ast.SwitchExpr,
+	ast.ControlFlowExpr,
 	error,
 ) {
 	branches := reducer.groupBranches(stmts)
@@ -913,25 +872,11 @@ func (reducer *Reducer) ToSwitchExprBody(
 // SelectExpr
 //
 
-func (reducer *Reducer) LabelledToSelectExpr(
-	labelDecl *lr.TokenValue,
-	selectExpr *ast.SelectExpr,
-) (
-	ast.Expression,
-	error,
-) {
-	selectExpr.StartPos = labelDecl.Loc()
-	selectExpr.PrependToLeading(labelDecl.TakeTrailing())
-	selectExpr.PrependToLeading(labelDecl.TakeLeading())
-	selectExpr.LabelDecl = labelDecl.Value
-	return selectExpr, nil
-}
-
 func (reducer *Reducer) ToSelectExprBody(
 	selectKW *lr.TokenValue,
 	stmts *ast.StatementsExpr,
 ) (
-	*ast.SelectExpr,
+	ast.ControlFlowExpr,
 	error,
 ) {
 	branches := reducer.groupBranches(stmts)
@@ -964,24 +909,10 @@ func (reducer *Reducer) ToSelectExprBody(
 // LoopExpr
 //
 
-func (reducer *Reducer) LabelledToLoopExpr(
-	labelDecl *lr.TokenValue,
-	loop *ast.LoopExpr,
-) (
-	ast.Expression,
-	error,
-) {
-	loop.StartPos = labelDecl.Loc()
-	loop.PrependToLeading(labelDecl.TakeTrailing())
-	loop.PrependToLeading(labelDecl.TakeLeading())
-	loop.LabelDecl = labelDecl.Value
-	return loop, nil
-}
-
 func (reducer *Reducer) InfiniteToLoopExprBody(
 	body *ast.StatementsExpr,
 ) (
-	*ast.LoopExpr,
+	ast.ControlFlowExpr,
 	error,
 ) {
 	leading := body.TakeLeading()
@@ -1003,7 +934,7 @@ func (reducer *Reducer) DoWhileToLoopExprBody(
 	forKW *lr.TokenValue,
 	condition ast.Expression,
 ) (
-	*ast.LoopExpr,
+	ast.ControlFlowExpr,
 	error,
 ) {
 	leading := body.TakeLeading()
@@ -1028,7 +959,7 @@ func (reducer *Reducer) WhileToLoopExprBody(
 	condition ast.Expression,
 	body *ast.StatementsExpr,
 ) (
-	*ast.LoopExpr,
+	ast.ControlFlowExpr,
 	error,
 ) {
 	leading := forKW.TakeLeading()
@@ -1054,7 +985,7 @@ func (reducer *Reducer) IteratorToLoopExprBody(
 	iterator ast.Expression,
 	body *ast.StatementsExpr,
 ) (
-	*ast.LoopExpr,
+	ast.ControlFlowExpr,
 	error,
 ) {
 	leading := forKW.TakeLeading()
@@ -1081,7 +1012,7 @@ func (reducer *Reducer) ForToLoopExprBody(
 	post ast.Statement,
 	body *ast.StatementsExpr,
 ) (
-	*ast.LoopExpr,
+	ast.ControlFlowExpr,
 	error,
 ) {
 	var last ast.Node = body
@@ -1165,4 +1096,21 @@ func (reducer *Reducer) ToForLoopBody(
 	error,
 ) {
 	return reducer.toLoopBody(do, expr), nil
+}
+
+//
+// ControlFlowExpr
+//
+
+func (Reducer) LabelledToControlFlowExpr(
+	label *lr.TokenValue,
+	expr ast.ControlFlowExpr,
+) (
+	ast.ControlFlowExpr,
+	error,
+) {
+	expr.SetLabel(label.Value)
+	expr.PrependToLeading(label.TakeTrailing())
+	expr.PrependToLeading(label.TakeLeading())
+	return expr, nil
 }

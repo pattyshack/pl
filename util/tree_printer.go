@@ -149,24 +149,24 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			len(node.Arguments))
 	case *ast.IfExpr:
 		printer.list(
-			fmt.Sprintf("[IfExpr: LabelDecl=%s", node.LabelDecl),
+			fmt.Sprintf("[IfExpr: Label=%s", node.Label),
 			nil,
 			"Branch",
 			len(node.ConditionBranches))
 	case *ast.SwitchExpr:
 		printer.list(
-			fmt.Sprintf("[SwitchExpr: LabelDecl=%s", node.LabelDecl),
+			fmt.Sprintf("[SwitchExpr: Label=%s", node.Label),
 			[]string{"Operand="},
 			"Branch",
 			len(node.ConditionBranches))
 	case *ast.SelectExpr:
 		printer.list(
-			fmt.Sprintf("[SwitchExpr: LabelDecl=%s", node.LabelDecl),
+			fmt.Sprintf("[SwitchExpr: Label=%s", node.Label),
 			nil,
 			"Branch",
 			len(node.ConditionBranches))
 	case *ast.LoopExpr:
-		printer.write("[LoopExpr: Kind=%s LabelDecl=%s", node.Kind, node.LabelDecl)
+		printer.write("[LoopExpr: Kind=%s Label=%s", node.Kind, node.Label)
 		labels := []string{}
 		if node.Init != nil {
 			labels = append(labels, "Init=")
@@ -181,7 +181,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.push(labels...)
 	case *ast.StatementsExpr:
 		printer.list(
-			fmt.Sprintf("[StatementsExpr: LabelDecl=%s", node.LabelDecl),
+			fmt.Sprintf("[StatementsExpr: Label=%s", node.Label),
 			nil,
 			"Statement",
 			len(node.Statements))

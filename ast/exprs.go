@@ -333,7 +333,7 @@ type StatementsExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	LabelDecl  string // optional
+	Label
 	Statements []Statement
 }
 
@@ -356,7 +356,7 @@ type IfExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	LabelDecl         string // optional
+	Label
 	ConditionBranches []*ConditionBranchStmt
 }
 
@@ -379,7 +379,7 @@ type SwitchExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	LabelDecl         string // optional
+	Label
 	Operand           Expression
 	ConditionBranches []*ConditionBranchStmt
 }
@@ -404,7 +404,7 @@ type SelectExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	LabelDecl         string // optional
+	Label
 	ConditionBranches []*ConditionBranchStmt
 }
 
@@ -439,7 +439,7 @@ type LoopExpr struct {
 
 	Kind LoopKind
 
-	LabelDecl string
+	Label
 
 	Init      Statement  // optional. only applicable to traditional-for loop
 	Condition Expression // optional. not applicable to infinite loop

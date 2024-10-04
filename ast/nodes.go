@@ -56,6 +56,11 @@ type Expression interface {
 	IsExpression()
 }
 
+type ControlFlowExpr interface {
+	Expression
+	SetLabel(string)
+}
+
 type IsExpr struct {
 	IsStmt
 }
@@ -210,4 +215,11 @@ func (sep StartEndPos) Loc() lexutil.Location {
 
 func (sep StartEndPos) End() lexutil.Location {
 	return sep.EndPos
+}
+
+// Control flow label
+type Label string
+
+func (label *Label) SetLabel(l string) {
+	*label = Label(l)
 }
