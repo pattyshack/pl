@@ -739,19 +739,18 @@ generic_argument_list<TypeExpressionList> ->
 //
 
 // NOTE: default_enum_field_def is only usable in enum. struct_padding is only
-// usable in struct.
-// These are checked post parsing.
+// usable in struct. These are checked post parsing.
 //
 // NOTE: In general, type_expr must be concrete (i.e., can't have any inferred
 // type).  Enum value can use "_" as type to indicate no data is associated
 // with the enum value.
 type_property<TypeProperty> ->
+  // NOTE: unnamed_field also captures trait method signatures
   unnamed_field: type_expr |
   named_field: IDENTIFIER type_expr |
   padding_field: UNDERSCORE type_expr |
   default_named_enum_field: DEFAULT IDENTIFIER type_expr |
-  default_unnamed_enum_field: DEFAULT type_expr |
-  = unsafe_stmt
+  default_unnamed_enum_field: DEFAULT type_expr
 
 proper_implicit_type_properties<TypeProperties> ->
   add: proper_implicit_type_properties COMMA type_property |

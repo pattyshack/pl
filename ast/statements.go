@@ -31,6 +31,8 @@ type ImportStmt struct {
 	ImportClauses []*ImportClause
 }
 
+var _ Statement = &ImportStmt{}
+
 func (stmt *ImportStmt) Walk(visitor Visitor) {
 	visitor.Enter(stmt)
 	for _, clause := range stmt.ImportClauses {
@@ -61,6 +63,8 @@ type JumpStmt struct {
 	Label string     // optional
 	Value Expression // optional
 }
+
+var _ Statement = &JumpStmt{}
 
 func (stmt *JumpStmt) Walk(visitor Visitor) {
 	visitor.Enter(stmt)
@@ -115,7 +119,6 @@ func NewJumpStmt(
 
 type UnsafeStmt struct {
 	IsStmt
-	IsTypeProp
 	StartEndPos
 	LeadingTrailingComments
 
@@ -123,7 +126,7 @@ type UnsafeStmt struct {
 	VerbatimSource string
 }
 
-var _ TypeProperty = &UnsafeStmt{}
+var _ Statement = &UnsafeStmt{}
 
 func (stmt *UnsafeStmt) Walk(visitor Visitor) {
 	visitor.Enter(stmt)
@@ -146,6 +149,8 @@ type ConditionBranchStmt struct {
 	Branch    *StatementsExpr
 }
 
+var _ Statement = &ConditionBranchStmt{}
+
 func (cb *ConditionBranchStmt) Walk(visitor Visitor) {
 	visitor.Enter(cb)
 	if cb.Condition != nil {
@@ -153,4 +158,51 @@ func (cb *ConditionBranchStmt) Walk(visitor Visitor) {
 	}
 	cb.Branch.Walk(visitor)
 	visitor.Exit(cb)
+}
+
+//
+// FloatingComment
+//
+
+type FloatingComment struct {
+	IsStmt
+	StartEndPos
+	LeadingTrailingComments
+}
+
+var _ Statement = &FloatingComment{}
+
+func (def *FloatingComment) Walk(visitor Visitor) {
+	visitor.Enter(def)
+	visitor.Exit(def)
+}
+
+//
+// TypeDef
+//
+
+type TypeDef struct {
+	IsStmt
+	StartEndPos
+	LeadingTrailingComments
+
+	Name              string
+	IsAlias           bool
+	GenericParameters *GenericParameterList // optional
+	BaseType          TypeExpression
+	Constraint        TypeExpression // optional
+}
+
+var _ Statement = &TypeDef{}
+
+func (def *TypeDef) Walk(visitor Visitor) {
+	visitor.Enter(def)
+	if def.GenericParameters != nil {
+		def.GenericParameters.Walk(visitor)
+	}
+	def.BaseType.Walk(visitor)
+	if def.Constraint != nil {
+		def.Constraint.Walk(visitor)
+	}
+	visitor.Exit(def)
 }

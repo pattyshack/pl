@@ -464,3 +464,25 @@ func (expr *LoopExpr) Walk(visitor Visitor) {
 	expr.Body.Walk(visitor)
 	visitor.Exit(expr)
 }
+
+//
+// FuncDefinition
+//
+
+type FuncDefinition struct {
+	IsExpr
+	StartEndPos
+	LeadingTrailingComments
+
+	Signature *FuncSignature
+	Body      Expression
+}
+
+var _ Expression = &FuncDefinition{}
+
+func (def *FuncDefinition) Walk(visitor Visitor) {
+	visitor.Enter(def)
+	def.Signature.Walk(visitor)
+	def.Body.Walk(visitor)
+	visitor.Exit(def)
+}

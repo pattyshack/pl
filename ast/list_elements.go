@@ -1,6 +1,61 @@
 package ast
 
 //
+// FieldDef
+//
+
+type FieldDefKind string
+
+const (
+	NamedFieldDef   = FieldDefKind("named")
+	UnnamedFieldDef = FieldDefKind("unnamed")
+	PaddingFieldDef = FieldDefKind("padding")
+)
+
+type FieldDef struct {
+	IsTypeProp
+	StartEndPos
+	LeadingTrailingComments
+
+	Kind      FieldDefKind
+	IsDefault bool
+
+	Name string // Could be identifier, underscore, or ""
+	Type TypeExpression
+}
+
+var _ TypeProperty = &FieldDef{}
+
+func (def *FieldDef) Walk(visitor Visitor) {
+	visitor.Enter(def)
+	def.Type.Walk(visitor)
+	visitor.Exit(def)
+}
+
+//
+// GenericParameter
+//
+
+type GenericParameter struct {
+	StartEndPos
+	LeadingTrailingComments
+
+	Name string
+
+	Constraint TypeExpression // optional
+}
+
+var _ Node = &GenericParameter{}
+
+func (param *GenericParameter) Walk(visitor Visitor) {
+	visitor.Enter(param)
+	if param.Constraint != nil {
+		param.Constraint.Walk(visitor)
+	}
+	visitor.Exit(param)
+}
+
+//
 // Parameter
 //
 

@@ -664,171 +664,171 @@ type TypePropertyReducer interface {
 }
 
 type ProperImplicitTypePropertiesReducer interface {
-	// 757:2: proper_implicit_type_properties -> add: ...
+	// 756:2: proper_implicit_type_properties -> add: ...
 	AddToProperImplicitTypeProperties(ProperImplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 758:2: proper_implicit_type_properties -> type_property: ...
+	// 757:2: proper_implicit_type_properties -> type_property: ...
 	TypePropertyToProperImplicitTypeProperties(TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 }
 
 type ImplicitTypePropertiesReducer interface {
 
-	// 762:2: implicit_type_properties -> improper: ...
+	// 761:2: implicit_type_properties -> improper: ...
 	ImproperToImplicitTypeProperties(ProperImplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue) (*ast.TypePropertyList, error)
 
-	// 763:2: implicit_type_properties -> nil: ...
+	// 762:2: implicit_type_properties -> nil: ...
 	NilToImplicitTypeProperties() (*ast.TypePropertyList, error)
 }
 
 type ImplicitStructTypeExprReducer interface {
-	// 766:2: implicit_struct_type_expr -> ...
+	// 765:2: implicit_struct_type_expr -> ...
 	ToImplicitStructTypeExpr(Lparen_ *TokenValue, ImplicitTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ProperExplicitTypePropertiesReducer interface {
-	// 769:2: proper_explicit_type_properties -> add_implicit: ...
+	// 768:2: proper_explicit_type_properties -> add_implicit: ...
 	AddImplicitToProperExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 770:2: proper_explicit_type_properties -> add_explicit: ...
+	// 769:2: proper_explicit_type_properties -> add_explicit: ...
 	AddExplicitToProperExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 771:2: proper_explicit_type_properties -> type_property: ...
+	// 770:2: proper_explicit_type_properties -> type_property: ...
 	TypePropertyToProperExplicitTypeProperties(TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 }
 
 type ExplicitTypePropertiesReducer interface {
 
-	// 775:2: explicit_type_properties -> improper_implicit: ...
+	// 774:2: explicit_type_properties -> improper_implicit: ...
 	ImproperImplicitToExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount) (*ast.TypePropertyList, error)
 
-	// 776:2: explicit_type_properties -> improper_explicit: ...
+	// 775:2: explicit_type_properties -> improper_explicit: ...
 	ImproperExplicitToExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue) (*ast.TypePropertyList, error)
 
-	// 777:2: explicit_type_properties -> nil: ...
+	// 776:2: explicit_type_properties -> nil: ...
 	NilToExplicitTypeProperties() (*ast.TypePropertyList, error)
 }
 
 type ExplicitStructTypeExprReducer interface {
-	// 780:2: explicit_struct_type_expr -> ...
+	// 779:2: explicit_struct_type_expr -> ...
 	ToExplicitStructTypeExpr(Struct_ *TokenValue, Lparen_ *TokenValue, ExplicitTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type TraitTypeExprReducer interface {
-	// 783:2: trait_type_expr -> ...
+	// 782:2: trait_type_expr -> ...
 	ToTraitTypeExpr(Trait_ *TokenValue, Lparen_ *TokenValue, ExplicitTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ProperImplicitEnumTypePropertiesReducer interface {
-	// 794:2: proper_implicit_enum_type_properties -> pair: ...
+	// 793:2: proper_implicit_enum_type_properties -> pair: ...
 	PairToProperImplicitEnumTypeProperties(TypeProperty_ ast.TypeProperty, Or_ *TokenValue, TypeProperty_2 ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 795:2: proper_implicit_enum_type_properties -> add: ...
+	// 794:2: proper_implicit_enum_type_properties -> add: ...
 	AddToProperImplicitEnumTypeProperties(ProperImplicitEnumTypeProperties_ *ast.TypePropertyList, Or_ *TokenValue, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 }
 
 type ImplicitEnumTypePropertiesReducer interface {
 
-	// 800:2: implicit_enum_type_properties -> improper: ...
+	// 799:2: implicit_enum_type_properties -> improper: ...
 	ImproperToImplicitEnumTypeProperties(ProperImplicitEnumTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount) (*ast.TypePropertyList, error)
 }
 
 type ImplicitEnumTypeExprReducer interface {
-	// 803:2: implicit_enum_type_expr -> ...
+	// 802:2: implicit_enum_type_expr -> ...
 	ToImplicitEnumTypeExpr(Lparen_ *TokenValue, ImplicitEnumTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ProperExplicitEnumTypePropertiesReducer interface {
-	// 806:2: proper_explicit_enum_type_properties -> explicit_pair: ...
+	// 805:2: proper_explicit_enum_type_properties -> explicit_pair: ...
 	ExplicitPairToProperExplicitEnumTypeProperties(TypeProperty_ ast.TypeProperty, Or_ *TokenValue, TypeProperty_2 ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 807:2: proper_explicit_enum_type_properties -> implicit_pair: ...
+	// 806:2: proper_explicit_enum_type_properties -> implicit_pair: ...
 	ImplicitPairToProperExplicitEnumTypeProperties(TypeProperty_ ast.TypeProperty, Newlines_ TokenCount, TypeProperty_2 ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 808:2: proper_explicit_enum_type_properties -> explicit_add: ...
+	// 807:2: proper_explicit_enum_type_properties -> explicit_add: ...
 	ExplicitAddToProperExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *ast.TypePropertyList, Or_ *TokenValue, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 
-	// 809:2: proper_explicit_enum_type_properties -> implicit_add: ...
+	// 808:2: proper_explicit_enum_type_properties -> implicit_add: ...
 	ImplicitAddToProperExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 }
 
 type ExplicitEnumTypePropertiesReducer interface {
 
-	// 814:2: explicit_enum_type_properties -> improper: ...
+	// 813:2: explicit_enum_type_properties -> improper: ...
 	ImproperToExplicitEnumTypeProperties(ProperExplicitEnumTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount) (*ast.TypePropertyList, error)
 }
 
 type ExplicitEnumTypeExprReducer interface {
-	// 817:2: explicit_enum_type_expr -> ...
+	// 816:2: explicit_enum_type_expr -> ...
 	ToExplicitEnumTypeExpr(Enum_ *TokenValue, Lparen_ *TokenValue, ExplicitEnumTypeProperties_ *ast.TypePropertyList, Rparen_ *TokenValue) (ast.TypeExpression, error)
 }
 
 type ReturnTypeReducer interface {
 
-	// 826:2: return_type -> nil: ...
+	// 825:2: return_type -> nil: ...
 	NilToReturnType() (ast.TypeExpression, error)
 }
 
 type ParameterReducer interface {
-	// 831:2: parameter -> named_arg: ...
+	// 830:2: parameter -> named_arg: ...
 	NamedArgToParameter(Identifier_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 
-	// 832:2: parameter -> named_receiver: ...
+	// 831:2: parameter -> named_receiver: ...
 	NamedReceiverToParameter(Identifier_ *TokenValue, Greater_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 
-	// 833:2: parameter -> named_vararg: ...
+	// 832:2: parameter -> named_vararg: ...
 	NamedVarargToParameter(Identifier_ *TokenValue, Ellipsis_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 
-	// 834:2: parameter -> ignore_arg: ...
+	// 833:2: parameter -> ignore_arg: ...
 	IgnoreArgToParameter(Underscore_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 
-	// 835:2: parameter -> ignore_receiver: ...
+	// 834:2: parameter -> ignore_receiver: ...
 	IgnoreReceiverToParameter(Underscore_ *TokenValue, Greater_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 
-	// 836:2: parameter -> ignore_vararg: ...
+	// 835:2: parameter -> ignore_vararg: ...
 	IgnoreVarargToParameter(Underscore_ *TokenValue, Ellipsis_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 
-	// 837:2: parameter -> unnamed_arg: ...
+	// 836:2: parameter -> unnamed_arg: ...
 	UnnamedArgToParameter(TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 
-	// 838:2: parameter -> unnamed_receiver: ...
+	// 837:2: parameter -> unnamed_receiver: ...
 	UnnamedReceiverToParameter(Greater_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 
-	// 839:2: parameter -> unnamed_vararg: ...
+	// 838:2: parameter -> unnamed_vararg: ...
 	UnnamedVarargToParameter(Ellipsis_ *TokenValue, TypeExpr_ ast.TypeExpression) (*ast.Parameter, error)
 }
 
 type ProperParameterListReducer interface {
-	// 842:2: proper_parameter_list -> add: ...
+	// 841:2: proper_parameter_list -> add: ...
 	AddToProperParameterList(ProperParameterList_ *ast.ParameterList, Comma_ *TokenValue, Parameter_ *ast.Parameter) (*ast.ParameterList, error)
 
-	// 843:2: proper_parameter_list -> parameter: ...
+	// 842:2: proper_parameter_list -> parameter: ...
 	ParameterToProperParameterList(Parameter_ *ast.Parameter) (*ast.ParameterList, error)
 }
 
 type ParameterListReducer interface {
 
-	// 847:2: parameter_list -> improper: ...
+	// 846:2: parameter_list -> improper: ...
 	ImproperToParameterList(ProperParameterList_ *ast.ParameterList, Comma_ *TokenValue) (*ast.ParameterList, error)
 
-	// 848:2: parameter_list -> nil: ...
+	// 847:2: parameter_list -> nil: ...
 	NilToParameterList() (*ast.ParameterList, error)
 }
 
 type ParametersReducer interface {
-	// 850:26: parameters -> ...
+	// 849:26: parameters -> ...
 	ToParameters(Lparen_ *TokenValue, ParameterList_ *ast.ParameterList, Rparen_ *TokenValue) (*ast.ParameterList, error)
 }
 
 type FuncSignatureReducer interface {
-	// 857:2: func_signature -> anonymous: ...
+	// 856:2: func_signature -> anonymous: ...
 	AnonymousToFuncSignature(Func_ *TokenValue, Parameters_ *ast.ParameterList, ReturnType_ ast.TypeExpression) (*ast.FuncSignature, error)
 
-	// 858:2: func_signature -> named: ...
+	// 857:2: func_signature -> named: ...
 	NamedToFuncSignature(Func_ *TokenValue, Identifier_ *TokenValue, GenericParameters_ *ast.GenericParameterList, Parameters_ *ast.ParameterList, ReturnType_ ast.TypeExpression) (*ast.FuncSignature, error)
 }
 
 type FuncDefReducer interface {
-	// 860:24: func_def -> ...
+	// 859:24: func_def -> ...
 	ToFuncDef(FuncSignature_ *ast.FuncSignature, Statements_ *ast.StatementsExpr) (ast.Expression, error)
 }
 
@@ -1083,7 +1083,7 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State120:
 		return []SymbolId{RparenToken}
 	case _State122:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State123:
 		return []SymbolId{IdentifierToken}
 	case _State124:
@@ -1143,9 +1143,9 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State187:
 		return []SymbolId{NewlinesToken, OrToken}
 	case _State193:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State195:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State196:
 		return []SymbolId{RparenToken}
 	case _State197:
@@ -1161,11 +1161,11 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State207:
 		return []SymbolId{LbraceToken}
 	case _State216:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State217:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State218:
-		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, UnsafeToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
+		return []SymbolId{IdentifierToken, UnderscoreToken, DefaultToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State220:
 		return []SymbolId{IdentifierToken, UnderscoreToken, StructToken, EnumToken, TraitToken, FuncToken, LparenToken, LbracketToken, DotToken, QuestionToken, ExclaimToken, TildeToken, TildeTildeToken, BitAndToken}
 	case _State222:
@@ -2178,54 +2178,53 @@ const (
 	_ReducePaddingFieldToTypeProperty                                   = _ReduceType(261)
 	_ReduceDefaultNamedEnumFieldToTypeProperty                          = _ReduceType(262)
 	_ReduceDefaultUnnamedEnumFieldToTypeProperty                        = _ReduceType(263)
-	_ReduceUnsafeStmtToTypeProperty                                     = _ReduceType(264)
-	_ReduceAddToProperImplicitTypeProperties                            = _ReduceType(265)
-	_ReduceTypePropertyToProperImplicitTypeProperties                   = _ReduceType(266)
-	_ReduceProperImplicitTypePropertiesToImplicitTypeProperties         = _ReduceType(267)
-	_ReduceImproperToImplicitTypeProperties                             = _ReduceType(268)
-	_ReduceNilToImplicitTypeProperties                                  = _ReduceType(269)
-	_ReduceToImplicitStructTypeExpr                                     = _ReduceType(270)
-	_ReduceAddImplicitToProperExplicitTypeProperties                    = _ReduceType(271)
-	_ReduceAddExplicitToProperExplicitTypeProperties                    = _ReduceType(272)
-	_ReduceTypePropertyToProperExplicitTypeProperties                   = _ReduceType(273)
-	_ReduceProperExplicitTypePropertiesToExplicitTypeProperties         = _ReduceType(274)
-	_ReduceImproperImplicitToExplicitTypeProperties                     = _ReduceType(275)
-	_ReduceImproperExplicitToExplicitTypeProperties                     = _ReduceType(276)
-	_ReduceNilToExplicitTypeProperties                                  = _ReduceType(277)
-	_ReduceToExplicitStructTypeExpr                                     = _ReduceType(278)
-	_ReduceToTraitTypeExpr                                              = _ReduceType(279)
-	_ReducePairToProperImplicitEnumTypeProperties                       = _ReduceType(280)
-	_ReduceAddToProperImplicitEnumTypeProperties                        = _ReduceType(281)
-	_ReduceProperImplicitEnumTypePropertiesToImplicitEnumTypeProperties = _ReduceType(282)
-	_ReduceImproperToImplicitEnumTypeProperties                         = _ReduceType(283)
-	_ReduceToImplicitEnumTypeExpr                                       = _ReduceType(284)
-	_ReduceExplicitPairToProperExplicitEnumTypeProperties               = _ReduceType(285)
-	_ReduceImplicitPairToProperExplicitEnumTypeProperties               = _ReduceType(286)
-	_ReduceExplicitAddToProperExplicitEnumTypeProperties                = _ReduceType(287)
-	_ReduceImplicitAddToProperExplicitEnumTypeProperties                = _ReduceType(288)
-	_ReduceProperExplicitEnumTypePropertiesToExplicitEnumTypeProperties = _ReduceType(289)
-	_ReduceImproperToExplicitEnumTypeProperties                         = _ReduceType(290)
-	_ReduceToExplicitEnumTypeExpr                                       = _ReduceType(291)
-	_ReduceReturnableTypeExprToReturnType                               = _ReduceType(292)
-	_ReduceNilToReturnType                                              = _ReduceType(293)
-	_ReduceNamedArgToParameter                                          = _ReduceType(294)
-	_ReduceNamedReceiverToParameter                                     = _ReduceType(295)
-	_ReduceNamedVarargToParameter                                       = _ReduceType(296)
-	_ReduceIgnoreArgToParameter                                         = _ReduceType(297)
-	_ReduceIgnoreReceiverToParameter                                    = _ReduceType(298)
-	_ReduceIgnoreVarargToParameter                                      = _ReduceType(299)
-	_ReduceUnnamedArgToParameter                                        = _ReduceType(300)
-	_ReduceUnnamedReceiverToParameter                                   = _ReduceType(301)
-	_ReduceUnnamedVarargToParameter                                     = _ReduceType(302)
-	_ReduceAddToProperParameterList                                     = _ReduceType(303)
-	_ReduceParameterToProperParameterList                               = _ReduceType(304)
-	_ReduceProperParameterListToParameterList                           = _ReduceType(305)
-	_ReduceImproperToParameterList                                      = _ReduceType(306)
-	_ReduceNilToParameterList                                           = _ReduceType(307)
-	_ReduceToParameters                                                 = _ReduceType(308)
-	_ReduceAnonymousToFuncSignature                                     = _ReduceType(309)
-	_ReduceNamedToFuncSignature                                         = _ReduceType(310)
-	_ReduceToFuncDef                                                    = _ReduceType(311)
+	_ReduceAddToProperImplicitTypeProperties                            = _ReduceType(264)
+	_ReduceTypePropertyToProperImplicitTypeProperties                   = _ReduceType(265)
+	_ReduceProperImplicitTypePropertiesToImplicitTypeProperties         = _ReduceType(266)
+	_ReduceImproperToImplicitTypeProperties                             = _ReduceType(267)
+	_ReduceNilToImplicitTypeProperties                                  = _ReduceType(268)
+	_ReduceToImplicitStructTypeExpr                                     = _ReduceType(269)
+	_ReduceAddImplicitToProperExplicitTypeProperties                    = _ReduceType(270)
+	_ReduceAddExplicitToProperExplicitTypeProperties                    = _ReduceType(271)
+	_ReduceTypePropertyToProperExplicitTypeProperties                   = _ReduceType(272)
+	_ReduceProperExplicitTypePropertiesToExplicitTypeProperties         = _ReduceType(273)
+	_ReduceImproperImplicitToExplicitTypeProperties                     = _ReduceType(274)
+	_ReduceImproperExplicitToExplicitTypeProperties                     = _ReduceType(275)
+	_ReduceNilToExplicitTypeProperties                                  = _ReduceType(276)
+	_ReduceToExplicitStructTypeExpr                                     = _ReduceType(277)
+	_ReduceToTraitTypeExpr                                              = _ReduceType(278)
+	_ReducePairToProperImplicitEnumTypeProperties                       = _ReduceType(279)
+	_ReduceAddToProperImplicitEnumTypeProperties                        = _ReduceType(280)
+	_ReduceProperImplicitEnumTypePropertiesToImplicitEnumTypeProperties = _ReduceType(281)
+	_ReduceImproperToImplicitEnumTypeProperties                         = _ReduceType(282)
+	_ReduceToImplicitEnumTypeExpr                                       = _ReduceType(283)
+	_ReduceExplicitPairToProperExplicitEnumTypeProperties               = _ReduceType(284)
+	_ReduceImplicitPairToProperExplicitEnumTypeProperties               = _ReduceType(285)
+	_ReduceExplicitAddToProperExplicitEnumTypeProperties                = _ReduceType(286)
+	_ReduceImplicitAddToProperExplicitEnumTypeProperties                = _ReduceType(287)
+	_ReduceProperExplicitEnumTypePropertiesToExplicitEnumTypeProperties = _ReduceType(288)
+	_ReduceImproperToExplicitEnumTypeProperties                         = _ReduceType(289)
+	_ReduceToExplicitEnumTypeExpr                                       = _ReduceType(290)
+	_ReduceReturnableTypeExprToReturnType                               = _ReduceType(291)
+	_ReduceNilToReturnType                                              = _ReduceType(292)
+	_ReduceNamedArgToParameter                                          = _ReduceType(293)
+	_ReduceNamedReceiverToParameter                                     = _ReduceType(294)
+	_ReduceNamedVarargToParameter                                       = _ReduceType(295)
+	_ReduceIgnoreArgToParameter                                         = _ReduceType(296)
+	_ReduceIgnoreReceiverToParameter                                    = _ReduceType(297)
+	_ReduceIgnoreVarargToParameter                                      = _ReduceType(298)
+	_ReduceUnnamedArgToParameter                                        = _ReduceType(299)
+	_ReduceUnnamedReceiverToParameter                                   = _ReduceType(300)
+	_ReduceUnnamedVarargToParameter                                     = _ReduceType(301)
+	_ReduceAddToProperParameterList                                     = _ReduceType(302)
+	_ReduceParameterToProperParameterList                               = _ReduceType(303)
+	_ReduceProperParameterListToParameterList                           = _ReduceType(304)
+	_ReduceImproperToParameterList                                      = _ReduceType(305)
+	_ReduceNilToParameterList                                           = _ReduceType(306)
+	_ReduceToParameters                                                 = _ReduceType(307)
+	_ReduceAnonymousToFuncSignature                                     = _ReduceType(308)
+	_ReduceNamedToFuncSignature                                         = _ReduceType(309)
+	_ReduceToFuncDef                                                    = _ReduceType(310)
 )
 
 func (i _ReduceType) String() string {
@@ -2756,8 +2755,6 @@ func (i _ReduceType) String() string {
 		return "DefaultNamedEnumFieldToTypeProperty"
 	case _ReduceDefaultUnnamedEnumFieldToTypeProperty:
 		return "DefaultUnnamedEnumFieldToTypeProperty"
-	case _ReduceUnsafeStmtToTypeProperty:
-		return "UnsafeStmtToTypeProperty"
 	case _ReduceAddToProperImplicitTypeProperties:
 		return "AddToProperImplicitTypeProperties"
 	case _ReduceTypePropertyToProperImplicitTypeProperties:
@@ -5108,13 +5105,6 @@ func (act *_Action) ReduceSymbol(
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = TypePropertyType
 		symbol.TypeProperty, err = reducer.DefaultUnnamedEnumFieldToTypeProperty(args[0].Value, args[1].TypeExpression)
-	case _ReduceUnsafeStmtToTypeProperty:
-		args := stack[len(stack)-1:]
-		stack = stack[:len(stack)-1]
-		symbol.SymbolId_ = TypePropertyType
-		//line grammar.lr:754:4
-		symbol.TypeProperty = args[0].UnsafeStmt
-		err = nil
 	case _ReduceAddToProperImplicitTypeProperties:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
@@ -5129,7 +5119,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ImplicitTypePropertiesType
-		//line grammar.lr:761:4
+		//line grammar.lr:760:4
 		symbol.TypeProperties = args[0].TypeProperties
 		err = nil
 	case _ReduceImproperToImplicitTypeProperties:
@@ -5164,7 +5154,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ExplicitTypePropertiesType
-		//line grammar.lr:774:4
+		//line grammar.lr:773:4
 		symbol.TypeProperties = args[0].TypeProperties
 		err = nil
 	case _ReduceImproperImplicitToExplicitTypeProperties:
@@ -5204,7 +5194,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ImplicitEnumTypePropertiesType
-		//line grammar.lr:798:4
+		//line grammar.lr:797:4
 		symbol.TypeProperties = args[0].TypeProperties
 		err = nil
 	case _ReduceImproperToImplicitEnumTypeProperties:
@@ -5241,7 +5231,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ExplicitEnumTypePropertiesType
-		//line grammar.lr:812:4
+		//line grammar.lr:811:4
 		symbol.TypeProperties = args[0].TypeProperties
 		err = nil
 	case _ReduceImproperToExplicitEnumTypeProperties:
@@ -5258,7 +5248,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ReturnTypeType
-		//line grammar.lr:825:4
+		//line grammar.lr:824:4
 		symbol.TypeExpression = args[0].TypeExpression
 		err = nil
 	case _ReduceNilToReturnType:
@@ -5323,7 +5313,7 @@ func (act *_Action) ReduceSymbol(
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
 		symbol.SymbolId_ = ParameterListType
-		//line grammar.lr:846:4
+		//line grammar.lr:845:4
 		symbol.Parameters = args[0].Parameters
 		err = nil
 	case _ReduceImproperToParameterList:
@@ -8733,8 +8723,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State126, 0}, true
 		case DefaultToken:
 			return _Action{_ShiftAction, _State124, 0}, true
-		case UnsafeToken:
-			return _Action{_ShiftAction, _State24, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State21, 0}, true
 		case EnumToken:
@@ -8773,8 +8761,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStmtType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -9115,8 +9101,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State126, 0}, true
 		case DefaultToken:
 			return _Action{_ShiftAction, _State124, 0}, true
-		case UnsafeToken:
-			return _Action{_ShiftAction, _State24, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State21, 0}, true
 		case EnumToken:
@@ -9149,8 +9133,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStmtType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -12843,8 +12825,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State126, 0}, true
 		case DefaultToken:
 			return _Action{_ShiftAction, _State124, 0}, true
-		case UnsafeToken:
-			return _Action{_ShiftAction, _State24, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State21, 0}, true
 		case EnumToken:
@@ -12879,8 +12859,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStmtType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -13188,8 +13166,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State126, 0}, true
 		case DefaultToken:
 			return _Action{_ShiftAction, _State124, 0}, true
-		case UnsafeToken:
-			return _Action{_ShiftAction, _State24, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State21, 0}, true
 		case EnumToken:
@@ -13222,8 +13198,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStmtType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -15857,8 +15831,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State126, 0}, true
 		case DefaultToken:
 			return _Action{_ShiftAction, _State124, 0}, true
-		case UnsafeToken:
-			return _Action{_ShiftAction, _State24, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State21, 0}, true
 		case EnumToken:
@@ -15887,8 +15859,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStmtType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -15932,8 +15902,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State126, 0}, true
 		case DefaultToken:
 			return _Action{_ShiftAction, _State124, 0}, true
-		case UnsafeToken:
-			return _Action{_ShiftAction, _State24, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State21, 0}, true
 		case EnumToken:
@@ -15962,8 +15930,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStmtType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -16010,8 +15976,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State126, 0}, true
 		case DefaultToken:
 			return _Action{_ShiftAction, _State124, 0}, true
-		case UnsafeToken:
-			return _Action{_ShiftAction, _State24, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State21, 0}, true
 		case EnumToken:
@@ -16040,8 +16004,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStmtType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -16108,8 +16070,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State126, 0}, true
 		case DefaultToken:
 			return _Action{_ShiftAction, _State124, 0}, true
-		case UnsafeToken:
-			return _Action{_ShiftAction, _State24, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State21, 0}, true
 		case EnumToken:
@@ -16138,8 +16098,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStmtType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -16186,8 +16144,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State126, 0}, true
 		case DefaultToken:
 			return _Action{_ShiftAction, _State124, 0}, true
-		case UnsafeToken:
-			return _Action{_ShiftAction, _State24, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State21, 0}, true
 		case EnumToken:
@@ -16216,8 +16172,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStmtType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -16742,8 +16696,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State126, 0}, true
 		case DefaultToken:
 			return _Action{_ShiftAction, _State124, 0}, true
-		case UnsafeToken:
-			return _Action{_ShiftAction, _State24, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State21, 0}, true
 		case EnumToken:
@@ -16772,8 +16724,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStmtType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -16820,8 +16770,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State126, 0}, true
 		case DefaultToken:
 			return _Action{_ShiftAction, _State124, 0}, true
-		case UnsafeToken:
-			return _Action{_ShiftAction, _State24, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State21, 0}, true
 		case EnumToken:
@@ -16850,8 +16798,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStmtType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -16895,8 +16841,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State126, 0}, true
 		case DefaultToken:
 			return _Action{_ShiftAction, _State124, 0}, true
-		case UnsafeToken:
-			return _Action{_ShiftAction, _State24, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State21, 0}, true
 		case EnumToken:
@@ -16925,8 +16869,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStmtType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -16970,8 +16912,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAction, _State126, 0}, true
 		case DefaultToken:
 			return _Action{_ShiftAction, _State124, 0}, true
-		case UnsafeToken:
-			return _Action{_ShiftAction, _State24, 0}, true
 		case StructToken:
 			return _Action{_ShiftAction, _State21, 0}, true
 		case EnumToken:
@@ -17000,8 +16940,6 @@ func (_ActionTableType) Get(
 			return _Action{_ShiftAndReduceAction, 0, _ReduceTildeTildeToPrefixUnaryTypeOp}, true
 		case BitAndToken:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceBitAndToPrefixUnaryTypeOp}, true
-		case UnsafeStmtType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceUnsafeStmtToTypeProperty}, true
 		case InitializableTypeExprType:
 			return _Action{_ShiftAndReduceAction, 0, _ReduceInitializableTypeExprToAtomTypeExpr}, true
 		case SliceTypeExprType:
@@ -19319,7 +19257,6 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -19340,7 +19277,6 @@ Parser Debug States:
       IDENTIFIER -> State 125
       UNDERSCORE -> State 126
       DEFAULT -> State 124
-      UNSAFE -> State 24
       STRUCT -> State 21
       ENUM -> State 64
       TRAIT -> State 67
@@ -19584,7 +19520,6 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -19606,7 +19541,6 @@ Parser Debug States:
       IDENTIFIER -> State 125
       UNDERSCORE -> State 126
       DEFAULT -> State 124
-      UNSAFE -> State 24
       STRUCT -> State 21
       ENUM -> State 64
       TRAIT -> State 67
@@ -21759,7 +21693,6 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -21780,7 +21713,6 @@ Parser Debug States:
       IDENTIFIER -> State 125
       UNDERSCORE -> State 126
       DEFAULT -> State 124
-      UNSAFE -> State 24
       STRUCT -> State 21
       ENUM -> State 64
       TRAIT -> State 67
@@ -22009,7 +21941,6 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -22031,7 +21962,6 @@ Parser Debug States:
       IDENTIFIER -> State 125
       UNDERSCORE -> State 126
       DEFAULT -> State 124
-      UNSAFE -> State 24
       STRUCT -> State 21
       ENUM -> State 64
       TRAIT -> State 67
@@ -23745,7 +23675,6 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -23767,7 +23696,6 @@ Parser Debug States:
       IDENTIFIER -> State 125
       UNDERSCORE -> State 126
       DEFAULT -> State 124
-      UNSAFE -> State 24
       STRUCT -> State 21
       ENUM -> State 64
       TRAIT -> State 67
@@ -23790,7 +23718,6 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -23812,7 +23739,6 @@ Parser Debug States:
       IDENTIFIER -> State 125
       UNDERSCORE -> State 126
       DEFAULT -> State 124
-      UNSAFE -> State 24
       STRUCT -> State 21
       ENUM -> State 64
       TRAIT -> State 67
@@ -23834,7 +23760,6 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -23856,7 +23781,6 @@ Parser Debug States:
       IDENTIFIER -> State 125
       UNDERSCORE -> State 126
       DEFAULT -> State 124
-      UNSAFE -> State 24
       STRUCT -> State 21
       ENUM -> State 64
       TRAIT -> State 67
@@ -23913,7 +23837,6 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -23935,7 +23858,6 @@ Parser Debug States:
       IDENTIFIER -> State 125
       UNDERSCORE -> State 126
       DEFAULT -> State 124
-      UNSAFE -> State 24
       STRUCT -> State 21
       ENUM -> State 64
       TRAIT -> State 67
@@ -23958,7 +23880,6 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -23980,7 +23901,6 @@ Parser Debug States:
       IDENTIFIER -> State 125
       UNDERSCORE -> State 126
       DEFAULT -> State 124
-      UNSAFE -> State 24
       STRUCT -> State 21
       ENUM -> State 64
       TRAIT -> State 67
@@ -24330,7 +24250,6 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -24352,7 +24271,6 @@ Parser Debug States:
       IDENTIFIER -> State 125
       UNDERSCORE -> State 126
       DEFAULT -> State 124
-      UNSAFE -> State 24
       STRUCT -> State 21
       ENUM -> State 64
       TRAIT -> State 67
@@ -24374,7 +24292,6 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -24396,7 +24313,6 @@ Parser Debug States:
       IDENTIFIER -> State 125
       UNDERSCORE -> State 126
       DEFAULT -> State 124
-      UNSAFE -> State 24
       STRUCT -> State 21
       ENUM -> State 64
       TRAIT -> State 67
@@ -24418,7 +24334,6 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -24440,7 +24355,6 @@ Parser Debug States:
       IDENTIFIER -> State 125
       UNDERSCORE -> State 126
       DEFAULT -> State 124
-      UNSAFE -> State 24
       STRUCT -> State 21
       ENUM -> State 64
       TRAIT -> State 67
@@ -24462,7 +24376,6 @@ Parser Debug States:
       TILDE -> [prefix_unary_type_op]
       TILDE_TILDE -> [prefix_unary_type_op]
       BIT_AND -> [prefix_unary_type_op]
-      unsafe_stmt -> [type_property]
       initializable_type_expr -> [atom_type_expr]
       slice_type_expr -> [initializable_type_expr]
       array_type_expr -> [initializable_type_expr]
@@ -24484,7 +24397,6 @@ Parser Debug States:
       IDENTIFIER -> State 125
       UNDERSCORE -> State 126
       DEFAULT -> State 124
-      UNSAFE -> State 24
       STRUCT -> State 21
       ENUM -> State 64
       TRAIT -> State 67
@@ -24598,12 +24510,12 @@ Parser Debug States:
       binary_type_op -> State 136
 
 Number of states: 224
-Number of shift actions: 1767
+Number of shift actions: 1754
 Number of reduce actions: 112
-Number of shift-and-reduce actions: 3624
+Number of shift-and-reduce actions: 3611
 Number of shift/reduce conflicts: 0
 Number of reduce/reduce conflicts: 0
-Number of unoptimized states: 8493
-Number of unoptimized shift actions: 98048
-Number of unoptimized reduce actions: 84774
+Number of unoptimized states: 8463
+Number of unoptimized shift actions: 97696
+Number of unoptimized reduce actions: 84748
 */

@@ -180,3 +180,46 @@ func (expr *PropertiesTypeExpr) Walk(visitor Visitor) {
 	}
 	visitor.Exit(expr)
 }
+
+//
+// FuncSignature
+//
+
+type FuncSignatureKind string
+
+const (
+	AnonymousFunc = FuncSignatureKind("anonymous")
+	NamedFunc     = FuncSignatureKind("named")
+)
+
+type FuncSignature struct {
+	IsTypeExpr
+	IsTypeProp
+	StartEndPos
+	LeadingTrailingComments
+
+	Kind FuncSignatureKind
+
+	// Optional. Only used by named signature
+	Name string
+	// Optional.  Only used by named signature
+	GenericParameters *GenericParameterList
+
+	Parameters *ParameterList
+	ReturnType TypeExpression // Optional
+}
+
+var _ TypeExpression = &FuncSignature{}
+var _ TypeProperty = &FuncSignature{}
+
+func (sig *FuncSignature) Walk(visitor Visitor) {
+	visitor.Enter(sig)
+	if sig.GenericParameters != nil {
+		sig.GenericParameters.Walk(visitor)
+	}
+	sig.Parameters.Walk(visitor)
+	if sig.ReturnType != nil {
+		sig.ReturnType.Walk(visitor)
+	}
+	visitor.Exit(sig)
+}
