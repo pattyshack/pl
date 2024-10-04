@@ -1,0 +1,17 @@
+{
+  x = func() {}  // ok
+
+  x = func name() {}  // not ok
+
+  x = func(bad >.) {}
+
+  func () {}  // unexpected anon func
+}
+
+func wrongOrderReceiver(i int, bad >Recv) {}
+
+func wrongOrderVararg(i int, j ...int, k int) {}
+
+func (i int, j int) {}  // unexpected anon func
+
+func ok(r >Recv, x int, y int, z ...float) {}

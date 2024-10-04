@@ -9,13 +9,25 @@ import (
 // ast.FieldDef
 //
 
-func (Reducer) NamedToFieldDef(
+func (Reducer) unnamedField(
+	typeExpr ast.TypeExpression,
+) *ast.FieldDef {
+	def := &ast.FieldDef{
+		StartEndPos: ast.NewStartEndPos(typeExpr.Loc(), typeExpr.End()),
+		Kind:        ast.UnnamedFieldDef,
+		Type:        typeExpr,
+	}
+
+	def.LeadingComment = typeExpr.TakeLeading()
+	def.TrailingComment = typeExpr.TakeTrailing()
+
+	return def
+}
+
+func (Reducer) namedField(
 	name *lr.TokenValue,
 	typeExpr ast.TypeExpression,
-) (
-	*ast.FieldDef,
-	error,
-) {
+) *ast.FieldDef {
 	def := &ast.FieldDef{
 		StartEndPos: ast.NewStartEndPos(name.Loc(), typeExpr.End()),
 		Kind:        ast.NamedFieldDef,
@@ -27,34 +39,54 @@ func (Reducer) NamedToFieldDef(
 	typeExpr.PrependToLeading(name.TakeTrailing())
 	def.TrailingComment = typeExpr.TakeTrailing()
 
-	return def, nil
+	return def
 }
 
-func (Reducer) UnnamedToFieldDef(
+func (reducer Reducer) UnnamedFieldToTypeProperty(
 	typeExpr ast.TypeExpression,
-) (
-	*ast.FieldDef,
-	error,
-) {
-	def := &ast.FieldDef{
-		StartEndPos: ast.NewStartEndPos(typeExpr.Loc(), typeExpr.End()),
-		Kind:        ast.UnnamedFieldDef,
-		Type:        typeExpr,
-	}
-
-	def.LeadingComment = typeExpr.TakeLeading()
-	def.TrailingComment = typeExpr.TakeTrailing()
-
-	return def, nil
-}
-
-func (Reducer) DefaultEnumFieldDefToTypeProperty(
-	defaultKW *lr.TokenValue,
-	def *ast.FieldDef,
 ) (
 	ast.TypeProperty,
 	error,
 ) {
+	sig, ok := typeExpr.(*ast.FuncSignature)
+	if ok && sig.Kind == ast.NamedFunc {
+		return sig, nil
+	}
+
+	return reducer.unnamedField(typeExpr), nil
+}
+
+func (reducer Reducer) NamedFieldToTypeProperty(
+	name *lr.TokenValue,
+	typeExpr ast.TypeExpression,
+) (
+	ast.TypeProperty,
+	error,
+) {
+	return reducer.namedField(name, typeExpr), nil
+}
+
+func (reducer Reducer) PaddingFieldDefToTypeProperty(
+	underscore *lr.TokenValue,
+	typeExpr ast.TypeExpression,
+) (
+	ast.TypeProperty,
+	error,
+) {
+	def := reducer.namedField(underscore, typeExpr)
+	def.Kind = ast.PaddingFieldDef
+	return def, nil
+}
+
+func (reducer Reducer) DefaultNamedEnumFieldToTypeProperty(
+	defaultKW *lr.TokenValue,
+	name *lr.TokenValue,
+	typeExpr ast.TypeExpression,
+) (
+	ast.TypeProperty,
+	error,
+) {
+	def := reducer.namedField(name, typeExpr)
 	if def.Name == "" {
 		def.Kind = ast.UnnamedDefaultEnumFieldDef
 	} else {
@@ -67,16 +99,24 @@ func (Reducer) DefaultEnumFieldDefToTypeProperty(
 	return def, nil
 }
 
-func (reducer *Reducer) PaddingFieldDefToTypeProperty(
-	underscore *lr.TokenValue,
+func (reducer Reducer) DefaultUnnamedEnumFieldToTypeProperty(
+	defaultKW *lr.TokenValue,
 	typeExpr ast.TypeExpression,
 ) (
 	ast.TypeProperty,
 	error,
 ) {
-	def, err := reducer.NamedToFieldDef(underscore, typeExpr)
-	def.Kind = ast.PaddingFieldDef
-	return def, err
+	def := reducer.unnamedField(typeExpr)
+	if def.Name == "" {
+		def.Kind = ast.UnnamedDefaultEnumFieldDef
+	} else {
+		def.Kind = ast.NamedDefaultEnumFieldDef
+	}
+
+	def.PrependToLeading(defaultKW.TakeTrailing())
+	def.PrependToLeading(defaultKW.TakeLeading())
+
+	return def, nil
 }
 
 //

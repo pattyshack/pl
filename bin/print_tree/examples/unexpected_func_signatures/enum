@@ -1,0 +1,13 @@
+type e enum(
+  func ()  // this is a valid, unnamed field with anonymous func type
+
+  func (>bad)  // unexpected receiver
+
+  func (...int, int)
+
+  ok int
+
+  func named()  // this is an invalid method signature
+
+  alsoOk func()
+)

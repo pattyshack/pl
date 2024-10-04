@@ -1,0 +1,9 @@
+type e struct(
+  func ()  // this is a valid, unnamed field with anonymous func type
+
+  ok int
+
+  func named()  // this is an invalid method signature
+
+  alsoOk func()
+)

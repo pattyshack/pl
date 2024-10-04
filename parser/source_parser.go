@@ -162,6 +162,7 @@ func ParseSource(
 func Validate(node ast.Node) []error {
 	passes := [][]util.Pass{
 		{
+			detectUnexpectedFuncSignatures(),
 			detectUnreachableStatements(),
 			detectUnexpectedStatements(),
 			detectUnexpectedArguments(),

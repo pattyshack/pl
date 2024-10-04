@@ -244,3 +244,152 @@ func (detector *unexpectedDefaultBranchesDetector) checkBranches(
 
 func (detector *unexpectedDefaultBranchesDetector) Exit(node ast.Node) {
 }
+
+type unexpectedFuncSignaturesDetector struct {
+	processed map[*ast.FuncSignature]struct{}
+
+	util.ErrorEmitter
+}
+
+func detectUnexpectedFuncSignatures() util.Pass {
+	return &unexpectedFuncSignaturesDetector{
+		processed: map[*ast.FuncSignature]struct{}{},
+	}
+}
+
+func (detector *unexpectedFuncSignaturesDetector) Process(node ast.Node) {
+	node.Walk(detector)
+}
+
+func (detector *unexpectedFuncSignaturesDetector) Enter(node ast.Node) {
+	switch expr := node.(type) {
+	case *ast.StatementList:
+		detector.processStatements(expr.Elements)
+	case *ast.StatementsExpr:
+		detector.processStatements(expr.Statements)
+	case *ast.PropertiesTypeExpr:
+		detector.processPropertiesTypeExpr(expr)
+	case *ast.FuncSignature:
+		_, ok := detector.processed[expr]
+		if ok {
+			return
+		}
+
+		detector.processAnonymousSignature(expr)
+	}
+}
+
+func (detector *unexpectedFuncSignaturesDetector) processStatements(
+	stmts []ast.Statement,
+) {
+	for _, stmt := range stmts {
+		def, ok := stmt.(*ast.FuncDefinition)
+		if !ok {
+			continue
+		}
+
+		detector.processed[def.Signature] = struct{}{}
+		detector.processNamedSignature(def.Signature, true)
+	}
+}
+
+func (detector *unexpectedFuncSignaturesDetector) processPropertiesTypeExpr(
+	typeExpr *ast.PropertiesTypeExpr,
+) {
+	for _, property := range typeExpr.Properties {
+		sig, ok := property.(*ast.FuncSignature)
+		if !ok {
+			continue
+		}
+
+		detector.processed[sig] = struct{}{}
+
+		if typeExpr.Kind != ast.TraitKind {
+			detector.Emit(
+				"%s: unexpected %s function signature in %s type",
+				property.Loc(),
+				sig.Kind,
+				typeExpr.Kind)
+			continue
+		}
+
+		detector.processNamedSignature(sig, false)
+	}
+}
+
+func (detector *unexpectedFuncSignaturesDetector) processNamedSignature(
+	sig *ast.FuncSignature,
+	allowReceiver bool,
+) {
+	if sig.Kind == ast.AnonymousFunc {
+		detector.Emit(
+			"%s: unexpected %s function signature",
+			sig.Loc(),
+			sig.Kind)
+	} else {
+		// manual ast construction
+		if sig.Name == "" {
+			detector.Emit(
+				"%s: unexpected empty name string in function signature",
+				sig.Loc())
+		}
+	}
+
+	detector.processParameters(sig, allowReceiver)
+}
+
+func (detector *unexpectedFuncSignaturesDetector) processAnonymousSignature(
+	sig *ast.FuncSignature,
+) {
+	if sig.Kind != ast.AnonymousFunc {
+		detector.Emit(
+			"%s: unexpected %s function signature",
+			sig.Loc(),
+			sig.Kind)
+	} else {
+		// manual ast construction
+		if sig.Name != "" {
+			detector.Emit(
+				"%s: unexpected name string (%s) in function signature",
+				sig.Loc(),
+				sig.Name)
+		}
+
+		// manual ast construction
+		if sig.GenericParameters != nil {
+			detector.Emit(
+				"%s: unexpected generic parameters in function signature",
+				sig.Loc())
+		}
+	}
+
+	detector.processParameters(sig, false)
+}
+
+func (detector *unexpectedFuncSignaturesDetector) processParameters(
+	sig *ast.FuncSignature,
+	allowReceiver bool,
+) {
+	for idx, param := range sig.Parameters.Elements {
+		if param.Kind == ast.VarargParameter {
+			if idx != len(sig.Parameters.Elements)-1 {
+				detector.Emit(
+					"%s: %s parameter must be the last parameter in the list",
+					param.Loc(),
+					param.Kind)
+			}
+		} else if param.Kind == ast.ReceiverParameter {
+			if !allowReceiver {
+				detector.Emit("%s: unexpect %s parameter", param.Loc(), param.Kind)
+			} else if idx != 0 {
+				detector.Emit(
+					"%s: %s parameter must be the first argument in the list",
+					param.Loc(),
+					param.Kind)
+			}
+		}
+	}
+}
+
+func (detector *unexpectedFuncSignaturesDetector) Exit(node ast.Node) {
+}

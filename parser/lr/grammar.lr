@@ -757,11 +757,6 @@ generic_argument_list<TypeExpressionList> ->
 // Explicit/Implicit struct/enum/trait definition
 //
 
-// method signature (part of type_expr) is only usable in trait
-field_def<FieldDef> ->
-  named: IDENTIFIER type_expr |
-  unnamed: type_expr
-
 // NOTE: default_enum_field_def is only usable in enum. struct_padding is only
 // usable in struct.
 // These are checked post parsing.
@@ -770,9 +765,11 @@ field_def<FieldDef> ->
 // type).  Enum value can use "_" as type to indicate no data is associated
 // with the enum value.
 type_property<TypeProperty> ->
-  = field_def |
-  default_enum_field_def: DEFAULT field_def |
-  padding_field_def: UNDERSCORE type_expr |
+  unnamed_field: type_expr |
+  named_field: IDENTIFIER type_expr |
+  padding_field: UNDERSCORE type_expr |
+  default_named_enum_field: DEFAULT IDENTIFIER type_expr |
+  default_unnamed_enum_field: DEFAULT type_expr |
   = unsafe_stmt
 
 proper_implicit_type_properties<TypeProperties> ->
@@ -909,7 +906,6 @@ go:
     StatementList: "*github.com/pattyshack/pl/ast.StatementList"
     TypeProperty: "github.com/pattyshack/pl/ast.TypeProperty"
     TypeProperties: "*github.com/pattyshack/pl/ast.TypePropertyList"
-    FieldDef: "*github.com/pattyshack/pl/ast.FieldDef"
     ImportClause: "*github.com/pattyshack/pl/ast.ImportClause"
     ImportClauseList: "*github.com/pattyshack/pl/ast.ImportClauseList"
     UnsafeStmt: "*github.com/pattyshack/pl/ast.UnsafeStmt"

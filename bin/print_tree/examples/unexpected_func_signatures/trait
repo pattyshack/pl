@@ -1,0 +1,7 @@
+type T trait (
+  func ()  // unnamed callable field
+
+  func ok()  // method signature
+
+  func unexpectedReceiver(blah >.)
+)
