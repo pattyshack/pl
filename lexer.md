@@ -190,7 +190,6 @@ _
 
 ### Operators and punctuations
 ```
-// @ label decl and jump label
 // _ identifier
 // ' rune
 // " string
@@ -223,6 +222,7 @@ _
 ?
 !
 $[
+@
 
 ```
 

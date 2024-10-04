@@ -92,20 +92,6 @@ func (reducer *Reducer) ToStatements(
 	return expr, nil
 }
 
-func (reducer *Reducer) LabelledToStatementsExpr(
-	labelDecl *lr.TokenValue,
-	expr *ast.StatementsExpr,
-) (
-	ast.Expression,
-	error,
-) {
-	expr.StartPos = labelDecl.Loc()
-	expr.SetLabel(labelDecl.Value)
-	expr.PrependToLeading(labelDecl.TakeTrailing())
-	expr.PrependToLeading(labelDecl.TakeLeading())
-	return expr, nil
-}
-
 //
 // ImportClause
 //
@@ -295,7 +281,7 @@ func (reducer *Reducer) UnlabeledNoValueToJumpStmt(
 	ast.Statement,
 	error,
 ) {
-	return ast.NewJumpStmt(op, nil, nil), nil
+	return ast.NewJumpStmt(op, nil, nil, nil), nil
 }
 
 func (reducer *Reducer) UnlabeledValuedToJumpStmt(
@@ -305,28 +291,30 @@ func (reducer *Reducer) UnlabeledValuedToJumpStmt(
 	ast.Statement,
 	error,
 ) {
-	return ast.NewJumpStmt(op, nil, value), nil
+	return ast.NewJumpStmt(op, nil, nil, value), nil
 }
 
 func (reducer *Reducer) LabeledNoValueToJumpStmt(
 	op *lr.TokenValue,
+	at *lr.TokenValue,
 	label *lr.TokenValue,
 ) (
 	ast.Statement,
 	error,
 ) {
-	return ast.NewJumpStmt(op, label, nil), nil
+	return ast.NewJumpStmt(op, at, label, nil), nil
 }
 
 func (reducer *Reducer) LabeledValuedToJumpStmt(
 	op *lr.TokenValue,
+	at *lr.TokenValue,
 	label *lr.TokenValue,
 	value ast.Expression,
 ) (
 	ast.Statement,
 	error,
 ) {
-	return ast.NewJumpStmt(op, label, value), nil
+	return ast.NewJumpStmt(op, at, label, value), nil
 }
 
 func (reducer *Reducer) FallthroughToJumpStmt(
@@ -335,7 +323,7 @@ func (reducer *Reducer) FallthroughToJumpStmt(
 	ast.Statement,
 	error,
 ) {
-	return ast.NewJumpStmt(op, nil, nil), nil
+	return ast.NewJumpStmt(op, nil, nil, nil), nil
 }
 
 //

@@ -186,7 +186,7 @@ func (lexer *RawLexer) peekNextToken() (lr.SymbolId, string, error) {
 	case ' ', '\t':
 		return spacesToken, "", nil
 	case '@':
-		return lr.JumpLabelToken, "", nil
+		return lr.AtToken, "@", nil
 
 	case '{':
 		return lr.LbraceToken, "{", nil
@@ -1123,52 +1123,7 @@ func (lexer *RawLexer) lexStringLiteralToken(
 	}, nil
 }
 
-func (lexer *RawLexer) lexJumpLabelToken() (lr.Token, error) {
-	// Note: we can skip checking the first byte, which we alreay know is '@'
-
-	size, err := lexutil.PeekIdentifier(
-		lexer.BufferedByteLocationReader,
-		1,
-		lexer.initialPeekWindowSize)
-	if err != nil {
-		return nil, err
-	}
-
-	loc := lexer.Location
-
-	if size == 0 {
-		_, err := lexer.Discard(1)
-		if err != nil {
-			panic("Should never happen")
-		}
-
-		return lr.NewParseErrorSymbol(
-			loc, lexer.Location,
-			"%s: no label name associated with @", loc), nil
-	}
-
-	size++
-
-	jumpLabelBytes, err := lexer.Peek(size)
-	if err != nil || len(jumpLabelBytes) != size {
-		panic("Should never happen")
-	}
-
-	jumpLabel := lexer.InternBytes(jumpLabelBytes)
-
-	_, err = lexer.Discard(size)
-	if err != nil {
-		panic("Should never happen")
-	}
-
-	return &lr.TokenValue{
-		SymbolId:    lr.JumpLabelToken,
-		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
-		Value:       jumpLabel,
-	}, nil
-}
-
-func (lexer *RawLexer) lexIdentifierKeywordsOrLabelDeclToken() (
+func (lexer *RawLexer) lexIdentifierOrKeywords() (
 	*lr.TokenValue,
 	error,
 ) {
@@ -1186,14 +1141,10 @@ func (lexer *RawLexer) lexIdentifierKeywordsOrLabelDeclToken() (
 
 	symbolId := lr.IdentifierToken
 
-	peeked, _ := lexer.Peek(size + 1)
-	if size+1 == len(peeked) && peeked[size] == '@' {
-		size++
-		symbolId = lr.LabelDeclToken
-	}
+	peeked, _ := lexer.Peek(size)
 
 	loc := lexer.Location
-	value := lexer.InternBytes(peeked[:size])
+	value := lexer.InternBytes(peeked)
 
 	_, err = lexer.Discard(size)
 	if err != nil {
@@ -1328,10 +1279,8 @@ func (lexer *RawLexer) Next() (lr.Token, error) {
 			3,     // end marker length
 			true,  // allow multiline
 			false) // allow escaped
-	case lr.JumpLabelToken:
-		return lexer.lexJumpLabelToken()
 	case lr.IdentifierToken:
-		return lexer.lexIdentifierKeywordsOrLabelDeclToken()
+		return lexer.lexIdentifierOrKeywords()
 	}
 
 	panic(fmt.Sprintf("RawLexer: unhandled variable length token: %v", symbolId))

@@ -322,7 +322,6 @@ func (lexer *TerminalNewlinesLexer) Next() (lr.Token, error) {
 		case lr.IdentifierToken, lr.UnderscoreToken,
 			lr.IntegerLiteralToken, lr.StringLiteralToken,
 			lr.RuneLiteralToken, lr.FloatLiteralToken,
-			lr.JumpLabelToken,
 			lr.ReturnToken, lr.BreakToken, lr.ContinueToken, lr.FallthroughToken,
 			lr.TrueToken, lr.FalseToken,
 			lr.AddOneAssignToken, lr.SubOneAssignToken,

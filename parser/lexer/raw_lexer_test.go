@@ -290,46 +290,49 @@ func (s *RawLexerSuite) TestIdentifier(t *testing.T) {
 }
 
 func (s *RawLexerSuite) TestLabelDecl(t *testing.T) {
-	tokens := s.lex(t, "abc@", lr.LabelDeclToken)
-	expectValue(t, "abc@", tokens[0])
+	tokens := s.lex(t, "abc@", lr.IdentifierToken, lr.AtToken)
+	expectValue(t, "abc", tokens[0])
 
 	testId := ""
 	// Test in loop to check for peek window resizing
 	for i := 0; i < 151; i++ {
 		testId += testIdxChar(i)
-		tokens := s.lex(t, "+"+testId+"@", lr.AddToken, lr.LabelDeclToken)
-		expectValue(t, testId+"@", tokens[1])
+		tokens := s.lex(
+			t, "+"+testId+"@",
+			lr.AddToken, lr.IdentifierToken, lr.AtToken)
+		expectValue(t, testId, tokens[1])
 
 		tokens = s.lex(
 			t, "+"+testId+"@-",
-			lr.AddToken, lr.LabelDeclToken, lr.SubToken)
-		expectValue(t, testId+"@", tokens[1])
+			lr.AddToken, lr.IdentifierToken, lr.AtToken, lr.SubToken)
+		expectValue(t, testId, tokens[1])
 	}
 
-	tokens = s.lex(t, "+世界@", lr.AddToken, lr.LabelDeclToken)
-	expectValue(t, "世界@", tokens[1])
+	tokens = s.lex(t, "+世界@", lr.AddToken, lr.IdentifierToken, lr.AtToken)
+	expectValue(t, "世界", tokens[1])
 
-	tokens = s.lex(t, "+世界@-", lr.AddToken, lr.LabelDeclToken, lr.SubToken)
-	expectValue(t, "世界@", tokens[1])
+	tokens = s.lex(t, "+世界@-",
+		lr.AddToken, lr.IdentifierToken, lr.AtToken, lr.SubToken)
+	expectValue(t, "世界", tokens[1])
 }
 
 func (s *RawLexerSuite) TestJumpLabel(t *testing.T) {
-	tokens := s.lex(t, "@abc", lr.JumpLabelToken)
-	expectValue(t, "@abc", tokens[0])
+	tokens := s.lex(t, "@abc", lr.AtToken, lr.IdentifierToken)
+	expectValue(t, "abc", tokens[1])
 
-	tokens = s.lex(t, "+@-", lr.AddToken, lr.ParseErrorToken, lr.SubToken)
-	expectError(t, tokens[1], "no label name associated with @")
+	s.lex(t, "+@-", lr.AddToken, lr.AtToken, lr.SubToken)
+
+	s.lex(
+		t, "@0abc",
+		lr.AtToken, lr.IntegerLiteralToken, lr.IdentifierToken)
+
+	tokens = s.lex(t, "+@label", lr.AddToken, lr.AtToken, lr.IdentifierToken)
+	expectValue(t, "label", tokens[2])
 
 	tokens = s.lex(
-		t, "@0abc",
-		lr.ParseErrorToken, lr.IntegerLiteralToken, lr.IdentifierToken)
-	expectError(t, tokens[0], "no label name associated with @")
-
-	tokens = s.lex(t, "+@label", lr.AddToken, lr.JumpLabelToken)
-	expectValue(t, "@label", tokens[1])
-
-	tokens = s.lex(t, "+@label-", lr.AddToken, lr.JumpLabelToken, lr.SubToken)
-	expectValue(t, "@label", tokens[1])
+		t, "+@label-",
+		lr.AddToken, lr.AtToken, lr.IdentifierToken, lr.SubToken)
+	expectValue(t, "label", tokens[2])
 }
 
 func (s *RawLexerSuite) TestKeywordTokens(t *testing.T) {

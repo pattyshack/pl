@@ -32,8 +32,7 @@
 
 %token<Value> NOT AND OR
 
-%token<Value> LABEL_DECL // <identifier>@
-%token<Value> JUMP_LABEL // @<identifier>
+%token<Value> AT
 
 %token<Value> LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
 %token<Value> DOT COMMA QUESTION SEMICOLON COLON EXCLAIM
@@ -124,8 +123,8 @@ unsafe_stmt<UnsafeStmt> ->
 jump_stmt<Statement> ->
   unlabeled_no_value: jump_op |
   unlabeled_valued: jump_op returnable_expr |
-  labeled_no_value: jump_op JUMP_LABEL |
-  labeled_valued: jump_op JUMP_LABEL returnable_expr |
+  labeled_no_value: jump_op AT IDENTIFIER |
+  labeled_valued: jump_op AT IDENTIFIER returnable_expr |
   // Only applicable to switch case block (must be the last statement in the
   // case branch)
   FALLTHROUGH
@@ -513,7 +512,7 @@ unlabelled_control_flow_expr<ControlFlowExpr> ->
 
 control_flow_expr<ControlFlowExpr> ->
   = unlabelled_control_flow_expr |
-  labelled: LABEL_DECL unlabelled_control_flow_expr
+  labelled: IDENTIFIER AT unlabelled_control_flow_expr
 
 expr<Expression> ->
   = assign_op_expr |

@@ -72,6 +72,7 @@ func (stmt *JumpStmt) Walk(visitor Visitor) {
 
 func NewJumpStmt(
 	op TokenValue,
+	atToken TokenValue,
 	labelToken TokenValue,
 	value Expression,
 ) *JumpStmt {
@@ -84,6 +85,8 @@ func NewJumpStmt(
 	if labelToken != nil {
 		label = labelToken.Val()
 		end = labelToken.End()
+		trailing.Append(atToken.TakeLeading())
+		trailing.Append(atToken.TakeTrailing())
 		trailing.Append(labelToken.TakeLeading())
 		trailing.Append(labelToken.TakeTrailing())
 	}

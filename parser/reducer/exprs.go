@@ -1104,12 +1104,15 @@ func (reducer *Reducer) ToForLoopBody(
 
 func (Reducer) LabelledToControlFlowExpr(
 	label *lr.TokenValue,
+	at *lr.TokenValue,
 	expr ast.ControlFlowExpr,
 ) (
 	ast.ControlFlowExpr,
 	error,
 ) {
 	expr.SetLabel(label.Value)
+	expr.PrependToLeading(at.TakeTrailing())
+	expr.PrependToLeading(at.TakeLeading())
 	expr.PrependToLeading(label.TakeTrailing())
 	expr.PrependToLeading(label.TakeLeading())
 	return expr, nil

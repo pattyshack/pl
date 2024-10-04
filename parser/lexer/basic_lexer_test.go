@@ -272,10 +272,14 @@ func (s *TerminalNewlinesLexerSuite) TestLiteral(t *testing.T) {
 }
 
 func (s *TerminalNewlinesLexerSuite) TestJumps(t *testing.T) {
-	s.lex(t, "return @label\n}",
-		lr.ReturnToken, lr.JumpLabelToken, lr.NewlinesToken, lr.RbraceToken)
-	s.lex(t, "return @label // comment \n}",
-		lr.ReturnToken, lr.JumpLabelToken, lr.NewlinesToken, lr.RbraceToken)
+	s.lex(
+		t, "return @label\n}",
+		lr.ReturnToken, lr.AtToken, lr.IdentifierToken, lr.NewlinesToken,
+		lr.RbraceToken)
+	s.lex(
+		t, "return @label // comment \n}",
+		lr.ReturnToken, lr.AtToken, lr.IdentifierToken, lr.NewlinesToken,
+		lr.RbraceToken)
 	s.lex(t, "return\n}", lr.ReturnToken, lr.NewlinesToken, lr.RbraceToken)
 	s.lex(t, "break\n}", lr.BreakToken, lr.NewlinesToken, lr.RbraceToken)
 	s.lex(t, "continue\n}", lr.ContinueToken, lr.NewlinesToken, lr.RbraceToken)
