@@ -221,18 +221,11 @@ func (expr *PropertiesTypeExpr) Validate(emitter *lexutil.ErrorEmitter) {
 
 type FuncSignatureKind string
 
-const (
-	AnonymousFunc = FuncSignatureKind("anonymous")
-	NamedFunc     = FuncSignatureKind("named")
-)
-
 type FuncSignature struct {
 	IsTypeExpr
 	IsTypeProp
 	StartEndPos
 	LeadingTrailingComments
-
-	Kind FuncSignatureKind
 
 	// Optional. Only used by named signature
 	Name string

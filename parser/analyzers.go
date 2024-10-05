@@ -191,7 +191,11 @@ func (detector *unexpectedFuncSignaturesDetector) processStatements(
 		}
 
 		detector.processed[def.Signature] = struct{}{}
-		detector.processNamedSignature(def.Signature, true)
+		if def.Signature.Name != "" {
+			detector.processNamedSignature(def.Signature, true)
+		} else {
+			detector.processAnonymousSignature(def.Signature)
+		}
 	}
 }
 
@@ -214,18 +218,8 @@ func (detector *unexpectedFuncSignaturesDetector) processNamedSignature(
 	sig *ast.FuncSignature,
 	allowReceiver bool,
 ) {
-	if sig.Kind == ast.AnonymousFunc {
-		detector.Emit(
-			sig.Loc(),
-			"unexpected %s function signature",
-			sig.Kind)
-	} else {
-		// manual ast construction
-		if sig.Name == "" {
-			detector.Emit(
-				sig.Loc(),
-				"unexpected empty name string in function signature")
-		}
+	if sig.Name == "" {
+		detector.Emit(sig.Loc(), "unexpected anonymous function signature")
 	}
 
 	detector.processParameters(sig, allowReceiver)
@@ -234,26 +228,13 @@ func (detector *unexpectedFuncSignaturesDetector) processNamedSignature(
 func (detector *unexpectedFuncSignaturesDetector) processAnonymousSignature(
 	sig *ast.FuncSignature,
 ) {
-	if sig.Kind != ast.AnonymousFunc {
+	if sig.Name != "" {
+		detector.Emit(sig.Loc(), "unexpected named function signature")
+	} else if sig.GenericParameters != nil {
+		// manual ast construction
 		detector.Emit(
 			sig.Loc(),
-			"unexpected %s function signature",
-			sig.Kind)
-	} else {
-		// manual ast construction
-		if sig.Name != "" {
-			detector.Emit(
-				sig.Loc(),
-				"unexpected name string (%s) in function signature",
-				sig.Name)
-		}
-
-		// manual ast construction
-		if sig.GenericParameters != nil {
-			detector.Emit(
-				sig.Loc(),
-				"unexpected generic parameters in function signature")
-		}
+			"unexpected generic parameters in function signature")
 	}
 
 	detector.processParameters(sig, false)

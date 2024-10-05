@@ -49,7 +49,7 @@ func (reducer Reducer) UnnamedFieldToTypeProperty(
 	error,
 ) {
 	sig, ok := typeExpr.(*ast.FuncSignature)
-	if ok && sig.Kind == ast.NamedFunc {
+	if ok && sig.Name != "" {
 		return sig, nil
 	}
 

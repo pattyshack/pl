@@ -5,7 +5,7 @@
 
   x = func(bad >.) {}
 
-  func () {}  // unexpected anon func
+  func () {}  // anon func expr
 }
 
 func wrongOrderReceiver(i int, bad >Recv) {}

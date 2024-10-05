@@ -30,7 +30,6 @@ func (reducer *Reducer) AnonymousToFuncSignature(
 
 	sig := &ast.FuncSignature{
 		StartEndPos: ast.NewStartEndPos(funcKW.Loc(), end.End()),
-		Kind:        ast.AnonymousFunc,
 		Parameters:  parameters,
 		ReturnType:  returnType,
 	}
@@ -67,7 +66,6 @@ func (reducer *Reducer) NamedToFuncSignature(
 
 	sig := &ast.FuncSignature{
 		StartEndPos:       ast.NewStartEndPos(funcKW.Loc(), end.End()),
-		Kind:              ast.NamedFunc,
 		Name:              name.Value,
 		GenericParameters: genericParameters,
 		Parameters:        parameters,

@@ -239,7 +239,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			"Property",
 			len(node.Properties))
 	case *ast.FuncSignature:
-		printer.write("[FuncSignature: Kind=%s Name=%s", node.Kind, node.Name)
+		printer.write("[FuncSignature: Name=%s", node.Name)
 		labels := []string{}
 		if node.GenericParameters != nil {
 			labels = append(labels, "GenericParameters=")
