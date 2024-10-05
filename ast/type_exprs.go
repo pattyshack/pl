@@ -202,7 +202,7 @@ func (expr *PropertiesTypeExpr) Validate(emitter *lexutil.ErrorEmitter) {
 				}
 			}
 
-			if prop.Kind == PaddingFieldDef && expr.Kind != StructKind {
+			if prop.IsPadding() && expr.Kind != StructKind {
 				emitter.Emit(p.Loc(), "unexpected field padding")
 			}
 		case *FuncSignature:

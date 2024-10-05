@@ -4,24 +4,23 @@ package ast
 // FieldDef
 //
 
-type FieldDefKind string
-
-const (
-	NamedFieldDef   = FieldDefKind("named")
-	UnnamedFieldDef = FieldDefKind("unnamed")
-	PaddingFieldDef = FieldDefKind("padding")
-)
-
 type FieldDef struct {
 	IsTypeProp
 	StartEndPos
 	LeadingTrailingComments
 
-	Kind      FieldDefKind
 	IsDefault bool
 
 	Name string // Could be identifier, underscore, or ""
 	Type TypeExpression
+}
+
+func (def *FieldDef) IsUnnamed() bool {
+	return def.Name == ""
+}
+
+func (def *FieldDef) IsPadding() bool {
+	return def.Name == "_"
 }
 
 var _ TypeProperty = &FieldDef{}

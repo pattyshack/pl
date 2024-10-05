@@ -14,7 +14,6 @@ func (Reducer) unnamedField(
 ) *ast.FieldDef {
 	def := &ast.FieldDef{
 		StartEndPos: ast.NewStartEndPos(typeExpr.Loc(), typeExpr.End()),
-		Kind:        ast.UnnamedFieldDef,
 		Type:        typeExpr,
 	}
 
@@ -30,7 +29,6 @@ func (Reducer) namedField(
 ) *ast.FieldDef {
 	def := &ast.FieldDef{
 		StartEndPos: ast.NewStartEndPos(name.Loc(), typeExpr.End()),
-		Kind:        ast.NamedFieldDef,
 		Name:        name.Value,
 		Type:        typeExpr,
 	}
@@ -73,9 +71,7 @@ func (reducer Reducer) PaddingFieldToTypeProperty(
 	ast.TypeProperty,
 	error,
 ) {
-	def := reducer.namedField(underscore, typeExpr)
-	def.Kind = ast.PaddingFieldDef
-	return def, nil
+	return reducer.namedField(underscore, typeExpr), nil
 }
 
 func (reducer Reducer) DefaultNamedEnumFieldToTypeProperty(
