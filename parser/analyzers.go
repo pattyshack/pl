@@ -147,47 +147,6 @@ func (detector *unexpectedStatementsDetector) checkExprStmts(
 func (detector *unexpectedStatementsDetector) Exit(node ast.Node) {
 }
 
-// This verifies:
-//   - default branch (if existing) is the last branch
-type unexpectedDefaultBranchesDetector struct {
-	lexutil.ErrorEmitter
-}
-
-func detectUnexpectedDefaultBranches() ast.Pass {
-	return &unexpectedDefaultBranchesDetector{}
-}
-
-func (detector *unexpectedDefaultBranchesDetector) Process(node ast.Node) {
-	node.Walk(detector)
-}
-
-func (detector *unexpectedDefaultBranchesDetector) Enter(node ast.Node) {
-	switch expr := node.(type) {
-	case *ast.IfExpr:
-		detector.checkBranches(expr.ConditionBranches)
-	case *ast.SwitchExpr:
-		detector.checkBranches(expr.ConditionBranches)
-	case *ast.SelectExpr:
-		detector.checkBranches(expr.ConditionBranches)
-	}
-}
-
-func (detector *unexpectedDefaultBranchesDetector) checkBranches(
-	condBranches []*ast.ConditionBranchStmt,
-) {
-	last := len(condBranches) - 1
-	for idx, branch := range condBranches {
-		if branch.IsDefaultBranch {
-			if idx != last {
-				detector.Emit(branch.Loc(), "default branch is not the last branch")
-			}
-		}
-	}
-}
-
-func (detector *unexpectedDefaultBranchesDetector) Exit(node ast.Node) {
-}
-
 type unexpectedFuncSignaturesDetector struct {
 	processed map[*ast.FuncSignature]struct{}
 

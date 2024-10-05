@@ -397,6 +397,19 @@ func (expr *StatementsExpr) Validate(emitter *lexutil.ErrorEmitter) {
 // IfExpr
 //
 
+func validateDefaultBranch(
+	emitter *lexutil.ErrorEmitter,
+	branches []*ConditionBranchStmt,
+) {
+	for idx, branch := range branches {
+		if branch.IsDefaultBranch {
+			if idx != len(branches)-1 {
+				emitter.Emit(branch.Loc(), "default branch is not the last branch")
+			}
+		}
+	}
+}
+
 type IfExpr struct {
 	IsExpr
 	StartEndPos
@@ -407,6 +420,7 @@ type IfExpr struct {
 }
 
 var _ Expression = &IfExpr{}
+var _ Validator = &IfExpr{}
 
 func (expr *IfExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
@@ -414,6 +428,10 @@ func (expr *IfExpr) Walk(visitor Visitor) {
 		condBranch.Walk(visitor)
 	}
 	visitor.Exit(expr)
+}
+
+func (expr *IfExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	validateDefaultBranch(emitter, expr.ConditionBranches)
 }
 
 //
@@ -431,6 +449,7 @@ type SwitchExpr struct {
 }
 
 var _ Expression = &SwitchExpr{}
+var _ Validator = &SwitchExpr{}
 
 func (expr *SwitchExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
@@ -439,6 +458,10 @@ func (expr *SwitchExpr) Walk(visitor Visitor) {
 		condBranch.Walk(visitor)
 	}
 	visitor.Exit(expr)
+}
+
+func (expr *SwitchExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	validateDefaultBranch(emitter, expr.ConditionBranches)
 }
 
 //
@@ -455,6 +478,7 @@ type SelectExpr struct {
 }
 
 var _ Expression = &SelectExpr{}
+var _ Validator = &SelectExpr{}
 
 func (expr *SelectExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
@@ -462,6 +486,10 @@ func (expr *SelectExpr) Walk(visitor Visitor) {
 		condBranch.Walk(visitor)
 	}
 	visitor.Exit(expr)
+}
+
+func (expr *SelectExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	validateDefaultBranch(emitter, expr.ConditionBranches)
 }
 
 //

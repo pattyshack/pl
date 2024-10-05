@@ -164,7 +164,6 @@ func Validate(node ast.Node) []error {
 			validateNodes(),
 			detectUnexpectedFuncSignatures(),
 			detectUnexpectedStatements(),
-			detectUnexpectedDefaultBranches(),
 		},
 	}
 
