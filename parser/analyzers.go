@@ -205,12 +205,7 @@ func (detector *unexpectedFuncSignaturesDetector) processPropertiesTypeExpr(
 		}
 
 		detector.processed[sig] = struct{}{}
-
-		if typeExpr.Kind != ast.TraitKind {
-			// NOTE: unexpected method signature error is emitted by nodeValidator
-			continue
-		}
-
+		// NOTE: valid anonymous signatures are wrapped by FieldDef
 		detector.processNamedSignature(sig, false)
 	}
 }
