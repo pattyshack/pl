@@ -47,10 +47,22 @@ type LiteralExpr struct {
 }
 
 var _ Expression = &LiteralExpr{}
+var _ Validator = &LiteralExpr{}
 
 func (expr *LiteralExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	visitor.Exit(expr)
+}
+
+func (expr *LiteralExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	switch expr.Kind {
+	case BoolLiteral, IntLiteral, FloatLiteral, RuneLiteral, StringLiteral: // ok
+	default:
+		emitter.Emit(
+			expr.Loc(),
+			"invalid ast construction. unexpected literal kind (%s)",
+			expr.Kind)
+	}
 }
 
 //
@@ -129,11 +141,37 @@ type UnaryExpr struct {
 }
 
 var _ Expression = &UnaryExpr{}
+var _ Validator = &UnaryExpr{}
 
 func (expr *UnaryExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Operand.Walk(visitor)
 	visitor.Exit(expr)
+}
+
+func (expr *UnaryExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	switch expr.Op {
+	case UnaryReturnDefaultEnumOp,
+		UnaryPanicOnDefaultEnumOp,
+		UnaryAssignAddOneOp,
+		UnaryAssignSubOneOp,
+		UnaryNotOp,
+		UnaryBitwiseComplementOp,
+		UnaryPlusOp,
+		UnaryMinusOp,
+		UnaryDerefOp,
+		UnaryRefOp,
+		UnaryAsyncOp,
+		UnaryDeferOp,
+		UnaryAssignToOp,
+		UnaryRecvOp:
+		// ok
+	default:
+		emitter.Emit(
+			expr.Loc(),
+			"invalid ast construction. unexpected unary op (%s)",
+			expr.Op)
+	}
 }
 
 //
@@ -185,12 +223,53 @@ type BinaryExpr struct {
 }
 
 var _ Expression = &BinaryExpr{}
+var _ Validator = &BinaryExpr{}
 
 func (expr *BinaryExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Left.Walk(visitor)
 	expr.Right.Walk(visitor)
 	visitor.Exit(expr)
+}
+
+func (expr *BinaryExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	switch expr.Op {
+	case BinaryAddOp,
+		BinarySubOp,
+		BinaryMulOp,
+		BinaryDivOp,
+		BinaryModOp,
+		BinaryBitAndOp,
+		BinaryBitOrOp,
+		BinaryBitXorOp,
+		BinaryBitLshiftOp,
+		BinaryBitRshiftOp,
+		BinaryEqualOp,
+		BinaryNotEqualOp,
+		BinaryLessOp,
+		BinaryLessOrEqualOp,
+		BinaryGreaterOp,
+		BinaryGreaterOrEqualOp,
+		BinaryAndOp,
+		BinaryOrOp,
+		BinarySendOp,
+		BinaryAddAssignOp,
+		BinarySubAssignOp,
+		BinaryMulAssignOp,
+		BinaryDivAssignOp,
+		BinaryModAssignOp,
+		BinaryBitAndAssignOp,
+		BinaryBitOrAssignOp,
+		BinaryBitXorAssignOp,
+		BinaryBitLshiftAssignOp,
+		BinaryBitRshiftAssignOp:
+		//ok
+	default:
+		emitter.Emit(
+			expr.Loc(),
+			"invalid ast construction. unexpected binary op (%s)",
+			expr.Op)
+	}
 }
 
 //
@@ -221,6 +300,7 @@ type ImplicitStructExpr struct {
 }
 
 var _ Expression = &ImplicitStructExpr{}
+var _ Validator = &ImplicitStructExpr{}
 
 func (expr *ImplicitStructExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
@@ -228,6 +308,17 @@ func (expr *ImplicitStructExpr) Walk(visitor Visitor) {
 		arg.Walk(visitor)
 	}
 	visitor.Exit(expr)
+}
+
+func (expr *ImplicitStructExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	switch expr.Kind {
+	case ProperImplicitStruct, ImproperImplicitStruct, ColonImplicitStruct: // ok
+	default:
+		emitter.Emit(
+			expr.Loc(),
+			"invalid ast construction. unexpected implicit struct expr kind (%s)",
+			expr.Kind)
+	}
 }
 
 //
@@ -546,18 +637,32 @@ func (expr *LoopExpr) Walk(visitor Visitor) {
 }
 
 func (expr *LoopExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	switch expr.Kind {
+	case InfiniteLoop,
+		DoWhileLoop,
+		WhileLoop,
+		IteratorLoop,
+		ForLoop:
+		// ok
+	default:
+		emitter.Emit(
+			expr.Loc(),
+			"invalid ast construction.  unexpected loop kind (%s)",
+			expr.Kind)
+	}
+
 	if expr.Kind != ForLoop {
 		if expr.Init != nil {
 			emitter.Emit(
 				expr.Init.Loc(),
-				"invalid manual ast construction. init statement set in %s loop",
+				"invalid ast construction. init statement set in %s loop",
 				expr.Kind)
 		}
 
 		if expr.Post != nil {
 			emitter.Emit(
 				expr.Post.Loc(),
-				"invalid manual ast construction. post statement set in %s loop",
+				"invalid ast construction. post statement set in %s loop",
 				expr.Kind)
 		}
 	}
@@ -566,7 +671,7 @@ func (expr *LoopExpr) Validate(emitter *lexutil.ErrorEmitter) {
 		if expr.Condition != nil {
 			emitter.Emit(
 				expr.Condition.Loc(),
-				"invalid manual ast construction. condition expression set in %s loop",
+				"invalid ast construction. condition expression set in %s loop",
 				expr.Kind)
 		}
 		return
@@ -575,7 +680,7 @@ func (expr *LoopExpr) Validate(emitter *lexutil.ErrorEmitter) {
 	if expr.Condition == nil {
 		emitter.Emit(
 			expr.Loc(),
-			"invalid manual ast construction. nil condition expression in %s loop",
+			"invalid ast construction. nil condition expression in %s loop",
 			expr.Kind)
 		return
 	}
@@ -588,7 +693,7 @@ func (expr *LoopExpr) Validate(emitter *lexutil.ErrorEmitter) {
 	if !ok || assign.Kind != InAssign {
 		emitter.Emit(
 			expr.Condition.Loc(),
-			"invalid manual ast construction. condition expresion set in %s loop",
+			"invalid ast construction. condition expresion set in %s loop",
 			expr.Kind)
 	}
 }

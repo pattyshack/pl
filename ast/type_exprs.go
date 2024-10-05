@@ -115,6 +115,14 @@ func (expr *NamedTypeExpr) Walk(visitor Visitor) {
 
 type UnaryTypeOp string
 
+const (
+	ReturnOnDefaultTypeOp          = UnaryTypeOp("?")
+	PanicOnDefaultTypeOp           = UnaryTypeOp("!")
+	ReferenceTypeOp                = UnaryTypeOp("&")
+	AllPublicMethodsTraitTypeOp    = UnaryTypeOp("~")
+	AllPublicPropertiesTraitTypeOp = UnaryTypeOp("~~")
+)
+
 type UnaryTypeExpr struct {
 	IsTypeExpr
 	StartEndPos
@@ -124,10 +132,29 @@ type UnaryTypeExpr struct {
 	Operand TypeExpression
 }
 
+var _ TypeExpression = &UnaryTypeExpr{}
+var _ Validator = &UnaryTypeExpr{}
+
 func (expr *UnaryTypeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Operand.Walk(visitor)
 	visitor.Exit(expr)
+}
+
+func (expr *UnaryTypeExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	switch expr.Op {
+	case ReturnOnDefaultTypeOp,
+		PanicOnDefaultTypeOp,
+		ReferenceTypeOp,
+		AllPublicMethodsTraitTypeOp,
+		AllPublicPropertiesTraitTypeOp:
+		// ok
+	default:
+		emitter.Emit(
+			expr.Loc(),
+			"invalid ast construction. unexpected unary type expr op (%s)",
+			expr.Op)
+	}
 }
 
 //
@@ -135,6 +162,12 @@ func (expr *UnaryTypeExpr) Walk(visitor Visitor) {
 //
 
 type BinaryTypeOp string
+
+const (
+	TraitIntersectTypeOp  = BinaryTypeOp("*")
+	TraitUnionTypeOp      = BinaryTypeOp("+")
+	TraitDifferenceTypeOp = BinaryTypeOp("-")
+)
 
 type BinaryTypeExpr struct {
 	IsTypeExpr
@@ -146,11 +179,25 @@ type BinaryTypeExpr struct {
 	Right TypeExpression
 }
 
+var _ TypeExpression = &BinaryTypeExpr{}
+var _ Validator = &BinaryTypeExpr{}
+
 func (expr *BinaryTypeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Left.Walk(visitor)
 	expr.Right.Walk(visitor)
 	visitor.Exit(expr)
+}
+
+func (expr *BinaryTypeExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	switch expr.Op {
+	case TraitIntersectTypeOp, TraitUnionTypeOp, TraitDifferenceTypeOp: // ok
+	default:
+		emitter.Emit(
+			expr.Loc(),
+			"invalid ast construction. unexpected binary type expr op (%s)",
+			expr.Op)
+	}
 }
 
 //
@@ -189,6 +236,15 @@ func (expr *PropertiesTypeExpr) Walk(visitor Visitor) {
 }
 
 func (expr *PropertiesTypeExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	switch expr.Kind {
+	case StructKind, EnumKind, TraitKind: // ok
+	default:
+		emitter.Emit(
+			expr.Loc(),
+			"invalid ast construction. unexpected properties type expr kind (%s)",
+			expr.Kind)
+	}
+
 	defaultCount := 0
 	for _, p := range expr.Properties {
 		switch prop := p.(type) {
@@ -218,8 +274,6 @@ func (expr *PropertiesTypeExpr) Validate(emitter *lexutil.ErrorEmitter) {
 //
 // FuncSignature
 //
-
-type FuncSignatureKind string
 
 type FuncSignature struct {
 	IsTypeExpr

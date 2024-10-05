@@ -1,5 +1,9 @@
 package ast
 
+import (
+	"github.com/pattyshack/gt/lexutil"
+)
+
 //
 // AssignPattern
 //
@@ -23,12 +27,24 @@ type AssignPattern struct {
 }
 
 var _ Expression = &AssignPattern{}
+var _ Validator = &AssignPattern{}
 
 func (assign *AssignPattern) Walk(visitor Visitor) {
 	visitor.Enter(assign)
 	assign.Pattern.Walk(visitor)
 	assign.Value.Walk(visitor)
 	visitor.Exit(assign)
+}
+
+func (assign *AssignPattern) Validate(emitter *lexutil.ErrorEmitter) {
+	switch assign.Kind {
+	case EqualAssign, InAssign:
+	default:
+		emitter.Emit(
+			assign.Loc(),
+			"invalid ast construction. unexpected assign pattern kind (%s)",
+			assign.Kind)
+	}
 }
 
 //
@@ -76,6 +92,7 @@ type AddressPattern struct {
 }
 
 var _ Expression = &AddressPattern{}
+var _ Validator = &AddressPattern{}
 
 func NewAddressPattern(
 	varType TokenValue,
@@ -107,6 +124,17 @@ func (pattern *AddressPattern) Walk(visitor Visitor) {
 		pattern.Type.Walk(visitor)
 	}
 	visitor.Exit(pattern)
+}
+
+func (pattern *AddressPattern) Validate(emitter *lexutil.ErrorEmitter) {
+	switch pattern.Kind {
+	case VarAddressDecl, LetAddressDecl, AssignToAddress:
+	default:
+		emitter.Emit(
+			pattern.Loc(),
+			"invalid ast construction. unexpected address pattern kind (%s)",
+			pattern.Kind)
+	}
 }
 
 //

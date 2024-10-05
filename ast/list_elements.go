@@ -81,11 +81,24 @@ type Parameter struct {
 }
 
 var _ Node = &Parameter{}
+var _ Validator = &Parameter{}
 
 func (param *Parameter) Walk(visitor Visitor) {
 	visitor.Enter(param)
 	param.Type.Walk(visitor)
 	visitor.Exit(param)
+}
+
+func (param *Parameter) Validate(emitter *lexutil.ErrorEmitter) {
+	switch param.Kind {
+	case SingularParameter, ReceiverParameter, VariadicParameter:
+		// ok
+	default:
+		emitter.Emit(
+			param.Loc(),
+			"invalid ast construction. unexpected parameter kind (%s)",
+			param.Kind)
+	}
 }
 
 //
@@ -125,11 +138,20 @@ func (arg *Argument) Walk(visitor Visitor) {
 }
 
 func (arg *Argument) Validate(emitter *lexutil.ErrorEmitter) {
-	if arg.Name != "" && arg.Kind != SingularArgument {
-		// manual ast construction
+	switch arg.Kind {
+	case SingularArgument, VariadicArgument, SkipPatternArgument:
+		// ok
+	default:
 		emitter.Emit(
 			arg.Loc(),
-			"invalid manual ast construction. name set in %s argument",
+			"invalid ast construction. unexpected argument kind (%s)",
+			arg.Kind)
+	}
+
+	if arg.Name != "" && arg.Kind != SingularArgument {
+		emitter.Emit(
+			arg.Loc(),
+			"invalid ast construction. name set in %s argument",
 			arg.Kind)
 	}
 
@@ -137,13 +159,13 @@ func (arg *Argument) Validate(emitter *lexutil.ErrorEmitter) {
 		if arg.Kind != SkipPatternArgument {
 			emitter.Emit(
 				arg.Loc(),
-				"invalid manual ast construction. expression not set in %s argument",
+				"invalid ast construction. expression not set in %s argument",
 				arg.Kind)
 		}
 	} else if arg.Kind == SkipPatternArgument {
 		emitter.Emit(
 			arg.Loc(),
-			"invalid manual ast construction. expression set in %s argument",
+			"invalid ast construction. expression set in %s argument",
 			arg.Kind)
 	}
 }

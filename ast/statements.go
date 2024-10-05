@@ -1,5 +1,9 @@
 package ast
 
+import (
+	"github.com/pattyshack/gt/lexutil"
+)
+
 //
 // ImportClause
 //
@@ -65,6 +69,7 @@ type JumpStmt struct {
 }
 
 var _ Statement = &JumpStmt{}
+var _ Validator = &JumpStmt{}
 
 func (stmt *JumpStmt) Walk(visitor Visitor) {
 	visitor.Enter(stmt)
@@ -72,6 +77,17 @@ func (stmt *JumpStmt) Walk(visitor Visitor) {
 		stmt.Value.Walk(visitor)
 	}
 	visitor.Exit(stmt)
+}
+
+func (stmt *JumpStmt) Validate(emitter *lexutil.ErrorEmitter) {
+	switch stmt.Op {
+	case FallthroughOp, ReturnOp, ContinueOp, BreakOp: // ok
+	default:
+		emitter.Emit(
+			stmt.Loc(),
+			"invalid ast construction. unexpected jump statement kind (%s)",
+			stmt.Op)
+	}
 }
 
 func NewJumpStmt(
