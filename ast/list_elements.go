@@ -1,5 +1,9 @@
 package ast
 
+import (
+	"github.com/pattyshack/gt/lexutil"
+)
+
 //
 // FieldDef
 //
@@ -72,7 +76,7 @@ type Parameter struct {
 
 	Kind ParameterKind
 
-	Name string // optional. NOTE: "_" is converted to ""
+	Name string // either a real name, or "". NOTE: "_" is converted to ""
 	Type TypeExpression
 }
 
@@ -80,9 +84,7 @@ var _ Node = &Parameter{}
 
 func (param *Parameter) Walk(visitor Visitor) {
 	visitor.Enter(param)
-	if param.Type != nil {
-		param.Type.Walk(visitor)
-	}
+	param.Type.Walk(visitor)
 	visitor.Exit(param)
 }
 
@@ -107,11 +109,12 @@ type Argument struct {
 
 	Name string // only used by named singular argument
 
-	// NOTE: Expr may be nil for SkipPatternArgument
+	// NOTE: Expr is nil for SkipPatternArgument
 	Expr Expression
 }
 
 var _ Node = &Argument{}
+var _ Validator = &Argument{}
 
 func (arg *Argument) Walk(visitor Visitor) {
 	visitor.Enter(arg)
@@ -119,6 +122,23 @@ func (arg *Argument) Walk(visitor Visitor) {
 		arg.Expr.Walk(visitor)
 	}
 	visitor.Exit(arg)
+}
+
+func (arg *Argument) Validate(emitter *lexutil.ErrorEmitter) {
+	if arg.Name != "" && arg.Kind != SingularArgument {
+		// manual ast construction
+		emitter.Emit(arg.Loc(), "unexpected name set in %s argument", arg.Kind)
+	}
+
+	if arg.Expr == nil {
+		if arg.Kind != SkipPatternArgument {
+			// manual ast construction
+			emitter.Emit(arg.Loc(), "expression not set in %s argument", arg.Kind)
+		}
+	} else if arg.Kind == SkipPatternArgument {
+		// manual ast construction
+		emitter.Emit(arg.Loc(), "invalid expression set in %s argument", arg.Kind)
+	}
 }
 
 func NewPositionalArgument(expr Expression) *Argument {
