@@ -61,9 +61,9 @@ func (param *GenericParameter) Walk(visitor Visitor) {
 type ParameterKind string
 
 const (
-	ArgParameter      = ParameterKind("arg")
+	SingularParameter = ParameterKind("singular")
 	ReceiverParameter = ParameterKind("receiver")
-	VarargParameter   = ParameterKind("vararg")
+	VariadicParameter = ParameterKind("variadic")
 )
 
 type Parameter struct {

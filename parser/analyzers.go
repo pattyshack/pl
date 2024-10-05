@@ -245,7 +245,7 @@ func (detector *unexpectedFuncSignaturesDetector) processParameters(
 	allowReceiver bool,
 ) {
 	for idx, param := range sig.Parameters.Elements {
-		if param.Kind == ast.VarargParameter {
+		if param.Kind == ast.VariadicParameter {
 			if idx != len(sig.Parameters.Elements)-1 {
 				detector.Emit(
 					param.Loc(),

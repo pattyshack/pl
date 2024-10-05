@@ -18,7 +18,7 @@ func (reducer *Reducer) NamedArgToParameter(
 ) {
 	param := &ast.Parameter{
 		StartEndPos: ast.NewStartEndPos(name.Loc(), typeExpr.End()),
-		Kind:        ast.ArgParameter,
+		Kind:        ast.SingularParameter,
 		Name:        name.Value,
 		Type:        typeExpr,
 	}
@@ -62,7 +62,7 @@ func (reducer *Reducer) NamedVarargToParameter(
 ) {
 	param := &ast.Parameter{
 		StartEndPos: ast.NewStartEndPos(name.Loc(), typeExpr.End()),
-		Kind:        ast.VarargParameter,
+		Kind:        ast.VariadicParameter,
 		Name:        name.Value,
 		Type:        typeExpr,
 	}
@@ -85,7 +85,7 @@ func (reducer *Reducer) IgnoreArgToParameter(
 ) {
 	param := &ast.Parameter{
 		StartEndPos: ast.NewStartEndPos(underscore.Loc(), typeExpr.End()),
-		Kind:        ast.ArgParameter,
+		Kind:        ast.SingularParameter,
 		Type:        typeExpr,
 	}
 	param.LeadingComment = underscore.TakeLeading()
@@ -127,7 +127,7 @@ func (reducer *Reducer) IgnoreVarargToParameter(
 ) {
 	param := &ast.Parameter{
 		StartEndPos: ast.NewStartEndPos(underscore.Loc(), typeExpr.End()),
-		Kind:        ast.VarargParameter,
+		Kind:        ast.VariadicParameter,
 		Type:        typeExpr,
 	}
 	leading := underscore.TakeLeading()
@@ -149,7 +149,7 @@ func (reducer *Reducer) UnnamedArgToParameter(
 	param := &ast.Parameter{
 		StartEndPos:             typeExpr.StartEnd(),
 		LeadingTrailingComments: typeExpr.TakeComments(),
-		Kind:                    ast.ArgParameter,
+		Kind:                    ast.SingularParameter,
 		Type:                    typeExpr,
 	}
 	return param, nil
@@ -182,7 +182,7 @@ func (reducer *Reducer) UnnamedVarargToParameter(
 ) {
 	param := &ast.Parameter{
 		StartEndPos: ast.NewStartEndPos(ellipsis.Loc(), typeExpr.End()),
-		Kind:        ast.VarargParameter,
+		Kind:        ast.VariadicParameter,
 		Type:        typeExpr,
 	}
 	param.LeadingComment = ellipsis.TakeLeading()
