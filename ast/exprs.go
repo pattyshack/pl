@@ -399,8 +399,13 @@ func (expr *StatementsExpr) Validate(emitter *lexutil.ErrorEmitter) {
 
 func validateDefaultBranch(
 	emitter *lexutil.ErrorEmitter,
+	parent Expression,
 	branches []*ConditionBranchStmt,
 ) {
+	if len(branches) == 0 {
+		emitter.Emit(parent.Loc(), "expected at least one branch")
+	}
+
 	for idx, branch := range branches {
 		if branch.IsDefaultBranch {
 			if idx != len(branches)-1 {
@@ -431,7 +436,7 @@ func (expr *IfExpr) Walk(visitor Visitor) {
 }
 
 func (expr *IfExpr) Validate(emitter *lexutil.ErrorEmitter) {
-	validateDefaultBranch(emitter, expr.ConditionBranches)
+	validateDefaultBranch(emitter, expr, expr.ConditionBranches)
 }
 
 //
@@ -461,7 +466,7 @@ func (expr *SwitchExpr) Walk(visitor Visitor) {
 }
 
 func (expr *SwitchExpr) Validate(emitter *lexutil.ErrorEmitter) {
-	validateDefaultBranch(emitter, expr.ConditionBranches)
+	validateDefaultBranch(emitter, expr, expr.ConditionBranches)
 }
 
 //
@@ -489,7 +494,7 @@ func (expr *SelectExpr) Walk(visitor Visitor) {
 }
 
 func (expr *SelectExpr) Validate(emitter *lexutil.ErrorEmitter) {
-	validateDefaultBranch(emitter, expr.ConditionBranches)
+	validateDefaultBranch(emitter, expr, expr.ConditionBranches)
 }
 
 //
