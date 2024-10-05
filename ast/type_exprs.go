@@ -78,7 +78,7 @@ type InferredTypeExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	InferMutable bool // "_" infers mutable ref. "." infers immutabel ref.
+	InferMutable bool // "_" infers mutable ref. "." infers immutable ref.
 }
 
 func (expr *InferredTypeExpr) Walk(visitor Visitor) {

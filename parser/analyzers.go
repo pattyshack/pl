@@ -231,10 +231,10 @@ func (detector *unexpectedFuncSignaturesDetector) processAnonymousSignature(
 	if sig.Name != "" {
 		detector.Emit(sig.Loc(), "unexpected named function signature")
 	} else if sig.GenericParameters != nil {
-		// manual ast construction
 		detector.Emit(
 			sig.Loc(),
-			"unexpected generic parameters in function signature")
+			"invalid manual ast construction. "+
+				"generic parameters set in anonymous function signature")
 	}
 
 	detector.processParameters(sig, false)

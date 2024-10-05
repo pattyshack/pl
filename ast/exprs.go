@@ -523,6 +523,7 @@ type LoopExpr struct {
 }
 
 var _ Expression = &LoopExpr{}
+var _ Validator = &LoopExpr{}
 
 func (expr *LoopExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
@@ -537,6 +538,54 @@ func (expr *LoopExpr) Walk(visitor Visitor) {
 	}
 	expr.Body.Walk(visitor)
 	visitor.Exit(expr)
+}
+
+func (expr *LoopExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	if expr.Kind != ForLoop {
+		if expr.Init != nil {
+			emitter.Emit(
+				expr.Init.Loc(),
+				"invalid manual ast construction. init statement set in %s loop",
+				expr.Kind)
+		}
+
+		if expr.Post != nil {
+			emitter.Emit(
+				expr.Post.Loc(),
+				"invalid manual ast construction. post statement set in %s loop",
+				expr.Kind)
+		}
+	}
+
+	if expr.Kind == InfiniteLoop {
+		if expr.Condition != nil {
+			emitter.Emit(
+				expr.Condition.Loc(),
+				"invalid manual ast construction. condition expression set in %s loop",
+				expr.Kind)
+		}
+		return
+	}
+
+	if expr.Condition == nil {
+		emitter.Emit(
+			expr.Loc(),
+			"invalid manual ast construction. nil condition expression in %s loop",
+			expr.Kind)
+		return
+	}
+
+	if expr.Kind != IteratorLoop {
+		return
+	}
+
+	assign, ok := expr.Condition.(*AssignPattern)
+	if !ok || assign.Kind != InAssign {
+		emitter.Emit(
+			expr.Condition.Loc(),
+			"invalid manual ast construction. condition expresion set in %s loop",
+			expr.Kind)
+	}
 }
 
 //

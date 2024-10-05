@@ -145,7 +145,7 @@ type ConditionBranchStmt struct {
 	// either default branch in SwitchExpr/SelectExpr, or else branch in IfExpr
 	IsDefaultBranch bool
 
-	Condition Expression // nil when IsElse is true
+	Condition Expression // nil when IsDefaultBranch is true
 	Branch    *StatementsExpr
 }
 
