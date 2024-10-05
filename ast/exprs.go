@@ -1,5 +1,9 @@
 package ast
 
+import (
+	"github.com/pattyshack/gt/lexutil"
+)
+
 //
 // ParseErrorExpr
 //
@@ -241,6 +245,7 @@ type CallExpr struct {
 }
 
 var _ Expression = &CallExpr{}
+var _ Validator = &CallExpr{}
 
 func (expr *CallExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
@@ -252,6 +257,21 @@ func (expr *CallExpr) Walk(visitor Visitor) {
 		arg.Walk(visitor)
 	}
 	visitor.Exit(expr)
+}
+
+func (expr *CallExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	for idx, arg := range expr.Arguments {
+		if arg.Kind == SkipPatternArgument {
+			emitter.Emit(arg.Loc(), "unexpected %s argument", arg.Kind)
+		}
+
+		if arg.Kind == VariadicArgument && idx != len(expr.Arguments)-1 {
+			emitter.Emit(
+				arg.Loc(),
+				"%s argument must be the last argument in the list",
+				arg.Kind)
+		}
+	}
 }
 
 //
@@ -315,6 +335,9 @@ type InitializeExpr struct {
 	Arguments     []*Argument
 }
 
+var _ Expression = &InitializeExpr{}
+var _ Validator = &InitializeExpr{}
+
 func (expr *InitializeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Initializable.Walk(visitor)
@@ -322,6 +345,14 @@ func (expr *InitializeExpr) Walk(visitor Visitor) {
 		arg.Walk(visitor)
 	}
 	visitor.Exit(expr)
+}
+
+func (expr *InitializeExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	for _, arg := range expr.Arguments {
+		if arg.Kind == SkipPatternArgument || arg.Kind == VariadicArgument {
+			emitter.Emit(arg.Loc(), "unexpected %s argument", arg.Kind)
+		}
+	}
 }
 
 //
@@ -338,6 +369,7 @@ type StatementsExpr struct {
 }
 
 var _ Expression = &StatementsExpr{}
+var _ Validator = &StatementsExpr{}
 
 func (expr *StatementsExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
@@ -345,6 +377,20 @@ func (expr *StatementsExpr) Walk(visitor Visitor) {
 		stmt.Walk(visitor)
 	}
 	visitor.Exit(expr)
+}
+
+func (expr *StatementsExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	for idx, stmt := range expr.Statements {
+		_, ok := stmt.(*JumpStmt)
+		if !ok {
+			continue
+		}
+
+		if idx < len(expr.Statements)-1 {
+			emitter.Emit(expr.Statements[idx+1].Loc(), "unreachable statement")
+			return
+		}
+	}
 }
 
 //

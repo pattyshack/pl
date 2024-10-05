@@ -7,7 +7,6 @@ import (
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
-	"github.com/pattyshack/pl/util"
 )
 
 // Discard spacesToken and merge adjacent NewlinesTokens
@@ -19,7 +18,7 @@ type TrimSpacesLexer struct {
 func NewTrimSpacesLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
-	emitter *util.ErrorEmitter,
+	emitter *lexutil.ErrorEmitter,
 	options LexerOptions,
 ) lr.Lexer {
 	base := NewRawLexer(sourceFileName, sourceContent, emitter, options)
@@ -95,7 +94,7 @@ type CommentGroupLexer struct {
 func NewCommentGroupLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
-	emitter *util.ErrorEmitter,
+	emitter *lexutil.ErrorEmitter,
 	options LexerOptions,
 ) lr.Lexer {
 	base := NewTrimSpacesLexer(sourceFileName, sourceContent, emitter, options)
@@ -169,7 +168,7 @@ type AssociateCommentGroupsLexer struct {
 func NewAssociateCommentGroupsLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
-	emitter *util.ErrorEmitter,
+	emitter *lexutil.ErrorEmitter,
 	options LexerOptions,
 ) lr.Lexer {
 	base := NewCommentGroupLexer(sourceFileName, sourceContent, emitter, options)
@@ -281,7 +280,7 @@ type TerminalNewlinesLexer struct {
 func NewBasicLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
-	emitter *util.ErrorEmitter,
+	emitter *lexutil.ErrorEmitter,
 	options LexerOptions,
 ) lr.Lexer {
 	base := NewAssociateCommentGroupsLexer(

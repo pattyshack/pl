@@ -8,7 +8,6 @@ import (
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 	reducerImpl "github.com/pattyshack/pl/parser/reducer"
-	"github.com/pattyshack/pl/util"
 )
 
 type bufferLexer struct {
@@ -42,7 +41,7 @@ func newSourceParser(
 	*sourceParser,
 	error,
 ) {
-	emitter := &util.ErrorEmitter{}
+	emitter := &lexutil.ErrorEmitter{}
 	reducer := reducerImpl.NewReducer(emitter)
 	lexer, err := options.NewLexer(fileName, emitter, reducer)
 	if err != nil {
@@ -160,15 +159,14 @@ func ParseSource(
 }
 
 func Validate(node ast.Node) []error {
-	passes := [][]util.Pass{
+	passes := [][]ast.Pass{
 		{
+			validateNodes(),
 			detectUnexpectedFuncSignatures(),
-			detectUnreachableStatements(),
 			detectUnexpectedStatements(),
-			detectUnexpectedArguments(),
 			detectUnexpectedDefaultBranches(),
 		},
 	}
 
-	return util.Process(node, passes, 0)
+	return lexutil.Process(node, passes, 0)
 }

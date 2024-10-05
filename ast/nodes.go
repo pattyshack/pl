@@ -51,9 +51,9 @@ type Node interface {
 }
 
 // A Node may optionally implement Validator, which non-recursively validate
-// the node's syntactic structure.
+// the node's basic syntactic structure.
 type Validator interface {
-	Validate() []error
+	Validate(*lexutil.ErrorEmitter)
 }
 
 type Expression interface {
@@ -229,3 +229,5 @@ type Label string
 func (label *Label) SetLabel(l string) {
 	*label = Label(l)
 }
+
+type Pass = lexutil.Pass[Node]

@@ -7,7 +7,6 @@ import (
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
-	"github.com/pattyshack/pl/util"
 )
 
 type scope struct {
@@ -16,7 +15,7 @@ type scope struct {
 }
 
 type ScopedLexer struct {
-	*util.ErrorEmitter
+	*lexutil.ErrorEmitter
 
 	buffered *lexutil.BufferedReader[lr.Token]
 	base     lr.Lexer
@@ -28,7 +27,7 @@ type ScopedLexer struct {
 func NewLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
-	emitter *util.ErrorEmitter,
+	emitter *lexutil.ErrorEmitter,
 	reducer lr.Reducer,
 	options LexerOptions,
 ) *ScopedLexer {

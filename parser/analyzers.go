@@ -3,51 +3,42 @@ package parser
 import (
 	"fmt"
 
+	"github.com/pattyshack/gt/lexutil"
+
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/util"
 )
 
-type unreachableStatementsDetector struct {
-	util.ErrorEmitter
+type nodeValidator struct {
+	*lexutil.ErrorEmitter
 }
 
-func detectUnreachableStatements() util.Pass {
-	return &unreachableStatementsDetector{}
+func validateNodes() ast.Pass {
+	return &nodeValidator{
+		ErrorEmitter: &lexutil.ErrorEmitter{},
+	}
 }
 
-func (detector *unreachableStatementsDetector) Process(node ast.Node) {
+func (detector *nodeValidator) Process(node ast.Node) {
 	node.Walk(detector)
 }
 
-func (detector *unreachableStatementsDetector) Enter(node ast.Node) {
-	stmts, ok := node.(*ast.StatementsExpr)
-	if !ok {
-		return
-	}
-
-	for idx, stmt := range stmts.Statements {
-		_, ok := stmt.(*ast.JumpStmt)
-		if !ok {
-			continue
-		}
-
-		if idx < len(stmts.Statements)-1 {
-			detector.Emit(stmts.Statements[idx+1].Loc(), "unreachable statement")
-			break
-		}
+func (detector *nodeValidator) Enter(node ast.Node) {
+	validator, ok := node.(ast.Validator)
+	if ok {
+		validator.Validate(detector.ErrorEmitter)
 	}
 }
 
-func (detector *unreachableStatementsDetector) Exit(node ast.Node) {
+func (detector *nodeValidator) Exit(node ast.Node) {
 }
 
 type unexpectedStatementsDetector struct {
 	processed map[*ast.StatementsExpr]struct{}
 
-	util.ErrorEmitter
+	lexutil.ErrorEmitter
 }
 
-func detectUnexpectedStatements() util.Pass {
+func detectUnexpectedStatements() ast.Pass {
 	return &unexpectedStatementsDetector{
 		processed: map[*ast.StatementsExpr]struct{}{},
 	}
@@ -156,58 +147,13 @@ func (detector *unexpectedStatementsDetector) checkExprStmts(
 func (detector *unexpectedStatementsDetector) Exit(node ast.Node) {
 }
 
-type unexpectedArgumentsDetector struct {
-	util.ErrorEmitter
-}
-
-func detectUnexpectedArguments() util.Pass {
-	return &unexpectedArgumentsDetector{}
-}
-
-func (detector *unexpectedArgumentsDetector) Process(node ast.Node) {
-	node.Walk(detector)
-}
-
-func (detector *unexpectedArgumentsDetector) Enter(n ast.Node) {
-	// NOTE: ImplicitStructExpr's arguments are handled by
-	// unexpectedPatternsDetector.
-	switch node := n.(type) {
-	case *ast.CallExpr:
-		for idx, arg := range node.Arguments {
-			if arg.Kind == ast.SkipPatternArgument {
-				detector.Emit(arg.Loc(), "unexpected %s argument", arg.Kind)
-			}
-
-			if arg.Kind == ast.VariadicArgument &&
-				idx != len(node.Arguments)-1 {
-
-				detector.Emit(
-					arg.Loc(),
-					"%s argument must be the last argument in the list",
-					arg.Kind)
-			}
-		}
-	case *ast.InitializeExpr:
-		for _, arg := range node.Arguments {
-			if arg.Kind == ast.SkipPatternArgument ||
-				arg.Kind == ast.VariadicArgument {
-
-				detector.Emit(arg.Loc(), "unexpected %s argument", arg.Kind)
-			}
-		}
-	}
-}
-
-func (detector *unexpectedArgumentsDetector) Exit(node ast.Node) {
-}
-
 // This verifies:
 //   - default branch (if existing) is the last branch
 type unexpectedDefaultBranchesDetector struct {
-	util.ErrorEmitter
+	lexutil.ErrorEmitter
 }
 
-func detectUnexpectedDefaultBranches() util.Pass {
+func detectUnexpectedDefaultBranches() ast.Pass {
 	return &unexpectedDefaultBranchesDetector{}
 }
 
@@ -245,10 +191,10 @@ func (detector *unexpectedDefaultBranchesDetector) Exit(node ast.Node) {
 type unexpectedFuncSignaturesDetector struct {
 	processed map[*ast.FuncSignature]struct{}
 
-	util.ErrorEmitter
+	lexutil.ErrorEmitter
 }
 
-func detectUnexpectedFuncSignatures() util.Pass {
+func detectUnexpectedFuncSignatures() ast.Pass {
 	return &unexpectedFuncSignaturesDetector{
 		processed: map[*ast.FuncSignature]struct{}{},
 	}
