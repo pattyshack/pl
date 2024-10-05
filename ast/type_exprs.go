@@ -1,5 +1,11 @@
 package ast
 
+import (
+	"fmt"
+
+	"github.com/pattyshack/gt/lexutil"
+)
+
 //
 // SliceTypeExpr
 //
@@ -172,6 +178,7 @@ type PropertiesTypeExpr struct {
 }
 
 var _ TypeExpression = &PropertiesTypeExpr{}
+var _ Validator = &PropertiesTypeExpr{}
 
 func (expr *PropertiesTypeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
@@ -179,6 +186,33 @@ func (expr *PropertiesTypeExpr) Walk(visitor Visitor) {
 		prop.Walk(visitor)
 	}
 	visitor.Exit(expr)
+}
+
+func (expr *PropertiesTypeExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	defaultCount := 0
+	for _, p := range expr.Properties {
+		switch prop := p.(type) {
+		case *FieldDef:
+			if prop.IsDefault {
+				defaultCount++
+				if expr.Kind != EnumKind {
+					emitter.Emit(p.Loc(), "unexpected default field")
+				} else if defaultCount > 1 {
+					emitter.Emit(p.Loc(), "more than one default field")
+				}
+			}
+
+			if prop.Kind == PaddingFieldDef && expr.Kind != StructKind {
+				emitter.Emit(p.Loc(), "unexpected field padding")
+			}
+		case *FuncSignature:
+			if expr.Kind != TraitKind {
+				emitter.Emit(p.Loc(), "unexpected method signature in %s", expr.Kind)
+			}
+		default:
+			panic(fmt.Sprintf("unexpected property type: %v", p))
+		}
+	}
 }
 
 //

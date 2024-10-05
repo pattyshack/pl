@@ -3,4 +3,8 @@ var _ enum(
   (Int)
   default X string
   default ()
+
+  func bad()
+
+  _ bad
 )

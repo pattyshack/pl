@@ -1,0 +1,9 @@
+var _ trait(
+  i int
+  _ int  // bad
+
+  ok func()
+  func alsoOk()
+
+  default bad foo
+)
