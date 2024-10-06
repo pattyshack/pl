@@ -14,4 +14,6 @@
   more + unreachabele / code
 
   fallthrough
+
+  s[i], s[j] = s[j], s[i]
 }

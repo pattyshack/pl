@@ -267,3 +267,118 @@ func (detector *unexpectedFuncSignaturesDetector) processParameters(
 
 func (detector *unexpectedFuncSignaturesDetector) Exit(node ast.Node) {
 }
+
+// All errors detected by this pass can only occur due to manual ast
+// construction.  lr parsed tree should be free of these errors.
+//
+// Improper implicit structs are valid in jump statements, statements
+// expr, assign patterns, loop's init/post statements (and iterator condition),
+// and top level statements.  In index expr and colon implicit struct,
+// unit improper implicit structs are valid arguments.
+//
+// Colon implicit structs are only allowed in callable expr.
+type unexpectedImplicitStructsDetector struct {
+	validImproperColon map[*ast.ImplicitStructExpr]struct{}
+	lexutil.ErrorEmitter
+}
+
+func detectUnexpectedImplicitStructs() ast.Pass {
+	return &unexpectedImplicitStructsDetector{
+		validImproperColon: map[*ast.ImplicitStructExpr]struct{}{},
+	}
+}
+
+func (detector *unexpectedImplicitStructsDetector) Process(node ast.Node) {
+	node.Walk(detector)
+}
+
+func (detector *unexpectedImplicitStructsDetector) Enter(n ast.Node) {
+	switch node := n.(type) {
+	case *ast.StatementList:
+		for _, stmt := range node.Elements {
+			detector.allowImproperStruct(stmt)
+		}
+	case *ast.StatementsExpr:
+		for _, stmt := range node.Statements {
+			detector.allowImproperStruct(stmt)
+		}
+	case *ast.LoopExpr:
+		if node.Init != nil {
+			detector.allowImproperStruct(node.Init)
+		}
+		if node.Post != nil {
+			detector.allowImproperStruct(node.Post)
+		}
+	case *ast.AssignPattern:
+		detector.allowImproperStruct(node.Pattern)
+		detector.allowImproperStruct(node.Value)
+	case *ast.JumpStmt:
+		detector.allowImproperStruct(node.Value)
+	case *ast.CallExpr:
+		detector.allowColonStructArguments(node.Arguments)
+	case *ast.InitializeExpr:
+		detector.allowColonStructArguments(node.Arguments)
+	case *ast.IndexExpr:
+		for _, arg := range node.IndexArgs {
+			detector.allowUnitImproperStruct(arg)
+		}
+	case *ast.ImplicitStructExpr:
+		if node.Kind == ast.ProperImplicitStruct {
+			detector.allowColonStructArguments(node.Arguments)
+			return
+		}
+
+		if node.Kind == ast.ColonImplicitStruct {
+			for _, arg := range node.Arguments {
+				if arg.Kind == ast.SingularArgument {
+					detector.allowUnitImproperStruct(arg.Expr)
+				}
+			}
+		}
+
+		_, valid := detector.validImproperColon[node]
+		if !valid {
+			detector.Emit(
+				node.Loc(),
+				"invalid ast construction. unexpected %s implicit struct",
+				node.Kind)
+		}
+	}
+}
+
+func (detector *unexpectedImplicitStructsDetector) allowColonStructArguments(
+	args []*ast.Argument,
+) {
+	for _, arg := range args {
+		if arg.Kind == ast.SingularArgument {
+			exprStruct, ok := arg.Expr.(*ast.ImplicitStructExpr)
+			if ok && exprStruct.Kind == ast.ColonImplicitStruct {
+				detector.validImproperColon[exprStruct] = struct{}{}
+			}
+		}
+	}
+}
+
+func (detector *unexpectedImplicitStructsDetector) allowUnitImproperStruct(
+	expr ast.Expression,
+) {
+	exprStruct, ok := expr.(*ast.ImplicitStructExpr)
+	if ok &&
+		exprStruct.Kind == ast.ImproperImplicitStruct &&
+		len(exprStruct.Arguments) == 0 {
+
+		detector.validImproperColon[exprStruct] = struct{}{}
+	}
+}
+
+func (detector *unexpectedImplicitStructsDetector) allowImproperStruct(
+	node ast.Node,
+) {
+	exprStruct, ok := node.(*ast.ImplicitStructExpr)
+	if ok && exprStruct.Kind == ast.ImproperImplicitStruct {
+		detector.validImproperColon[exprStruct] = struct{}{}
+	}
+}
+
+func (detector *unexpectedImplicitStructsDetector) Exit(node ast.Node) {
+}
