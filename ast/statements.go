@@ -65,7 +65,7 @@ type JumpStmt struct {
 
 	Op    JumpOp
 	Label string     // optional
-	Value Expression // optional
+	Value Expression // use improper unit struct for no value
 }
 
 var _ Statement = &JumpStmt{}
@@ -73,9 +73,7 @@ var _ Validator = &JumpStmt{}
 
 func (stmt *JumpStmt) Walk(visitor Visitor) {
 	visitor.Enter(stmt)
-	if stmt.Value != nil {
-		stmt.Value.Walk(visitor)
-	}
+	stmt.Value.Walk(visitor)
 	visitor.Exit(stmt)
 }
 

@@ -254,11 +254,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.list("[ImportStmt:", nil, "ImportClause", len(node.ImportClauses))
 	case *ast.JumpStmt:
 		printer.write("[JumpStmt: Op=%s Label=%s", node.Op, node.Label)
-		if node.Value != nil {
-			printer.push("Value=")
-		} else {
-			printer.write("]")
-		}
+		printer.push("Value=")
 	case *ast.UnsafeStmt:
 		printer.write(
 			"[UnsafeStmt: Language=%s VerbatimSource\n",
@@ -405,9 +401,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.ImportStmt:
 		printer.endList(len(node.ImportClauses))
 	case *ast.JumpStmt:
-		if node.Value != nil {
-			printer.endNode()
-		}
+		printer.endNode()
 	case *ast.ConditionBranchStmt:
 		printer.endNode()
 

@@ -426,18 +426,10 @@ func (Reducer) UnitUnitPairToColonExpr(
 ) {
 	args := ast.ReduceAdd(
 		[]*ast.Argument{
-			ast.NewPositionalArgument(
-				&ast.ImplicitStructExpr{
-					StartEndPos: colon.StartEnd(),
-					Kind:        ast.ImproperImplicitStruct,
-				}),
+			ast.NewPositionalArgument(ast.NewImproperUnit(colon.StartEnd())),
 		},
 		colon,
-		ast.NewPositionalArgument(
-			&ast.ImplicitStructExpr{
-				StartEndPos: colon.StartEnd(),
-				Kind:        ast.ImproperImplicitStruct,
-			}))
+		ast.NewPositionalArgument(ast.NewImproperUnit(colon.StartEnd())))
 
 	return &ast.ImplicitStructExpr{
 		StartEndPos: colon.StartEnd(),
@@ -456,11 +448,7 @@ func (Reducer) ExprUnitPairToColonExpr(
 	args := ast.ReduceAdd(
 		[]*ast.Argument{ast.NewPositionalArgument(leftExpr)},
 		colon,
-		ast.NewPositionalArgument(
-			&ast.ImplicitStructExpr{
-				StartEndPos: colon.StartEnd(),
-				Kind:        ast.ImproperImplicitStruct,
-			}))
+		ast.NewPositionalArgument(ast.NewImproperUnit(colon.StartEnd())))
 
 	return &ast.ImplicitStructExpr{
 		StartEndPos: ast.NewStartEndPos(leftExpr.Loc(), colon.End()),
@@ -478,11 +466,7 @@ func (reducer *Reducer) UnitExprPairToColonExpr(
 ) {
 	args := ast.ReduceAdd(
 		[]*ast.Argument{
-			ast.NewPositionalArgument(
-				&ast.ImplicitStructExpr{
-					StartEndPos: colon.StartEnd(),
-					Kind:        ast.ImproperImplicitStruct,
-				}),
+			ast.NewPositionalArgument(ast.NewImproperUnit(colon.StartEnd())),
 		},
 		colon,
 		ast.NewPositionalArgument(rightExpr))
@@ -524,12 +508,7 @@ func (reducer *Reducer) ColonExprUnitTupleToColonExpr(
 	colonExpr.Arguments = ast.ReduceAdd(
 		colonExpr.Arguments,
 		colon,
-		ast.NewPositionalArgument(
-			&ast.ImplicitStructExpr{
-				StartEndPos: colon.StartEnd(),
-				Kind:        ast.ImproperImplicitStruct,
-			}))
-	colonExpr.EndPos = colon.End()
+		ast.NewPositionalArgument(ast.NewImproperUnit(colon.StartEnd())))
 	return colonExpr, nil
 }
 

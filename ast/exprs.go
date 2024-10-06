@@ -302,6 +302,13 @@ type ImplicitStructExpr struct {
 var _ Expression = &ImplicitStructExpr{}
 var _ Validator = &ImplicitStructExpr{}
 
+func NewImproperUnit(startEnd StartEndPos) *ImplicitStructExpr {
+	return &ImplicitStructExpr{
+		StartEndPos: startEnd,
+		Kind:        ImproperImplicitStruct,
+	}
+}
+
 func (expr *ImplicitStructExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	for _, arg := range expr.Arguments {

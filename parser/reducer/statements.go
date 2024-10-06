@@ -281,7 +281,7 @@ func (reducer *Reducer) UnlabeledNoValueToJumpStmt(
 	ast.Statement,
 	error,
 ) {
-	return ast.NewJumpStmt(op, nil, nil, nil), nil
+	return ast.NewJumpStmt(op, nil, nil, ast.NewImproperUnit(op.StartEnd())), nil
 }
 
 func (reducer *Reducer) UnlabeledValuedToJumpStmt(
@@ -302,7 +302,10 @@ func (reducer *Reducer) LabeledNoValueToJumpStmt(
 	ast.Statement,
 	error,
 ) {
-	return ast.NewJumpStmt(op, at, label, nil), nil
+	return ast.NewJumpStmt(
+		op,
+		at, label,
+		ast.NewImproperUnit(label.StartEnd())), nil
 }
 
 func (reducer *Reducer) LabeledValuedToJumpStmt(
@@ -323,7 +326,7 @@ func (reducer *Reducer) FallthroughToJumpStmt(
 	ast.Statement,
 	error,
 ) {
-	return ast.NewJumpStmt(op, nil, nil, nil), nil
+	return ast.NewJumpStmt(op, nil, nil, ast.NewImproperUnit(op.StartEnd())), nil
 }
 
 //
