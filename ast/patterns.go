@@ -70,43 +70,34 @@ func (cond *CasePatterns) Walk(visitor Visitor) {
 }
 
 //
-// AddressPattern
+// AddrDeclPattern
 //
 
-type AddressPatternKind string
-
-const (
-	VarAddressDecl  = AddressPatternKind("var")
-	LetAddressDecl  = AddressPatternKind("let")
-	AssignToAddress = AddressPatternKind(">")
-)
-
-type AddressPattern struct {
+type AddrDeclPattern struct {
 	IsExpr
 	StartEndPos
 	LeadingTrailingComments
 
-	Kind    AddressPatternKind
+	IsVar   bool // true = var, false = let
 	Pattern Expression
 	Type    TypeExpression // optional
 }
 
-var _ Expression = &AddressPattern{}
-var _ Validator = &AddressPattern{}
+var _ Expression = &AddrDeclPattern{}
 
-func NewAddressPattern(
+func NewAddrDeclPattern(
 	varType TokenValue,
 	pattern Expression,
 	typeExpr TypeExpression,
-) *AddressPattern {
+) *AddrDeclPattern {
 	var end Node = pattern
 	if typeExpr != nil {
 		end = typeExpr
 	}
 
-	expr := &AddressPattern{
+	expr := &AddrDeclPattern{
 		StartEndPos: NewStartEndPos(varType.Loc(), end.End()),
-		Kind:        AddressPatternKind(varType.Val()),
+		IsVar:       varType.Val() == "var",
 		Pattern:     pattern,
 		Type:        typeExpr,
 	}
@@ -117,7 +108,7 @@ func NewAddressPattern(
 	return expr
 }
 
-func (pattern *AddressPattern) Walk(visitor Visitor) {
+func (pattern *AddrDeclPattern) Walk(visitor Visitor) {
 	visitor.Enter(pattern)
 	pattern.Pattern.Walk(visitor)
 	if pattern.Type != nil {
@@ -126,15 +117,39 @@ func (pattern *AddressPattern) Walk(visitor Visitor) {
 	visitor.Exit(pattern)
 }
 
-func (pattern *AddressPattern) Validate(emitter *lexutil.ErrorEmitter) {
-	switch pattern.Kind {
-	case VarAddressDecl, LetAddressDecl, AssignToAddress:
-	default:
-		emitter.Emit(
-			pattern.Loc(),
-			"invalid ast construction. unexpected address pattern kind (%s)",
-			pattern.Kind)
+//
+// AssignToAddrPattern
+//
+
+type AssignToAddrPattern struct {
+	IsExpr
+	StartEndPos
+	LeadingTrailingComments
+
+	Pattern Expression
+}
+
+var _ Expression = &AssignToAddrPattern{}
+
+func NewAssignToAddrPattern(
+	greater TokenValue,
+	pattern Expression,
+) *AssignToAddrPattern {
+	addrPattern := &AssignToAddrPattern{
+		StartEndPos: NewStartEndPos(greater.Loc(), pattern.End()),
+		Pattern:     pattern,
 	}
+	addrPattern.LeadingComment = greater.TakeLeading()
+	pattern.PrependToLeading(greater.TakeTrailing())
+	addrPattern.TrailingComment = pattern.TakeTrailing()
+
+	return addrPattern
+}
+
+func (pattern *AssignToAddrPattern) Walk(visitor Visitor) {
+	visitor.Enter(pattern)
+	pattern.Pattern.Walk(visitor)
+	visitor.Exit(pattern)
 }
 
 //

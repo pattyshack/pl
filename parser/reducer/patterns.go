@@ -104,20 +104,20 @@ func (reducer *Reducer) ToCasePatternExpr(
 }
 
 //
-// AddressPattern
+// AddrDeclPattern
 //
 
-func (reducer *Reducer) NewInferredToAddressPattern(
+func (reducer *Reducer) NewInferredToAddrDeclPattern(
 	varType *lr.TokenValue,
 	pattern ast.Expression,
 ) (
 	ast.Expression,
 	error,
 ) {
-	return ast.NewAddressPattern(varType, pattern, nil), nil
+	return ast.NewAddrDeclPattern(varType, pattern, nil), nil
 }
 
-func (Reducer) NewTypedToAddressPattern(
+func (Reducer) NewTypedToAddrDeclPattern(
 	varType *lr.TokenValue,
 	pattern ast.Expression,
 	typeExpr ast.TypeExpression,
@@ -125,17 +125,21 @@ func (Reducer) NewTypedToAddressPattern(
 	ast.Expression,
 	error,
 ) {
-	return ast.NewAddressPattern(varType, pattern, typeExpr), nil
+	return ast.NewAddrDeclPattern(varType, pattern, typeExpr), nil
 }
 
-func (Reducer) ExistingToAddressPattern(
+//
+// AssignToAddrPattern
+//
+
+func (Reducer) ToAssignToAddrPattern(
 	greater *lr.TokenValue,
 	pattern ast.Expression,
 ) (
 	ast.Expression,
 	error,
 ) {
-	return ast.NewAddressPattern(greater, pattern, nil), nil
+	return ast.NewAssignToAddrPattern(greater, pattern), nil
 }
 
 //
@@ -240,7 +244,7 @@ func (Reducer) AssignToNewAddressToEnumPattern(
 	leading.Append(dot.TakeTrailing())
 	leading.Append(enumValue.TakeLeading())
 
-	varPattern := ast.NewAddressPattern(varType, implicitStruct, nil)
+	varPattern := ast.NewAddrDeclPattern(varType, implicitStruct, nil)
 	varPattern.PrependToLeading(enumValue.TakeTrailing())
 
 	trailing := implicitStruct.TakeTrailing()
@@ -270,7 +274,7 @@ func (Reducer) AssignToExistingAddressToEnumPattern(
 	leading.Append(dot.TakeTrailing())
 	leading.Append(enumValue.TakeLeading())
 
-	varPattern := ast.NewAddressPattern(greater, implicitStruct, nil)
+	varPattern := ast.NewAssignToAddrPattern(greater, implicitStruct)
 	varPattern.PrependToLeading(enumValue.TakeTrailing())
 
 	trailing := implicitStruct.TakeTrailing()

@@ -79,6 +79,10 @@ type NamedExpr struct {
 
 var _ Expression = &NamedExpr{}
 
+func (expr *NamedExpr) IsPadding() bool {
+	return expr.Name == "_"
+}
+
 func (expr *NamedExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	visitor.Exit(expr)

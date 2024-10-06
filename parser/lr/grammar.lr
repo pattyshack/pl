@@ -175,10 +175,11 @@ import_clause<ImportClause> ->
 // VAR declares a reassignable variable. LET declares a non-reassignable
 // variable.  A "constant" is a LET variable associated with a type with no
 // public access to fields, and no mutation methods.
-address_pattern<Expression> ->
+addr_decl_pattern<Expression> ->
   new_inferred: new_var_type new_addressable |
-  new_typed: new_var_type new_addressable type_expr |
-  existing: GREATER expr
+  new_typed: new_var_type new_addressable type_expr
+
+assign_to_addr_pattern<Expression> -> GREATER expr
 
 new_var_type<Value> ->
   = VAR |
@@ -519,7 +520,8 @@ expr<Expression> ->
   = control_flow_expr |
   // NOTE: *_pattern are not a real expression.  Unexpected usage in real
   // expressions are rejected during type checking.
-  = address_pattern
+  = addr_decl_pattern |
+  = assign_to_addr_pattern
 
 // IMPORTANT NOTE!!!
 //
