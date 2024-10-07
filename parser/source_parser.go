@@ -159,12 +159,18 @@ func ParseSource(
 }
 
 func Validate(node ast.Node) []error {
+	patternsAnalyzer := newPatternsAnalyzer()
+
 	passes := [][]ast.Pass{
 		{
 			validateNodes(),
 			detectUnexpectedFuncSignatures(),
 			detectUnexpectedStatements(),
 			detectUnexpectedImplicitStructs(),
+			patternsAnalyzer.Analyze(),
+		},
+		{
+			patternsAnalyzer.Transform(),
 		},
 	}
 

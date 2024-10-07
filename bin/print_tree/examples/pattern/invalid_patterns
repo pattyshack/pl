@@ -1,0 +1,28 @@
+>i
+>i = 1  // ok
+
+(i, >j)
+
+(i, var j)
+i, var j  // ok due to special casing
+
+{return (i, var j)}
+{return i, var j} // ok due to special casing
+
+select {
+case i,j,k:
+}
+
+select {
+case i:
+case i, j, var k = j():
+}
+
+(i, ..., j)
+(i, ..., j) = x  // ok
+
+(i, ..., j, ...) = x
+
+var (i, j, k + l, m)
+var (i, j, k + l, (a, b, c * d, f()))
+> (i+j, k, f()) = x  // ok
