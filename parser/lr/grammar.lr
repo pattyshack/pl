@@ -235,9 +235,7 @@ enum_pattern<Expression> ->
   // actually parses explicit enum match pattern, where VARs are inside the
   // data list, but we should reject this form for consistency)
   match: DOT IDENTIFIER implicit_struct_expr |
-  nondata: DOT IDENTIFIER |
-  assign_to_new_address: new_var_type DOT IDENTIFIER implicit_struct_expr |
-  assign_to_existing_address: GREATER DOT IDENTIFIER implicit_struct_expr
+  nondata: DOT IDENTIFIER
 
 //
 // Expressions (in decrasing order precedence) ================================
