@@ -161,7 +161,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			len(node.ConditionBranches))
 	case *ast.SelectExpr:
 		printer.list(
-			fmt.Sprintf("[SwitchExpr: Label=%s", node.Label),
+			fmt.Sprintf("[SelectExpr: Label=%s", node.Label),
 			nil,
 			"Branch",
 			len(node.ConditionBranches))
