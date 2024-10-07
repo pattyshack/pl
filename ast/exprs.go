@@ -322,13 +322,16 @@ func (expr *ImplicitStructExpr) Walk(visitor Visitor) {
 }
 
 func (expr *ImplicitStructExpr) Validate(emitter *lexutil.ErrorEmitter) {
+	// NOTE: additional argument validation are handled by
+	// unexpectedPatternsDetector
 	switch expr.Kind {
 	case ProperImplicitStruct:
-		// NOTE: proper implicit struct argument validation are handled by
-		// unexpectedPatternsDetector
+		for _, arg := range expr.Arguments {
+			if arg.Kind == VariadicArgument {
+				emitter.Emit(arg.Loc(), "unexpected %s argument", arg.Kind)
+			}
+		}
 	case ImproperImplicitStruct, ColonImplicitStruct:
-		// NOTE: additional argument validation are handled by
-		// unexpectedPatternsDetector
 		for _, arg := range expr.Arguments {
 			if arg.Kind == SkipPatternArgument || arg.Kind == VariadicArgument {
 				emitter.Emit(arg.Loc(), "unexpected %s argument", arg.Kind)
