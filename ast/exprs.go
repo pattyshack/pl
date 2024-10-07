@@ -580,14 +580,6 @@ func (expr *IfExpr) Validate(emitter *lexutil.ErrorEmitter) {
 					"invalid ast construction.  unexpected assign pattern kind (%s)",
 					assign.Kind)
 			}
-
-			_, ok = assign.Pattern.(*CasePatterns)
-			if !ok {
-				emitter.Emit(
-					cond.Loc(),
-					"invalid ast construction. "+
-						"assign pattern must be paired case patterns")
-			}
 		})
 }
 
