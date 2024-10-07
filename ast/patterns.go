@@ -161,16 +161,14 @@ type EnumPattern struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	EnumValue string
-	Pattern   Expression // optional.  either implicit struct or AddressPattern
+	EnumValue string // optional. empty string matches unnamed struct enum value
+	Pattern   Expression
 }
 
 var _ Expression = &EnumPattern{}
 
 func (pattern *EnumPattern) Walk(visitor Visitor) {
 	visitor.Enter(pattern)
-	if pattern.Pattern != nil {
-		pattern.Pattern.Walk(visitor)
-	}
+	pattern.Pattern.Walk(visitor)
 	visitor.Exit(pattern)
 }

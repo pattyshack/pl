@@ -85,13 +85,14 @@ func (printer *treePrinter) list(
 	if size == 0 && len(argLabels) == 0 {
 		printer.write("]")
 	} else {
-		printer.push(argLabels...)
-
 		for i := size - 1; i >= 0; i-- {
 			printer.labelStack = append(
 				printer.labelStack,
 				fmt.Sprintf("%s%d=", elementType, i))
 		}
+
+		// push in reverse order
+		printer.push(argLabels...)
 	}
 }
 
@@ -202,12 +203,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.push("Pattern=")
 	case *ast.EnumPattern:
 		printer.write("[EnumPattern: EnumValue=%s", node.EnumValue)
-		if node.Pattern != nil {
-			printer.push("Pattern=")
-		} else {
-			printer.write("]")
-		}
-
+		printer.push("Pattern=")
 	case *ast.SliceTypeExpr:
 		printer.write("[SliceTypeExpr:")
 		printer.push("Value=")
@@ -381,9 +377,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.CasePatterns:
 		printer.endList(len(node.Patterns))
 	case *ast.EnumPattern:
-		if node.Pattern != nil {
-			printer.endNode()
-		}
+		printer.endNode()
 	case *ast.SliceTypeExpr:
 		printer.endNode()
 	case *ast.ArrayTypeExpr:

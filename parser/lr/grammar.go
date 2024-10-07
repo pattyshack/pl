@@ -245,11 +245,11 @@ type SwitchableCasePatternsReducer interface {
 }
 
 type EnumPatternReducer interface {
-	// 237:2: enum_pattern -> match: ...
-	MatchToEnumPattern(Dot_ *TokenValue, Identifier_ *TokenValue, ImplicitStructExpr_ ast.Expression) (ast.Expression, error)
+	// 237:2: enum_pattern -> named: ...
+	NamedToEnumPattern(Dot_ *TokenValue, Identifier_ *TokenValue, ImplicitStructExpr_ ast.Expression) (ast.Expression, error)
 
-	// 238:2: enum_pattern -> nondata: ...
-	NondataToEnumPattern(Dot_ *TokenValue, Identifier_ *TokenValue) (ast.Expression, error)
+	// 238:2: enum_pattern -> unnamed_struct: ...
+	UnnamedStructToEnumPattern(Dot_ *TokenValue, ImplicitStructExpr_ ast.Expression) (ast.Expression, error)
 }
 
 type ParseErrorExprReducer interface {
@@ -984,7 +984,7 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	case _State38:
 		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, ParseErrorToken}
 	case _State44:
-		return []SymbolId{IdentifierToken}
+		return []SymbolId{IdentifierToken, LparenToken}
 	case _State45:
 		return []SymbolId{ColonToken}
 	case _State49:
@@ -1051,6 +1051,8 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, ParseErrorToken}
 	case _State98:
 		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, StructToken, FuncToken, AsyncToken, DeferToken, NotToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, ParseErrorToken}
+	case _State99:
+		return []SymbolId{LparenToken}
 	case _State101:
 		return []SymbolId{IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, SwitchToken, RepeatToken, ForToken, SelectToken, StructToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, NotToken, LbraceToken, LparenToken, LbracketToken, ArrowToken, AddToken, SubToken, MulToken, BitAndToken, BitXorToken, GreaterToken, ParseErrorToken}
 	case _State102:
@@ -1955,8 +1957,8 @@ const (
 	_ReduceAddToSwitchableCasePatterns                                  = _ReduceType(46)
 	_ReduceExprToSwitchableCasePattern                                  = _ReduceType(47)
 	_ReduceEnumPatternToSwitchableCasePattern                           = _ReduceType(48)
-	_ReduceMatchToEnumPattern                                           = _ReduceType(49)
-	_ReduceNondataToEnumPattern                                         = _ReduceType(50)
+	_ReduceNamedToEnumPattern                                           = _ReduceType(49)
+	_ReduceUnnamedStructToEnumPattern                                   = _ReduceType(50)
 	_ReduceParseErrorExprToAtomExpr                                     = _ReduceType(51)
 	_ReduceLiteralExprToAtomExpr                                        = _ReduceType(52)
 	_ReduceNamedExprToAtomExpr                                          = _ReduceType(53)
@@ -2316,10 +2318,10 @@ func (i _ReduceType) String() string {
 		return "ExprToSwitchableCasePattern"
 	case _ReduceEnumPatternToSwitchableCasePattern:
 		return "EnumPatternToSwitchableCasePattern"
-	case _ReduceMatchToEnumPattern:
-		return "MatchToEnumPattern"
-	case _ReduceNondataToEnumPattern:
-		return "NondataToEnumPattern"
+	case _ReduceNamedToEnumPattern:
+		return "NamedToEnumPattern"
+	case _ReduceUnnamedStructToEnumPattern:
+		return "UnnamedStructToEnumPattern"
 	case _ReduceParseErrorExprToAtomExpr:
 		return "ParseErrorExprToAtomExpr"
 	case _ReduceLiteralExprToAtomExpr:
@@ -3800,16 +3802,16 @@ func (act *_Action) ReduceSymbol(
 		//line grammar.lr:229:4
 		symbol.Expression = args[0].Expression
 		err = nil
-	case _ReduceMatchToEnumPattern:
+	case _ReduceNamedToEnumPattern:
 		args := stack[len(stack)-3:]
 		stack = stack[:len(stack)-3]
 		symbol.SymbolId_ = EnumPatternType
-		symbol.Expression, err = reducer.MatchToEnumPattern(args[0].Value, args[1].Value, args[2].Expression)
-	case _ReduceNondataToEnumPattern:
+		symbol.Expression, err = reducer.NamedToEnumPattern(args[0].Value, args[1].Value, args[2].Expression)
+	case _ReduceUnnamedStructToEnumPattern:
 		args := stack[len(stack)-2:]
 		stack = stack[:len(stack)-2]
 		symbol.SymbolId_ = EnumPatternType
-		symbol.Expression, err = reducer.NondataToEnumPattern(args[0].Value, args[1].Value)
+		symbol.Expression, err = reducer.UnnamedStructToEnumPattern(args[0].Value, args[1].Expression)
 	case _ReduceParseErrorExprToAtomExpr:
 		args := stack[len(stack)-1:]
 		stack = stack[:len(stack)-1]
@@ -7846,6 +7848,10 @@ func (_ActionTableType) Get(
 		switch symbolId {
 		case IdentifierToken:
 			return _Action{_ShiftAction, _State99, 0}, true
+		case LparenToken:
+			return _Action{_ShiftAction, _State18, 0}, true
+		case ImplicitStructExprType:
+			return _Action{_ShiftAndReduceAction, 0, _ReduceUnnamedStructToEnumPattern}, true
 		}
 	case _State45:
 		switch symbolId {
@@ -11383,10 +11389,7 @@ func (_ActionTableType) Get(
 		case LparenToken:
 			return _Action{_ShiftAction, _State18, 0}, true
 		case ImplicitStructExprType:
-			return _Action{_ShiftAndReduceAction, 0, _ReduceMatchToEnumPattern}, true
-
-		default:
-			return _Action{_ReduceAction, 0, _ReduceNondataToEnumPattern}, true
+			return _Action{_ShiftAndReduceAction, 0, _ReduceNamedToEnumPattern}, true
 		}
 	case _State100:
 		switch symbolId {
@@ -18508,13 +18511,14 @@ Parser Debug States:
   State 44:
     Kernel Items:
       enum_pattern: DOT.IDENTIFIER implicit_struct_expr
-      enum_pattern: DOT.IDENTIFIER
+      enum_pattern: DOT.implicit_struct_expr
     Reduce:
       (nil)
     ShiftAndReduce:
-      (nil)
+      implicit_struct_expr -> [enum_pattern]
     Goto:
       IDENTIFIER -> State 99
+      LPAREN -> State 18
 
   State 45:
     Kernel Items:
@@ -20652,9 +20656,8 @@ Parser Debug States:
   State 99:
     Kernel Items:
       enum_pattern: DOT IDENTIFIER.implicit_struct_expr
-      enum_pattern: DOT IDENTIFIER., *
     Reduce:
-      * -> [enum_pattern]
+      (nil)
     ShiftAndReduce:
       implicit_struct_expr -> [enum_pattern]
     Goto:
@@ -24237,12 +24240,12 @@ Parser Debug States:
       binary_type_op -> State 132
 
 Number of states: 218
-Number of shift actions: 1720
-Number of reduce actions: 112
-Number of shift-and-reduce actions: 3584
+Number of shift actions: 1721
+Number of reduce actions: 111
+Number of shift-and-reduce actions: 3585
 Number of shift/reduce conflicts: 0
 Number of reduce/reduce conflicts: 0
-Number of unoptimized states: 8467
-Number of unoptimized shift actions: 98084
+Number of unoptimized states: 8469
+Number of unoptimized shift actions: 98088
 Number of unoptimized reduce actions: 84792
 */

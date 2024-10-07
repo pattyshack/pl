@@ -8,7 +8,7 @@ for var (i, j); i < j; var k, var (l, (m, n)) do {}
 for i in iter do {}
 
 if case x,y,z = blah {
-} else if case .enum1, .enum2(x,y,z, >(a, (b, c())), var (d, e)) = blah {
+} else if case .enum1(), .enum2(x,y,z, >(a, (b, c())), var (d, e)) = blah {
 }
 
 select {
@@ -28,7 +28,9 @@ case (var x, y) = receiver<-value:
 }
 
 switch x {
-case .enumValue1(x, >y, var z, (let more, ..., >stuff), ...), .enumValue2:
+case .enumValue1(x, >y, var z, (let more, ..., >stuff), ...), .enumValue2():
 case (i+1, named=>(x, y()), named=var (i, j)), j(), k[x]:
+case .():
+case .(i, >j, var k):
 }
 
