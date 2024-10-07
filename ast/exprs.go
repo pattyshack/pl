@@ -513,6 +513,7 @@ func validateDefaultBranch(
 	emitter *lexutil.ErrorEmitter,
 	parent Expression,
 	branches []*ConditionBranchStmt,
+	checkCondition func(Expression),
 ) {
 	if len(branches) == 0 {
 		emitter.Emit(parent.Loc(), "expected at least one branch")
@@ -523,6 +524,18 @@ func validateDefaultBranch(
 			if idx != len(branches)-1 {
 				emitter.Emit(branch.Loc(), "default branch is not the last branch")
 			}
+
+			if branch.Condition != nil {
+				emitter.Emit(
+					branch.Condition.Loc(),
+					"invalid ast construction. condition set on default branch")
+			}
+		} else if branch.Condition == nil {
+			emitter.Emit(
+				branch.Loc(),
+				"invalid ast construction. condition not set on non-default branch")
+		} else {
+			checkCondition(branch.Condition)
 		}
 	}
 }
@@ -548,7 +561,31 @@ func (expr *IfExpr) Walk(visitor Visitor) {
 }
 
 func (expr *IfExpr) Validate(emitter *lexutil.ErrorEmitter) {
-	validateDefaultBranch(emitter, expr, expr.ConditionBranches)
+	validateDefaultBranch(
+		emitter,
+		expr,
+		expr.ConditionBranches,
+		func(cond Expression) {
+			assign, ok := cond.(*AssignPattern)
+			if !ok {
+				return
+			}
+
+			if assign.Kind != EqualAssign {
+				emitter.Emit(
+					cond.Loc(),
+					"invalid ast construction.  unexpected assign pattern kind (%s)",
+					assign.Kind)
+			}
+
+			_, ok = assign.Pattern.(*CasePatterns)
+			if !ok {
+				emitter.Emit(
+					cond.Loc(),
+					"invalid ast construction. "+
+						"assign pattern must be paired case patterns")
+			}
+		})
 }
 
 //
@@ -578,7 +615,18 @@ func (expr *SwitchExpr) Walk(visitor Visitor) {
 }
 
 func (expr *SwitchExpr) Validate(emitter *lexutil.ErrorEmitter) {
-	validateDefaultBranch(emitter, expr, expr.ConditionBranches)
+	validateDefaultBranch(
+		emitter,
+		expr,
+		expr.ConditionBranches,
+		func(cond Expression) {
+			_, ok := cond.(*CasePatterns)
+			if !ok {
+				emitter.Emit(
+					cond.Loc(),
+					"invalid ast construction. expecting case patterns")
+			}
+		})
 }
 
 //
@@ -606,7 +654,41 @@ func (expr *SelectExpr) Walk(visitor Visitor) {
 }
 
 func (expr *SelectExpr) Validate(emitter *lexutil.ErrorEmitter) {
-	validateDefaultBranch(emitter, expr, expr.ConditionBranches)
+	validateDefaultBranch(
+		emitter,
+		expr,
+		expr.ConditionBranches,
+		func(condition Expression) {
+			assign, ok := condition.(*AssignPattern)
+			if ok {
+				if assign.Kind != EqualAssign {
+					emitter.Emit(
+						condition.Loc(),
+						"invalid ast construction. unexpected assign pattern kind (%s)",
+						assign.Kind)
+				}
+				condition = assign.Value
+			}
+
+			switch nary := condition.(type) {
+			case *CasePatterns:
+				emitter.Emit(
+					condition.Loc(),
+					"unexpected pattern list, expecting only one pattern per case")
+			case *UnaryExpr:
+				if nary.Op != UnaryRecvOp {
+					emitter.Emit(
+						condition.Loc(),
+						"unexpected expression, expecting send/recv expression")
+				}
+			case *BinaryExpr:
+				if nary.Op != BinarySendOp {
+					emitter.Emit(
+						condition.Loc(),
+						"unexpected expression, expecting send/recv expression")
+				}
+			}
+		})
 }
 
 //
