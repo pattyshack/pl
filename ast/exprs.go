@@ -706,16 +706,21 @@ func (expr *LoopExpr) Validate(emitter *lexutil.ErrorEmitter) {
 		return
 	}
 
-	if expr.Kind != IteratorLoop {
-		return
-	}
-
 	assign, ok := expr.Condition.(*AssignPattern)
-	if !ok || assign.Kind != InAssign {
-		emitter.Emit(
-			expr.Condition.Loc(),
-			"invalid ast construction. condition expresion set in %s loop",
-			expr.Kind)
+	if ok {
+		if expr.Kind != IteratorLoop || assign.Kind != InAssign {
+			emitter.Emit(
+				expr.Condition.Loc(),
+				"invalid ast construction. unexpected condition set in %s loop",
+				expr.Kind)
+		}
+	} else {
+		if expr.Kind == IteratorLoop {
+			emitter.Emit(
+				expr.Condition.Loc(),
+				"invalid ast construction. unexpected condition set in %s loop",
+				expr.Kind)
+		}
 	}
 }
 
