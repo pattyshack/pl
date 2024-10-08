@@ -46,14 +46,18 @@ func (Reducer) ConstrainedToGenericParameter(
 //
 
 func (Reducer) GenericToGenericParameters(
-	dollarLbracket *lr.TokenValue,
+	dollar *lr.TokenValue,
+	lbracket *lr.TokenValue,
 	list *ast.GenericParameterList,
 	rbracket *lr.TokenValue,
 ) (
 	*ast.GenericParameterList,
 	error,
 ) {
-	list.ReduceMarkers(dollarLbracket, rbracket)
+	list.ReduceMarkers(lbracket, rbracket)
+	list.PrependToLeading(dollar.TakeTrailing())
+	list.PrependToLeading(dollar.TakeLeading())
+	list.StartPos = dollar.Loc()
 	return list, nil
 }
 
@@ -110,7 +114,8 @@ func (Reducer) NilToGenericParameterList() (
 //
 
 func (reducer *Reducer) BindingToGenericArguments(
-	dollarLbracket *lr.TokenValue,
+	dollar *lr.TokenValue,
+	lbracket *lr.TokenValue,
 	list *ast.TypeExpressionList,
 	rbracket *lr.TokenValue,
 ) (
@@ -120,7 +125,10 @@ func (reducer *Reducer) BindingToGenericArguments(
 	if list == nil {
 		list = ast.NewTypeExpressionList()
 	}
-	list.ReduceMarkers(dollarLbracket, rbracket)
+	list.ReduceMarkers(lbracket, rbracket)
+	list.PrependToLeading(dollar.TakeTrailing())
+	list.PrependToLeading(dollar.TakeLeading())
+	list.StartPos = dollar.Loc()
 	return list, nil
 }
 

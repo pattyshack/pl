@@ -36,7 +36,7 @@
 
 %token<Value> LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
 %token<Value> DOT COMMA QUESTION SEMICOLON COLON EXCLAIM
-%token<Value> DOLLAR_LBRACKET // $[
+%token<Value> DOLLAR
 %token<Value> ELLIPSIS // ...
 %token<Value> TILDE TILDE_TILDE
 
@@ -710,7 +710,7 @@ generic_parameter<GenericParameter> ->
   constrained: IDENTIFIER type_expr
 
 generic_parameters<GenericParameterList> ->
-  generic: DOLLAR_LBRACKET generic_parameter_list RBRACKET |
+  generic: DOLLAR LBRACKET generic_parameter_list RBRACKET |
   nil:
 
 proper_generic_parameter_list<GenericParameterList> ->
@@ -723,7 +723,7 @@ generic_parameter_list<GenericParameterList> ->
   nil:
 
 generic_arguments<TypeExpressionList> ->
-  binding: DOLLAR_LBRACKET generic_argument_list RBRACKET |
+  binding: DOLLAR LBRACKET generic_argument_list RBRACKET |
   nil:
 
 proper_generic_argument_list<TypeExpressionList> ->

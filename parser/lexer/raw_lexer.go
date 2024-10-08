@@ -218,9 +218,7 @@ func (lexer *RawLexer) peekNextToken() (lr.SymbolId, string, error) {
 	case ':':
 		return lr.ColonToken, ":", nil
 	case '$':
-		if len(peeked) > 1 && peeked[1] == '[' {
-			return lr.DollarLbracketToken, "$[", nil
-		}
+		return lr.DollarToken, "$", nil
 	case '+':
 		if len(peeked) > 1 {
 			if peeked[1] == '+' {
