@@ -220,3 +220,63 @@ func (def *TypeDef) Walk(visitor Visitor) {
 	}
 	visitor.Exit(def)
 }
+
+//
+// BlockAddrDeclStmt
+//
+
+type BlockAddrDeclStmt struct {
+	IsStmt
+	StartEndPos
+	LeadingTrailingComments
+
+	IsVar bool // true = var, false = let
+
+	Patterns []Expression // either AddrDeclPattern or AssignPattern
+}
+
+var _ Statement = &BlockAddrDeclStmt{}
+var _ Validator = &BlockAddrDeclStmt{}
+
+func (block *BlockAddrDeclStmt) Walk(visitor Visitor) {
+	visitor.Enter(block)
+	for _, pattern := range block.Patterns {
+		pattern.Walk(visitor)
+	}
+	visitor.Exit(block)
+}
+
+func (block *BlockAddrDeclStmt) Validate(emitter *lexutil.ErrorEmitter) {
+	for _, expr := range block.Patterns {
+		switch pattern := expr.(type) {
+		case *AssignPattern:
+			if pattern.Kind != EqualAssign {
+				emitter.Emit(
+					pattern.Loc(),
+					"invalid ast construction, unexpected assign pattern kind (%s)",
+					pattern.Kind)
+			}
+
+			decl, ok := pattern.Pattern.(*AddrDeclPattern)
+			if !ok {
+				emitter.Emit(
+					pattern.Pattern.Loc(),
+					"invalid ast construction, expected addr decl in assign pattern")
+			} else if block.IsVar != decl.IsVar {
+				emitter.Emit(
+					decl.Loc(),
+					"invalid ast construction, addr decl type does not much block")
+			}
+		case *AddrDeclPattern:
+			if block.IsVar != pattern.IsVar {
+				emitter.Emit(
+					pattern.Loc(),
+					"invalid ast construction, addr decl type does not much block")
+			}
+		default:
+			emitter.Emit(
+				expr.Loc(),
+				"invalid ast construction, expected assign or addr decl pattern")
+		}
+	}
+}

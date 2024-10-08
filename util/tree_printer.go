@@ -282,6 +282,12 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		} else {
 			printer.push("Branch=")
 		}
+  case *ast.BlockAddrDeclStmt:
+    printer.list(
+      fmt.Sprintf("[BlockAddrDeclStmt: IsVar=%v", node.IsVar),
+      nil,
+      "Decl",
+      len(node.Patterns))
 
 	case *ast.FloatingComment:
 		printer.write("[FloatingComment]")
@@ -410,6 +416,8 @@ func (printer *treePrinter) Exit(n ast.Node) {
 		printer.endNode()
 	case *ast.ConditionBranchStmt:
 		printer.endNode()
+  case *ast.BlockAddrDeclStmt:
+		printer.endList(len(node.Patterns))
 
 	case *ast.FuncDefinition:
 		printer.endNode()

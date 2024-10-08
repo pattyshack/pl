@@ -87,7 +87,9 @@ statement<Statement> ->
 
   // NOTE: assignment can only operate on proper address values.  Additional
   // checks are applied during post analysis.
-  = assign_stmt
+  = assign_stmt |
+
+  = block_addr_decl_stmt
 
 // Free floating comment is not part of any other symbol. This can happen if
 // the source file only has comments, or if there are comments at the end of
@@ -169,8 +171,27 @@ import_clause<ImportClause> ->
   import_to_local: DOT STRING_LITERAL
 
 //
-// Variable declaration pattern (Pseudo expression) ===========================
+// Variable declaration pattern (Pseudo expression / statement) ===============
 //
+
+block_addr_decl_stmt<Statement> ->
+  new_var_type DOLLAR LPAREN block_addr_decl_list RPAREN
+
+block_addr_decl_list<ExpressionList> ->
+  = proper_block_addr_decl_list |
+  improper_implicit: proper_block_addr_decl_list NEWLINES |
+  improper_explicit: proper_block_addr_decl_list COMMA |
+  nil:
+
+proper_block_addr_decl_list<ExpressionList> ->
+  block_addr_decl_item |
+  add_implicit: proper_block_addr_decl_list NEWLINES block_addr_decl_item |
+  add_explicit: proper_block_addr_decl_list COMMA block_addr_decl_item
+
+block_addr_decl_item<Expression> ->
+  decl: new_addressable type_expr |
+  inferred_assign: new_addressable ASSIGN expr |
+  typed_assign: new_addressable type_expr ASSIGN expr
 
 // VAR declares a reassignable variable. LET declares a non-reassignable
 // variable.  A "constant" is a LET variable associated with a type with no

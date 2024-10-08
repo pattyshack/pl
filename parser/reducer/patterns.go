@@ -238,3 +238,45 @@ func (Reducer) UnnamedStructToEnumPattern(
 	enum.TrailingComment = trailing
 	return enum, nil
 }
+
+//
+// BlockAddrDeclStmt item
+//
+
+func (Reducer) DeclToBlockAddrDeclItem(
+	addr ast.Expression,
+	typeExpr ast.TypeExpression,
+) (
+	ast.Expression,
+	error,
+) {
+	// NOTE: IsVar is set by the block
+	return ast.NewAddrDeclPattern(nil, addr, typeExpr), nil
+}
+
+func (reducer *Reducer) InferredAssignToBlockAddrDeclItem(
+	addr ast.Expression,
+	assign *lr.TokenValue,
+	value ast.Expression,
+) (
+	ast.Expression,
+	error,
+) {
+	// NOTE: IsVar is set by the block
+	pattern := ast.NewAddrDeclPattern(nil, addr, nil)
+	return reducer.toAssignPattern(pattern, assign, value), nil
+}
+
+func (reducer *Reducer) TypedAssignToBlockAddrDeclItem(
+	addr ast.Expression,
+	typeExpr ast.TypeExpression,
+	assign *lr.TokenValue,
+	value ast.Expression,
+) (
+	ast.Expression,
+	error,
+) {
+	// NOTE: IsVar is set by the block
+	pattern := ast.NewAddrDeclPattern(nil, addr, typeExpr)
+	return reducer.toAssignPattern(pattern, assign, value), nil
+}

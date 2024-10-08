@@ -439,3 +439,112 @@ func (reducer *Reducer) DefaultBranchToBranchStmt(
 
 	return stmt, nil
 }
+
+//
+// BlockAddrDeclStmt
+//
+
+func (Reducer) ToBlockAddrDeclStmt(
+	varType *lr.TokenValue,
+	dollar *lr.TokenValue,
+	lparen *lr.TokenValue,
+	list *ast.ExpressionList,
+	rparen *lr.TokenValue,
+) (
+	ast.Statement,
+	error,
+) {
+	isVar := varType.Val() == "var"
+
+	list.ReduceMarkers(lparen, rparen)
+
+	leading := varType.TakeLeading()
+	leading.Append(varType.TakeTrailing())
+	leading.Append(dollar.TakeLeading())
+	leading.Append(dollar.TakeTrailing())
+	leading.Append(list.TakeLeading())
+	leading.Append(list.MiddleComment)
+
+	trailing := list.TakeTrailing()
+	for _, item := range list.Elements {
+		pattern := item
+
+		assign, ok := item.(*ast.AssignPattern)
+		if ok {
+			pattern = assign.Pattern
+		}
+
+		decl := pattern.(*ast.AddrDeclPattern)
+		decl.IsVar = isVar
+	}
+
+	block := &ast.BlockAddrDeclStmt{
+		StartEndPos: ast.NewStartEndPos(varType.Loc(), rparen.End()),
+		IsVar:       isVar,
+		Patterns:    list.Elements,
+	}
+	block.LeadingComment = leading
+	block.TrailingComment = trailing
+
+	return block, nil
+}
+
+func (Reducer) ImproperImplicitToBlockAddrDeclList(
+	list *ast.ExpressionList,
+	newlines lr.TokenCount,
+) (
+	*ast.ExpressionList,
+	error,
+) {
+	return list, nil
+}
+
+func (Reducer) ImproperExplicitToBlockAddrDeclList(
+	list *ast.ExpressionList,
+	comma *lr.TokenValue,
+) (
+	*ast.ExpressionList,
+	error,
+) {
+	list.ReduceImproper(comma)
+	return list, nil
+}
+
+func (Reducer) NilToBlockAddrDeclList() (*ast.ExpressionList, error) {
+	return ast.NewExpressionList(), nil
+}
+
+func (Reducer) BlockAddrDeclItemToProperBlockAddrDeclList(
+	item ast.Expression,
+) (
+	*ast.ExpressionList,
+	error,
+) {
+	list := ast.NewExpressionList()
+	list.Add(item)
+	return list, nil
+}
+
+func (Reducer) AddImplicitToProperBlockAddrDeclList(
+	list *ast.ExpressionList,
+	newlines lr.TokenCount,
+	item ast.Expression,
+) (
+	*ast.ExpressionList,
+	error,
+) {
+	list.Add(item)
+	return list, nil
+}
+
+func (Reducer) AddExplicitToProperBlockAddrDeclList(
+	list *ast.ExpressionList,
+	comma *lr.TokenValue,
+	item ast.Expression,
+) (
+	*ast.ExpressionList,
+	error,
+) {
+	list.ReduceAdd(comma, item)
+	return list, nil
+}

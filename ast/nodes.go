@@ -37,8 +37,7 @@ type Commentable interface {
 }
 
 type TokenValue interface {
-	Locatable
-	Commentable
+  Node
 
 	Val() string
 }

@@ -347,6 +347,18 @@ func (analyzer *patternsAnalyzer) collectPatternEntryPoints(
 func (analyzer *patternsAnalyzer) processStatement(
 	s ast.Statement,
 ) {
+	block, ok := s.(*ast.BlockAddrDeclStmt)
+	if ok {
+		for _, expr := range block.Patterns {
+			switch pattern := expr.(type) {
+			case *ast.AssignPattern:
+				analyzer.validAssignPatterns[pattern] = false
+			case *ast.AddrDeclPattern:
+				analyzer.validAddrDeclPatterns[pattern] = addrDeclPattern
+			}
+		}
+	}
+
 	assign, ok := s.(*ast.AssignPattern)
 	if ok {
 		if assign.Kind != ast.EqualAssign {

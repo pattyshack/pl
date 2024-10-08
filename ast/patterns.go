@@ -90,19 +90,27 @@ func NewAddrDeclPattern(
 	pattern Expression,
 	typeExpr TypeExpression,
 ) *AddrDeclPattern {
+	isVar := false
+	var start Node = pattern
+	if varType != nil {
+		isVar = varType.Val() == "var"
+		start = varType
+		pattern.PrependToLeading(varType.TakeTrailing())
+	}
+
 	var end Node = pattern
 	if typeExpr != nil {
 		end = typeExpr
 	}
 
 	expr := &AddrDeclPattern{
-		StartEndPos: NewStartEndPos(varType.Loc(), end.End()),
-		IsVar:       varType.Val() == "var",
+		StartEndPos: NewStartEndPos(start.Loc(), end.End()),
+		IsVar:       isVar,
 		Pattern:     pattern,
 		Type:        typeExpr,
 	}
 
-	expr.LeadingComment = varType.TakeLeading()
+	expr.LeadingComment = start.TakeLeading()
 	expr.TrailingComment = end.TakeTrailing()
 
 	return expr

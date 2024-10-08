@@ -23,3 +23,19 @@ func() {}  // invalid
 
   s[i], s[j] = s[j], s[i]
 }
+
+var $(
+  i = 5
+  j int
+  k int = 6
+  (i, j) (int, string)
+  (x, y) =  (1, 2)
+  (x=x, y=y, ...) = foo()
+)
+
+{
+  let $(
+    x = s[1]
+    y = s[2]
+  )
+}

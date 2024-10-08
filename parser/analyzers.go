@@ -83,6 +83,7 @@ func (detector *unexpectedStatementsDetector) checkTopLevelStmts(
 		case *ast.ImportStmt: // ok
 		case *ast.FloatingComment: // ok
 		case *ast.TypeDef: // ok
+		case *ast.BlockAddrDeclStmt: // ok
 		case *ast.ConditionBranchStmt:
 			invalidStmtType = "branch statement"
 		case *ast.JumpStmt:
@@ -193,6 +194,7 @@ func (detector *unexpectedStatementsDetector) checkExprStmts(
 		invalidStmtType := ""
 		switch stmt := node.(type) {
 		case *ast.UnsafeStmt: // ok
+		case *ast.BlockAddrDeclStmt: // ok
 		case *ast.ImportStmt:
 			invalidStmtType = "import statement"
 		case *ast.FloatingComment:
