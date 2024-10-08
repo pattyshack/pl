@@ -218,7 +218,17 @@ func (reducer *Reducer) ParameterToProperParameterList(
 	return list, nil
 }
 
-func (reducer *Reducer) ImproperToParameterList(
+func (reducer *Reducer) ImproperImplicitToParameterList(
+	list *ast.ParameterList,
+	newlines lr.TokenCount,
+) (
+	*ast.ParameterList,
+	error,
+) {
+  return list, nil
+}
+
+func (reducer *Reducer) ImproperExplicitToParameterList(
 	list *ast.ParameterList,
 	comma *lr.TokenValue,
 ) (
@@ -330,7 +340,17 @@ func (reducer *Reducer) ArgumentToProperArguments(
 	return list, nil
 }
 
-func (reducer *Reducer) ImproperToArguments(
+func (reducer *Reducer) ImproperImplicitToArguments(
+	list *ast.ArgumentList,
+	newlines lr.TokenCount,
+) (
+	*ast.ArgumentList,
+	error,
+) {
+	return list, nil
+}
+
+func (reducer *Reducer) ImproperExplicitToArguments(
 	list *ast.ArgumentList,
 	comma *lr.TokenValue,
 ) (

@@ -134,7 +134,17 @@ func (Reducer) TypePropertyToProperImplicitTypeProperties(
 	return list, nil
 }
 
-func (Reducer) ImproperToImplicitTypeProperties(
+func (Reducer) ImproperImplicitToImplicitTypeProperties(
+	list *ast.TypePropertyList,
+	newlines lr.TokenCount,
+) (
+	*ast.TypePropertyList,
+	error,
+) {
+	return list, nil
+}
+
+func (Reducer) ImproperExplicitToImplicitTypeProperties(
 	list *ast.TypePropertyList,
 	comma *lr.TokenValue,
 ) (

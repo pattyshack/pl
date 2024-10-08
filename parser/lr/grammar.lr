@@ -326,7 +326,8 @@ proper_arguments<ArgumentList> ->
 
 arguments<ArgumentList> ->
   = proper_arguments |
-  improper: proper_arguments COMMA |
+  improper_implicit: proper_arguments NEWLINES |
+  improper_explicit: proper_arguments COMMA |
   nil:
 
 argument<Argument> ->
@@ -740,7 +741,8 @@ proper_generic_parameter_list<GenericParameterList> ->
 
 generic_parameter_list<GenericParameterList> ->
   = proper_generic_parameter_list |
-  improper: proper_generic_parameter_list COMMA |
+  improper_implicit: proper_generic_parameter_list NEWLINES |
+  improper_explicit: proper_generic_parameter_list COMMA |
   nil:
 
 generic_arguments<TypeExpressionList> ->
@@ -753,7 +755,8 @@ proper_generic_argument_list<TypeExpressionList> ->
 
 generic_argument_list<TypeExpressionList> ->
   = proper_generic_argument_list |
-  improper: proper_generic_argument_list COMMA |
+  improper_implicit: proper_generic_argument_list NEWLINES |
+  improper_explicit: proper_generic_argument_list COMMA |
   nil:
 
 //
@@ -780,7 +783,8 @@ proper_implicit_type_properties<TypeProperties> ->
 
 implicit_type_properties<TypeProperties> ->
   = proper_implicit_type_properties |
-  improper: proper_implicit_type_properties COMMA |
+  improper_implicit: proper_implicit_type_properties NEWLINES |
+  improper_explicit: proper_implicit_type_properties COMMA |
   nil:
 
 implicit_struct_type_expr<TypeExpression> ->
@@ -865,7 +869,8 @@ proper_parameter_list<Parameters> ->
 
 parameter_list<Parameters> ->
   = proper_parameter_list |
-  improper: proper_parameter_list COMMA |
+  improper_implicit: proper_parameter_list NEWLINES |
+  improper_explicit: proper_parameter_list COMMA |
   nil:
 
 parameters<Parameters> -> LPAREN parameter_list RPAREN
