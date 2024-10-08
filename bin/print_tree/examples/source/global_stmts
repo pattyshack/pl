@@ -1,3 +1,9 @@
+var i = 10
+var i, var j = 10  // invalid
+
+func foo() {}
+func() {}  // invalid
+
 {
   import "fmt" // invalid
 

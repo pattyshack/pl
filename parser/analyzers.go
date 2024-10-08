@@ -1,11 +1,10 @@
 package parser
 
 import (
-	"fmt"
-
 	"github.com/pattyshack/gt/lexutil"
 
 	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/util"
 )
 
 type nodeValidator struct {
@@ -79,7 +78,7 @@ func (detector *unexpectedStatementsDetector) checkTopLevelStmts(
 ) {
 	for _, stmt := range stmts.Elements {
 		invalidStmtType := ""
-		switch stmt.(type) {
+		switch expr := stmt.(type) {
 		case *ast.UnsafeStmt: // ok
 		case *ast.ImportStmt: // ok
 		case *ast.FloatingComment: // ok
@@ -89,14 +88,91 @@ func (detector *unexpectedStatementsDetector) checkTopLevelStmts(
 		case *ast.JumpStmt:
 			invalidStmtType = "jump statement"
 		case ast.Expression:
-			// TODO limit allowable top-level expression
+			detector.checkTopLevelExpr(expr)
 		default:
-			invalidStmtType = fmt.Sprintf("statement type (%v)", stmt)
+			invalidStmtType = "statement type:\n" + util.TreeString(stmt, "  ") + "\n"
 		}
 
 		if invalidStmtType != "" {
 			detector.Emit(stmt.Loc(), "unexpected %s", invalidStmtType)
 		}
+	}
+}
+
+func (detector *unexpectedStatementsDetector) checkTopLevelExpr(
+	node ast.Expression,
+) {
+	invalid := ""
+	additional := ""
+	switch expr := node.(type) {
+
+	// invalid top level expressions
+
+	case *ast.LiteralExpr:
+		invalid = "literal"
+	case *ast.NamedExpr:
+		invalid = "name"
+	case *ast.AccessExpr:
+		invalid = "access"
+	case *ast.UnaryExpr:
+		invalid = "unary"
+	case *ast.BinaryExpr:
+		invalid = "binary"
+	case *ast.ImplicitStructExpr:
+		invalid = "implicit struct"
+	case *ast.CallExpr:
+		invalid = "call"
+	case *ast.IndexExpr:
+		invalid = "index"
+	case *ast.AsExpr:
+		invalid = "as"
+	case *ast.InitializeExpr:
+		invalid = "initialize"
+	case *ast.IfExpr:
+		invalid = "if"
+	case *ast.SwitchExpr:
+		invalid = "switch"
+	case *ast.SelectExpr:
+		invalid = "select"
+	case *ast.LoopExpr:
+		invalid = "loop"
+
+	// invalid top-level patterns (errors are emitted by patternAnalyzer).
+
+	case *ast.CasePatterns:
+	case *ast.AssignToAddrPattern:
+	case *ast.EnumPattern:
+
+		// conditionally valid top level expressions
+
+	case *ast.FuncDefinition:
+		if expr.Signature.Name == "" {
+			invalid = "anonymous func"
+		}
+
+	case *ast.AssignPattern:
+		_, ok := expr.Pattern.(*ast.AddrDeclPattern)
+		if !ok {
+			invalid = "assign"
+			additional = ", left hand side must be proper variable declaration"
+		}
+
+		// valid top level expressions
+
+	case *ast.StatementsExpr:
+	case *ast.ParseErrorExpr:
+	case *ast.AddrDeclPattern:
+
+	default:
+		invalid = "statement type:\n" + util.TreeString(node, "  ") + "\n"
+	}
+
+	if invalid != "" {
+		detector.Emit(
+			node.Loc(),
+			"unexpected source level %s expression%s",
+			invalid,
+			additional)
 	}
 }
 
@@ -132,7 +208,7 @@ func (detector *unexpectedStatementsDetector) checkExprStmts(
 			}
 		case ast.Expression: // ok
 		default:
-			invalidStmtType = "statement type"
+			invalidStmtType = "statement type:\n" + util.TreeString(node, "  ") + "\n"
 		}
 
 		if invalidStmtType != "" {

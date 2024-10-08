@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"strings"
@@ -11,6 +12,12 @@ import (
 const (
 	indent = "  "
 )
+
+func TreeString(node ast.Node, indent string) string {
+	buffer := &bytes.Buffer{}
+	_ = PrintTree(buffer, node, indent)
+	return buffer.String()
+}
 
 func PrintTree(output io.Writer, node ast.Node, indent string) error {
 	printer := &treePrinter{
