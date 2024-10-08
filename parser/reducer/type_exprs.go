@@ -262,32 +262,6 @@ func (reducer *Reducer) implicitPropertiesTypeExpr(
 	}
 }
 
-func (reducer *Reducer) explicitPropertiesTypeExpr(
-	kind ast.PropertiesKind,
-	kw *lr.TokenValue,
-	lparen *lr.TokenValue,
-	properties *ast.TypePropertyList,
-	rparen *lr.TokenValue,
-) *ast.PropertiesTypeExpr {
-	if properties == nil {
-		properties = ast.NewTypePropertyList()
-	}
-	properties.ReduceMarkers(lparen, rparen)
-
-	properties.PrependToLeading(kw.TakeTrailing())
-	properties.PrependToLeading(kw.TakeLeading())
-
-	expr := &ast.PropertiesTypeExpr{
-		StartEndPos:             ast.NewStartEndPos(kw.Loc(), rparen.End()),
-		LeadingTrailingComments: properties.TakeComments(),
-		Kind:                    kind,
-		IsImplicit:              false,
-		Properties:              properties.Elements,
-	}
-
-	return expr
-}
-
 func (reducer *Reducer) ToImplicitStructTypeExpr(
 	lparen *lr.TokenValue,
 	properties *ast.TypePropertyList,
@@ -298,42 +272,6 @@ func (reducer *Reducer) ToImplicitStructTypeExpr(
 ) {
 	expr := reducer.implicitPropertiesTypeExpr(
 		ast.StructKind,
-		lparen,
-		properties,
-		rparen)
-	return expr, nil
-}
-
-func (reducer *Reducer) ToExplicitStructTypeExpr(
-	structKW *lr.TokenValue,
-	lparen *lr.TokenValue,
-	properties *ast.TypePropertyList,
-	rparen *lr.TokenValue,
-) (
-	ast.TypeExpression,
-	error,
-) {
-	expr := reducer.explicitPropertiesTypeExpr(
-		ast.StructKind,
-		structKW,
-		lparen,
-		properties,
-		rparen)
-	return expr, nil
-}
-
-func (reducer *Reducer) ToTraitTypeExpr(
-	trait *lr.TokenValue,
-	lparen *lr.TokenValue,
-	properties *ast.TypePropertyList,
-	rparen *lr.TokenValue,
-) (
-	ast.TypeExpression,
-	error,
-) {
-	expr := reducer.explicitPropertiesTypeExpr(
-		ast.TraitKind,
-		trait,
 		lparen,
 		properties,
 		rparen)
@@ -356,8 +294,8 @@ func (reducer *Reducer) ToImplicitEnumTypeExpr(
 	return expr, nil
 }
 
-func (reducer *Reducer) ToExplicitEnumTypeExpr(
-	enum *lr.TokenValue,
+func (reducer *Reducer) ToPropertiesTypeExpr(
+	kw *lr.TokenValue,
 	lparen *lr.TokenValue,
 	properties *ast.TypePropertyList,
 	rparen *lr.TokenValue,
@@ -365,11 +303,19 @@ func (reducer *Reducer) ToExplicitEnumTypeExpr(
 	ast.TypeExpression,
 	error,
 ) {
-	expr := reducer.explicitPropertiesTypeExpr(
-		ast.EnumKind,
-		enum,
-		lparen,
-		properties,
-		rparen)
-	return expr, nil
+	if properties == nil {
+		properties = ast.NewTypePropertyList()
+	}
+	properties.ReduceMarkers(lparen, rparen)
+
+	properties.PrependToLeading(kw.TakeTrailing())
+	properties.PrependToLeading(kw.TakeLeading())
+
+	return &ast.PropertiesTypeExpr{
+		StartEndPos:             ast.NewStartEndPos(kw.Loc(), rparen.End()),
+		LeadingTrailingComments: properties.TakeComments(),
+		Kind:                    ast.PropertiesKind(kw.Value),
+		IsImplicit:              false,
+		Properties:              properties.Elements,
+	}, nil
 }

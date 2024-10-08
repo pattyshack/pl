@@ -649,7 +649,7 @@ improper_expr_struct<ImplicitStructExpr> ->
 // Note: named type initializations are parsed as call_expr instead of
 // initialize_expr
 initializable_type_expr<TypeExpression> ->
-  = explicit_struct_type_expr |
+  = properties_type_expr |
   = slice_type_expr |
   = array_type_expr |
   = map_type_expr
@@ -668,9 +668,7 @@ atom_type_expr<TypeExpression> ->
   = named_type_expr |
   = inferred_type_expr |
   = implicit_struct_type_expr |
-  = explicit_enum_type_expr |
   = implicit_enum_type_expr |
-  = trait_type_expr |
   = func_signature
 
 named_type_expr<TypeExpression> ->
@@ -790,23 +788,6 @@ implicit_type_properties<TypeProperties> ->
 implicit_struct_type_expr<TypeExpression> ->
   LPAREN implicit_type_properties RPAREN
 
-proper_explicit_type_properties<TypeProperties> ->
-  add_implicit: proper_explicit_type_properties NEWLINES type_property |
-  add_explicit: proper_explicit_type_properties COMMA type_property |
-  type_property
-
-explicit_type_properties<TypeProperties> ->
-  = proper_explicit_type_properties |
-  improper_implicit: proper_explicit_type_properties NEWLINES |
-  improper_explicit: proper_explicit_type_properties COMMA |
-  nil:
-
-explicit_struct_type_expr<TypeExpression> ->
-  STRUCT LPAREN explicit_type_properties RPAREN
-
-trait_type_expr<TypeExpression> ->
-  TRAIT LPAREN explicit_type_properties RPAREN
-
 // NOTE: inferred "<type_expr> OR ()" should be treated as
 // Optional$[<type_expr>]
 //
@@ -827,19 +808,24 @@ implicit_enum_type_properties<TypeProperties> ->
 implicit_enum_type_expr<TypeExpression> ->
   LPAREN implicit_enum_type_properties RPAREN
 
-proper_explicit_enum_type_properties<TypeProperties> ->
-  explicit_pair: type_property OR type_property |
-  implicit_pair: type_property NEWLINES type_property |
-  explicit_add: proper_explicit_enum_type_properties OR type_property |
-  implicit_add: proper_explicit_enum_type_properties NEWLINES type_property
+proper_explicit_type_properties<TypeProperties> ->
+  add_implicit: proper_explicit_type_properties NEWLINES type_property |
+  add_explicit: proper_explicit_type_properties COMMA type_property |
+  type_property
 
-explicit_enum_type_properties<TypeProperties> ->
-  = proper_explicit_enum_type_properties |
-  // allow ) on a different line
-  improper: proper_explicit_enum_type_properties NEWLINES
+explicit_type_properties<TypeProperties> ->
+  = proper_explicit_type_properties |
+  improper_implicit: proper_explicit_type_properties NEWLINES |
+  improper_explicit: proper_explicit_type_properties COMMA |
+  nil:
 
-explicit_enum_type_expr<TypeExpression> ->
-  ENUM LPAREN explicit_enum_type_properties RPAREN
+properties_type_expr<TypeExpression> ->
+  properties_kind LPAREN explicit_type_properties RPAREN
+
+properties_kind<Value> ->
+  = STRUCT |
+  = TRAIT |
+  = ENUM
 
 //
 // Function type, definition, trait method signature

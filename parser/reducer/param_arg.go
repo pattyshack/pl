@@ -225,7 +225,7 @@ func (reducer *Reducer) ImproperImplicitToParameterList(
 	*ast.ParameterList,
 	error,
 ) {
-  return list, nil
+	return list, nil
 }
 
 func (reducer *Reducer) ImproperExplicitToParameterList(
