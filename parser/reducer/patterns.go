@@ -197,6 +197,28 @@ func (Reducer) NamedToEnumPattern(
 	return enum, nil
 }
 
+func (Reducer) NamedUnitToEnumPattern(
+	dot *lr.TokenValue,
+	enumValue *lr.TokenValue,
+) (
+	ast.Expression,
+	error,
+) {
+	leading := dot.TakeLeading()
+	leading.Append(dot.TakeTrailing())
+	leading.Append(enumValue.TakeLeading())
+	trailing := enumValue.TakeTrailing()
+
+	enum := &ast.EnumPattern{
+		StartEndPos: ast.NewStartEndPos(dot.Loc(), enumValue.End()),
+		EnumValue:   enumValue.Value,
+		Pattern:     ast.NewImproperUnit(enumValue.End()),
+	}
+	enum.LeadingComment = leading
+	enum.TrailingComment = trailing
+	return enum, nil
+}
+
 func (Reducer) UnnamedStructToEnumPattern(
 	dot *lr.TokenValue,
 	pattern ast.Expression,

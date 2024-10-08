@@ -28,7 +28,7 @@ case (var x, y) = receiver<-value:
 }
 
 switch x {
-case .enumValue1(x, >y, var z, (let more, ..., >stuff), ...), .enumValue2():
+case .enumValue1(x, >y, var z, (let more, ..., >stuff), ...), .enumValue2(), .enumValue3:
 case (i+1, named=>(x, y()), named=var (i, j)), j(), k[x]:
 case .():
 case .(i, >j, var k):

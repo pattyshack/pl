@@ -343,6 +343,8 @@ func (detector *unexpectedImplicitStructsDetector) Enter(n ast.Node) {
 				"invalid ast construction. unexpected %s implicit struct",
 				node.Kind)
 		}
+	case *ast.EnumPattern:
+		detector.allowUnitImproperStruct(node.Pattern)
 	}
 }
 

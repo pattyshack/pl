@@ -306,9 +306,9 @@ type ImplicitStructExpr struct {
 var _ Expression = &ImplicitStructExpr{}
 var _ Validator = &ImplicitStructExpr{}
 
-func NewImproperUnit(startEnd StartEndPos) *ImplicitStructExpr {
+func NewImproperUnit(pos lexutil.Location) *ImplicitStructExpr {
 	return &ImplicitStructExpr{
-		StartEndPos: startEnd,
+		StartEndPos: NewStartEndPos(pos, pos),
 		Kind:        ImproperImplicitStruct,
 	}
 }

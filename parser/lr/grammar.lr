@@ -235,6 +235,7 @@ enum_pattern<Expression> ->
   // actually parses explicit enum match pattern, where VARs are inside the
   // data list, but we should reject this form for consistency)
   named: DOT IDENTIFIER implicit_struct_expr |
+  named_unit: DOT IDENTIFIER |
   unnamed_struct: DOT implicit_struct_expr
 
 //
