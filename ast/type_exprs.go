@@ -265,6 +265,18 @@ func (expr *PropertiesTypeExpr) Validate(emitter *lexutil.ErrorEmitter) {
 			if expr.Kind != TraitKind {
 				emitter.Emit(p.Loc(), "unexpected method signature in %s", expr.Kind)
 			}
+		case *FuncDefinition:
+			if prop.Signature.Name == "" {
+				emitter.Emit(prop.Loc(), "unexpected anonymous function definition")
+			} else {
+				if len(prop.Signature.Parameters.Elements) == 0 ||
+					prop.Signature.Parameters.Elements[0].Kind != ReceiverParameter {
+
+					emitter.Emit(
+						prop.Loc(),
+						"unexpected method definition, expected receiver parameter")
+				}
+			}
 		default:
 			panic(fmt.Sprintf("unexpected property type: %v", p))
 		}

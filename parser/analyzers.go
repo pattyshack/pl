@@ -281,14 +281,15 @@ func (detector *unexpectedFuncSignaturesDetector) processPropertiesTypeExpr(
 	typeExpr *ast.PropertiesTypeExpr,
 ) {
 	for _, property := range typeExpr.Properties {
-		sig, ok := property.(*ast.FuncSignature)
-		if !ok {
-			continue
-		}
-
-		detector.processed[sig] = struct{}{}
 		// NOTE: valid anonymous signatures are wrapped by FieldDef
-		detector.processNamedSignature(sig, false)
+		switch prop := property.(type) {
+		case *ast.FuncSignature:
+			detector.processed[prop] = struct{}{}
+			detector.processNamedSignature(prop, false)
+		case *ast.FuncDefinition:
+			detector.processed[prop.Signature] = struct{}{}
+			detector.processNamedSignature(prop.Signature, true)
+		}
 	}
 }
 

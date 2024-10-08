@@ -81,7 +81,7 @@ func (reducer *Reducer) ToFuncDef(
 	sig *ast.FuncSignature,
 	body *ast.StatementsExpr,
 ) (
-	ast.Expression,
+	*ast.FuncDefinition,
 	error,
 ) {
 	return &ast.FuncDefinition{

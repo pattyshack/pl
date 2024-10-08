@@ -773,7 +773,8 @@ type_property<TypeProperty> ->
   named_field: IDENTIFIER type_expr |
   padding_field: UNDERSCORE type_expr |
   default_named_enum_field: DEFAULT IDENTIFIER type_expr |
-  default_unnamed_enum_field: DEFAULT type_expr
+  default_unnamed_enum_field: DEFAULT type_expr |
+  = func_def
 
 proper_implicit_type_properties<TypeProperties> ->
   add: proper_implicit_type_properties COMMA type_property |
@@ -869,7 +870,7 @@ func_signature<FuncSignature> ->
   anonymous: FUNC parameters return_type |
   named: FUNC IDENTIFIER generic_parameters parameters return_type
 
-func_def<Expression> -> func_signature statements
+func_def<FuncDefinition> -> func_signature statements
 
 %%lang_specs{
 go:
@@ -890,6 +891,7 @@ go:
     ArgumentList: "*github.com/pattyshack/pl/ast.ArgumentList"
     TypeExpression: "github.com/pattyshack/pl/ast.TypeExpression"
     FuncSignature: "*github.com/pattyshack/pl/ast.FuncSignature"
+    FuncDefinition: "*github.com/pattyshack/pl/ast.FuncDefinition"
     GenericParameter: "*github.com/pattyshack/pl/ast.GenericParameter"
     GenericParameterList: "*github.com/pattyshack/pl/ast.GenericParameterList"
     TypeExpressionList: "*github.com/pattyshack/pl/ast.TypeExpressionList"

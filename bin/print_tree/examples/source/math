@@ -9,13 +9,18 @@ type StringIter = Iter$[String]
 type Fib struct(
   prev Int
   curr Int
+
+  func nextImpl(f >_) Int {
+    var prev = f.curr
+    f.curr += f.prev
+    f.prev = prev
+    f.curr
+  }
+
 ) implements Iter
 
-func next(f >&Fact) {
-  var prev = f.curr
-  f.curr += f.prev
-  f.prev = prev
-  f.curr
+func next(f >&Fact) Int {
+  f.next()
 }
 
 func fact(i Int) Int {

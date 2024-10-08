@@ -807,6 +807,7 @@ func (expr *LoopExpr) Validate(emitter *lexutil.ErrorEmitter) {
 
 type FuncDefinition struct {
 	IsExpr
+	IsTypeProp
 	StartEndPos
 	LeadingTrailingComments
 

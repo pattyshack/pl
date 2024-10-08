@@ -37,7 +37,7 @@ type Commentable interface {
 }
 
 type TokenValue interface {
-  Node
+	Node
 
 	Val() string
 }
