@@ -463,3 +463,55 @@ func (detector *unexpectedImplicitStructsDetector) allowImproperStruct(
 
 func (detector *unexpectedImplicitStructsDetector) Exit(node ast.Node) {
 }
+
+type unexpectedTypeDefsDetector struct {
+	// push true when TypeDef is entered.  push false when StatementsExpr is
+	// entered
+	scopeStack []bool
+	lexutil.ErrorEmitter
+}
+
+func detectUnexpectedTypeDefs() ast.Pass {
+	return &unexpectedTypeDefsDetector{}
+}
+
+func (detector *unexpectedTypeDefsDetector) Process(node ast.Node) {
+	node.Walk(detector)
+}
+
+func (detector *unexpectedTypeDefsDetector) push(scope bool) {
+	detector.scopeStack = append(detector.scopeStack, scope)
+}
+
+func (detector *unexpectedTypeDefsDetector) pop() {
+	detector.scopeStack = detector.scopeStack[:len(detector.scopeStack)-1]
+}
+
+func (detector *unexpectedTypeDefsDetector) isInTypeDef() bool {
+	if len(detector.scopeStack) > 0 {
+		return detector.scopeStack[len(detector.scopeStack)-1]
+	}
+	return false
+}
+
+func (detector *unexpectedTypeDefsDetector) Enter(node ast.Node) {
+	switch node.(type) {
+	case *ast.StatementsExpr:
+		detector.push(false)
+	case *ast.TypeDef:
+		detector.push(true)
+	case *ast.InferredTypeExpr:
+		if detector.isInTypeDef() {
+			detector.Emit(node.Loc(), "unexpected inferred type in type definition")
+		}
+	}
+}
+
+func (detector *unexpectedTypeDefsDetector) Exit(node ast.Node) {
+	switch node.(type) {
+	case *ast.StatementsExpr:
+		detector.pop()
+	case *ast.TypeDef:
+		detector.pop()
+	}
+}

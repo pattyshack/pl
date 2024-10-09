@@ -7,4 +7,21 @@ var _ enum(
   func bad()
 
   _ bad
+
+  ok _
+)
+
+type X = enum(
+  X string
+  (Int)
+  default X string
+  default ()
+
+  func bad()
+
+  _ bad
+
+  bad _
+
+  bad [Int]
 )
