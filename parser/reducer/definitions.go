@@ -26,15 +26,13 @@ func (reducer *Reducer) ToFloatingComment(
 // TypeDef
 //
 
-func (reducer *Reducer) DefinitionToTypeDef(
+func (reducer *Reducer) toTypeDef(
 	typeKW *lr.TokenValue,
 	name *lr.TokenValue,
 	genericParameters *ast.GenericParameterList,
 	baseType ast.TypeExpression,
-) (
-	ast.Statement,
-	error,
-) {
+	constraint ast.TypeExpression,
+) *ast.TypeDef {
 	leading := typeKW.TakeLeading()
 	leading.Append(typeKW.TakeTrailing())
 	leading.Append(name.TakeLeading())
@@ -45,16 +43,34 @@ func (reducer *Reducer) DefinitionToTypeDef(
 		baseType.PrependToLeading(name.TakeTrailing())
 	}
 
-	trailing := baseType.TakeTrailing()
-
 	def := &ast.TypeDef{
 		StartEndPos:       ast.NewStartEndPos(typeKW.Loc(), baseType.End()),
 		Name:              name.Value,
 		GenericParameters: genericParameters,
 		BaseType:          baseType,
+		Constraint:        constraint,
 	}
 	def.LeadingComment = leading
-	def.TrailingComment = trailing
+
+	return def
+}
+
+func (reducer *Reducer) DefinitionToTypeDef(
+	typeKW *lr.TokenValue,
+	name *lr.TokenValue,
+	genericParameters *ast.GenericParameterList,
+	baseType ast.TypeExpression,
+) (
+	ast.Statement,
+	error,
+) {
+	def := reducer.toTypeDef(
+		typeKW,
+		name,
+		genericParameters,
+		baseType,
+		ast.NewAnyTrait(baseType.End()))
+	def.TrailingComment = baseType.TakeTrailing()
 
 	return def, nil
 }
@@ -70,61 +86,16 @@ func (reducer *Reducer) ConstrainedDefToTypeDef(
 	ast.Statement,
 	error,
 ) {
-	leading := typeKW.TakeLeading()
-	leading.Append(typeKW.TakeTrailing())
-	leading.Append(name.TakeLeading())
-
-	if genericParameters != nil {
-		genericParameters.PrependToLeading(name.TakeTrailing())
-	} else {
-		baseType.PrependToLeading(name.TakeTrailing())
-	}
-
 	baseType.AppendToTrailing(implements.TakeLeading())
 	constraint.PrependToLeading(implements.TakeTrailing())
 
-	trailing := constraint.TakeTrailing()
-
-	def := &ast.TypeDef{
-		StartEndPos:       ast.NewStartEndPos(typeKW.Loc(), constraint.End()),
-		Name:              name.Value,
-		GenericParameters: genericParameters,
-		BaseType:          baseType,
-		Constraint:        constraint,
-	}
-	def.LeadingComment = leading
-	def.TrailingComment = trailing
-
-	return def, nil
-}
-
-func (reducer *Reducer) AliasToTypeDef(
-	typeKW *lr.TokenValue,
-	name *lr.TokenValue,
-	assign *lr.TokenValue,
-	baseType ast.TypeExpression,
-) (
-	ast.Statement,
-	error,
-) {
-	leading := typeKW.TakeLeading()
-	leading.Append(typeKW.TakeTrailing())
-	leading.Append(name.TakeLeading())
-
-	baseType.PrependToLeading(assign.TakeTrailing())
-	baseType.PrependToLeading(assign.TakeLeading())
-	baseType.PrependToLeading(name.TakeTrailing())
-
-	trailing := baseType.TakeTrailing()
-
-	def := &ast.TypeDef{
-		StartEndPos: ast.NewStartEndPos(typeKW.Loc(), baseType.End()),
-		Name:        name.Value,
-		IsAlias:     true,
-		BaseType:    baseType,
-	}
-	def.LeadingComment = leading
-	def.TrailingComment = trailing
+	def := reducer.toTypeDef(
+		typeKW,
+		name,
+		genericParameters,
+		baseType,
+		constraint)
+	def.TrailingComment = constraint.TakeTrailing()
 
 	return def, nil
 }

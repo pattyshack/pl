@@ -45,16 +45,14 @@ type GenericParameter struct {
 
 	Name string
 
-	Constraint TypeExpression // optional
+	Constraint TypeExpression // use any trait if unconstrained
 }
 
 var _ Node = &GenericParameter{}
 
 func (param *GenericParameter) Walk(visitor Visitor) {
 	visitor.Enter(param)
-	if param.Constraint != nil {
-		param.Constraint.Walk(visitor)
-	}
+	param.Constraint.Walk(visitor)
 	visitor.Exit(param)
 }
 

@@ -77,6 +77,15 @@ type InferredTypeExpr struct {
 	IsTypeExpr
 	StartEndPos
 	LeadingTrailingComments
+
+	IsImplicit bool
+}
+
+func NewImplicitInferredTypeExpr(pos lexutil.Location) TypeExpression {
+	return &InferredTypeExpr{
+		StartEndPos: NewStartEndPos(pos, pos),
+		IsImplicit:  true,
+	}
 }
 
 func (expr *InferredTypeExpr) Walk(visitor Visitor) {
@@ -225,6 +234,14 @@ type PropertiesTypeExpr struct {
 var _ TypeExpression = &PropertiesTypeExpr{}
 var _ Validator = &PropertiesTypeExpr{}
 
+func NewAnyTrait(pos lexutil.Location) *PropertiesTypeExpr {
+	return &PropertiesTypeExpr{
+		StartEndPos: NewStartEndPos(pos, pos),
+		Kind:        TraitKind,
+		IsImplicit:  true,
+	}
+}
+
 func (expr *PropertiesTypeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	for _, prop := range expr.Properties {
@@ -297,7 +314,7 @@ type FuncSignature struct {
 	GenericParameters *GenericParameterList
 
 	Parameters *ParameterList
-	ReturnType TypeExpression // Optional
+	ReturnType TypeExpression // use any trait if unconstrained
 }
 
 var _ TypeExpression = &FuncSignature{}
@@ -309,8 +326,6 @@ func (sig *FuncSignature) Walk(visitor Visitor) {
 		sig.GenericParameters.Walk(visitor)
 	}
 	sig.Parameters.Walk(visitor)
-	if sig.ReturnType != nil {
-		sig.ReturnType.Walk(visitor)
-	}
+	sig.ReturnType.Walk(visitor)
 	visitor.Exit(sig)
 }

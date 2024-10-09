@@ -26,6 +26,8 @@ func (reducer *Reducer) AnonymousToFuncSignature(
 	var end ast.Node = parameters
 	if returnType != nil {
 		end = returnType
+	} else {
+		returnType = ast.NewAnyTrait(parameters.End())
 	}
 
 	sig := &ast.FuncSignature{
@@ -62,6 +64,8 @@ func (reducer *Reducer) NamedToFuncSignature(
 	var end ast.Node = parameters
 	if returnType != nil {
 		end = returnType
+	} else {
+		returnType = ast.NewAnyTrait(parameters.End())
 	}
 
 	sig := &ast.FuncSignature{

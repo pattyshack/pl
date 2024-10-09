@@ -200,11 +200,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.list("[CasePatterns:", nil, "Pattern", len(node.Patterns))
 	case *ast.AddrDeclPattern:
 		printer.write("[AddrDeclPattern: IsVar=%v", node.IsVar)
-		if node.Type != nil {
-			printer.push("Pattern=", "TypeExpr=")
-		} else {
-			printer.push("Pattern=")
-		}
+		printer.push("Pattern=", "TypeExpr=")
 	case *ast.AssignToAddrPattern:
 		printer.write("[AssignToAddrPattern:")
 		printer.push("Pattern=")
@@ -221,7 +217,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.write("[MapTypeExpr:")
 		printer.push("Key=", "Value=")
 	case *ast.InferredTypeExpr:
-		printer.write("[InferredTypeExpr]")
+		printer.write("[InferredTypeExpr: IsImplicit=%v]", node.IsImplicit)
 	case *ast.NamedTypeExpr:
 		printer.write("[NamedTypeExpr: Pkg=%s Name=%s", node.Pkg, node.Name)
 		if node.GenericArguments != nil {
@@ -250,10 +246,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		if node.GenericParameters != nil {
 			labels = append(labels, "GenericParameters=")
 		}
-		labels = append(labels, "Parameters=")
-		if node.ReturnType != nil {
-			labels = append(labels, "ReturnType=")
-		}
+		labels = append(labels, "Parameters=", "ReturnType=")
 		printer.push(labels...)
 
 	case *ast.ImportStmt:
@@ -295,15 +288,12 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.write("[FuncDefinition")
 		printer.push("Signature=", "Body=")
 	case *ast.TypeDef:
-		printer.write("[TypeDef: Name=%s IsAlias=%v", node.Name, node.IsAlias)
+		printer.write("[TypeDef: Name=%s", node.Name)
 		labels := []string{}
 		if node.GenericParameters != nil {
 			labels = append(labels, "GenericParameters=")
 		}
-		labels = append(labels, "BaseType=")
-		if node.Constraint != nil {
-			labels = append(labels, "Constraint=")
-		}
+		labels = append(labels, "BaseType=", "Constraint=")
 		printer.push(labels...)
 
 	case *ast.Parameter:
@@ -321,11 +311,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.push("Type=")
 	case *ast.GenericParameter:
 		printer.write("GenericParameter: Name=%s", node.Name)
-		if node.Constraint != nil {
-			printer.push("Constraint=")
-		} else {
-			printer.write("]")
-		}
+		printer.push("Constraint=")
 	case *ast.ImportClause:
 		printer.write(
 			"[ImportClause: Alias=%s Package=%s]",
@@ -433,9 +419,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.FieldDef:
 		printer.endNode()
 	case *ast.GenericParameter:
-		if node.Constraint != nil {
-			printer.endNode()
-		}
+		printer.endNode()
 
 	case *ast.StatementList:
 		printer.endList(len(node.Elements))

@@ -80,7 +80,7 @@ type AddrDeclPattern struct {
 
 	IsVar   bool // true = var, false = let
 	Pattern Expression
-	Type    TypeExpression // optional
+	Type    TypeExpression // use InferredTypeExpr if unspecified
 }
 
 var _ Expression = &AddrDeclPattern{}
@@ -101,6 +101,8 @@ func NewAddrDeclPattern(
 	var end Node = pattern
 	if typeExpr != nil {
 		end = typeExpr
+	} else {
+		typeExpr = NewImplicitInferredTypeExpr(pattern.End())
 	}
 
 	expr := &AddrDeclPattern{
@@ -119,9 +121,7 @@ func NewAddrDeclPattern(
 func (pattern *AddrDeclPattern) Walk(visitor Visitor) {
 	visitor.Enter(pattern)
 	pattern.Pattern.Walk(visitor)
-	if pattern.Type != nil {
-		pattern.Type.Walk(visitor)
-	}
+	pattern.Type.Walk(visitor)
 	visitor.Exit(pattern)
 }
 

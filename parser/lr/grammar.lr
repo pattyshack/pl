@@ -710,8 +710,7 @@ binary_type_op<Value> ->
 
 type_def<Statement> ->
   definition: TYPE IDENTIFIER generic_parameters type_expr |
-  constrained_def: TYPE IDENTIFIER generic_parameters type_expr IMPLEMENTS type_expr |
-  alias: TYPE IDENTIFIER ASSIGN type_expr
+  constrained_def: TYPE IDENTIFIER generic_parameters type_expr IMPLEMENTS type_expr
 
 //
 // Generic parameter definitions / arguments

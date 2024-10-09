@@ -16,9 +16,10 @@ func (Reducer) UnconstrainedToGenericParameter(
 	error,
 ) {
 	return &ast.GenericParameter{
-		StartEndPos:             ast.NewStartEndPos(name.Loc(), name.End()),
-		LeadingTrailingComments: name.LeadingTrailingComments,
+		StartEndPos:             name.StartEnd(),
+		LeadingTrailingComments: name.TakeComments(),
 		Name:                    name.Value,
+		Constraint:              ast.NewAnyTrait(name.End()),
 	}, nil
 }
 
