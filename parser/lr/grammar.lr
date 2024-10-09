@@ -24,7 +24,8 @@
 
 %token<Value> UNSAFE
 
-%token<Value> TYPE IMPLEMENTS STRUCT ENUM TRAIT
+%token<Value> TYPE IMPLEMENTS ALIAS
+%token<Value> STRUCT ENUM TRAIT
 %token<Value> FUNC ASYNC DEFER
 %token<Value> VAR LET AS
 
@@ -74,6 +75,7 @@ statement<Statement> ->
   = import_stmt |
   = floating_comment |
   = type_def |
+  = alias_def |
 
   // Note: Only applicable to switch / select body
   = branch_stmt |
@@ -317,6 +319,8 @@ index<Expression> ->
 // eqv to golang's "s, ok := expr.(SomeType)".
 as_expr<Expression> -> accessible_expr DOT AS LPAREN type_expr RPAREN
 
+// NOTE: call_expr captures certain initialize_expr as well. The compiler will
+// need to resolve the name and convert call_expr to initialize_expr
 call_expr<Expression> ->
   accessible_expr generic_arguments LPAREN arguments RPAREN
 
@@ -711,6 +715,10 @@ binary_type_op<Value> ->
 type_def<Statement> ->
   definition: TYPE IDENTIFIER generic_parameters type_expr |
   constrained_def: TYPE IDENTIFIER generic_parameters type_expr IMPLEMENTS type_expr
+
+// NOTE: this also allows named function (and variable) aliasing.  The compiler
+// will resolve names and converted type_expr to expr as needed.
+alias_def<Statement> -> ALIAS IDENTIFIER generic_parameters type_expr
 
 //
 // Generic parameter definitions / arguments

@@ -4,7 +4,7 @@ type Iter$[Item] trait(
   func next() Item
 )
 
-type StringIter = Iter$[String]
+alias StringIter Iter$[String]
 
 type Fib struct(
   prev Int

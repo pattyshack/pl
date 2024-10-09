@@ -83,6 +83,7 @@ func (detector *unexpectedStatementsDetector) checkTopLevelStmts(
 		case *ast.ImportStmt: // ok
 		case *ast.FloatingComment: // ok
 		case *ast.TypeDef: // ok
+		case *ast.AliasDef: // ok
 		case *ast.BlockAddrDeclStmt: // ok
 		case *ast.ConditionBranchStmt:
 			invalidStmtType = "branch statement"
@@ -201,6 +202,8 @@ func (detector *unexpectedStatementsDetector) checkExprStmts(
 			// This only happen in manually constructed tree.
 			invalidStmtType = "floating comment"
 		case *ast.TypeDef:
+			// XXX: ok for now. should check to ensure the type is used.
+		case *ast.AliasDef:
 			// XXX: ok for now. should check to ensure the type is used.
 		case *ast.ConditionBranchStmt:
 			invalidStmtType = "branch statement"

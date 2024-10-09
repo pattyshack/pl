@@ -295,6 +295,14 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		}
 		labels = append(labels, "BaseType=", "Constraint=")
 		printer.push(labels...)
+	case *ast.AliasDef:
+		printer.write("[Alias: Alias=%s", node.Alias)
+		labels := []string{}
+		if node.GenericParameters != nil {
+			labels = append(labels, "GenericParameters=")
+		}
+		labels = append(labels, "Value=")
+		printer.push(labels...)
 
 	case *ast.Parameter:
 		printer.write("[Parameter: Kind=%v Name=%s", node.Kind, node.Name)
@@ -408,6 +416,8 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.FuncDefinition:
 		printer.endNode()
 	case *ast.TypeDef:
+		printer.endNode()
+	case *ast.AliasDef:
 		printer.endNode()
 
 	case *ast.Parameter:

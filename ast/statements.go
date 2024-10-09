@@ -219,6 +219,31 @@ func (def *TypeDef) Walk(visitor Visitor) {
 }
 
 //
+// AliasDef
+//
+
+type AliasDef struct {
+	IsStmt
+	StartEndPos
+	LeadingTrailingComments
+
+	Alias             string
+	GenericParameters *GenericParameterList // optional
+	Value             TypeExpression
+}
+
+var _ Statement = &AliasDef{}
+
+func (def *AliasDef) Walk(visitor Visitor) {
+	visitor.Enter(def)
+	if def.GenericParameters != nil {
+		def.GenericParameters.Walk(visitor)
+	}
+	def.Value.Walk(visitor)
+	visitor.Exit(def)
+}
+
+//
 // BlockAddrDeclStmt
 //
 

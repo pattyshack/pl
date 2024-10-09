@@ -99,3 +99,34 @@ func (reducer *Reducer) ConstrainedDefToTypeDef(
 
 	return def, nil
 }
+
+func (reducer *Reducer) ToAliasDef(
+	aliasKW *lr.TokenValue,
+	alias *lr.TokenValue,
+	genericParameters *ast.GenericParameterList,
+	value ast.TypeExpression,
+) (
+	ast.Statement,
+	error,
+) {
+	leading := aliasKW.TakeLeading()
+	leading.Append(aliasKW.TakeTrailing())
+	leading.Append(alias.TakeLeading())
+
+	if genericParameters != nil {
+		genericParameters.PrependToLeading(alias.TakeTrailing())
+	} else {
+		value.PrependToLeading(alias.TakeTrailing())
+	}
+
+	def := &ast.AliasDef{
+		StartEndPos:       ast.NewStartEndPos(aliasKW.Loc(), value.End()),
+		Alias:             alias.Value,
+		GenericParameters: genericParameters,
+		Value:             value,
+	}
+	def.LeadingComment = leading
+	def.TrailingComment = value.TakeTrailing()
+
+	return def, nil
+}

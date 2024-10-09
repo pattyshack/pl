@@ -169,12 +169,12 @@ identifer = letter (letter | unicode-number)*
 
 ### Keywords
 ```
-and      async        as
+alias    and          async       as
 break
 case     continue
 default  defer        do
 else     enum
-false    fallthrough  for       func
+false    fallthrough  for         func
 if       in           implements  import
 let
 not

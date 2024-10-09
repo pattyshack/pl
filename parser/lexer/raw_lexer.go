@@ -55,6 +55,7 @@ var (
 		"unsafe":      lr.UnsafeToken,
 		"type":        lr.TypeToken,
 		"implements":  lr.ImplementsToken,
+		"alias":       lr.AliasToken,
 		"struct":      lr.StructToken,
 		"enum":        lr.EnumToken,
 		"trait":       lr.TraitToken,
