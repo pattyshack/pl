@@ -221,7 +221,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.write("[MapTypeExpr:")
 		printer.push("Key=", "Value=")
 	case *ast.InferredTypeExpr:
-		printer.write("[InferredTypeExpr: InferMutable=%v]", node.InferMutable)
+		printer.write("[InferredTypeExpr]")
 	case *ast.NamedTypeExpr:
 		printer.write("[NamedTypeExpr: Pkg=%s Name=%s", node.Pkg, node.Name)
 		if node.GenericArguments != nil {
@@ -282,12 +282,12 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		} else {
 			printer.push("Branch=")
 		}
-  case *ast.BlockAddrDeclStmt:
-    printer.list(
-      fmt.Sprintf("[BlockAddrDeclStmt: IsVar=%v", node.IsVar),
-      nil,
-      "Decl",
-      len(node.Patterns))
+	case *ast.BlockAddrDeclStmt:
+		printer.list(
+			fmt.Sprintf("[BlockAddrDeclStmt: IsVar=%v", node.IsVar),
+			nil,
+			"Decl",
+			len(node.Patterns))
 
 	case *ast.FloatingComment:
 		printer.write("[FloatingComment]")
@@ -416,7 +416,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 		printer.endNode()
 	case *ast.ConditionBranchStmt:
 		printer.endNode()
-  case *ast.BlockAddrDeclStmt:
+	case *ast.BlockAddrDeclStmt:
 		printer.endList(len(node.Patterns))
 
 	case *ast.FuncDefinition:

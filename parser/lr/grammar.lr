@@ -12,9 +12,7 @@
 // "_" is a keyword that has different meanings in different context:
 //  1. As an expression, it's an assignable, but inaccessible, variable
 //     placeholder that can be used anywhere without val/let declaration.
-//  2. As an type expression:
-//    a. When used as an enum value type, the enum value has no associated data.
-//    b. Everywhere else, it is an inferred mutable reference type.
+//  2. As an type expression, it is an inferred mutable reference type.
 %token<Value> UNDERSCORE
 
 %token<Value> TRUE FALSE
@@ -677,14 +675,7 @@ named_type_expr<TypeExpression> ->
   local: IDENTIFIER generic_arguments |
   external: IDENTIFIER DOT IDENTIFIER generic_arguments
 
-// NOTE: "." infers to a copy-on-mutate reference by default, whereas "_"
-// infers to a mutable reference by default (or a non-data enum value).
-//
-// NOTE: Maybe allow "DOT generic_arguments", which potentially only infer
-// a name rather than a type_expr.
-inferred_type_expr<TypeExpression> ->
-  DOT |
-  UNDERSCORE
+inferred_type_expr<TypeExpression> -> UNDERSCORE
 
 // NOTE: allowing return type to use trait algebra without explicitly wrapping
 // inside a trait() would cause to ambiguity.  e.g.,
@@ -767,8 +758,7 @@ generic_argument_list<TypeExpressionList> ->
 // usable in struct. These are checked post parsing.
 //
 // NOTE: In general, type_expr must be concrete (i.e., can't have any inferred
-// type).  Enum value can use "_" as type to indicate no data is associated
-// with the enum value.
+// type).
 type_property<TypeProperty> ->
   // NOTE: unnamed_field also captures trait method signatures
   unnamed_field: type_expr |
@@ -839,8 +829,8 @@ return_type<TypeExpression> ->
   = returnable_type_expr |
   nil:
 
-// NOTE: inferred mutable reference type is declared either as "_" or "&.".
-// copy-on-mutate reference is declared as "."
+// NOTE: inferred mutable reference type is declared "&_". copy-on-mutate
+// reference is declared as "_"
 parameter<Parameter> ->
   named_arg: IDENTIFIER type_expr |
   named_receiver: IDENTIFIER GREATER type_expr |

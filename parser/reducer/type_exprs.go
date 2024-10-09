@@ -99,34 +99,16 @@ func (reducer *Reducer) ToMapTypeExpr(
 // InferredTypeExpr
 //
 
-func (reducer *Reducer) DotToInferredTypeExpr(
-	dot *lr.TokenValue,
-) (
-	ast.TypeExpression,
-	error,
-) {
-	expr := &ast.InferredTypeExpr{
-		StartEndPos:  ast.NewStartEndPos(dot.Loc(), dot.End()),
-		InferMutable: false,
-	}
-	expr.LeadingComment = dot.TakeLeading()
-	expr.TrailingComment = dot.TakeTrailing()
-	return expr, nil
-}
-
-func (reducer *Reducer) UnderscoreToInferredTypeExpr(
+func (reducer *Reducer) ToInferredTypeExpr(
 	underscore *lr.TokenValue,
 ) (
 	ast.TypeExpression,
 	error,
 ) {
-	expr := &ast.InferredTypeExpr{
-		StartEndPos:  ast.NewStartEndPos(underscore.Loc(), underscore.End()),
-		InferMutable: true,
-	}
-	expr.LeadingComment = underscore.TakeLeading()
-	expr.TrailingComment = underscore.TakeTrailing()
-	return expr, nil
+	return &ast.InferredTypeExpr{
+		StartEndPos:             underscore.StartEnd(),
+		LeadingTrailingComments: underscore.TakeComments(),
+	}, nil
 }
 
 //
