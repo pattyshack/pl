@@ -173,14 +173,11 @@ func (Reducer) AddToSwitchableCasePatterns(
 // EnumPattern
 //
 
-func (Reducer) NamedToEnumPattern(
+func (Reducer) namedToEnumPattern(
 	dot *lr.TokenValue,
 	enumValue *lr.TokenValue,
 	pattern ast.Expression,
-) (
-	ast.Expression,
-	error,
-) {
+) ast.Expression {
 	leading := dot.TakeLeading()
 	leading.Append(dot.TakeTrailing())
 	leading.Append(enumValue.TakeLeading())
@@ -194,16 +191,35 @@ func (Reducer) NamedToEnumPattern(
 	}
 	enum.LeadingComment = leading
 	enum.TrailingComment = trailing
-	return enum, nil
+	return enum
 }
 
-func (Reducer) NamedUnitToEnumPattern(
+func (reducer Reducer) MatchAnyDataToEnumPattern(
 	dot *lr.TokenValue,
-	enumValue *lr.TokenValue,
+	underscore *lr.TokenValue,
+	pattern ast.Expression,
 ) (
 	ast.Expression,
 	error,
 ) {
+	return reducer.namedToEnumPattern(dot, underscore, pattern), nil
+}
+
+func (reducer Reducer) NamedToEnumPattern(
+	dot *lr.TokenValue,
+	enumValue *lr.TokenValue,
+	pattern ast.Expression,
+) (
+	ast.Expression,
+	error,
+) {
+	return reducer.namedToEnumPattern(dot, enumValue, pattern), nil
+}
+
+func (Reducer) namedUnitToEnumPattern(
+	dot *lr.TokenValue,
+	enumValue *lr.TokenValue,
+) ast.Expression {
 	leading := dot.TakeLeading()
 	leading.Append(dot.TakeTrailing())
 	leading.Append(enumValue.TakeLeading())
@@ -216,7 +232,27 @@ func (Reducer) NamedUnitToEnumPattern(
 	}
 	enum.LeadingComment = leading
 	enum.TrailingComment = trailing
-	return enum, nil
+	return enum
+}
+
+func (reducer Reducer) MatchAnyUnitToEnumPattern(
+	dot *lr.TokenValue,
+	underscore *lr.TokenValue,
+) (
+	ast.Expression,
+	error,
+) {
+	return reducer.namedUnitToEnumPattern(dot, underscore), nil
+}
+
+func (reducer Reducer) NamedUnitToEnumPattern(
+	dot *lr.TokenValue,
+	enumValue *lr.TokenValue,
+) (
+	ast.Expression,
+	error,
+) {
+	return reducer.namedUnitToEnumPattern(dot, enumValue), nil
 }
 
 func (Reducer) UnnamedStructToEnumPattern(

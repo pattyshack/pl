@@ -169,8 +169,12 @@ type EnumPattern struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	EnumValue string // optional. empty string matches unnamed struct enum value
-	Pattern   Expression
+	// - identifier string matches only only that named enum value
+	// - empty string matches unnamed struct enum value
+	// - underscore matches any named/unnamed enum value
+	EnumValue string
+
+	Pattern Expression
 }
 
 var _ Expression = &EnumPattern{}
