@@ -3,5 +3,5 @@ type T trait (
 
   func ok()  // method signature
 
-  func unexpectedReceiver(blah >.)
+  func unexpectedReceiver(blah >_)
 )

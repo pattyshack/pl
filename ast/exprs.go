@@ -355,7 +355,7 @@ type CallExpr struct {
 	LeadingTrailingComments
 
 	FuncExpr         Expression
-	GenericArguments *TypeExpressionList // optional
+	GenericArguments *TypeExpressionList
 	Arguments        []*Argument
 }
 
@@ -365,9 +365,7 @@ var _ Validator = &CallExpr{}
 func (expr *CallExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.FuncExpr.Walk(visitor)
-	if expr.GenericArguments != nil {
-		expr.GenericArguments.Walk(visitor)
-	}
+	expr.GenericArguments.Walk(visitor)
 	for _, arg := range expr.Arguments {
 		arg.Walk(visitor)
 	}

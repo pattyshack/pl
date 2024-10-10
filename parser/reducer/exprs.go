@@ -547,6 +547,10 @@ func (reducer *Reducer) ToCallExpr(
 	var prev ast.Node = funcExpr
 	if genericArguments != nil {
 		prev = genericArguments
+	} else {
+		genericArguments = ast.NewTypeExpressionList()
+		genericArguments.StartPos = funcExpr.End()
+		genericArguments.EndPos = funcExpr.End()
 	}
 
 	if arguments == nil {

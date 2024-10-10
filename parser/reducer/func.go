@@ -58,6 +58,9 @@ func (reducer *Reducer) NamedToFuncSignature(
 	var next ast.Node = parameters
 	if genericParameters != nil {
 		next = genericParameters
+	} else {
+		genericParameters = ast.NewGenericParameterList()
+		genericParameters.StartEndPos = ast.NewStartEndPos(name.End(), name.End())
 	}
 	next.PrependToLeading(name.TakeTrailing())
 

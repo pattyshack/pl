@@ -11,7 +11,7 @@ var _ enum(
   ok _
 )
 
-type X = enum(
+type X enum(
   X string
   (Int)
   default X string
@@ -23,5 +23,5 @@ type X = enum(
 
   bad _
 
-  bad [Int]
+  bad [_]
 )

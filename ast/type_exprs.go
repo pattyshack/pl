@@ -105,14 +105,12 @@ type NamedTypeExpr struct {
 	Pkg  string // optional.  "" = local
 	Name string
 
-	GenericArguments *TypeExpressionList // optional
+	GenericArguments *TypeExpressionList
 }
 
 func (expr *NamedTypeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
-	if expr.GenericArguments != nil {
-		expr.GenericArguments.Walk(visitor)
-	}
+	expr.GenericArguments.Walk(visitor)
 	visitor.Exit(expr)
 }
 
@@ -308,9 +306,9 @@ type FuncSignature struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	// Optional. Only used by named signature
+	// Required for named named signature. Empty for anonymous signature.
 	Name string
-	// Optional.  Only used by named signature
+	// Required for named signature. nil for anonymous signature.
 	GenericParameters *GenericParameterList
 
 	Parameters *ParameterList

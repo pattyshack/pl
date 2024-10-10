@@ -3,7 +3,7 @@
 
   x = func name() {}  // not ok
 
-  x = func(bad >.) {}
+  x = func(bad >_) {}
 
   func () {}  // anon func expr
 }

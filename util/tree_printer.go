@@ -135,10 +135,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			"Argument",
 			len(node.Arguments))
 	case *ast.CallExpr:
-		argLabels := []string{"FuncExpr="}
-		if node.GenericArguments != nil {
-			argLabels = append(argLabels, "GenericArguments=")
-		}
+		argLabels := []string{"FuncExpr=", "GenericArguments="}
 		printer.list("[CallExpr", argLabels, "Argument", len(node.Arguments))
 	case *ast.IndexExpr:
 		printer.list(
@@ -220,11 +217,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.write("[InferredTypeExpr: IsImplicit=%v]", node.IsImplicit)
 	case *ast.NamedTypeExpr:
 		printer.write("[NamedTypeExpr: Pkg=%s Name=%s", node.Pkg, node.Name)
-		if node.GenericArguments != nil {
-			printer.push("GenericArguments=")
-		} else {
-			printer.write("]")
-		}
+		printer.push("GenericArguments=")
 	case *ast.UnaryTypeExpr:
 		printer.write("[UnaryTypeExpr: Op=(%s)", node.Op)
 		printer.push("Operand=")
@@ -289,21 +282,10 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.push("Signature=", "Body=")
 	case *ast.TypeDef:
 		printer.write("[TypeDef: Name=%s", node.Name)
-		labels := []string{}
-		if node.GenericParameters != nil {
-			labels = append(labels, "GenericParameters=")
-		}
-		labels = append(labels, "BaseType=", "Constraint=")
-		printer.push(labels...)
+		printer.push("GenericParameters=", "BaseType=", "Constraint=")
 	case *ast.AliasDef:
 		printer.write("[Alias: Alias=%s", node.Alias)
-		labels := []string{}
-		if node.GenericParameters != nil {
-			labels = append(labels, "GenericParameters=")
-		}
-		labels = append(labels, "Value=")
-		printer.push(labels...)
-
+		printer.push("GenericParameters=", "Value=")
 	case *ast.Parameter:
 		printer.write("[Parameter: Kind=%v Name=%s", node.Kind, node.Name)
 		printer.push("Type=")
@@ -392,9 +374,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.MapTypeExpr:
 		printer.endNode()
 	case *ast.NamedTypeExpr:
-		if node.GenericArguments != nil {
-			printer.endNode()
-		}
+		printer.endNode()
 	case *ast.UnaryTypeExpr:
 		printer.endNode()
 	case *ast.BinaryTypeExpr:

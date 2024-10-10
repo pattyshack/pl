@@ -201,7 +201,7 @@ type TypeDef struct {
 	LeadingTrailingComments
 
 	Name              string
-	GenericParameters *GenericParameterList // optional
+	GenericParameters *GenericParameterList
 	BaseType          TypeExpression
 	Constraint        TypeExpression // use any trait if unconstrained
 }
@@ -210,9 +210,7 @@ var _ Statement = &TypeDef{}
 
 func (def *TypeDef) Walk(visitor Visitor) {
 	visitor.Enter(def)
-	if def.GenericParameters != nil {
-		def.GenericParameters.Walk(visitor)
-	}
+	def.GenericParameters.Walk(visitor)
 	def.BaseType.Walk(visitor)
 	def.Constraint.Walk(visitor)
 	visitor.Exit(def)
@@ -228,7 +226,7 @@ type AliasDef struct {
 	LeadingTrailingComments
 
 	Alias             string
-	GenericParameters *GenericParameterList // optional
+	GenericParameters *GenericParameterList
 	Value             TypeExpression
 }
 
@@ -236,9 +234,7 @@ var _ Statement = &AliasDef{}
 
 func (def *AliasDef) Walk(visitor Visitor) {
 	visitor.Enter(def)
-	if def.GenericParameters != nil {
-		def.GenericParameters.Walk(visitor)
-	}
+	def.GenericParameters.Walk(visitor)
 	def.Value.Walk(visitor)
 	visitor.Exit(def)
 }
