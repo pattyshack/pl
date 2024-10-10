@@ -3,6 +3,7 @@ package parser
 import (
 	"github.com/pattyshack/pl/analyze"
 	"github.com/pattyshack/pl/ast"
+	"sync"
 )
 
 type parseSourceResult struct {
@@ -22,27 +23,38 @@ func ParsePackage(
 	[]error,
 	error,
 ) {
-	sourceChan := make(chan parseSourceResult, len(packageSources))
-	for _, src := range packageSources {
-		go func(fileName string) {
+	if len(packageSources) == 0 {
+		return nil, nil, nil
+	}
+
+	results := make([]parseSourceResult, len(packageSources), len(packageSources))
+
+	wg := &sync.WaitGroup{}
+	wg.Add(len(packageSources))
+
+	for idx, src := range packageSources {
+		go func(idx int, fileName string) {
+			defer wg.Done()
 			list, parseErrors, err := ParseSource(fileName, options)
-			sourceChan <- parseSourceResult{
+			results[idx] = parseSourceResult{
 				Stmts:       list,
 				ParseErrors: parseErrors,
 				Err:         err,
 			}
-		}(src)
+		}(idx, src)
 	}
 
-	var parseErrors []error
+	wg.Wait()
+
 	var list *ast.StatementList
-	for i := 0; i < len(packageSources); i++ {
-		result := <-sourceChan
+	var parseErrors []error
+
+	for idx, result := range results {
 		if result.Err != nil {
 			return nil, nil, result.Err
 		}
 
-		if i == 0 {
+		if idx == 0 {
 			list = result.Stmts
 			parseErrors = result.ParseErrors
 		} else {
