@@ -31,6 +31,7 @@ func SourceSyntax(node ast.Node) []error {
 func PackageSyntax(node ast.Node) []error {
 	passes := [][]ast.Pass{
 		{
+			syntax.ValidatePkgInitBlock(),
 		},
 	}
 
