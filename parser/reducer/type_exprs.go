@@ -125,8 +125,7 @@ func (reducer *Reducer) toNamedTypeExpr(
 	if genericArguments != nil {
 		end = genericArguments
 	} else {
-		genericArguments = ast.NewTypeExpressionList()
-		genericArguments.StartEndPos = ast.NewStartEndPos(name.End(), name.End())
+		genericArguments = ast.NewImplicitTypeExpressionList(name.End())
 	}
 
 	named := &ast.NamedTypeExpr{

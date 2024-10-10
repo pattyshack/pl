@@ -1,5 +1,9 @@
 package ast
 
+import (
+	"github.com/pattyshack/gt/lexutil"
+)
+
 type NodeList[T Node] struct {
 	StartEndPos
 
@@ -8,6 +12,9 @@ type NodeList[T Node] struct {
 
 	// MiddleComment is only used when the list is empty, but contains comments.
 	MiddleComment CommentGroups
+
+	// Used by generic parameters / arguments
+	IsImplicit bool
 
 	Elements []T
 }
@@ -86,6 +93,13 @@ func NewTypeExpressionList() *TypeExpressionList {
 	return &NodeList[TypeExpression]{}
 }
 
+func NewImplicitTypeExpressionList(pos lexutil.Location) *TypeExpressionList {
+	return &NodeList[TypeExpression]{
+		StartEndPos: NewStartEndPos(pos, pos),
+		IsImplicit:  true,
+	}
+}
+
 //
 // ParameterList
 //
@@ -104,6 +118,13 @@ type GenericParameterList = NodeList[*GenericParameter]
 
 func NewGenericParameterList() *GenericParameterList {
 	return &NodeList[*GenericParameter]{}
+}
+
+func NewImplicitGenericParameterList(pos lexutil.Location) *GenericParameterList {
+	return &NodeList[*GenericParameter]{
+		StartEndPos: NewStartEndPos(pos, pos),
+		IsImplicit:  true,
+	}
 }
 
 //

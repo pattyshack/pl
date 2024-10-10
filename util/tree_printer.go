@@ -312,7 +312,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.list("[StatementList:", nil, "Statement", len(node.Elements))
 	case *ast.TypeExpressionList:
 		printer.list(
-			"[TypeExpressionList:",
+			fmt.Sprintf("[TypeExpressionList: IsImplicit=%v", node.IsImplicit),
 			nil,
 			"TypeExpression",
 			len(node.Elements))
@@ -320,7 +320,7 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.list("[ParameterList:", nil, "Parameter", len(node.Elements))
 	case *ast.GenericParameterList:
 		printer.list(
-			"[GenericParameterList:",
+			fmt.Sprintf("[GenericParameterList: IsImplicit=%v", node.IsImplicit),
 			nil,
 			"GenericParameter",
 			len(node.Elements))

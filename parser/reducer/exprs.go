@@ -548,9 +548,7 @@ func (reducer *Reducer) ToCallExpr(
 	if genericArguments != nil {
 		prev = genericArguments
 	} else {
-		genericArguments = ast.NewTypeExpressionList()
-		genericArguments.StartPos = funcExpr.End()
-		genericArguments.EndPos = funcExpr.End()
+		genericArguments = ast.NewImplicitTypeExpressionList(funcExpr.End())
 	}
 
 	if arguments == nil {

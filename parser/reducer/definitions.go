@@ -40,9 +40,7 @@ func (reducer *Reducer) toTypeDef(
 	if genericParameters != nil {
 		genericParameters.PrependToLeading(name.TakeTrailing())
 	} else {
-		genericParameters = ast.NewGenericParameterList()
-		genericParameters.StartEndPos = ast.NewStartEndPos(name.End(), name.End())
-
+		genericParameters = ast.NewImplicitGenericParameterList(name.End())
 		baseType.PrependToLeading(name.TakeTrailing())
 	}
 
@@ -119,8 +117,7 @@ func (reducer *Reducer) ToAliasDef(
 	if genericParameters != nil {
 		genericParameters.PrependToLeading(alias.TakeTrailing())
 	} else {
-		genericParameters = ast.NewGenericParameterList()
-		genericParameters.StartEndPos = ast.NewStartEndPos(alias.End(), alias.End())
+		genericParameters = ast.NewImplicitGenericParameterList(alias.End())
 
 		value.PrependToLeading(alias.TakeTrailing())
 	}
