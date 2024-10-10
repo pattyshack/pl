@@ -167,7 +167,7 @@ func Validate(node ast.Node) []error {
 			detectUnexpectedFuncSignatures(),
 			detectUnexpectedStatements(),
 			detectUnexpectedImplicitStructs(),
-			detectUnexpectedTypeDefs(),
+			detectUnexpectedFieldDefs(),
 			patternsAnalyzer.Analyze(),
 		},
 		{

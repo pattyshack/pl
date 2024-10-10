@@ -467,54 +467,54 @@ func (detector *unexpectedImplicitStructsDetector) allowImproperStruct(
 func (detector *unexpectedImplicitStructsDetector) Exit(node ast.Node) {
 }
 
-type unexpectedTypeDefsDetector struct {
-	// push true when TypeDef is entered.  push false when StatementsExpr is
-	// entered
+type unexpectedFieldDefsDetector struct {
+	// push true when FieldDef is entered.  push false when PropertiesTypeExpr
+	// is entered
 	scopeStack []bool
 	lexutil.ErrorEmitter
 }
 
-func detectUnexpectedTypeDefs() ast.Pass {
-	return &unexpectedTypeDefsDetector{}
+func detectUnexpectedFieldDefs() ast.Pass {
+	return &unexpectedFieldDefsDetector{}
 }
 
-func (detector *unexpectedTypeDefsDetector) Process(node ast.Node) {
+func (detector *unexpectedFieldDefsDetector) Process(node ast.Node) {
 	node.Walk(detector)
 }
 
-func (detector *unexpectedTypeDefsDetector) push(scope bool) {
+func (detector *unexpectedFieldDefsDetector) push(scope bool) {
 	detector.scopeStack = append(detector.scopeStack, scope)
 }
 
-func (detector *unexpectedTypeDefsDetector) pop() {
+func (detector *unexpectedFieldDefsDetector) pop() {
 	detector.scopeStack = detector.scopeStack[:len(detector.scopeStack)-1]
 }
 
-func (detector *unexpectedTypeDefsDetector) isInTypeDef() bool {
+func (detector *unexpectedFieldDefsDetector) isInFieldDef() bool {
 	if len(detector.scopeStack) > 0 {
 		return detector.scopeStack[len(detector.scopeStack)-1]
 	}
 	return false
 }
 
-func (detector *unexpectedTypeDefsDetector) Enter(node ast.Node) {
+func (detector *unexpectedFieldDefsDetector) Enter(node ast.Node) {
 	switch node.(type) {
-	case *ast.StatementsExpr:
+	case *ast.PropertiesTypeExpr:
 		detector.push(false)
-	case *ast.TypeDef:
+	case *ast.FieldDef:
 		detector.push(true)
 	case *ast.InferredTypeExpr:
-		if detector.isInTypeDef() {
-			detector.Emit(node.Loc(), "unexpected inferred type in type definition")
+		if detector.isInFieldDef() {
+			detector.Emit(node.Loc(), "unexpected inferred type in field definition")
 		}
 	}
 }
 
-func (detector *unexpectedTypeDefsDetector) Exit(node ast.Node) {
+func (detector *unexpectedFieldDefsDetector) Exit(node ast.Node) {
 	switch node.(type) {
-	case *ast.StatementsExpr:
+	case *ast.PropertiesTypeExpr:
 		detector.pop()
-	case *ast.TypeDef:
+	case *ast.FieldDef:
 		detector.pop()
 	}
 }
