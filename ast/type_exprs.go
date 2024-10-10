@@ -317,6 +317,7 @@ type FuncSignature struct {
 
 var _ TypeExpression = &FuncSignature{}
 var _ TypeProperty = &FuncSignature{}
+var _ Validator = &FuncSignature{}
 
 func (sig *FuncSignature) Walk(visitor Visitor) {
 	visitor.Enter(sig)
@@ -326,4 +327,22 @@ func (sig *FuncSignature) Walk(visitor Visitor) {
 	sig.Parameters.Walk(visitor)
 	sig.ReturnType.Walk(visitor)
 	visitor.Exit(sig)
+}
+
+func (sig *FuncSignature) Validate(emitter *lexutil.ErrorEmitter) {
+	if sig.Name != "" {
+		if sig.GenericParameters == nil {
+			emitter.Emit(
+				sig.Loc(),
+				"invalid ast construction, generic parameters not set for "+
+					"named func signature")
+		}
+	} else {
+		if sig.GenericParameters != nil {
+			emitter.Emit(
+				sig.Loc(),
+				"invalid ast construction, generic parameters set for "+
+					"anonymous func signature")
+		}
+	}
 }
