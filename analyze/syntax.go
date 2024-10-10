@@ -14,13 +14,23 @@ func SourceSyntax(node ast.Node) []error {
 		{
 			syntax.ValidateNodes(),
 			syntax.ValidateFuncSignatures(),
-			syntax.ValidateStatements(),
+			syntax.ValidatePackageStatements(),
+			syntax.ValidateExprStatements(),
 			syntax.ValidateImplicitStructs(),
 			syntax.ValidateFieldDefs(),
 			patternsAnalyzer.Validate(),
 		},
 		{
 			patternsAnalyzer.Transform(),
+		},
+	}
+
+	return lexutil.Process(node, passes, 0)
+}
+
+func PackageSyntax(node ast.Node) []error {
+	passes := [][]ast.Pass{
+		{
 		},
 	}
 

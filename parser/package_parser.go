@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/pattyshack/pl/analyze"
 	"github.com/pattyshack/pl/ast"
 )
 
@@ -49,6 +50,8 @@ func ParsePackage(
 			parseErrors = append(parseErrors, result.ParseErrors...)
 		}
 	}
+
+	parseErrors = append(parseErrors, analyze.PackageSyntax(list)...)
 
 	return list, parseErrors, nil
 }
