@@ -1,4 +1,4 @@
-package parser
+package syntax
 
 import (
 	"fmt"
@@ -42,7 +42,7 @@ const (
 	matchPattern = patternState(5)
 )
 
-type patternsAnalyzer struct {
+type PatternsAnalyzer struct {
 	stateStack []patternState
 
 	// true for conditional assignment (must be paired with CasePatterns).
@@ -61,8 +61,8 @@ type patternsAnalyzer struct {
 	*lexutil.ErrorEmitter
 }
 
-func newPatternsAnalyzer() *patternsAnalyzer {
-	return &patternsAnalyzer{
+func NewPatternsAnalyzer() *PatternsAnalyzer {
+	return &PatternsAnalyzer{
 		stateStack:                []patternState{},
 		validAssignPatterns:       map[*ast.AssignPattern]bool{},
 		validCasePatterns:         map[*ast.CasePatterns]struct{}{},
@@ -75,19 +75,19 @@ func newPatternsAnalyzer() *patternsAnalyzer {
 }
 
 type patternsAnalyzePass struct {
-	*patternsAnalyzer
+	*PatternsAnalyzer
 }
 
 func (analyzer *patternsAnalyzePass) Process(node ast.Node) {
 	node.Walk(analyzer)
 }
 
-func (analyzer *patternsAnalyzer) Analyze() ast.Pass {
+func (analyzer *PatternsAnalyzer) Validate() ast.Pass {
 	return &patternsAnalyzePass{analyzer}
 }
 
 type patternsTransformPass struct {
-	*patternsAnalyzer
+	*PatternsAnalyzer
 }
 
 func (analyzer *patternsTransformPass) Process(node ast.Node) {
@@ -115,19 +115,19 @@ func (pass *patternsTransformPass) Errors() []error {
 	return nil
 }
 
-func (analyzer *patternsAnalyzer) Transform() ast.Pass {
+func (analyzer *PatternsAnalyzer) Transform() ast.Pass {
 	return &patternsTransformPass{analyzer}
 }
 
-func (analyzer *patternsAnalyzer) push(state patternState) {
+func (analyzer *PatternsAnalyzer) push(state patternState) {
 	analyzer.stateStack = append(analyzer.stateStack, state)
 }
 
-func (analyzer *patternsAnalyzer) pop() {
+func (analyzer *PatternsAnalyzer) pop() {
 	analyzer.stateStack = analyzer.stateStack[:len(analyzer.stateStack)-1]
 }
 
-func (analyzer *patternsAnalyzer) current() patternState {
+func (analyzer *PatternsAnalyzer) current() patternState {
 	state := nonPattern
 	if len(analyzer.stateStack) > 0 {
 		state = analyzer.stateStack[len(analyzer.stateStack)-1]
@@ -136,7 +136,7 @@ func (analyzer *patternsAnalyzer) current() patternState {
 	return state
 }
 
-func (analyzer *patternsAnalyzer) Enter(n ast.Node) {
+func (analyzer *PatternsAnalyzer) Enter(n ast.Node) {
 	analyzer.collectPatternEntryPoints(n)
 
 	e, ok := n.(ast.Expression)
@@ -259,14 +259,14 @@ func (analyzer *patternsAnalyzer) Enter(n ast.Node) {
 	}
 }
 
-func (analyzer *patternsAnalyzer) Exit(n ast.Node) {
+func (analyzer *PatternsAnalyzer) Exit(n ast.Node) {
 	_, ok := n.(ast.Expression)
 	if ok {
 		analyzer.pop()
 	}
 }
 
-func (analyzer *patternsAnalyzer) collectPatternEntryPoints(
+func (analyzer *PatternsAnalyzer) collectPatternEntryPoints(
 	n ast.Node,
 ) {
 	switch node := n.(type) {
@@ -344,7 +344,7 @@ func (analyzer *patternsAnalyzer) collectPatternEntryPoints(
 	}
 }
 
-func (analyzer *patternsAnalyzer) processStatement(
+func (analyzer *PatternsAnalyzer) processStatement(
 	s ast.Statement,
 ) {
 	block, ok := s.(*ast.BlockAddrDeclStmt)

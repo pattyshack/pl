@@ -5,6 +5,7 @@ import (
 
 	"github.com/pattyshack/gt/lexutil"
 
+	"github.com/pattyshack/pl/analyze"
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 	reducerImpl "github.com/pattyshack/pl/parser/reducer"
@@ -138,7 +139,7 @@ func (parser *sourceParser) parseSource() (
 		return nil, nil, err
 	}
 
-	parser.EmitErrors(Validate(source)...)
+	parser.EmitErrors(analyze.SourceSyntax(source)...)
 	return source, parser.Errors(), nil
 }
 
@@ -156,24 +157,4 @@ func ParseSource(
 	}
 
 	return parser.parseSource()
-}
-
-func Validate(node ast.Node) []error {
-	patternsAnalyzer := newPatternsAnalyzer()
-
-	passes := [][]ast.Pass{
-		{
-			validateNodes(),
-			detectUnexpectedFuncSignatures(),
-			detectUnexpectedStatements(),
-			detectUnexpectedImplicitStructs(),
-			detectUnexpectedFieldDefs(),
-			patternsAnalyzer.Analyze(),
-		},
-		{
-			patternsAnalyzer.Transform(),
-		},
-	}
-
-	return lexutil.Process(node, passes, 0)
 }
