@@ -179,6 +179,7 @@ func main() {
 		Command: argparse.CommandLine,
 	}
 
+	cmd.AnalyzeSyntax = true
 	cmd.NewReaderFunc = func(fileName string) (io.Reader, error) {
 		fmt.Println("==========================")
 		fmt.Println("File name:", fileName)

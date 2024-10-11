@@ -139,7 +139,9 @@ func (parser *sourceParser) parseSource() (
 		return nil, nil, err
 	}
 
-	parser.EmitErrors(analyze.SourceSyntax(source)...)
+	if parser.AnalyzeSyntax {
+		parser.EmitErrors(analyze.SourceSyntax(source)...)
+	}
 	return source, parser.Errors(), nil
 }
 

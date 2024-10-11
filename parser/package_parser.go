@@ -63,7 +63,9 @@ func ParsePackage(
 		}
 	}
 
-	parseErrors = append(parseErrors, analyze.PackageSyntax(list)...)
+	if options.AnalyzeSyntax {
+		parseErrors = append(parseErrors, analyze.PackageSyntax(list)...)
+	}
 
 	return list, parseErrors, nil
 }

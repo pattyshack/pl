@@ -19,6 +19,8 @@ type ParserOptions struct {
 	UseBasicLexer bool
 
 	UseLRParseSource bool
+
+	AnalyzeSyntax bool
 }
 
 func (options ParserOptions) NewReader(fileName string) (io.Reader, error) {
