@@ -74,7 +74,7 @@ func (cmd *Command) printPackage(
 	}
 	fmt.Println("==========================")
 
-	list, parseErrors, err := parser.ParsePackage(args, cmd.ParserOptions)
+	list, _, parseErrors, err := parser.ParsePackage(args, cmd.ParserOptions)
 
 	if err != nil {
 		fmt.Println("Unexpected error:", err)

@@ -20,11 +20,12 @@ func ParsePackage(
 	options ParserOptions,
 ) (
 	*ast.StatementList,
+	[]*ast.ImportClause,
 	[]error,
 	error,
 ) {
 	if len(packageSources) == 0 {
-		return nil, nil, nil
+		return nil, nil, nil, nil
 	}
 
 	results := make([]parseSourceResult, len(packageSources), len(packageSources))
@@ -51,7 +52,7 @@ func ParsePackage(
 
 	for idx, result := range results {
 		if result.Err != nil {
-			return nil, nil, result.Err
+			return nil, nil, nil, result.Err
 		}
 
 		if idx == 0 {
@@ -63,9 +64,12 @@ func ParsePackage(
 		}
 	}
 
+	var importClauses []*ast.ImportClause
 	if options.AnalyzeSyntax {
-		parseErrors = append(parseErrors, analyze.PackageSyntax(list)...)
+		var errs []error
+		importClauses, errs = analyze.PackageSyntax(list)
+		parseErrors = append(parseErrors, errs...)
 	}
 
-	return list, parseErrors, nil
+	return list, importClauses, parseErrors, nil
 }

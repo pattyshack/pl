@@ -28,12 +28,15 @@ func SourceSyntax(node ast.Node) []error {
 	return lexutil.Process(node, passes, 0)
 }
 
-func PackageSyntax(node ast.Node) []error {
+func PackageSyntax(node ast.Node) ([]*ast.ImportClause, []error) {
+	importsCollector := syntax.NewImportClausesCollector()
 	passes := [][]ast.Pass{
 		{
+			importsCollector,
 			syntax.ValidatePkgInitBlock(),
 		},
 	}
 
-	return lexutil.Process(node, passes, 0)
+	errs := lexutil.Process(node, passes, 0)
+	return importsCollector.Clauses(), errs
 }
