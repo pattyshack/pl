@@ -105,7 +105,7 @@ func (reducer *Reducer) StringLiteralToImportClause(
 	clause := &ast.ImportClause{
 		StartEndPos:             pkg.StartEndPos,
 		LeadingTrailingComments: pkg.LeadingTrailingComments,
-		Package:                 pkg.Value,
+		PackageID:               ast.NewPackageID(pkg.Value),
 	}
 
 	return clause, nil
@@ -118,7 +118,7 @@ func (reducer *Reducer) aliasImport(
 	clause := &ast.ImportClause{
 		StartEndPos: ast.NewStartEndPos(alias.Loc(), pkg.End()),
 		Alias:       alias.Value,
-		Package:     pkg.Value,
+		PackageID:   ast.NewPackageID(pkg.Value),
 	}
 
 	leading := alias.TakeLeading()

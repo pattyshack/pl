@@ -5,7 +5,7 @@ func foo() {}
 func() {}  // invalid
 
 {
-  import "fmt" // invalid
+  import "fmt@v1" // invalid
 
   1 + 2
 

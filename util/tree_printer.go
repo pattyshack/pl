@@ -304,9 +304,9 @@ func (printer *treePrinter) Enter(n ast.Node) {
 		printer.push("Constraint=")
 	case *ast.ImportClause:
 		printer.write(
-			"[ImportClause: Alias=%s Package=%s]",
+			"[ImportClause: Alias=%s PackageID=%s]",
 			node.Alias,
-			node.Package)
+			node.PackageID)
 
 	case *ast.StatementList:
 		printer.list("[StatementList:", nil, "Statement", len(node.Elements))

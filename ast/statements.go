@@ -2,18 +2,40 @@ package ast
 
 import (
 	"github.com/pattyshack/gt/lexutil"
+	"strings"
 )
 
 //
 // ImportClause
 //
 
+type PackageID struct {
+	Path    string
+	Version string
+}
+
+func NewPackageID(pkgVer string) PackageID {
+	path, version, _ := strings.Cut(pkgVer, "@")
+	return PackageID{
+		Path:    path,
+		Version: version,
+	}
+}
+
+func (id PackageID) String() string {
+	if id.Version != "" {
+		return id.Path + "@" + id.Version
+	}
+
+	return id.Path
+}
+
 type ImportClause struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	Alias   string // Identifier or underscore or dot or ""
-	Package string
+	Alias string // Identifier or underscore or dot or ""
+	PackageID
 }
 
 var _ Node = &ImportClause{}
