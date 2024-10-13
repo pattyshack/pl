@@ -73,7 +73,7 @@ func (cmd *Command) printPackage(
 	fmt.Println("==========================")
 
 	emitter := &lexutil.ErrorEmitter{}
-	list, _, _ := parser.ParsePackage(args, emitter, cmd.ParserOptions)
+	list, _ := parser.ParsePackage(args, emitter, cmd.ParserOptions)
 
 	parseErrors := emitter.Errors()
 

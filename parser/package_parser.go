@@ -18,10 +18,9 @@ func ParsePackage(
 ) (
 	*ast.StatementList,
 	[]*ast.ImportClause,
-	bool,
 ) {
 	if len(packageSources) == 0 {
-		return nil, nil, false
+		return nil, nil
 	}
 
 	results := make(
@@ -29,15 +28,13 @@ func ParsePackage(
 		len(packageSources),
 		len(packageSources))
 
-	pkgErrEmitter := &lexutil.ErrorEmitter{}
-
 	wg := &sync.WaitGroup{}
 	wg.Add(len(packageSources))
 
 	for idx, src := range packageSources {
 		go func(idx int, fileName string) {
 			defer wg.Done()
-			results[idx] = ParseSource(fileName, pkgErrEmitter, options)
+			results[idx] = ParseSource(fileName, emitter, options)
 		}(idx, src)
 	}
 
@@ -55,9 +52,8 @@ func ParsePackage(
 
 	var importClauses []*ast.ImportClause
 	if !options.DisableSyntaxAnalysis {
-		importClauses = analyze.PackageSyntax(list, pkgErrEmitter)
+		importClauses = analyze.PackageSyntax(list, emitter)
 	}
 
-	emitter.MergeFrom(pkgErrEmitter)
-	return list, importClauses, pkgErrEmitter.HasErrors()
+	return list, importClauses
 }
