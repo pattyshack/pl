@@ -20,7 +20,7 @@ type ParserOptions struct {
 
 	UseLRParseSource bool
 
-	AnalyzeSyntax bool
+	DisableSyntaxAnalysis bool
 }
 
 func (options ParserOptions) NewReader(fileName string) (io.Reader, error) {

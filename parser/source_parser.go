@@ -138,7 +138,7 @@ func (parser *sourceParser) parseSource() *ast.StatementList {
 		return nil
 	}
 
-	if parser.AnalyzeSyntax {
+	if !parser.DisableSyntaxAnalysis {
 		analyze.SourceSyntax(source, parser.ErrorEmitter)
 	}
 	return source

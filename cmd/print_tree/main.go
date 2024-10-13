@@ -156,7 +156,6 @@ func main() {
 		Command: argparse.CommandLine,
 	}
 
-	cmd.AnalyzeSyntax = true
 	cmd.NewReaderFunc = func(fileName string) (io.Reader, error) {
 		fmt.Println("==========================")
 		fmt.Println("File name:", fileName)
@@ -166,10 +165,6 @@ func main() {
 		if err != nil {
 			fmt.Println("Error opening file:", err)
 			return nil, err
-		}
-
-		if len(content) > 0 && content[len(content)-1] == '\n' {
-			content = content[:len(content)-1]
 		}
 
 		fmt.Println("Content:")

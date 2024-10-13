@@ -51,7 +51,7 @@ func ParsePackage(
 	}
 
 	var importClauses []*ast.ImportClause
-	if options.AnalyzeSyntax {
+	if !options.DisableSyntaxAnalysis {
 		importClauses = analyze.PackageSyntax(list, emitter)
 	}
 
