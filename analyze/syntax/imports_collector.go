@@ -16,10 +16,6 @@ func (collector *ImportClausesCollector) Clauses() []*ast.ImportClause {
 	return collector.clauses
 }
 
-func (ImportClausesCollector) Errors() []error {
-	return nil
-}
-
 func (collector *ImportClausesCollector) Process(node ast.Node) {
 	list, ok := node.(*ast.StatementList)
 	if !ok {

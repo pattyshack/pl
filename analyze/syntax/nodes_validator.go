@@ -10,9 +10,9 @@ type NodeValidator struct {
 	*lexutil.ErrorEmitter
 }
 
-func ValidateNodes() ast.Pass {
+func ValidateNodes(emitter *lexutil.ErrorEmitter) ast.Pass {
 	return &NodeValidator{
-		ErrorEmitter: &lexutil.ErrorEmitter{},
+		ErrorEmitter: emitter,
 	}
 }
 

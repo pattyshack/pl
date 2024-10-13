@@ -61,7 +61,7 @@ type PatternsAnalyzer struct {
 	*lexutil.ErrorEmitter
 }
 
-func NewPatternsAnalyzer() *PatternsAnalyzer {
+func NewPatternsAnalyzer(emitter *lexutil.ErrorEmitter) *PatternsAnalyzer {
 	return &PatternsAnalyzer{
 		stateStack:                []patternState{},
 		validAssignPatterns:       map[*ast.AssignPattern]bool{},
@@ -70,7 +70,7 @@ func NewPatternsAnalyzer() *PatternsAnalyzer {
 		validAddrDeclPatterns:     map[*ast.AddrDeclPattern]patternState{},
 		validAssignToAddrPatterns: map[*ast.AssignToAddrPattern]struct{}{},
 		redundantAssignToAddr:     map[*ast.AssignToAddrPattern]ast.Expression{},
-		ErrorEmitter:              &lexutil.ErrorEmitter{},
+		ErrorEmitter:              emitter,
 	}
 }
 
@@ -91,10 +91,6 @@ type patternsTransformPass struct {
 }
 
 func (analyzer *patternsTransformPass) Process(node ast.Node) {
-	if len(analyzer.Errors()) > 0 {
-		return
-	}
-
 	for redundant, parent := range analyzer.redundantAssignToAddr {
 		switch expr := parent.(type) {
 		case *ast.ImplicitStructExpr:
@@ -109,10 +105,6 @@ func (analyzer *patternsTransformPass) Process(node ast.Node) {
 			panic(fmt.Sprintf("unexpected parent expression: %v", parent))
 		}
 	}
-}
-
-func (pass *patternsTransformPass) Errors() []error {
-	return nil
 }
 
 func (analyzer *PatternsAnalyzer) Transform() ast.Pass {

@@ -17,12 +17,13 @@ import (
 // Colon implicit structs are only allowed in callable expr.
 type ImplicitStructsValidator struct {
 	validImproperColon map[*ast.ImplicitStructExpr]struct{}
-	lexutil.ErrorEmitter
+	*lexutil.ErrorEmitter
 }
 
-func ValidateImplicitStructs() ast.Pass {
+func ValidateImplicitStructs(emitter *lexutil.ErrorEmitter) ast.Pass {
 	return &ImplicitStructsValidator{
 		validImproperColon: map[*ast.ImplicitStructExpr]struct{}{},
+		ErrorEmitter:       emitter,
 	}
 }
 

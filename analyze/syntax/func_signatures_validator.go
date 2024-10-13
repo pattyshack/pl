@@ -9,12 +9,13 @@ import (
 type FuncSignaturesValidator struct {
 	processed map[*ast.FuncSignature]struct{}
 
-	lexutil.ErrorEmitter
+	*lexutil.ErrorEmitter
 }
 
-func ValidateFuncSignatures() ast.Pass {
+func ValidateFuncSignatures(emitter *lexutil.ErrorEmitter) ast.Pass {
 	return &FuncSignaturesValidator{
-		processed: map[*ast.FuncSignature]struct{}{},
+		processed:    map[*ast.FuncSignature]struct{}{},
+		ErrorEmitter: emitter,
 	}
 }
 

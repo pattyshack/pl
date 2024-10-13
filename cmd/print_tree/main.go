@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"sort"
 
 	"github.com/pattyshack/gt/argparse"
 	"github.com/pattyshack/gt/lexutil"
 
-	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser"
 	"github.com/pattyshack/pl/util"
 )
@@ -74,12 +72,10 @@ func (cmd *Command) printPackage(
 	}
 	fmt.Println("==========================")
 
-	list, _, parseErrors, err := parser.ParsePackage(args, cmd.ParserOptions)
+	emitter := &lexutil.ErrorEmitter{}
+	list, _ := parser.ParsePackage(args, emitter, cmd.ParserOptions)
 
-	if err != nil {
-		fmt.Println("Unexpected error:", err)
-		return err
-	}
+	parseErrors := emitter.Errors()
 
 	fmt.Println("Tree:")
 	fmt.Println("-----")
@@ -91,7 +87,6 @@ func (cmd *Command) printPackage(
 		fmt.Println("---------------------")
 		fmt.Println("Parse errors:")
 		fmt.Println("---------------------")
-		sort.Sort(lexutil.ErrorsByLocation(parseErrors))
 		for idx, err := range parseErrors {
 			fmt.Printf("error %d: %s\n", idx, err)
 		}
@@ -100,51 +95,33 @@ func (cmd *Command) printPackage(
 	return nil
 }
 
-func (cmd *Command) printFunc(
-	parse func(string) (ast.Node, []error, error),
+func (cmd *Command) printSource(
 	args []string,
 ) error {
 	for _, fileName := range args {
-		result, parseErrors, err := parse(fileName)
-		if err != nil {
-			fmt.Println("Unexpected error:", err)
-			continue
+		emitter := &lexutil.ErrorEmitter{}
+		result := parser.ParseSource(fileName, emitter, cmd.ParserOptions)
+		parseErrors := emitter.Errors()
+
+		if result != nil {
+			fmt.Println("Parsed:")
+			fmt.Println("-----")
+			buffer := &bytes.Buffer{}
+			util.PrintTree(buffer, result, "")
+			fmt.Println(buffer.String())
 		}
 
-		fmt.Println("Parsed:")
-		fmt.Println("-----")
-		buffer := &bytes.Buffer{}
-		util.PrintTree(buffer, result, "")
-		fmt.Println(buffer.String())
-
-		if len(parseErrors) == 0 {
-			continue
-		}
-
-		fmt.Println("---------------------")
-		fmt.Println("Parse errors:")
-		fmt.Println("---------------------")
-		sort.Sort(lexutil.ErrorsByLocation(parseErrors))
-		for idx, err := range parseErrors {
-			fmt.Printf("error %d: %s\n", idx, err)
+		if len(parseErrors) > 0 {
+			fmt.Println("---------------------")
+			fmt.Println("Parse errors:")
+			fmt.Println("---------------------")
+			for idx, err := range parseErrors {
+				fmt.Printf("error %d: %s\n", idx, err)
+			}
 		}
 	}
 
 	return nil
-}
-
-func (cmd *Command) printSource(args []string) error {
-	return cmd.printFunc(
-		func(
-			fileName string,
-		) (
-			ast.Node,
-			[]error,
-			error,
-		) {
-			return parser.ParseSource(fileName, cmd.ParserOptions)
-		},
-		args)
 }
 
 func (cmd *Command) printTokens(args []string) error {

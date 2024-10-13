@@ -10,11 +10,13 @@ type FieldDefsValidator struct {
 	// push true when FieldDef is entered.  push false when PropertiesTypeExpr
 	// is entered
 	scopeStack []bool
-	lexutil.ErrorEmitter
+	*lexutil.ErrorEmitter
 }
 
-func ValidateFieldDefs() ast.Pass {
-	return &FieldDefsValidator{}
+func ValidateFieldDefs(emitter *lexutil.ErrorEmitter) ast.Pass {
+	return &FieldDefsValidator{
+		ErrorEmitter: emitter,
+	}
 }
 
 func (validator *FieldDefsValidator) Process(node ast.Node) {

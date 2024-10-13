@@ -10,12 +10,13 @@ import (
 type ExprStatementsValidator struct {
 	processed map[*ast.StatementsExpr]struct{}
 
-	lexutil.ErrorEmitter
+	*lexutil.ErrorEmitter
 }
 
-func ValidateExprStatements() ast.Pass {
+func ValidateExprStatements(emitter *lexutil.ErrorEmitter) ast.Pass {
 	return &ExprStatementsValidator{
-		processed: map[*ast.StatementsExpr]struct{}{},
+		processed:    map[*ast.StatementsExpr]struct{}{},
+		ErrorEmitter: emitter,
 	}
 }
 

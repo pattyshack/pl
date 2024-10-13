@@ -32,17 +32,18 @@ func (l bufferLexer) CurrentLocation() lexutil.Location {
 type sourceParser struct {
 	lexer lr.Lexer
 	*reducerImpl.Reducer
+	*lexutil.ErrorEmitter
 	ParserOptions
 }
 
 func newSourceParser(
 	fileName string,
+	emitter *lexutil.ErrorEmitter,
 	options ParserOptions,
 ) (
 	*sourceParser,
 	error,
 ) {
-	emitter := &lexutil.ErrorEmitter{}
 	reducer := reducerImpl.NewReducer(emitter)
 	lexer, err := options.NewLexer(fileName, emitter, reducer)
 	if err != nil {
@@ -52,6 +53,7 @@ func newSourceParser(
 	return &sourceParser{
 		lexer:         lexer,
 		Reducer:       reducer,
+		ErrorEmitter:  emitter,
 		ParserOptions: options,
 	}, nil
 }
@@ -129,33 +131,28 @@ func (parser *sourceParser) _parseSource() (*ast.StatementList, error) {
 	}
 }
 
-func (parser *sourceParser) parseSource() (
-	*ast.StatementList,
-	[]error,
-	error,
-) {
+func (parser *sourceParser) parseSource() *ast.StatementList {
 	source, err := parser._parseSource()
 	if err != nil {
-		return nil, nil, err
+		parser.EmitErrors(err)
+		return nil
 	}
 
 	if parser.AnalyzeSyntax {
-		parser.EmitErrors(analyze.SourceSyntax(source)...)
+		analyze.SourceSyntax(source, parser.ErrorEmitter)
 	}
-	return source, parser.Errors(), nil
+	return source
 }
 
 func ParseSource(
 	fileName string,
+	emitter *lexutil.ErrorEmitter,
 	options ParserOptions,
-) (
-	*ast.StatementList,
-	[]error,
-	error,
-) {
-	parser, err := newSourceParser(fileName, options)
+) *ast.StatementList {
+	parser, err := newSourceParser(fileName, emitter, options)
 	if err != nil {
-		return nil, nil, err
+		emitter.EmitErrors(err)
+		return nil
 	}
 
 	return parser.parseSource()

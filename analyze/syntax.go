@@ -7,17 +7,17 @@ import (
 	"github.com/pattyshack/pl/ast"
 )
 
-func SourceSyntax(node ast.Node) []error {
-	patternsAnalyzer := syntax.NewPatternsAnalyzer()
+func SourceSyntax(node ast.Node, emitter *lexutil.ErrorEmitter) {
+	patternsAnalyzer := syntax.NewPatternsAnalyzer(emitter)
 
 	passes := [][]ast.Pass{
 		{
-			syntax.ValidateNodes(),
-			syntax.ValidateFuncSignatures(),
-			syntax.ValidatePackageStatements(),
-			syntax.ValidateExprStatements(),
-			syntax.ValidateImplicitStructs(),
-			syntax.ValidateFieldDefs(),
+			syntax.ValidateNodes(emitter),
+			syntax.ValidateFuncSignatures(emitter),
+			syntax.ValidatePackageStatements(emitter),
+			syntax.ValidateExprStatements(emitter),
+			syntax.ValidateImplicitStructs(emitter),
+			syntax.ValidateFieldDefs(emitter),
 			patternsAnalyzer.Validate(),
 		},
 		{
@@ -25,18 +25,21 @@ func SourceSyntax(node ast.Node) []error {
 		},
 	}
 
-	return lexutil.Process(node, passes, 0)
+	lexutil.Process(node, passes, nil)
 }
 
-func PackageSyntax(node ast.Node) ([]*ast.ImportClause, []error) {
+func PackageSyntax(
+	node ast.Node,
+	emitter *lexutil.ErrorEmitter,
+) []*ast.ImportClause {
 	importsCollector := syntax.NewImportClausesCollector()
 	passes := [][]ast.Pass{
 		{
 			importsCollector,
-			syntax.ValidatePkgInitBlock(),
+			syntax.ValidatePkgInitBlock(emitter),
 		},
 	}
 
-	errs := lexutil.Process(node, passes, 0)
-	return importsCollector.Clauses(), errs
+	lexutil.Process(node, passes, nil)
+	return importsCollector.Clauses()
 }

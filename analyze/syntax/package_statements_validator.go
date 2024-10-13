@@ -8,11 +8,13 @@ import (
 )
 
 type PackageStatementsValidator struct {
-	lexutil.ErrorEmitter
+	*lexutil.ErrorEmitter
 }
 
-func ValidatePackageStatements() ast.Pass {
-	return &PackageStatementsValidator{}
+func ValidatePackageStatements(emitter *lexutil.ErrorEmitter) ast.Pass {
+	return &PackageStatementsValidator{
+		ErrorEmitter: emitter,
+	}
 }
 
 func (validator *PackageStatementsValidator) Process(node ast.Node) {

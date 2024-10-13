@@ -7,11 +7,13 @@ import (
 )
 
 type PkgInitBlockValidator struct {
-	lexutil.ErrorEmitter
+	*lexutil.ErrorEmitter
 }
 
-func ValidatePkgInitBlock() ast.Pass {
-	return &PkgInitBlockValidator{}
+func ValidatePkgInitBlock(emitter *lexutil.ErrorEmitter) ast.Pass {
+	return &PkgInitBlockValidator{
+		ErrorEmitter: emitter,
+	}
 }
 
 func (validator *PkgInitBlockValidator) Process(node ast.Node) {
