@@ -156,7 +156,7 @@ func main() {
 		Command: argparse.CommandLine,
 	}
 
-	cmd.NewReaderFunc = func(fileName string) (io.Reader, error) {
+	cmd.OpenFunc = func(fileName string) (io.Reader, error) {
 		fmt.Println("==========================")
 		fmt.Println("File name:", fileName)
 		fmt.Println("==========================")

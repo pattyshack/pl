@@ -14,7 +14,7 @@ import (
 type ParserOptions struct {
 	lexer.LexerOptions
 
-	NewReaderFunc func(string) (io.Reader, error)
+	OpenFunc func(string) (io.Reader, error)
 
 	UseBasicLexer bool
 
@@ -24,8 +24,8 @@ type ParserOptions struct {
 }
 
 func (options ParserOptions) NewReader(fileName string) (io.Reader, error) {
-	if options.NewReaderFunc != nil {
-		return options.NewReaderFunc(fileName)
+	if options.OpenFunc != nil {
+		return options.OpenFunc(fileName)
 	}
 
 	content, err := os.ReadFile(fileName)
