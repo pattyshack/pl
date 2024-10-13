@@ -8,8 +8,6 @@ import (
 	"path/filepath"
 	"sync"
 	"time"
-
-	"github.com/pattyshack/pl/ast"
 )
 
 type File interface {
@@ -29,11 +27,10 @@ type localFile struct {
 	size    int64
 	modTime time.Time
 
-	mutex               sync.Mutex
-	hasCachedContent    bool   // guarded by mutex
-	cachedContent       []byte // guarded by mutex
-	initializedChecksum bool   // guarded by mutex
-	checksum            []byte // guarded by mutex
+	mutex            sync.Mutex
+	hasCachedContent bool   // guarded by mutex
+	cachedContent    []byte // guarded by mutex
+	checksum         []byte // guarded by mutex
 }
 
 func (file *localFile) Name() string {
@@ -58,10 +55,9 @@ func (file *localFile) unsafeReadContent() error {
 		file.cachedContent = content
 		file.hasCachedContent = true
 
-		if !file.initializedChecksum {
+		if len(file.checksum) == 0 {
 			hash := md5.Sum(file.cachedContent)
 			file.checksum = hash[:]
-			file.initializedChecksum = true
 		}
 	}
 
@@ -104,15 +100,11 @@ func (file *localFile) ClearCached() {
 	file.cachedContent = nil
 }
 
-type PackageContents struct {
-	ast.PackageID
-
-	Contents map[string]File
-}
+type PackageContents map[string]File
 
 func (pkg PackageContents) Sources() []string {
 	sources := []string{}
-	for name, _ := range pkg.Contents {
+	for name, _ := range pkg {
 		sources = append(sources, name)
 	}
 
@@ -120,10 +112,16 @@ func (pkg PackageContents) Sources() []string {
 }
 
 func (pkg PackageContents) Open(name string) (io.Reader, error) {
-	file, ok := pkg.Contents[name]
+	file, ok := pkg[name]
 	if !ok {
 		return nil, os.ErrNotExist
 	}
 
 	return file.Open()
+}
+
+func (pkg PackageContents) ClearCached() {
+	for _, file := range pkg {
+		file.ClearCached()
+	}
 }

@@ -55,7 +55,7 @@ func FindWorkspaceRoot() (*Workspace, error) {
 	}
 }
 
-func (workspace *Workspace) Locate(id ast.PackageID) (*PackageContents, error) {
+func (workspace *Workspace) Locate(id ast.PackageID) (PackageContents, error) {
 	err := id.Validate()
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func (workspace *Workspace) Locate(id ast.PackageID) (*PackageContents, error) {
 			err)
 	}
 
-	contents := map[string]File{}
+	contents := PackageContents{}
 	for _, entry := range entries {
 		if entry.IsDir() || filepath.Ext(entry.Name()) != sourceExtension {
 			continue
@@ -111,8 +111,5 @@ func (workspace *Workspace) Locate(id ast.PackageID) (*PackageContents, error) {
 			id.String())
 	}
 
-	return &PackageContents{
-		PackageID: id,
-		Contents:  contents,
-	}, nil
+	return contents, nil
 }
