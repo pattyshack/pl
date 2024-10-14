@@ -2,8 +2,11 @@ package build
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/pattyshack/pl/ast"
 )
@@ -13,6 +16,8 @@ const (
 	sourceExtension = ".pl"
 )
 
+// TODO: support modularization.  Map all packages, including external modules
+// relative to // root (don't support bazel external repo style)
 type Workspace struct {
 	RootDirPath    string
 	WorkingDirPath string
@@ -112,4 +117,126 @@ func (workspace *Workspace) Locate(id ast.PackageID) (PackageContents, error) {
 	}
 
 	return contents, nil
+}
+
+// This uses bazel's cmdline convention (with no external repo) rather than
+// go's cmdline convention. In particular, // is the fully qualified package
+// path prefix (always uses slash regardless of filesystem separator).  ... by
+// itself is relative to cwd rather than //.
+//
+// (note that workspace root may or may not be the same as // once
+// modularization is supported).
+//
+// TODO: modularization
+func (workspace *Workspace) MatchTargetPattern(
+	originalPattern string,
+) (
+	[]ast.PackageID,
+	error,
+) {
+	pattern := originalPattern
+	pkgRoot := ""
+	findSubPackages := false
+
+	if pattern == "..." {
+		pkgRoot = workspace.WorkingDirPath
+		findSubPackages = true
+	} else if strings.HasPrefix(pattern, "//") {
+		pattern = pattern[2:]
+		if pattern == "" {
+			pkgRoot = workspace.RootDirPath
+		} else if pattern == "..." {
+			pkgRoot = workspace.RootDirPath
+			findSubPackages = true
+		} else {
+			if strings.HasSuffix(pattern, "/...") {
+				findSubPackages = true
+				pattern = pattern[:len(pattern)-4]
+			}
+
+			cleaned := path.Clean(pattern)
+			if cleaned == "." || cleaned != pattern {
+				return nil, fmt.Errorf(
+					"invalid pattern (%s), pattern package path is not clean/absolute",
+					originalPattern)
+			}
+
+			pkgRoot = filepath.Join(
+				workspace.RootDirPath,
+				filepath.FromSlash(pattern))
+		}
+	} else {
+		dir, file := filepath.Split(pattern)
+		if file == "..." {
+			findSubPackages = true
+			pattern = dir
+		}
+
+		var err error
+		pkgRoot, err = filepath.Abs(pattern)
+		if err != nil {
+			return nil, fmt.Errorf("invalid pattern (%s): %w", originalPattern, err)
+		}
+
+		if pkgRoot != workspace.RootDirPath &&
+			!strings.HasPrefix(
+				pkgRoot,
+				workspace.RootDirPath+string(filepath.Separator)) {
+
+			return nil, fmt.Errorf(
+				"invalid pattern (%s), not in workspace (%s)",
+				originalPattern,
+				workspace.RootDirPath)
+		}
+	}
+
+	if !findSubPackages && pkgRoot == workspace.RootDirPath {
+		return nil, fmt.Errorf(
+			"invalid pattern path (%s), must specify package name (or '...')",
+			originalPattern)
+	}
+
+	info, err := os.Stat(pkgRoot)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"invalid pattern path (%s): %w",
+			originalPattern,
+			err)
+	} else if !info.IsDir() {
+		return nil, fmt.Errorf(
+			"invalid pattern (%s), pattern package path is not a directory",
+			originalPattern)
+	}
+
+	dirs := map[string]struct{}{}
+	if !findSubPackages {
+		dirs[pkgRoot] = struct{}{}
+	} else {
+		err := filepath.WalkDir(
+			pkgRoot,
+			func(path string, entry fs.DirEntry, err error) error {
+				if entry.IsDir() || filepath.Ext(entry.Name()) != sourceExtension {
+					return nil
+				}
+
+				dir, _ := filepath.Split(path)
+				dirs[dir] = struct{}{}
+				return nil
+			})
+		if err != nil {
+			return nil, fmt.Errorf("invalid pattern (%s): %w", originalPattern, err)
+		}
+	}
+
+	targets := []ast.PackageID{}
+	for dir, _ := range dirs {
+		dir, err := filepath.Rel(workspace.RootDirPath, dir)
+		if err != nil {
+			return nil, fmt.Errorf("invalid pattern (%s): %w", originalPattern, err)
+		}
+
+		targets = append(targets, ast.NewPackageID(filepath.ToSlash(dir)))
+	}
+
+	return targets, nil
 }
