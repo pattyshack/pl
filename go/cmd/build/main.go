@@ -22,9 +22,7 @@ func main() {
 	}
 
 	builder := build.NewBuilder(workspace)
-	builder.Build(pkgIds...)
-
-	errs := builder.WaitForCompletion()
+	errs := builder.Build(pkgIds...)
 
 	// TODO: rm
 	for id, pkg := range builder.Packages() {

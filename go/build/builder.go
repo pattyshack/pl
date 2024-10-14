@@ -13,6 +13,8 @@ import (
 type locateState struct {
 	builder *Builder
 
+	ast.PackageID
+
 	mutex sync.Mutex
 
 	// All guarded by mutex
@@ -22,9 +24,7 @@ type locateState struct {
 	importedBy    []lexutil.Location
 }
 
-func (state *locateState) Locate(
-	id ast.PackageID,
-) (
+func (state *locateState) Locate() (
 	PackageContents,
 	error,
 ) {
@@ -36,7 +36,7 @@ func (state *locateState) Locate(
 	}
 	state.located = true
 
-	contents, err := state.builder.Locate(id)
+	contents, err := state.builder.Locate(state.PackageID)
 	state.err = err
 
 	if err != nil {
@@ -82,16 +82,14 @@ func (state *locateState) ImportedBy(loc *lexutil.Location) {
 
 type Package struct {
 	builder *Builder
-
 	locateState
 
-	ast.PackageID
+	// Populated by Load().  Safe to access once loadWaitGroup is ready
+	HasLoadErrors bool
 	PackageContents
+	Definitions        *ast.StatementList
+	DirectDependencies map[ast.PackageID]*Package
 
-	HasErrors   bool // maybe classify error type: body error vs public api error
-	Definitions *ast.StatementList
-
-	DirectDependencies      map[ast.PackageID]*Package
 	PublicInterfaceAnalyzed chan struct{}
 }
 
@@ -100,11 +98,12 @@ func (pkg *Package) Load() {
 
 	// TODO load cached entry
 
-	contents, err := pkg.locateState.Locate(pkg.PackageID)
+	contents, err := pkg.locateState.Locate()
 	if err != nil {
-		pkg.HasErrors = true
+		pkg.HasLoadErrors = true
 		return
 	}
+	pkg.PackageContents = contents
 
 	parseOptions := parser.ParserOptions{
 		OpenFunc: contents.Open,
@@ -116,7 +115,7 @@ func (pkg *Package) Load() {
 		emitter,
 		parseOptions)
 	pkg.Definitions = definitions
-	pkg.HasErrors = emitter.HasErrors()
+	pkg.HasLoadErrors = emitter.HasErrors()
 	pkg.builder.ErrorEmitter.MergeFrom(emitter)
 
 	for _, importPkg := range importPkgs {
@@ -182,13 +181,17 @@ func (builder *Builder) Packages() map[ast.PackageID]*Package {
 	return builder.packages
 }
 
-func (builder *Builder) Build(ids ...ast.PackageID) {
-	builder.mutex.Lock()
-	defer builder.mutex.Unlock()
-
+func (builder *Builder) Build(ids ...ast.PackageID) []error {
 	for _, id := range ids {
-		builder.unsafeBuild(id, nil)
+		builder.build(id, nil)
 	}
+
+	builder.loadWaitGroup.Wait()
+
+	// TODO check for dep cycles, cancel if found cycle
+
+	builder.buildWaitGroup.Wait()
+	return builder.Errors()
 }
 
 func (builder *Builder) build(
@@ -198,21 +201,14 @@ func (builder *Builder) build(
 	builder.mutex.Lock()
 	defer builder.mutex.Unlock()
 
-	return builder.unsafeBuild(id, importLoc)
-}
-
-func (builder *Builder) unsafeBuild(
-	id ast.PackageID,
-	importLoc *lexutil.Location,
-) *Package {
 	pkg := builder.packages[id]
 	if pkg == nil {
 		pkg = &Package{
 			builder: builder,
 			locateState: locateState{
-				builder: builder,
+				builder:   builder,
+				PackageID: id,
 			},
-			PackageID:               id,
 			DirectDependencies:      map[ast.PackageID]*Package{},
 			PublicInterfaceAnalyzed: make(chan struct{}),
 		}
@@ -225,13 +221,4 @@ func (builder *Builder) unsafeBuild(
 
 	pkg.locateState.ImportedBy(importLoc)
 	return pkg
-}
-
-func (builder *Builder) WaitForCompletion() []error {
-	builder.loadWaitGroup.Wait()
-
-	// TODO check for dep cycles, cancel if found cycle
-
-	builder.buildWaitGroup.Wait()
-	return builder.Errors()
 }
