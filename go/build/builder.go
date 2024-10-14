@@ -2,6 +2,7 @@ package build
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"github.com/pattyshack/gt/lexutil"
@@ -90,6 +91,9 @@ type Package struct {
 	Definitions        *ast.StatementList
 	DirectDependencies map[ast.PackageID]*Package
 
+	// Only used by detectCycles, after loadWaitGroup is ready.
+	isAcyclic bool
+
 	PublicInterfaceAnalyzed chan struct{}
 }
 
@@ -145,6 +149,36 @@ func (pkg *Package) Build() {
 	// can begin semantic analysis
 }
 
+func (pkg *Package) detectCycle(visited []ast.PackageID) error {
+	for idx, visitedID := range visited {
+		if visitedID == pkg.PackageID {
+			cycleErrMsg := "detected import dependency cycle:\n  "
+			for _, id := range visited[idx:] {
+				cycleErrMsg += id.String() + " ->\n  "
+			}
+			cycleErrMsg += pkg.PackageID.String()
+
+			return fmt.Errorf(cycleErrMsg)
+		}
+	}
+
+	visited = append(visited, pkg.PackageID)
+	for _, dep := range pkg.DirectDependencies {
+		if dep.isAcyclic {
+			continue
+		}
+
+		err := dep.detectCycle(visited)
+		if err != nil {
+			return err
+		}
+	}
+	visited = visited[:len(visited)-1]
+
+	pkg.isAcyclic = true
+	return nil
+}
+
 type Builder struct {
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -188,7 +222,7 @@ func (builder *Builder) Build(ids ...ast.PackageID) []error {
 
 	builder.loadWaitGroup.Wait()
 
-	// TODO check for dep cycles, cancel if found cycle
+	builder.detectCycles()
 
 	builder.buildWaitGroup.Wait()
 	return builder.Errors()
@@ -221,4 +255,21 @@ func (builder *Builder) build(
 
 	pkg.locateState.ImportedBy(importLoc)
 	return pkg
+}
+
+func (builder *Builder) detectCycles() {
+	for _, pkg := range builder.packages {
+		if pkg.isAcyclic {
+			continue
+		}
+
+		// NOTE: There could be multiple import cycles, but for simplicity, we'll
+		// only report the first detected cycle.
+		err := pkg.detectCycle(nil)
+		if err != nil {
+			builder.EmitErrors(err)
+			builder.cancel()
+			return
+		}
+	}
 }
