@@ -240,3 +240,22 @@ func (workspace *Workspace) MatchTargetPattern(
 
 	return targets, nil
 }
+
+func (workspace *Workspace) MatchTargetPatterns(
+	patterns ...string,
+) (
+	[]ast.PackageID,
+	error,
+) {
+	pkgIds := []ast.PackageID{}
+	for _, pattern := range patterns {
+		ids, err := workspace.MatchTargetPattern(pattern)
+		if err != nil {
+			return nil, err
+		}
+
+		pkgIds = append(pkgIds, ids...)
+	}
+
+	return pkgIds, nil
+}
