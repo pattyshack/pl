@@ -1,6 +1,8 @@
 package reducer
 
 import (
+	"strings"
+
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
@@ -96,6 +98,22 @@ func (reducer *Reducer) ToStatements(
 // ImportClause
 //
 
+func (reducer *Reducer) stringLiteralToPackageID(
+	pkg *lr.TokenValue,
+) ast.PackageID {
+	if strings.HasPrefix(pkg.Value, "```") ||
+		strings.HasPrefix(pkg.Value, `"""`) {
+
+		reducer.Emit(
+			pkg.Loc(),
+			"cannot specify package id using multi-line string literal")
+
+		return ast.NewPackageID(pkg.Value[3 : len(pkg.Value)-3])
+	}
+
+	return ast.NewPackageID(pkg.Value[1 : len(pkg.Value)-1])
+}
+
 func (reducer *Reducer) StringLiteralToImportClause(
 	pkg *lr.TokenValue,
 ) (
@@ -105,7 +123,7 @@ func (reducer *Reducer) StringLiteralToImportClause(
 	clause := &ast.ImportClause{
 		StartEndPos:             pkg.StartEndPos,
 		LeadingTrailingComments: pkg.LeadingTrailingComments,
-		PackageID:               ast.NewPackageID(pkg.Value),
+		PackageID:               reducer.stringLiteralToPackageID(pkg),
 	}
 
 	return clause, nil
@@ -118,7 +136,7 @@ func (reducer *Reducer) aliasImport(
 	clause := &ast.ImportClause{
 		StartEndPos: ast.NewStartEndPos(alias.Loc(), pkg.End()),
 		Alias:       alias.Value,
-		PackageID:   ast.NewPackageID(pkg.Value),
+		PackageID:   reducer.stringLiteralToPackageID(pkg),
 	}
 
 	leading := alias.TakeLeading()
