@@ -67,6 +67,10 @@ func (workspace *Workspace) Locate(id ast.PackageID) (PackageContents, error) {
 
 	entries, err := os.ReadDir(pkgDirPath)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, fmt.Errorf("package (%s) not found", id.String())
+		}
+
 		return nil, fmt.Errorf(
 			"failed to locate package (%s): %w",
 			id.String(),

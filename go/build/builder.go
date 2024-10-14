@@ -10,9 +10,80 @@ import (
 	"github.com/pattyshack/pl/parser"
 )
 
+type locateState struct {
+	builder *Builder
+
+	mutex sync.Mutex
+
+	// All guarded by mutex
+	located       bool
+	err           error
+	isBuildTarget bool
+	importedBy    []lexutil.Location
+}
+
+func (state *locateState) Locate(
+	id ast.PackageID,
+) (
+	PackageContents,
+	error,
+) {
+	state.mutex.Lock()
+	defer state.mutex.Unlock()
+
+	if state.located {
+		panic("should never happen")
+	}
+	state.located = true
+
+	contents, err := state.builder.Locate(id)
+	state.err = err
+
+	if err != nil {
+		if state.isBuildTarget {
+			state.builder.EmitErrors(err)
+		}
+
+		for _, loc := range state.importedBy {
+			state.builder.EmitErrors(lexutil.LocationError{Loc: loc, Err: err})
+		}
+	}
+	state.importedBy = nil
+
+	return contents, err
+}
+
+func (state *locateState) ImportedBy(loc *lexutil.Location) {
+	state.mutex.Lock()
+	defer state.mutex.Unlock()
+
+	if !state.located {
+		if loc == nil {
+			state.isBuildTarget = true
+		} else {
+			state.importedBy = append(state.importedBy, *loc)
+		}
+		return
+	}
+
+	if loc == nil {
+		if state.isBuildTarget {
+			return // already emitted error, if any
+		}
+		state.isBuildTarget = true
+
+		if state.err != nil {
+			state.builder.EmitErrors(state.err)
+		}
+	} else if state.err != nil {
+		state.builder.EmitErrors(lexutil.LocationError{Loc: *loc, Err: state.err})
+	}
+}
+
 type Package struct {
-	builder   *Builder
-	importLoc *lexutil.Location
+	builder *Builder
+
+	locateState
 
 	ast.PackageID
 	PackageContents
@@ -29,12 +100,8 @@ func (pkg *Package) Load() {
 
 	// TODO load cached entry
 
-	contents, err := pkg.builder.Locate(pkg.PackageID)
+	contents, err := pkg.locateState.Locate(pkg.PackageID)
 	if err != nil {
-		if pkg.importLoc != nil {
-			err = lexutil.LocationError{Loc: *pkg.importLoc, Err: err}
-		}
-		pkg.builder.EmitErrors(err)
 		pkg.HasErrors = true
 		return
 	}
@@ -139,25 +206,24 @@ func (builder *Builder) unsafeBuild(
 	importLoc *lexutil.Location,
 ) *Package {
 	pkg := builder.packages[id]
-	if pkg != nil {
-		return pkg
+	if pkg == nil {
+		pkg = &Package{
+			builder: builder,
+			locateState: locateState{
+				builder: builder,
+			},
+			PackageID:               id,
+			DirectDependencies:      map[ast.PackageID]*Package{},
+			PublicInterfaceAnalyzed: make(chan struct{}),
+		}
+		builder.packages[id] = pkg
+
+		builder.loadWaitGroup.Add(1)
+		builder.buildWaitGroup.Add(1)
+		go pkg.Build()
 	}
 
-	analyzedChan := make(chan struct{})
-
-	pkg = &Package{
-		builder:                 builder,
-		importLoc:               importLoc,
-		PackageID:               id,
-		DirectDependencies:      map[ast.PackageID]*Package{},
-		PublicInterfaceAnalyzed: analyzedChan,
-	}
-	builder.packages[id] = pkg
-
-	builder.loadWaitGroup.Add(1)
-	builder.buildWaitGroup.Add(1)
-	go pkg.Build()
-
+	pkg.locateState.ImportedBy(importLoc)
 	return pkg
 }
 
