@@ -3,6 +3,8 @@ import (
   "pkg2/subpkg"
 
   "bad/import"
+  "bad/#"
+  "bad/@"
 )
 
 var pkg2 = "pkg2"

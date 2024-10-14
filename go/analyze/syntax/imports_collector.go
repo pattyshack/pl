@@ -2,14 +2,21 @@ package syntax
 
 import (
 	"github.com/pattyshack/pl/ast"
+
+	"github.com/pattyshack/gt/lexutil"
 )
 
 type ImportClausesCollector struct {
 	clauses []*ast.ImportClause
+	*lexutil.ErrorEmitter
 }
 
-func NewImportClausesCollector() *ImportClausesCollector {
-	return &ImportClausesCollector{}
+func NewImportClausesCollector(
+	emitter *lexutil.ErrorEmitter,
+) *ImportClausesCollector {
+	return &ImportClausesCollector{
+		ErrorEmitter: emitter,
+	}
 }
 
 func (collector *ImportClausesCollector) Clauses() []*ast.ImportClause {
@@ -28,6 +35,14 @@ func (collector *ImportClausesCollector) Process(node ast.Node) {
 			continue
 		}
 
-		collector.clauses = append(collector.clauses, importStmt.ImportClauses...)
+		for _, clause := range importStmt.ImportClauses {
+			err := clause.PackageID.Validate()
+			if err != nil {
+				collector.EmitErrors(lexutil.LocationError{Loc: clause.Loc(), Err: err})
+				continue
+			}
+
+			collector.clauses = append(collector.clauses, clause)
+		}
 	}
 }

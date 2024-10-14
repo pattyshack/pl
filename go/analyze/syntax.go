@@ -32,7 +32,7 @@ func PackageSyntax(
 	node ast.Node,
 	emitter *lexutil.ErrorEmitter,
 ) []*ast.ImportClause {
-	importsCollector := syntax.NewImportClausesCollector()
+	importsCollector := syntax.NewImportClausesCollector(emitter)
 	passes := [][]ast.Pass{
 		{
 			importsCollector,

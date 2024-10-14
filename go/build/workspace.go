@@ -61,11 +61,6 @@ func FindWorkspaceRoot() (*Workspace, error) {
 }
 
 func (workspace *Workspace) Locate(id ast.PackageID) (PackageContents, error) {
-	err := id.Validate()
-	if err != nil {
-		return nil, err
-	}
-
 	pkgDirPath := filepath.Join(
 		workspace.RootDirPath,
 		filepath.FromSlash(id.String()))
@@ -230,12 +225,18 @@ func (workspace *Workspace) MatchTargetPattern(
 
 	targets := []ast.PackageID{}
 	for dir, _ := range dirs {
-		dir, err := filepath.Rel(workspace.RootDirPath, dir)
+		relDir, err := filepath.Rel(workspace.RootDirPath, dir)
 		if err != nil {
 			return nil, fmt.Errorf("invalid pattern (%s): %w", originalPattern, err)
 		}
 
-		targets = append(targets, ast.NewPackageID(filepath.ToSlash(dir)))
+		id := ast.NewPackageID(filepath.ToSlash(relDir))
+		err = id.Validate()
+		if err != nil {
+			return nil, fmt.Errorf("found invalid package %s: %w", dir, err)
+		} else {
+			targets = append(targets, id)
+		}
 	}
 
 	return targets, nil

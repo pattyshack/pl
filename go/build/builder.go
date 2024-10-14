@@ -20,8 +20,8 @@ type Package struct {
 	HasErrors   bool // maybe classify error type: body error vs public api error
 	Definitions *ast.StatementList
 
-	DirectDependencies map[ast.PackageID]*Package
-	DoneChan           chan struct{}
+	DirectDependencies      map[ast.PackageID]*Package
+	PublicInterfaceAnalyzed chan struct{}
 }
 
 func (pkg *Package) Load() {
@@ -62,7 +62,7 @@ func (pkg *Package) Load() {
 
 func (pkg *Package) Build() {
 	defer pkg.builder.buildWaitGroup.Done()
-	defer close(pkg.DoneChan)
+	defer close(pkg.PublicInterfaceAnalyzed)
 
 	pkg.Load()
 	// TODO need to check for error / early exit
@@ -71,7 +71,7 @@ func (pkg *Package) Build() {
 		select {
 		case <-pkg.builder.ctx.Done():
 			return
-		case <-dep.DoneChan:
+		case <-dep.PublicInterfaceAnalyzed:
 			// ok
 		}
 	}
@@ -143,14 +143,14 @@ func (builder *Builder) unsafeBuild(
 		return pkg
 	}
 
-	doneChan := make(chan struct{})
+	analyzedChan := make(chan struct{})
 
 	pkg = &Package{
-		builder:            builder,
-		importLoc:          importLoc,
-		PackageID:          id,
-		DirectDependencies: map[ast.PackageID]*Package{},
-		DoneChan:           doneChan,
+		builder:                 builder,
+		importLoc:               importLoc,
+		PackageID:               id,
+		DirectDependencies:      map[ast.PackageID]*Package{},
+		PublicInterfaceAnalyzed: analyzedChan,
 	}
 	builder.packages[id] = pkg
 
