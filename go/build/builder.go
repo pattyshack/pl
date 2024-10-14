@@ -81,6 +81,11 @@ func (state *locateState) ImportedBy(loc *lexutil.Location) {
 	}
 }
 
+type depPkg struct {
+	lexutil.Location
+	*Package
+}
+
 type Package struct {
 	builder *Builder
 	locateState
@@ -89,7 +94,7 @@ type Package struct {
 	HasLoadErrors bool
 	PackageContents
 	Definitions        *ast.StatementList
-	DirectDependencies map[ast.PackageID]*Package
+	DirectDependencies map[ast.PackageID]depPkg
 
 	// Only used by detectCycles, after loadWaitGroup is ready.
 	isAcyclic bool
@@ -124,9 +129,10 @@ func (pkg *Package) Load() {
 
 	for _, importPkg := range importPkgs {
 		loc := importPkg.Loc()
-		pkg.DirectDependencies[importPkg.PackageID] = pkg.builder.build(
-			importPkg.PackageID,
-			&loc)
+		pkg.DirectDependencies[importPkg.PackageID] = depPkg{
+			Location: loc,
+			Package:  pkg.builder.build(importPkg.PackageID, &loc),
+		}
 	}
 }
 
@@ -152,11 +158,17 @@ func (pkg *Package) Build() {
 func (pkg *Package) detectCycle(visited []ast.PackageID) error {
 	for idx, visitedID := range visited {
 		if visitedID == pkg.PackageID {
+			cycle := visited[idx:]
+
 			cycleErrMsg := "detected import dependency cycle:\n  "
-			for _, id := range visited[idx:] {
-				cycleErrMsg += id.String() + " ->\n  "
+			for idx, pkgId := range cycle {
+				curr := pkg.builder.packages[pkgId]
+				cycleErrMsg += fmt.Sprintf(
+					"%s (%s) ->\n  ",
+					pkgId,
+					curr.DirectDependencies[cycle[(idx+1)%len(cycle)]].Location)
 			}
-			cycleErrMsg += pkg.PackageID.String()
+			cycleErrMsg += cycle[0].String()
 
 			return fmt.Errorf(cycleErrMsg)
 		}
@@ -243,7 +255,7 @@ func (builder *Builder) build(
 				builder:   builder,
 				PackageID: id,
 			},
-			DirectDependencies:      map[ast.PackageID]*Package{},
+			DirectDependencies:      map[ast.PackageID]depPkg{},
 			PublicInterfaceAnalyzed: make(chan struct{}),
 		}
 		builder.packages[id] = pkg
