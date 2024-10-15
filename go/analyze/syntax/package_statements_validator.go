@@ -115,6 +115,11 @@ func (validator *PackageStatementsValidator) checkExpr(node ast.Expression) {
 		// valid top level expressions
 
 	case *ast.StatementsExpr:
+		if expr.Label != "" {
+			validator.Emit(
+				node.Loc(),
+				"package level statement block must be unlabelled")
+		}
 	case *ast.ParseErrorExpr:
 	case *ast.AddrDeclPattern:
 

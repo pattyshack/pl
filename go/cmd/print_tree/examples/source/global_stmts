@@ -4,7 +4,7 @@ var i, var j = 10  // invalid
 func foo() {}
 func() {}  // invalid
 
-{
+label@{
   import "fmt@v1" // invalid
 
   1 + 2
