@@ -24,5 +24,5 @@ case i, j, var k = j():
 (i, ..., j, ...) = x
 
 var (i, j, k + l, m)
-var (i, j, k + l, (a, b, c * d, f()))
+var (i, j, k + l, (a, b, c * d, f())) (int, _)
 > (i+j, k, f()) = x  // ok

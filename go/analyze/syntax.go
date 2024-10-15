@@ -17,7 +17,7 @@ func SourceSyntax(node ast.Node, emitter *lexutil.ErrorEmitter) {
 			syntax.ValidatePackageStatements(emitter),
 			syntax.ValidateExprStatements(emitter),
 			syntax.ValidateImplicitStructs(emitter),
-			syntax.ValidateFieldDefs(emitter),
+			syntax.ValidateExplicitlyTypedDefs(emitter),
 			patternsAnalyzer.Validate(),
 		},
 		{

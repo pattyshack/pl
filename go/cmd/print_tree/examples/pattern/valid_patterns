@@ -1,9 +1,9 @@
-var i, var j
-var k
+var i int, var j double
+var k string
 
 (x, ..., >y+z, (nested, >(a(), {b}, c[i]), ...)) = blah
 
-for var (i, j); i < j; var k, var (l, (m, n)) do {}
+for var (i, j) pair$[int, double]; i < j; var k string, var (l, (m, n)) blah do {}
 
 for i in iter do {}
 
@@ -20,11 +20,11 @@ case (var x, y) = receiver<-value:
 }
 
 {
-  return var i
+  return var i complex
 }
 
 {
-  return var i, var j
+  return var i cat, var j dog
 }
 
 switch x {

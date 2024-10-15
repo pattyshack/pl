@@ -16,7 +16,7 @@ const (
 
 	// Statement level AddrDeclPattern not associated with AssignPattern or
 	// CasePatterns.  Pattern body must either be a name or (nested) tuple of
-	// name, without skip patterns.
+	// name, without skip patterns, and be explicitly typed.
 	addrDeclPattern = patternState(1)
 
 	// AddrDeclPattern associated with AssignPattern or CasePatterns.  Pattern
@@ -80,6 +80,19 @@ type patternsAnalyzePass struct {
 
 func (analyzer *patternsAnalyzePass) Process(node ast.Node) {
 	node.Walk(analyzer)
+
+	for pattern, state := range analyzer.validAddrDeclPatterns {
+		if state != addrDeclPattern {
+			continue
+		}
+
+		visitor := &ExplicitlyTypedDefsValidator{
+			scopeStack:   []bool{true},
+			ErrorEmitter: analyzer.ErrorEmitter,
+		}
+
+		pattern.Type.Walk(visitor)
+	}
 }
 
 func (analyzer *PatternsAnalyzer) Validate() ast.Pass {
