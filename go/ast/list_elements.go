@@ -8,12 +8,21 @@ import (
 // FieldDef
 //
 
+type FieldDefQualifier string
+
+const (
+	NoFieldDefQualifier      = FieldDefQualifier("")
+	VarFieldDefQualifier     = FieldDefQualifier("var")
+	LetFieldDefQualifier     = FieldDefQualifier("let")
+	DefaultFieldDefQualifier = FieldDefQualifier("default")
+)
+
 type FieldDef struct {
 	IsTypeProp
 	StartEndPos
 	LeadingTrailingComments
 
-	IsDefault bool
+	Qualifier FieldDefQualifier
 
 	Name string // Could be identifier, underscore, or ""
 	Type TypeExpression

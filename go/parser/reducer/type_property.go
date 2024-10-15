@@ -74,6 +74,39 @@ func (reducer Reducer) PaddingFieldToTypeProperty(
 	return reducer.namedField(underscore, typeExpr), nil
 }
 
+func (reducer Reducer) VarTypeUnnamedFieldToTypeProperty(
+	varType *lr.TokenValue,
+	typeExpr ast.TypeExpression,
+) (
+	ast.TypeProperty,
+	error,
+) {
+	def := reducer.unnamedField(typeExpr)
+	def.Qualifier = ast.FieldDefQualifier(varType.Value)
+
+	def.PrependToLeading(varType.TakeTrailing())
+	def.PrependToLeading(varType.TakeLeading())
+
+	return def, nil
+}
+
+func (reducer Reducer) VarTypeNamedFieldToTypeProperty(
+	varType *lr.TokenValue,
+	name *lr.TokenValue,
+	typeExpr ast.TypeExpression,
+) (
+	ast.TypeProperty,
+	error,
+) {
+	def := reducer.namedField(name, typeExpr)
+	def.Qualifier = ast.FieldDefQualifier(varType.Value)
+
+	def.PrependToLeading(varType.TakeTrailing())
+	def.PrependToLeading(varType.TakeLeading())
+
+	return def, nil
+}
+
 func (reducer Reducer) DefaultNamedEnumFieldToTypeProperty(
 	defaultKW *lr.TokenValue,
 	name *lr.TokenValue,
@@ -83,7 +116,7 @@ func (reducer Reducer) DefaultNamedEnumFieldToTypeProperty(
 	error,
 ) {
 	def := reducer.namedField(name, typeExpr)
-	def.IsDefault = true
+	def.Qualifier = ast.DefaultFieldDefQualifier
 
 	def.PrependToLeading(defaultKW.TakeTrailing())
 	def.PrependToLeading(defaultKW.TakeLeading())
@@ -99,7 +132,7 @@ func (reducer Reducer) DefaultUnnamedEnumFieldToTypeProperty(
 	error,
 ) {
 	def := reducer.unnamedField(typeExpr)
-	def.IsDefault = true
+	def.Qualifier = ast.DefaultFieldDefQualifier
 
 	def.PrependToLeading(defaultKW.TakeTrailing())
 	def.PrependToLeading(defaultKW.TakeLeading())

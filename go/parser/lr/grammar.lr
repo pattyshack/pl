@@ -175,7 +175,7 @@ import_clause<ImportClause> ->
 //
 
 block_addr_decl_stmt<Statement> ->
-  new_var_type DOLLAR LPAREN block_addr_decl_list RPAREN
+  var_type DOLLAR LPAREN block_addr_decl_list RPAREN
 
 block_addr_decl_list<ExpressionList> ->
   = proper_block_addr_decl_list |
@@ -197,12 +197,12 @@ block_addr_decl_item<Expression> ->
 // variable.  A "constant" is a LET variable associated with a type with no
 // public access to fields, and no mutation methods.
 addr_decl_pattern<Expression> ->
-  new_inferred: new_var_type new_addressable |
-  new_typed: new_var_type new_addressable type_expr
+  new_inferred: var_type new_addressable |
+  new_typed: var_type new_addressable type_expr
 
 assign_to_addr_pattern<Expression> -> GREATER expr
 
-new_var_type<Value> ->
+var_type<Value> ->
   = VAR |
   = LET
 
@@ -771,6 +771,8 @@ type_property<TypeProperty> ->
   unnamed_field: type_expr |
   named_field: IDENTIFIER type_expr |
   padding_field: UNDERSCORE type_expr |
+  var_type_unnamed_field: var_type type_expr |
+  var_type_named_field: var_type IDENTIFIER type_expr |
   default_named_enum_field: DEFAULT IDENTIFIER type_expr |
   default_unnamed_enum_field: DEFAULT type_expr |
   = func_def

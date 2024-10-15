@@ -262,13 +262,22 @@ func (expr *PropertiesTypeExpr) Validate(emitter *lexutil.ErrorEmitter) {
 	for _, p := range expr.Properties {
 		switch prop := p.(type) {
 		case *FieldDef:
-			if prop.IsDefault {
+			switch prop.Qualifier {
+			case NoFieldDefQualifier:
+				// ok
+			case LetFieldDefQualifier, VarFieldDefQualifier:
+				if expr.Kind == EnumKind {
+					emitter.Emit(p.Loc(), "unexpected let field")
+				}
+			case DefaultFieldDefQualifier:
 				defaultCount++
 				if expr.Kind != EnumKind {
 					emitter.Emit(p.Loc(), "unexpected default field")
 				} else if defaultCount > 1 {
 					emitter.Emit(p.Loc(), "more than one default field")
 				}
+			default:
+				emitter.Emit(p.Loc(), "unknown field def qualifier: %s", prop.Qualifier)
 			}
 
 			if prop.IsPadding() && expr.Kind != StructKind {
