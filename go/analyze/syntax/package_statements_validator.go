@@ -3,6 +3,7 @@ package syntax
 import (
 	"github.com/pattyshack/gt/lexutil"
 
+	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/util"
 )
@@ -11,7 +12,7 @@ type PackageStatementsValidator struct {
 	*lexutil.ErrorEmitter
 }
 
-func ValidatePackageStatements(emitter *lexutil.ErrorEmitter) ast.Pass {
+func ValidatePackageStatements(emitter *lexutil.ErrorEmitter) process.Pass {
 	return &PackageStatementsValidator{
 		ErrorEmitter: emitter,
 	}

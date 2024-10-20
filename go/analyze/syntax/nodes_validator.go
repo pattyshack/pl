@@ -3,6 +3,7 @@ package syntax
 import (
 	"github.com/pattyshack/gt/lexutil"
 
+	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
 )
 
@@ -10,7 +11,7 @@ type NodeValidator struct {
 	*lexutil.ErrorEmitter
 }
 
-func ValidateNodes(emitter *lexutil.ErrorEmitter) ast.Pass {
+func ValidateNodes(emitter *lexutil.ErrorEmitter) process.Pass {
 	return &NodeValidator{
 		ErrorEmitter: emitter,
 	}

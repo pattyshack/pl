@@ -3,6 +3,7 @@ package syntax
 import (
 	"github.com/pattyshack/gt/lexutil"
 
+	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
 )
 
@@ -12,7 +13,7 @@ type FuncSignaturesValidator struct {
 	*lexutil.ErrorEmitter
 }
 
-func ValidateFuncSignatures(emitter *lexutil.ErrorEmitter) ast.Pass {
+func ValidateFuncSignatures(emitter *lexutil.ErrorEmitter) process.Pass {
 	return &FuncSignaturesValidator{
 		processed:    map[*ast.FuncSignature]struct{}{},
 		ErrorEmitter: emitter,

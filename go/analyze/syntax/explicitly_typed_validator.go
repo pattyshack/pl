@@ -3,6 +3,7 @@ package syntax
 import (
 	"github.com/pattyshack/gt/lexutil"
 
+	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
 )
 
@@ -13,7 +14,7 @@ type ExplicitlyTypedDefsValidator struct {
 	*lexutil.ErrorEmitter
 }
 
-func ValidateExplicitlyTypedDefs(emitter *lexutil.ErrorEmitter) ast.Pass {
+func ValidateExplicitlyTypedDefs(emitter *lexutil.ErrorEmitter) process.Pass {
 	return &ExplicitlyTypedDefsValidator{
 		ErrorEmitter: emitter,
 	}

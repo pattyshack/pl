@@ -6,6 +6,7 @@ import (
 	"github.com/pattyshack/gt/lexutil"
 
 	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/analyze/process"
 )
 
 type patternState int
@@ -95,7 +96,7 @@ func (analyzer *patternsAnalyzePass) Process(node ast.Node) {
 	}
 }
 
-func (analyzer *PatternsAnalyzer) Validate() ast.Pass {
+func (analyzer *PatternsAnalyzer) Validate() process.Pass {
 	return &patternsAnalyzePass{analyzer}
 }
 
@@ -120,7 +121,7 @@ func (analyzer *patternsTransformPass) Process(node ast.Node) {
 	}
 }
 
-func (analyzer *PatternsAnalyzer) Transform() ast.Pass {
+func (analyzer *PatternsAnalyzer) Transform() process.Pass {
 	return &patternsTransformPass{analyzer}
 }
 

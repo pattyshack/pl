@@ -228,5 +228,3 @@ type Label string
 func (label *Label) SetLabel(l string) {
 	*label = Label(l)
 }
-
-type Pass = lexutil.Pass[Node]

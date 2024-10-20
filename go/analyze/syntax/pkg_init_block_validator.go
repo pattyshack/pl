@@ -4,13 +4,14 @@ import (
 	"github.com/pattyshack/gt/lexutil"
 
 	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/analyze/process"
 )
 
 type PkgInitBlockValidator struct {
 	*lexutil.ErrorEmitter
 }
 
-func ValidatePkgInitBlock(emitter *lexutil.ErrorEmitter) ast.Pass {
+func ValidatePkgInitBlock(emitter *lexutil.ErrorEmitter) process.Pass {
 	return &PkgInitBlockValidator{
 		ErrorEmitter: emitter,
 	}

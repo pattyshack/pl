@@ -3,6 +3,7 @@ package syntax
 import (
 	"github.com/pattyshack/gt/lexutil"
 
+	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/util"
 )
@@ -13,7 +14,7 @@ type ExprStatementsValidator struct {
 	*lexutil.ErrorEmitter
 }
 
-func ValidateExprStatements(emitter *lexutil.ErrorEmitter) ast.Pass {
+func ValidateExprStatements(emitter *lexutil.ErrorEmitter) process.Pass {
 	return &ExprStatementsValidator{
 		processed:    map[*ast.StatementsExpr]struct{}{},
 		ErrorEmitter: emitter,

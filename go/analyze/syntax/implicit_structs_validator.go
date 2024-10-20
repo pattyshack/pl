@@ -3,6 +3,7 @@ package syntax
 import (
 	"github.com/pattyshack/gt/lexutil"
 
+	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
 )
 
@@ -20,7 +21,7 @@ type ImplicitStructsValidator struct {
 	*lexutil.ErrorEmitter
 }
 
-func ValidateImplicitStructs(emitter *lexutil.ErrorEmitter) ast.Pass {
+func ValidateImplicitStructs(emitter *lexutil.ErrorEmitter) process.Pass {
 	return &ImplicitStructsValidator{
 		validImproperColon: map[*ast.ImplicitStructExpr]struct{}{},
 		ErrorEmitter:       emitter,
