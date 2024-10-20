@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/pl/errors"
 )
 
 //
@@ -36,7 +36,7 @@ func (assign *AssignPattern) Walk(visitor Visitor) {
 	visitor.Exit(assign)
 }
 
-func (assign *AssignPattern) Validate(emitter *lexutil.ErrorEmitter) {
+func (assign *AssignPattern) Validate(emitter *errors.Emitter) {
 	switch assign.Kind {
 	case EqualAssign, InAssign:
 	default:

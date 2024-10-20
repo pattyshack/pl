@@ -7,6 +7,7 @@ import (
 
 	"github.com/pattyshack/pl/analyze"
 	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser/lr"
 	reducerImpl "github.com/pattyshack/pl/parser/reducer"
 )
@@ -32,13 +33,13 @@ func (l bufferLexer) CurrentLocation() lexutil.Location {
 type sourceParser struct {
 	lexer lr.Lexer
 	*reducerImpl.Reducer
-	*lexutil.ErrorEmitter
+	*errors.Emitter
 	ParserOptions
 }
 
 func newSourceParser(
 	fileName string,
-	emitter *lexutil.ErrorEmitter,
+	emitter *errors.Emitter,
 	options ParserOptions,
 ) (
 	*sourceParser,
@@ -53,7 +54,7 @@ func newSourceParser(
 	return &sourceParser{
 		lexer:         lexer,
 		Reducer:       reducer,
-		ErrorEmitter:  emitter,
+		Emitter:       emitter,
 		ParserOptions: options,
 	}, nil
 }
@@ -139,14 +140,14 @@ func (parser *sourceParser) parseSource() *ast.StatementList {
 	}
 
 	if !parser.DisableSyntaxAnalysis {
-		analyze.SourceSyntax(source, parser.ErrorEmitter)
+		analyze.SourceSyntax(source, parser.Emitter)
 	}
 	return source
 }
 
 func ParseSource(
 	fileName string,
-	emitter *lexutil.ErrorEmitter,
+	emitter *errors.Emitter,
 	options ParserOptions,
 ) *ast.StatementList {
 	parser, err := newSourceParser(fileName, emitter, options)

@@ -2,6 +2,8 @@ package ast
 
 import (
 	"github.com/pattyshack/gt/lexutil"
+
+	"github.com/pattyshack/pl/errors"
 )
 
 //
@@ -54,7 +56,7 @@ func (expr *LiteralExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *LiteralExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *LiteralExpr) Validate(emitter *errors.Emitter) {
 	switch expr.Kind {
 	case BoolLiteral, IntLiteral, FloatLiteral, RuneLiteral, StringLiteral: // ok
 	default:
@@ -153,7 +155,7 @@ func (expr *UnaryExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *UnaryExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *UnaryExpr) Validate(emitter *errors.Emitter) {
 	switch expr.Op {
 	case UnaryReturnDefaultEnumOp,
 		UnaryPanicOnDefaultEnumOp,
@@ -236,7 +238,7 @@ func (expr *BinaryExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *BinaryExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *BinaryExpr) Validate(emitter *errors.Emitter) {
 	switch expr.Op {
 	case BinaryAddOp,
 		BinarySubOp,
@@ -321,7 +323,7 @@ func (expr *ImplicitStructExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *ImplicitStructExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *ImplicitStructExpr) Validate(emitter *errors.Emitter) {
 	// NOTE: additional argument validation are handled by
 	// unexpectedPatternsDetector
 	switch expr.Kind {
@@ -372,7 +374,7 @@ func (expr *CallExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *CallExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *CallExpr) Validate(emitter *errors.Emitter) {
 	for idx, arg := range expr.Arguments {
 		if arg.Kind == SkipPatternArgument {
 			emitter.Emit(arg.Loc(), "unexpected %s argument", arg.Kind)
@@ -460,7 +462,7 @@ func (expr *InitializeExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *InitializeExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *InitializeExpr) Validate(emitter *errors.Emitter) {
 	for _, arg := range expr.Arguments {
 		if arg.Kind == SkipPatternArgument || arg.Kind == VariadicArgument {
 			emitter.Emit(arg.Loc(), "unexpected %s argument", arg.Kind)
@@ -492,7 +494,7 @@ func (expr *StatementsExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *StatementsExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *StatementsExpr) Validate(emitter *errors.Emitter) {
 	for idx, stmt := range expr.Statements {
 		_, ok := stmt.(*JumpStmt)
 		if !ok {
@@ -511,7 +513,7 @@ func (expr *StatementsExpr) Validate(emitter *lexutil.ErrorEmitter) {
 //
 
 func validateDefaultBranch(
-	emitter *lexutil.ErrorEmitter,
+	emitter *errors.Emitter,
 	parent Expression,
 	branches []*ConditionBranchStmt,
 	checkCondition func(Expression),
@@ -561,7 +563,7 @@ func (expr *IfExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *IfExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *IfExpr) Validate(emitter *errors.Emitter) {
 	validateDefaultBranch(
 		emitter,
 		expr,
@@ -607,7 +609,7 @@ func (expr *SwitchExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *SwitchExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *SwitchExpr) Validate(emitter *errors.Emitter) {
 	validateDefaultBranch(
 		emitter,
 		expr,
@@ -646,7 +648,7 @@ func (expr *SelectExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *SelectExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *SelectExpr) Validate(emitter *errors.Emitter) {
 	validateDefaultBranch(
 		emitter,
 		expr,
@@ -732,7 +734,7 @@ func (expr *LoopExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *LoopExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *LoopExpr) Validate(emitter *errors.Emitter) {
 	switch expr.Kind {
 	case InfiniteLoop,
 		DoWhileLoop,

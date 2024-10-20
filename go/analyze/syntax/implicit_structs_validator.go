@@ -1,10 +1,9 @@
 package syntax
 
 import (
-	"github.com/pattyshack/gt/lexutil"
-
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/errors"
 )
 
 // All errors detected by this pass can only occur due to manual ast
@@ -18,13 +17,13 @@ import (
 // Colon implicit structs are only allowed in callable expr.
 type ImplicitStructsValidator struct {
 	validImproperColon map[*ast.ImplicitStructExpr]struct{}
-	*lexutil.ErrorEmitter
+	*errors.Emitter
 }
 
-func ValidateImplicitStructs(emitter *lexutil.ErrorEmitter) process.Pass {
+func ValidateImplicitStructs(emitter *errors.Emitter) process.Pass {
 	return &ImplicitStructsValidator{
 		validImproperColon: map[*ast.ImplicitStructExpr]struct{}{},
-		ErrorEmitter:       emitter,
+		Emitter:            emitter,
 	}
 }
 

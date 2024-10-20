@@ -5,8 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/pattyshack/gt/lexutil"
-
+	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser/lexer"
 	"github.com/pattyshack/pl/parser/lr"
 )
@@ -38,7 +37,7 @@ func (options ParserOptions) NewReader(fileName string) (io.Reader, error) {
 
 func (options ParserOptions) NewLexer(
 	fileName string,
-	emitter *lexutil.ErrorEmitter,
+	emitter *errors.Emitter,
 	reducer lr.Reducer,
 ) (
 	lr.Lexer,

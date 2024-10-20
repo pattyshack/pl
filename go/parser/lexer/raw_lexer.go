@@ -9,6 +9,7 @@ import (
 	"github.com/pattyshack/gt/stringutil"
 
 	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser/lr"
 )
 
@@ -83,7 +84,7 @@ type LexerOptions struct {
 }
 
 type RawLexer struct {
-	*lexutil.ErrorEmitter
+	*errors.Emitter
 	LexerOptions
 
 	lexutil.BufferedByteLocationReader
@@ -93,7 +94,7 @@ type RawLexer struct {
 func NewRawLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
-	emitter *lexutil.ErrorEmitter,
+	emitter *errors.Emitter,
 	options LexerOptions,
 ) lr.Lexer {
 	if options.initialPeekWindowSize <= 0 {
@@ -106,7 +107,7 @@ func NewRawLexer(
 	}
 
 	return &RawLexer{
-		ErrorEmitter: emitter,
+		Emitter:      emitter,
 		LexerOptions: options,
 		BufferedByteLocationReader: lexutil.NewBufferedByteLocationReader(
 			sourceFileName,

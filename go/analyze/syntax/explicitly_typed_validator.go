@@ -1,22 +1,21 @@
 package syntax
 
 import (
-	"github.com/pattyshack/gt/lexutil"
-
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/errors"
 )
 
 type ExplicitlyTypedDefsValidator struct {
 	// push true when FieldDef / stand-alone AddrDeclPattern is entered.
 	// push false when PropertiesTypeExpr is entered
 	scopeStack []bool
-	*lexutil.ErrorEmitter
+	*errors.Emitter
 }
 
-func ValidateExplicitlyTypedDefs(emitter *lexutil.ErrorEmitter) process.Pass {
+func ValidateExplicitlyTypedDefs(emitter *errors.Emitter) process.Pass {
 	return &ExplicitlyTypedDefsValidator{
-		ErrorEmitter: emitter,
+		Emitter: emitter,
 	}
 }
 

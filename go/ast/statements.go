@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/pattyshack/gt/lexutil"
+
+	"github.com/pattyshack/pl/errors"
 )
 
 //
@@ -129,7 +131,7 @@ func (stmt *JumpStmt) Walk(visitor Visitor) {
 	visitor.Exit(stmt)
 }
 
-func (stmt *JumpStmt) Validate(emitter *lexutil.ErrorEmitter) {
+func (stmt *JumpStmt) Validate(emitter *errors.Emitter) {
 	switch stmt.Op {
 	case FallthroughOp, ReturnOp, ContinueOp, BreakOp: // ok
 	default:
@@ -316,7 +318,7 @@ func (block *BlockAddrDeclStmt) Walk(visitor Visitor) {
 	visitor.Exit(block)
 }
 
-func (block *BlockAddrDeclStmt) Validate(emitter *lexutil.ErrorEmitter) {
+func (block *BlockAddrDeclStmt) Validate(emitter *errors.Emitter) {
 	for _, expr := range block.Patterns {
 		switch pattern := expr.(type) {
 		case *AssignPattern:

@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/pattyshack/gt/lexutil"
+
+	"github.com/pattyshack/pl/errors"
 )
 
 //
@@ -146,7 +148,7 @@ func (expr *UnaryTypeExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *UnaryTypeExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *UnaryTypeExpr) Validate(emitter *errors.Emitter) {
 	switch expr.Op {
 	case ReturnOnDefaultTypeOp,
 		PanicOnDefaultTypeOp,
@@ -194,7 +196,7 @@ func (expr *BinaryTypeExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *BinaryTypeExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *BinaryTypeExpr) Validate(emitter *errors.Emitter) {
 	switch expr.Op {
 	case TraitIntersectTypeOp, TraitUnionTypeOp, TraitDifferenceTypeOp: // ok
 	default:
@@ -248,7 +250,7 @@ func (expr *PropertiesTypeExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *PropertiesTypeExpr) Validate(emitter *lexutil.ErrorEmitter) {
+func (expr *PropertiesTypeExpr) Validate(emitter *errors.Emitter) {
 	switch expr.Kind {
 	case StructKind, EnumKind, TraitKind: // ok
 	default:
@@ -338,7 +340,7 @@ func (sig *FuncSignature) Walk(visitor Visitor) {
 	visitor.Exit(sig)
 }
 
-func (sig *FuncSignature) Validate(emitter *lexutil.ErrorEmitter) {
+func (sig *FuncSignature) Validate(emitter *errors.Emitter) {
 	if sig.Name != "" {
 		if sig.GenericParameters == nil {
 			emitter.Emit(

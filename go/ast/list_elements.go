@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/pl/errors"
 )
 
 //
@@ -96,7 +96,7 @@ func (param *Parameter) Walk(visitor Visitor) {
 	visitor.Exit(param)
 }
 
-func (param *Parameter) Validate(emitter *lexutil.ErrorEmitter) {
+func (param *Parameter) Validate(emitter *errors.Emitter) {
 	switch param.Kind {
 	case SingularParameter, ReceiverParameter, VariadicParameter:
 		// ok
@@ -144,7 +144,7 @@ func (arg *Argument) Walk(visitor Visitor) {
 	visitor.Exit(arg)
 }
 
-func (arg *Argument) Validate(emitter *lexutil.ErrorEmitter) {
+func (arg *Argument) Validate(emitter *errors.Emitter) {
 	switch arg.Kind {
 	case SingularArgument, VariadicArgument, SkipPatternArgument:
 		// ok

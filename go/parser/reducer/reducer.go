@@ -1,19 +1,18 @@
 package reducer
 
 import (
-	"github.com/pattyshack/gt/lexutil"
-
+	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser/lr"
 )
 
 type Reducer struct {
-	*lexutil.ErrorEmitter
+	*errors.Emitter
 }
 
 var _ lr.Reducer = &Reducer{}
 
-func NewReducer(emitter *lexutil.ErrorEmitter) *Reducer {
+func NewReducer(emitter *errors.Emitter) *Reducer {
 	return &Reducer{
-		ErrorEmitter: emitter,
+		Emitter: emitter,
 	}
 }

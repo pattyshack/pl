@@ -2,6 +2,8 @@ package ast
 
 import (
 	"github.com/pattyshack/gt/lexutil"
+
+	"github.com/pattyshack/pl/errors"
 )
 
 type Visitor interface {
@@ -52,7 +54,7 @@ type Node interface {
 // A Node may optionally implement Validator, which non-recursively validate
 // the node's basic syntactic structure (without parent node information).
 type Validator interface {
-	Validate(*lexutil.ErrorEmitter)
+	Validate(*errors.Emitter)
 }
 
 type Expression interface {

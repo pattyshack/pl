@@ -1,14 +1,13 @@
 package analyze
 
 import (
-	"github.com/pattyshack/gt/lexutil"
-
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/analyze/syntax"
 	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/errors"
 )
 
-func SourceSyntax(node ast.Node, emitter *lexutil.ErrorEmitter) {
+func SourceSyntax(node ast.Node, emitter *errors.Emitter) {
 	patternsAnalyzer := syntax.NewPatternsAnalyzer(emitter)
 
 	passes := [][]process.Pass{
@@ -31,7 +30,7 @@ func SourceSyntax(node ast.Node, emitter *lexutil.ErrorEmitter) {
 
 func PackageSyntax(
 	node ast.Node,
-	emitter *lexutil.ErrorEmitter,
+	emitter *errors.Emitter,
 ) []*ast.ImportClause {
 	importsCollector := syntax.NewImportClausesCollector(emitter)
 	passes := [][]process.Pass{

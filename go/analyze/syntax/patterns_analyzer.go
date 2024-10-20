@@ -3,10 +3,9 @@ package syntax
 import (
 	"fmt"
 
-	"github.com/pattyshack/gt/lexutil"
-
-	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/analyze/process"
+	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/errors"
 )
 
 type patternState int
@@ -59,10 +58,10 @@ type PatternsAnalyzer struct {
 	// pattern -> parent (either implicit struct expr or assign expr)
 	redundantAssignToAddr map[*ast.AssignToAddrPattern]ast.Expression
 
-	*lexutil.ErrorEmitter
+	*errors.Emitter
 }
 
-func NewPatternsAnalyzer(emitter *lexutil.ErrorEmitter) *PatternsAnalyzer {
+func NewPatternsAnalyzer(emitter *errors.Emitter) *PatternsAnalyzer {
 	return &PatternsAnalyzer{
 		stateStack:                []patternState{},
 		validAssignPatterns:       map[*ast.AssignPattern]bool{},
@@ -71,7 +70,7 @@ func NewPatternsAnalyzer(emitter *lexutil.ErrorEmitter) *PatternsAnalyzer {
 		validAddrDeclPatterns:     map[*ast.AddrDeclPattern]patternState{},
 		validAssignToAddrPatterns: map[*ast.AssignToAddrPattern]struct{}{},
 		redundantAssignToAddr:     map[*ast.AssignToAddrPattern]ast.Expression{},
-		ErrorEmitter:              emitter,
+		Emitter:                   emitter,
 	}
 }
 
@@ -88,8 +87,8 @@ func (analyzer *patternsAnalyzePass) Process(node ast.Node) {
 		}
 
 		visitor := &ExplicitlyTypedDefsValidator{
-			scopeStack:   []bool{true},
-			ErrorEmitter: analyzer.ErrorEmitter,
+			scopeStack: []bool{true},
+			Emitter:    analyzer.Emitter,
 		}
 
 		pattern.Type.Walk(visitor)

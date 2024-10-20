@@ -8,6 +8,7 @@ import (
 	"github.com/pattyshack/gt/lexutil"
 
 	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser"
 )
 
@@ -118,14 +119,14 @@ func (pkg *Package) Load() {
 		OpenFunc: contents.Open,
 	}
 
-	emitter := &lexutil.ErrorEmitter{}
+	emitter := &errors.Emitter{}
 	definitions, importPkgs := parser.ParsePackage(
 		contents.Sources(),
 		emitter,
 		parseOptions)
 	pkg.Definitions = definitions
 	pkg.HasLoadErrors = emitter.HasErrors()
-	pkg.builder.ErrorEmitter.MergeFrom(emitter)
+	pkg.builder.Emitter.MergeFrom(emitter)
 
 	for _, importPkg := range importPkgs {
 		loc := importPkg.Loc()
@@ -195,7 +196,7 @@ type Builder struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 
-	*lexutil.ErrorEmitter
+	*errors.Emitter
 
 	loadWaitGroup  sync.WaitGroup
 	buildWaitGroup sync.WaitGroup
@@ -209,11 +210,11 @@ type Builder struct {
 func NewBuilder(workspace *Workspace) *Builder {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Builder{
-		ctx:          ctx,
-		cancel:       cancel,
-		ErrorEmitter: &lexutil.ErrorEmitter{},
-		Workspace:    workspace,
-		packages:     map[ast.PackageID]*Package{},
+		ctx:       ctx,
+		cancel:    cancel,
+		Emitter:   &errors.Emitter{},
+		Workspace: workspace,
+		packages:  map[ast.PackageID]*Package{},
 	}
 }
 

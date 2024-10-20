@@ -1,11 +1,11 @@
 package parser
 
 import (
-	"github.com/pattyshack/gt/lexutil"
+	"sync"
 
 	"github.com/pattyshack/pl/analyze"
 	"github.com/pattyshack/pl/ast"
-	"sync"
+	"github.com/pattyshack/pl/errors"
 )
 
 type packageParser struct {
@@ -13,7 +13,7 @@ type packageParser struct {
 
 func ParsePackage(
 	packageSources []string,
-	emitter *lexutil.ErrorEmitter,
+	emitter *errors.Emitter,
 	options ParserOptions,
 ) (
 	*ast.StatementList,

@@ -1,21 +1,22 @@
 package syntax
 
 import (
-	"github.com/pattyshack/pl/ast"
-
 	"github.com/pattyshack/gt/lexutil"
+
+	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/errors"
 )
 
 type ImportClausesCollector struct {
 	clauses []*ast.ImportClause
-	*lexutil.ErrorEmitter
+	*errors.Emitter
 }
 
 func NewImportClausesCollector(
-	emitter *lexutil.ErrorEmitter,
+	emitter *errors.Emitter,
 ) *ImportClausesCollector {
 	return &ImportClausesCollector{
-		ErrorEmitter: emitter,
+		Emitter: emitter,
 	}
 }
 

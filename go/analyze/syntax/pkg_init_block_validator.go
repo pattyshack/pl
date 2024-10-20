@@ -3,17 +3,18 @@ package syntax
 import (
 	"github.com/pattyshack/gt/lexutil"
 
-	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/analyze/process"
+	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/errors"
 )
 
 type PkgInitBlockValidator struct {
-	*lexutil.ErrorEmitter
+	*errors.Emitter
 }
 
-func ValidatePkgInitBlock(emitter *lexutil.ErrorEmitter) process.Pass {
+func ValidatePkgInitBlock(emitter *errors.Emitter) process.Pass {
 	return &PkgInitBlockValidator{
-		ErrorEmitter: emitter,
+		Emitter: emitter,
 	}
 }
 
