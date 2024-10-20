@@ -10,12 +10,13 @@ import (
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser"
+	"github.com/pattyshack/pl/types"
 )
 
 type locateState struct {
 	builder *Builder
 
-	ast.PackageID
+	types.PackageID
 
 	mutex sync.Mutex
 
@@ -95,7 +96,7 @@ type Package struct {
 	HasLoadErrors bool
 	PackageContents
 	Definitions        *ast.StatementList
-	DirectDependencies map[ast.PackageID]depPkg
+	DirectDependencies map[types.PackageID]depPkg
 
 	// Only used by detectCycles, after loadWaitGroup is ready.
 	isAcyclic bool
@@ -156,7 +157,7 @@ func (pkg *Package) Build() {
 	// can begin semantic analysis
 }
 
-func (pkg *Package) detectCycle(visited []ast.PackageID) error {
+func (pkg *Package) detectCycle(visited []types.PackageID) error {
 	for idx, visitedID := range visited {
 		if visitedID == pkg.PackageID {
 			cycle := visited[idx:]
@@ -204,7 +205,7 @@ type Builder struct {
 	*Workspace
 
 	mutex    sync.Mutex
-	packages map[ast.PackageID]*Package // guarded by mutex
+	packages map[types.PackageID]*Package // guarded by mutex
 }
 
 func NewBuilder(workspace *Workspace) *Builder {
@@ -214,12 +215,12 @@ func NewBuilder(workspace *Workspace) *Builder {
 		cancel:    cancel,
 		Emitter:   &errors.Emitter{},
 		Workspace: workspace,
-		packages:  map[ast.PackageID]*Package{},
+		packages:  map[types.PackageID]*Package{},
 	}
 }
 
 // TODO rm
-func (builder *Builder) Packages() map[ast.PackageID]*Package {
+func (builder *Builder) Packages() map[types.PackageID]*Package {
 	builder.buildWaitGroup.Wait()
 
 	builder.mutex.Lock()
@@ -228,7 +229,7 @@ func (builder *Builder) Packages() map[ast.PackageID]*Package {
 	return builder.packages
 }
 
-func (builder *Builder) Build(ids ...ast.PackageID) []error {
+func (builder *Builder) Build(ids ...types.PackageID) []error {
 	for _, id := range ids {
 		builder.build(id, nil)
 	}
@@ -242,7 +243,7 @@ func (builder *Builder) Build(ids ...ast.PackageID) []error {
 }
 
 func (builder *Builder) build(
-	id ast.PackageID,
+	id types.PackageID,
 	importLoc *lexutil.Location,
 ) *Package {
 	builder.mutex.Lock()
@@ -256,7 +257,7 @@ func (builder *Builder) build(
 				builder:   builder,
 				PackageID: id,
 			},
-			DirectDependencies:      map[ast.PackageID]depPkg{},
+			DirectDependencies:      map[types.PackageID]depPkg{},
 			PublicInterfaceAnalyzed: make(chan struct{}),
 		}
 		builder.packages[id] = pkg
