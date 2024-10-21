@@ -25,9 +25,9 @@ func main() {
 	errs := builder.Build(pkgIds...)
 
 	// TODO: rm
-	for id, pkg := range builder.Packages() {
+	for _, pkg := range builder.Packages() {
 		fmt.Println("=================")
-		fmt.Println("Package:", id)
+		fmt.Println("Package:", pkg.PackageID)
 		fmt.Println("-----------------")
 		if pkg.Definitions != nil {
 			fmt.Println(util.TreeString(pkg.Definitions, ""))

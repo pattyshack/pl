@@ -3,6 +3,7 @@ package build
 import (
 	"context"
 	"fmt"
+	"sort"
 	"sync"
 
 	"github.com/pattyshack/gt/lexutil"
@@ -13,7 +14,7 @@ import (
 	"github.com/pattyshack/pl/types"
 )
 
-type importedBy struct {
+type pkgLoc struct {
 	*Package
 	lexutil.Location
 }
@@ -27,7 +28,7 @@ type locateState struct {
 	located       bool
 	err           error
 	isBuildTarget bool
-	importedBy    []importedBy
+	importedBy    []pkgLoc
 }
 
 func (state *locateState) Locate(ws *Workspace, id types.PackageID) (
@@ -58,7 +59,7 @@ func (state *locateState) Locate(ws *Workspace, id types.PackageID) (
 	return contents, err
 }
 
-func (state *locateState) ImportedBy(by *importedBy) {
+func (state *locateState) ImportedBy(by *pkgLoc) {
 	state.mutex.Lock()
 	defer state.mutex.Unlock()
 
@@ -89,11 +90,6 @@ func (state *locateState) ImportedBy(by *importedBy) {
 	}
 }
 
-type depPkg struct {
-	lexutil.Location
-	*Package
-}
-
 type Package struct {
 	builder *Builder
 
@@ -105,9 +101,10 @@ type Package struct {
 	// Populated by Load().  Safe to access once loadWaitGroup is ready
 	PackageContents
 	Definitions        *ast.StatementList
-	DirectDependencies map[types.PackageID]depPkg
+	DirectDependencies map[types.PackageID]pkgLoc
 
-	// Only used by detectCycles, after loadWaitGroup is ready.
+	// Only used by detectCycles, after loadWaitGroup is ready, and
+	// sortedPackages is available.
 	isAcyclic bool
 
 	PublicInterfaceAnalyzed chan struct{}
@@ -136,9 +133,9 @@ func (pkg *Package) Load() {
 
 	for _, importPkg := range importPkgs {
 		loc := importPkg.Loc()
-		pkg.DirectDependencies[importPkg.PackageID] = depPkg{
+		pkg.DirectDependencies[importPkg.PackageID] = pkgLoc{
+			Package:  pkg.builder.build(importPkg.PackageID, &pkgLoc{pkg, loc}),
 			Location: loc,
-			Package:  pkg.builder.build(importPkg.PackageID, &importedBy{pkg, loc}),
 		}
 	}
 }
@@ -169,7 +166,7 @@ func (pkg *Package) detectCycle(visited []types.PackageID) error {
 
 			cycleErrMsg := "detected import dependency cycle:\n  "
 			for idx, pkgId := range cycle {
-				curr := pkg.builder.packages[pkgId]
+				curr := pkg.builder.get(pkgId)
 				cycleErrMsg += fmt.Sprintf(
 					"%s (%s) ->\n  ",
 					pkgId,
@@ -182,8 +179,14 @@ func (pkg *Package) detectCycle(visited []types.PackageID) error {
 	}
 
 	visited = append(visited, pkg.PackageID)
-	for _, dep := range pkg.DirectDependencies {
+	// Walk deps in deterministic order
+	for _, dep := range pkg.builder.Packages() {
 		if dep.isAcyclic {
+			continue
+		}
+
+		_, ok := pkg.DirectDependencies[dep.PackageID]
+		if !ok {
 			continue
 		}
 
@@ -202,60 +205,58 @@ type Builder struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 
-	*errors.Emitter
-
-	loadWaitGroup  sync.WaitGroup
-	buildWaitGroup sync.WaitGroup
-
 	*Workspace
 
-	mutex    sync.Mutex
-	packages map[types.PackageID]*Package // guarded by mutex
+	*errors.Emitter
+
+	loadWaitGroup     sync.WaitGroup
+	topoSortWaitGroup sync.WaitGroup
+	buildWaitGroup    sync.WaitGroup
+
+	mutex sync.Mutex
+
+	packages map[types.PackageID]*Package // guarded by mutex.
+
+	// Computed only after loadWaitGroup is ready, inaccessible until
+	// topoSortWaitGroup is ready.
+	sortedPackages []*Package // guarded by mutex
 }
 
 func NewBuilder(workspace *Workspace) *Builder {
 	ctx, cancel := context.WithCancel(context.Background())
-	return &Builder{
+	builder := &Builder{
 		ctx:       ctx,
 		cancel:    cancel,
-		Emitter:   &errors.Emitter{},
 		Workspace: workspace,
+		Emitter:   &errors.Emitter{},
 		packages:  map[types.PackageID]*Package{},
 	}
+
+	return builder
 }
 
-// TODO rm
-func (builder *Builder) Packages() map[types.PackageID]*Package {
-	builder.buildWaitGroup.Wait()
-
+func (builder *Builder) pkgs() []*Package {
 	builder.mutex.Lock()
 	defer builder.mutex.Unlock()
 
-	return builder.packages
+	pkgs := make([]*Package, 0, len(builder.packages))
+	for _, pkg := range builder.packages {
+		pkgs = append(pkgs, pkg)
+	}
+
+	return pkgs
 }
 
-func (builder *Builder) Build(ids ...types.PackageID) []error {
-	for _, id := range ids {
-		builder.build(id, nil)
-	}
+func (builder *Builder) get(id types.PackageID) *Package {
+	builder.mutex.Lock()
+	defer builder.mutex.Unlock()
 
-	builder.loadWaitGroup.Wait()
-
-	builder.detectCycles()
-
-	builder.buildWaitGroup.Wait()
-
-	errs := builder.Errors()
-	for _, pkg := range builder.packages {
-		errs = append(errs, pkg.Errors()...)
-	}
-
-	return errs
+	return builder.packages[id]
 }
 
 func (builder *Builder) build(
 	id types.PackageID,
-	by *importedBy,
+	by *pkgLoc,
 ) *Package {
 	builder.mutex.Lock()
 	defer builder.mutex.Unlock()
@@ -270,7 +271,7 @@ func (builder *Builder) build(
 			locateState: locateState{
 				Emitter: emitter,
 			},
-			DirectDependencies:      map[types.PackageID]depPkg{},
+			DirectDependencies:      map[types.PackageID]pkgLoc{},
 			PublicInterfaceAnalyzed: make(chan struct{}),
 		}
 		builder.packages[id] = pkg
@@ -284,19 +285,108 @@ func (builder *Builder) build(
 	return pkg
 }
 
-func (builder *Builder) detectCycles() {
-	for _, pkg := range builder.packages {
-		if pkg.isAcyclic {
-			continue
+func (builder *Builder) setSorted(sorted []*Package) {
+	defer builder.topoSortWaitGroup.Done()
+
+	builder.mutex.Lock()
+	defer builder.mutex.Unlock()
+
+	builder.sortedPackages = sorted
+}
+
+func (builder *Builder) Packages() []*Package {
+	builder.topoSortWaitGroup.Wait()
+
+	builder.mutex.Lock()
+	defer builder.mutex.Unlock()
+
+	return builder.sortedPackages
+}
+
+func (builder *Builder) Build(ids ...types.PackageID) []error {
+	builder.topoSortWaitGroup.Add(1)
+
+	for _, id := range ids {
+		builder.build(id, nil)
+	}
+
+	builder.loadWaitGroup.Wait()
+
+	builder.topoSortPkgsAndDetectCycles()
+
+	builder.buildWaitGroup.Wait()
+
+	errs := builder.Errors()
+	for _, pkg := range builder.Packages() {
+		errs = append(errs, pkg.Errors()...)
+	}
+
+	return errs
+}
+
+func (builder *Builder) topoSortPkgsAndDetectCycles() {
+	toCheck := builder.pkgs()
+	numPkgs := len(toCheck)
+
+	// This ensures topo sort will also be name sorted for independent packages
+	sort.Slice(toCheck, func(i int, j int) bool {
+		return toCheck[i].PackageID.String() < toCheck[j].PackageID.String()
+	})
+
+	var cycleFound *Package
+	processed := map[*Package]bool{}
+	sorted := make([]*Package, 0, numPkgs)
+	for len(toCheck) > 0 {
+		remaining := make([]*Package, 0, len(toCheck))
+		for _, pkg := range toCheck {
+			processedCount := 0
+			for _, dep := range pkg.DirectDependencies {
+				if processed[dep.Package] {
+					processedCount++
+				}
+			}
+
+			if processedCount == len(pkg.DirectDependencies) {
+				if cycleFound == nil {
+					pkg.isAcyclic = true
+				}
+
+				processed[pkg] = true
+				sorted = append(sorted, pkg)
+			} else {
+				remaining = append(remaining, pkg)
+			}
 		}
+
+		if len(toCheck) == len(remaining) {
+			// Processed all non-cycles.  Arbitrarily pick the last package to break
+			// the cycle.
+			lastIdx := len(toCheck) - 1
+			pkg := toCheck[lastIdx]
+			processed[pkg] = true
+			sorted = append(sorted, pkg)
+
+			if cycleFound == nil {
+				cycleFound = pkg
+			}
+
+			toCheck = toCheck[:lastIdx]
+		} else {
+			toCheck = remaining
+		}
+	}
+
+	builder.setSorted(sorted)
+
+	if cycleFound != nil {
+		builder.cancel()
 
 		// NOTE: There could be multiple import cycles, but for simplicity, we'll
 		// only report the first detected cycle.
-		err := pkg.detectCycle(nil)
-		if err != nil {
-			builder.EmitErrors(err)
-			builder.cancel()
-			return
+		err := cycleFound.detectCycle(nil)
+		if err == nil {
+			panic("This should never happen")
 		}
+		builder.EmitErrors(err)
 	}
 }
