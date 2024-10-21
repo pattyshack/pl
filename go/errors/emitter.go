@@ -12,10 +12,6 @@ type Emitter struct {
 	errs  []error // guarded by mutex
 }
 
-func (emitter *Emitter) MergeFrom(other *Emitter) {
-	emitter.EmitErrors(other.errors()...)
-}
-
 func (emitter *Emitter) errors() []error {
 	emitter.mutex.Lock()
 	defer emitter.mutex.Unlock()

@@ -13,10 +13,13 @@ import (
 	"github.com/pattyshack/pl/types"
 )
 
-type locateState struct {
-	builder *Builder
+type importedBy struct {
+	*Package
+	lexutil.Location
+}
 
-	types.PackageID
+type locateState struct {
+	*errors.Emitter
 
 	mutex sync.Mutex
 
@@ -24,10 +27,10 @@ type locateState struct {
 	located       bool
 	err           error
 	isBuildTarget bool
-	importedBy    []lexutil.Location
+	importedBy    []importedBy
 }
 
-func (state *locateState) Locate() (
+func (state *locateState) Locate(ws *Workspace, id types.PackageID) (
 	PackageContents,
 	error,
 ) {
@@ -39,47 +42,50 @@ func (state *locateState) Locate() (
 	}
 	state.located = true
 
-	contents, err := state.builder.Locate(state.PackageID)
+	contents, err := ws.Locate(id)
 	state.err = err
 
 	if err != nil {
 		if state.isBuildTarget {
-			state.builder.EmitErrors(err)
+			state.EmitErrors(err)
 		}
 
-		for _, loc := range state.importedBy {
-			state.builder.EmitErrors(lexutil.LocationError{Loc: loc, Err: err})
+		for _, by := range state.importedBy {
+			by.Package.EmitErrors(lexutil.LocationError{Loc: by.Location, Err: err})
 		}
 	}
-	state.importedBy = nil
 
 	return contents, err
 }
 
-func (state *locateState) ImportedBy(loc *lexutil.Location) {
+func (state *locateState) ImportedBy(by *importedBy) {
 	state.mutex.Lock()
 	defer state.mutex.Unlock()
 
 	if !state.located {
-		if loc == nil {
+		if by == nil {
 			state.isBuildTarget = true
 		} else {
-			state.importedBy = append(state.importedBy, *loc)
+			state.importedBy = append(state.importedBy, *by)
 		}
 		return
 	}
 
-	if loc == nil {
+	if by == nil {
 		if state.isBuildTarget {
 			return // already emitted error, if any
 		}
 		state.isBuildTarget = true
 
 		if state.err != nil {
-			state.builder.EmitErrors(state.err)
+			state.EmitErrors(state.err)
 		}
 	} else if state.err != nil {
-		state.builder.EmitErrors(lexutil.LocationError{Loc: *loc, Err: state.err})
+		by.Package.EmitErrors(
+			lexutil.LocationError{
+				Loc: by.Location,
+				Err: state.err,
+			})
 	}
 }
 
@@ -90,10 +96,13 @@ type depPkg struct {
 
 type Package struct {
 	builder *Builder
+
+	types.PackageID
+
+	*errors.Emitter
 	locateState
 
 	// Populated by Load().  Safe to access once loadWaitGroup is ready
-	HasLoadErrors bool
 	PackageContents
 	Definitions        *ast.StatementList
 	DirectDependencies map[types.PackageID]depPkg
@@ -109,9 +118,8 @@ func (pkg *Package) Load() {
 
 	// TODO load cached entry
 
-	contents, err := pkg.locateState.Locate()
+	contents, err := pkg.locateState.Locate(pkg.builder.Workspace, pkg.PackageID)
 	if err != nil {
-		pkg.HasLoadErrors = true
 		return
 	}
 	pkg.PackageContents = contents
@@ -120,20 +128,17 @@ func (pkg *Package) Load() {
 		OpenFunc: contents.Open,
 	}
 
-	emitter := &errors.Emitter{}
 	definitions, importPkgs := parser.ParsePackage(
 		contents.Sources(),
-		emitter,
+		pkg.Emitter,
 		parseOptions)
 	pkg.Definitions = definitions
-	pkg.HasLoadErrors = emitter.HasErrors()
-	pkg.builder.Emitter.MergeFrom(emitter)
 
 	for _, importPkg := range importPkgs {
 		loc := importPkg.Loc()
 		pkg.DirectDependencies[importPkg.PackageID] = depPkg{
 			Location: loc,
-			Package:  pkg.builder.build(importPkg.PackageID, &loc),
+			Package:  pkg.builder.build(importPkg.PackageID, &importedBy{pkg, loc}),
 		}
 	}
 }
@@ -239,23 +244,31 @@ func (builder *Builder) Build(ids ...types.PackageID) []error {
 	builder.detectCycles()
 
 	builder.buildWaitGroup.Wait()
-	return builder.Errors()
+
+	errs := builder.Errors()
+	for _, pkg := range builder.packages {
+		errs = append(errs, pkg.Errors()...)
+	}
+
+	return errs
 }
 
 func (builder *Builder) build(
 	id types.PackageID,
-	importLoc *lexutil.Location,
+	by *importedBy,
 ) *Package {
 	builder.mutex.Lock()
 	defer builder.mutex.Unlock()
 
 	pkg := builder.packages[id]
 	if pkg == nil {
+		emitter := &errors.Emitter{}
 		pkg = &Package{
-			builder: builder,
+			builder:   builder,
+			PackageID: id,
+			Emitter:   emitter,
 			locateState: locateState{
-				builder:   builder,
-				PackageID: id,
+				Emitter: emitter,
 			},
 			DirectDependencies:      map[types.PackageID]depPkg{},
 			PublicInterfaceAnalyzed: make(chan struct{}),
@@ -267,7 +280,7 @@ func (builder *Builder) build(
 		go pkg.Build()
 	}
 
-	pkg.locateState.ImportedBy(importLoc)
+	pkg.locateState.ImportedBy(by)
 	return pkg
 }
 
