@@ -6,9 +6,46 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
+
+const (
+	sourceExtension = ".pl"
+)
+
+type SourceType int
+
+const (
+	NotSource     = SourceType(0)
+	LibrarySource = SourceType(1)
+	BinarySource  = SourceType(2)
+	TestSource    = SourceType(3)
+)
+
+func IsSource(name string) bool {
+	return filepath.Ext(name) == sourceExtension
+}
+
+func ClassifySource(fileName string) SourceType {
+	if !IsSource(fileName) {
+		return NotSource
+	}
+
+	fileName = filepath.Base(fileName[:len(fileName)-len(sourceExtension)])
+	if fileName == "main" {
+		return BinarySource
+	} else if strings.HasSuffix(fileName, "_test") ||
+		strings.HasSuffix(fileName, "-test") ||
+		strings.HasSuffix(fileName, "Test") ||
+		strings.HasPrefix(fileName, "test") {
+
+		return TestSource
+	}
+
+	return LibrarySource
+}
 
 type File interface {
 	Name() string
@@ -102,17 +139,26 @@ func (file *localFile) ClearCached() {
 
 type PackageContents map[string]File
 
-func (pkg PackageContents) Sources() []string {
-	sources := []string{}
-	for name, _ := range pkg {
-		sources = append(sources, name)
+func (pkg PackageContents) Sources() ([]string, []string, []string) {
+	lib := []string{}
+	bin := []string{}
+	test := []string{}
+	for path, file := range pkg {
+		switch ClassifySource(file.Name()) {
+		case LibrarySource:
+			lib = append(lib, path)
+		case BinarySource:
+			bin = append(bin, path)
+		case TestSource:
+			test = append(test, path)
+		}
 	}
 
-	return sources
+	return lib, bin, test
 }
 
-func (pkg PackageContents) Open(name string) (io.Reader, error) {
-	file, ok := pkg[name]
+func (pkg PackageContents) Open(path string) (io.Reader, error) {
+	file, ok := pkg[path]
 	if !ok {
 		return nil, os.ErrNotExist
 	}

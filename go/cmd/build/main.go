@@ -22,15 +22,25 @@ func main() {
 	}
 
 	builder := build.NewBuilder(workspace)
-	errs := builder.Build(pkgIds...)
+	// TODO: don't hardcode build mode
+	errs := builder.Build(build.BuildTest, pkgIds...)
 
 	// TODO: rm
 	for _, pkg := range builder.Packages() {
 		fmt.Println("=================")
 		fmt.Println("Package:", pkg.PackageID)
 		fmt.Println("-----------------")
-		if pkg.Definitions != nil {
-			fmt.Println(util.TreeString(pkg.Definitions, ""))
+		if pkg.LibraryDefinitions != nil {
+			fmt.Println("Library definitions:")
+			fmt.Println(util.TreeString(pkg.LibraryDefinitions, "  "))
+		}
+		if pkg.BinaryDefinitions != nil {
+			fmt.Println("Binary definitions:")
+			fmt.Println(util.TreeString(pkg.BinaryDefinitions, "  "))
+		}
+		if pkg.TestDefinitions != nil {
+			fmt.Println("Test definitions:")
+			fmt.Println(util.TreeString(pkg.TestDefinitions, "  "))
 		}
 	}
 

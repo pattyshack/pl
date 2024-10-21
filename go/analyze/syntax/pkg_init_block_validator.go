@@ -9,12 +9,17 @@ import (
 )
 
 type PkgInitBlockValidator struct {
+	IsLibrary bool
 	*errors.Emitter
 }
 
-func ValidatePkgInitBlock(emitter *errors.Emitter) process.Pass {
+func ValidatePkgInitBlock(
+	isLibrary bool,
+	emitter *errors.Emitter,
+) process.Pass {
 	return &PkgInitBlockValidator{
-		Emitter: emitter,
+		IsLibrary: isLibrary,
+		Emitter:   emitter,
 	}
 }
 
@@ -36,15 +41,21 @@ func (validator *PkgInitBlockValidator) Process(node ast.Node) {
 			continue
 		}
 
-		count++
-		if count == 1 {
-			first = stmt.Loc()
+		if validator.IsLibrary {
+			count++
+			if count == 1 {
+				first = stmt.Loc()
+			} else {
+				validator.Emit(
+					stmt.Loc(),
+					"duplicate package init statement block (first defined at %s), "+
+						"each package can have at most package one init statement block",
+					first)
+			}
 		} else {
 			validator.Emit(
 				stmt.Loc(),
-				"duplicate package init statement block (first defined at %s), "+
-					"each package can have at most package one init statement block",
-				first)
+				"cannot specify init statement block in main / test sources")
 		}
 	}
 }

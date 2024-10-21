@@ -14,6 +14,14 @@ import (
 	"github.com/pattyshack/pl/types"
 )
 
+type BuildMode int
+
+const (
+	BuildLibrary = BuildMode(0)
+	BuildBinary  = BuildMode(1) // lib + bin
+	BuildTest    = BuildMode(2) // lib + bin + test
+)
+
 type pkgLoc struct {
 	*Package
 	lexutil.Location
@@ -93,6 +101,8 @@ func (state *locateState) ImportedBy(by *pkgLoc) {
 type Package struct {
 	builder *Builder
 
+	BuildMode
+
 	types.PackageID
 
 	*errors.Emitter
@@ -100,7 +110,11 @@ type Package struct {
 
 	// Populated by Load().  Safe to access once loadWaitGroup is ready
 	PackageContents
-	Definitions        *ast.StatementList
+
+	LibraryDefinitions *ast.StatementList
+	BinaryDefinitions  *ast.StatementList
+	TestDefinitions    *ast.StatementList
+
 	DirectDependencies map[types.PackageID]pkgLoc
 
 	// Only used by detectCycles, after loadWaitGroup is ready, and
@@ -125,16 +139,31 @@ func (pkg *Package) Load() {
 		OpenFunc: contents.Open,
 	}
 
-	definitions, importPkgs := parser.ParsePackage(
-		contents.Sources(),
+	libSrcs, binSrcs, testSrcs := contents.Sources()
+	if pkg.BuildMode == BuildLibrary {
+		binSrcs = nil
+		testSrcs = nil
+	} else if pkg.BuildMode == BuildBinary {
+		testSrcs = nil
+	}
+
+	parsed := parser.ParsePackage(
+		libSrcs,
+		binSrcs,
+		testSrcs,
 		pkg.Emitter,
 		parseOptions)
-	pkg.Definitions = definitions
+	pkg.LibraryDefinitions = parsed.Library
+	pkg.BinaryDefinitions = parsed.Binary
+	pkg.TestDefinitions = parsed.Test
 
-	for _, importPkg := range importPkgs {
+	for _, importPkg := range parsed.Dependencies {
 		loc := importPkg.Loc()
 		pkg.DirectDependencies[importPkg.PackageID] = pkgLoc{
-			Package:  pkg.builder.build(importPkg.PackageID, &pkgLoc{pkg, loc}),
+			Package: pkg.builder.build(
+				BuildLibrary,
+				importPkg.PackageID,
+				&pkgLoc{pkg, loc}),
 			Location: loc,
 		}
 	}
@@ -209,16 +238,14 @@ type Builder struct {
 
 	*errors.Emitter
 
-	loadWaitGroup     sync.WaitGroup
-	topoSortWaitGroup sync.WaitGroup
-	buildWaitGroup    sync.WaitGroup
+	loadWaitGroup  sync.WaitGroup
+	buildWaitGroup sync.WaitGroup
 
 	mutex sync.Mutex
 
 	packages map[types.PackageID]*Package // guarded by mutex.
 
-	// Computed only after loadWaitGroup is ready, inaccessible until
-	// topoSortWaitGroup is ready.
+	// Computed only after loadWaitGroup is ready.
 	sortedPackages []*Package // guarded by mutex
 }
 
@@ -255,6 +282,7 @@ func (builder *Builder) get(id types.PackageID) *Package {
 }
 
 func (builder *Builder) build(
+	mode BuildMode,
 	id types.PackageID,
 	by *pkgLoc,
 ) *Package {
@@ -266,6 +294,7 @@ func (builder *Builder) build(
 		emitter := &errors.Emitter{}
 		pkg = &Package{
 			builder:   builder,
+			BuildMode: mode,
 			PackageID: id,
 			Emitter:   emitter,
 			locateState: locateState{
@@ -286,8 +315,6 @@ func (builder *Builder) build(
 }
 
 func (builder *Builder) setSorted(sorted []*Package) {
-	defer builder.topoSortWaitGroup.Done()
-
 	builder.mutex.Lock()
 	defer builder.mutex.Unlock()
 
@@ -295,19 +322,15 @@ func (builder *Builder) setSorted(sorted []*Package) {
 }
 
 func (builder *Builder) Packages() []*Package {
-	builder.topoSortWaitGroup.Wait()
-
 	builder.mutex.Lock()
 	defer builder.mutex.Unlock()
 
 	return builder.sortedPackages
 }
 
-func (builder *Builder) Build(ids ...types.PackageID) []error {
-	builder.topoSortWaitGroup.Add(1)
-
+func (builder *Builder) Build(mode BuildMode, ids ...types.PackageID) []error {
 	for _, id := range ids {
-		builder.build(id, nil)
+		builder.build(mode, id, nil)
 	}
 
 	builder.loadWaitGroup.Wait()

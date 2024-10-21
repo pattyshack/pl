@@ -73,14 +73,14 @@ func (cmd *Command) printPackage(
 	fmt.Println("==========================")
 
 	emitter := &errors.Emitter{}
-	list, _ := parser.ParsePackage(args, emitter, cmd.ParserOptions)
+	pkg := parser.ParsePackage(args, nil, nil, emitter, cmd.ParserOptions)
 
 	parseErrors := emitter.Errors()
 
 	fmt.Println("Tree:")
 	fmt.Println("-----")
 	buffer := &bytes.Buffer{}
-	util.PrintTree(buffer, list, "")
+	util.PrintTree(buffer, pkg.Library, "")
 	fmt.Println(buffer.String())
 
 	if len(parseErrors) > 0 {

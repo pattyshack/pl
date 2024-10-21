@@ -12,8 +12,7 @@ import (
 )
 
 const (
-	workspaceFile   = "pl.workspace"
-	sourceExtension = ".pl"
+	workspaceFile = "pl.workspace"
 )
 
 // TODO: support modularization.  Map all packages, including external modules
@@ -79,7 +78,7 @@ func (workspace *Workspace) Locate(id types.PackageID) (PackageContents, error) 
 
 	contents := PackageContents{}
 	for _, entry := range entries {
-		if entry.IsDir() || filepath.Ext(entry.Name()) != sourceExtension {
+		if entry.IsDir() || !IsSource(entry.Name()) {
 			continue
 		}
 
@@ -214,7 +213,7 @@ func (workspace *Workspace) MatchTargetPattern(
 		err := filepath.WalkDir(
 			pkgRoot,
 			func(path string, entry fs.DirEntry, err error) error {
-				if entry.IsDir() || filepath.Ext(entry.Name()) != sourceExtension {
+				if entry.IsDir() || !IsSource(entry.Name()) {
 					return nil
 				}
 

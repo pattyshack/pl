@@ -28,7 +28,8 @@ func SourceSyntax(node ast.Node, emitter *errors.Emitter) {
 	process.Process(node, passes, nil)
 }
 
-func PackageSyntax(
+func TargetSyntax(
+	isLibrary bool,
 	node ast.Node,
 	emitter *errors.Emitter,
 ) []*ast.ImportClause {
@@ -36,7 +37,7 @@ func PackageSyntax(
 	passes := [][]process.Pass{
 		{
 			importsCollector,
-			syntax.ValidatePkgInitBlock(emitter),
+			syntax.ValidatePkgInitBlock(isLibrary, emitter),
 		},
 	}
 

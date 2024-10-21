@@ -8,30 +8,79 @@ import (
 	"github.com/pattyshack/pl/errors"
 )
 
-type packageParser struct {
+type parsedSources struct {
+	Definitions  *ast.StatementList
+	Dependencies []*ast.ImportClause
+}
+
+type ParsedPackage struct {
+	Library *ast.StatementList
+	Binary  *ast.StatementList
+	Test    *ast.StatementList
+
+	Dependencies []*ast.ImportClause
 }
 
 func ParsePackage(
-	packageSources []string,
+	libSrcs []string,
+	binSrcs []string,
+	testSrcs []string,
 	emitter *errors.Emitter,
 	options ParserOptions,
-) (
-	*ast.StatementList,
-	[]*ast.ImportClause,
-) {
-	if len(packageSources) == 0 {
-		return nil, nil
+) ParsedPackage {
+	var lib parsedSources
+	var bin parsedSources
+	var test parsedSources
+
+	wg := &sync.WaitGroup{}
+	wg.Add(3)
+
+	go func() {
+		defer wg.Done()
+		lib = parseSources(true, libSrcs, emitter, options)
+	}()
+	go func() {
+		defer wg.Done()
+		bin = parseSources(false, binSrcs, emitter, options)
+	}()
+	go func() {
+		defer wg.Done()
+		test = parseSources(false, testSrcs, emitter, options)
+	}()
+
+	wg.Wait()
+
+	deps := lib.Dependencies
+	deps = append(deps, bin.Dependencies...)
+	deps = append(deps, test.Dependencies...)
+
+	return ParsedPackage{
+		Library:      lib.Definitions,
+		Binary:       bin.Definitions,
+		Test:         test.Definitions,
+		Dependencies: deps,
+	}
+}
+
+func parseSources(
+	isLibrary bool,
+	sources []string,
+	emitter *errors.Emitter,
+	options ParserOptions,
+) parsedSources {
+	if len(sources) == 0 {
+		return parsedSources{}
 	}
 
 	results := make(
 		[]*ast.StatementList,
-		len(packageSources),
-		len(packageSources))
+		len(sources),
+		len(sources))
 
 	wg := &sync.WaitGroup{}
-	wg.Add(len(packageSources))
+	wg.Add(len(sources))
 
-	for idx, src := range packageSources {
+	for idx, src := range sources {
 		go func(idx int, fileName string) {
 			defer wg.Done()
 			results[idx] = ParseSource(fileName, emitter, options)
@@ -52,8 +101,11 @@ func ParsePackage(
 
 	var importClauses []*ast.ImportClause
 	if !options.DisableSyntaxAnalysis {
-		importClauses = analyze.PackageSyntax(list, emitter)
+		importClauses = analyze.TargetSyntax(isLibrary, list, emitter)
 	}
 
-	return list, importClauses
+	return parsedSources{
+		Definitions:  list,
+		Dependencies: importClauses,
+	}
 }
