@@ -1,0 +1,10 @@
+#[directive]
+#[name:subname]
+
+#[abc 1,2,3; def:ghi "abc"; test x,_,1.5,'a']
+#[constraint unix and not ((ios or osx) and not bsd)]
+
+{
+  // non pkg level directives are invalid for now
+  #[directive]
+}

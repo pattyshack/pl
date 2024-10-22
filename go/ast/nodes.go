@@ -102,6 +102,15 @@ type IsStmt struct {
 
 func (IsStmt) IsStatement() {}
 
+type DirectiveExpression interface {
+	Node
+	IsDirectiveExpression()
+}
+
+type IsDirectiveExpr struct{}
+
+func (IsDirectiveExpr) IsDirectiveExpression() {}
+
 // A comment group is a single block comment, or a group of line comments
 // separated by single newlines (ignoring spaces).
 type CommentGroup struct {

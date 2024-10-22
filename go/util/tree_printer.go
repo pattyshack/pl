@@ -308,6 +308,29 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			node.Alias,
 			node.PackageID)
 
+	case *ast.DirectivesDecl:
+		printer.list("[DirectivesDecl:", nil, "Directive", len(node.Directives))
+	case *ast.Directive:
+		printer.list(
+			fmt.Sprintf("[Directive: Name=%s SubName=%s", node.Name, node.SubName),
+			nil,
+			"Argument",
+			len(node.Arguments))
+	case *ast.DirectiveValueExpr:
+		printer.write("[DirectiveValueExpr: Value=%s]", node.Value)
+	case *ast.DirectiveGroupExpr:
+		printer.write("[DirectiveGroupExpr:")
+		printer.push("Expr=")
+	case *ast.DirectiveNotExpr:
+		printer.write("[DirectiveNotExpr:")
+		printer.push("Operand=")
+	case *ast.DirectiveAndExpr:
+		printer.write("[DirectiveAndExpr:")
+		printer.push("Left=", "Right=")
+	case *ast.DirectiveOrExpr:
+		printer.write("[DirectiveOrExpr:")
+		printer.push("Left=", "Right=")
+
 	case *ast.StatementList:
 		printer.list("[StatementList:", nil, "Statement", len(node.Elements))
 	case *ast.TypeExpressionList:
@@ -398,6 +421,19 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.TypeDef:
 		printer.endNode()
 	case *ast.AliasDef:
+		printer.endNode()
+
+	case *ast.DirectivesDecl:
+		printer.endNode()
+	case *ast.Directive:
+		printer.endList(len(node.Arguments))
+	case *ast.DirectiveGroupExpr:
+		printer.endNode()
+	case *ast.DirectiveNotExpr:
+		printer.endNode()
+	case *ast.DirectiveAndExpr:
+		printer.endNode()
+	case *ast.DirectiveOrExpr:
 		printer.endNode()
 
 	case *ast.Parameter:

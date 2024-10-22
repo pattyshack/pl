@@ -186,6 +186,8 @@ func (lexer *RawLexer) peekNextToken() (lr.SymbolId, string, error) {
 		return lr.NewlinesToken, "", nil
 	case ' ', '\t':
 		return spacesToken, "", nil
+	case '#':
+		return lr.PoundToken, "#", nil
 	case '@':
 		return lr.AtToken, "@", nil
 

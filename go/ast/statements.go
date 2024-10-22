@@ -1,8 +1,8 @@
 package ast
 
 import (
-	"github.com/pattyshack/pl/types"
 	"github.com/pattyshack/pl/errors"
+	"github.com/pattyshack/pl/types"
 )
 
 //

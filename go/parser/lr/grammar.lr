@@ -31,6 +31,7 @@
 
 %token<Value> NOT AND OR
 
+%token<Value> POUND
 %token<Value> AT
 
 %token<Value> LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET
@@ -52,7 +53,7 @@
 
 %token<ParseError> PARSE_ERROR
 
-%start source statement statements
+%start source statement statements directives_declaration
 
 // NOTE: the package name is taken from the directory name.  The compiler must
 // ensure the directory name is a valid IDENTIFIER.  The name cannot be
@@ -64,11 +65,71 @@ source<StatementList> ->
   = statement_list
 
 //
+// Compiler directives ========================================================
+//
+
+// XXX: maybe reuse directives_declaration for field tagging.  e.g.,
+//  type MyStruct struct(
+//    X Int #[tag:json "x" ; tag:xml "x"]
+//  )
+//
+// NOTE: only build constraint should make use of complex directive expr, all
+// other directives should only use basic value expr (unless otherwise
+// documented)
+directives_declaration<DirectivesDecl> -> POUND LBRACKET directives RBRACKET
+
+directives<DirectiveList> ->
+  directive |
+  add: directives SEMICOLON directive
+
+directive<Directive> ->
+  named: IDENTIFIER directive_exprs |
+  compound_named: IDENTIFIER COLON IDENTIFIER directive_exprs
+
+directive_exprs<DirectiveExprList> ->
+  = proper_directive_exprs |
+  nil:
+
+proper_directive_exprs<DirectiveExprList> ->
+  directive_expr |
+  add: directive_exprs COMMA directive_expr
+
+directive_expr<DirectiveExpr> ->
+  = directive_and_expr |
+  or: directive_expr OR directive_and_expr
+
+directive_and_expr<DirectiveExpr> ->
+  = directive_not_expr |
+  and: directive_and_expr AND directive_not_expr
+
+directive_not_expr<DirectiveExpr> ->
+  = directive_atom_expr |
+  not: NOT directive_atom_expr
+
+directive_atom_expr<DirectiveExpr> ->
+  = directive_value_expr |
+  group: LPAREN directive_expr RPAREN
+
+directive_value_expr<DirectiveExpr> -> directive_value
+
+directive_value<Value> ->
+  = IDENTIFIER |
+  = UNDERSCORE |
+  = TRUE |
+  = FALSE |
+  = INTEGER_LITERAL |
+  = FLOAT_LITERAL |
+  = RUNE_LITERAL |
+  = STRING_LITERAL
+
+//
 // Statement ==================================================================
 //
 
 statement<Statement> ->
   = unsafe_stmt |
+
+  = directives_declaration |
 
   // NOTE: The following are only applicable to top-level source definitions
 
@@ -904,5 +965,10 @@ go:
     ImportClauseList: "*github.com/pattyshack/pl/ast.ImportClauseList"
     UnsafeStmt: "*github.com/pattyshack/pl/ast.UnsafeStmt"
     CommentGroups: "CommentGroupsTok"
+    DirectivesDecl: "*github.com/pattyshack/pl/ast.DirectivesDecl"
+    Directive: "*github.com/pattyshack/pl/ast.Directive"
+    DirectiveList: "*github.com/pattyshack/pl/ast.DirectiveList"
+    DirectiveExpr: "github.com/pattyshack/pl/ast.DirectiveExpression"
+    DirectiveExprList: "*github.com/pattyshack/pl/ast.DirectiveExpressionList"
   generate_end_pos: True
 }%%

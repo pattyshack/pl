@@ -285,6 +285,10 @@ func (s *RawLexerSuite) TestIdentifier(t *testing.T) {
 	expectError(t, tokens[3], "unexpected utf8 rune")
 }
 
+func (s *RawLexerSuite) TestPound(t *testing.T) {
+	s.lex(t, "#[", lr.PoundToken, lr.LbracketToken)
+}
+
 func (s *RawLexerSuite) TestLabelDecl(t *testing.T) {
 	tokens := s.lex(t, "abc@", lr.IdentifierToken, lr.AtToken)
 	expectValue(t, "abc", tokens[0])

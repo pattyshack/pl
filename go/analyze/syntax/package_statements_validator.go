@@ -36,6 +36,7 @@ func (validator *PackageStatementsValidator) checkStmt(stmt ast.Statement) {
 	invalidType := ""
 	switch expr := stmt.(type) {
 	case *ast.UnsafeStmt: // ok
+	case *ast.DirectivesDecl: // ok
 	case *ast.ImportStmt: // ok
 	case *ast.FloatingComment: // ok
 	case *ast.TypeDef: // ok

@@ -160,3 +160,15 @@ type ExpressionList = NodeList[Expression]
 func NewExpressionList() *ExpressionList {
 	return &NodeList[Expression]{}
 }
+
+type DirectiveList = NodeList[*Directive]
+
+func NewDirectiveList() *DirectiveList {
+	return &NodeList[*Directive]{}
+}
+
+type DirectiveExpressionList = NodeList[DirectiveExpression]
+
+func NewDirectiveExpressionList() *DirectiveExpressionList {
+	return &NodeList[DirectiveExpression]{}
+}

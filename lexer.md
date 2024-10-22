@@ -194,7 +194,7 @@ _
 // ' rune
 // " string
 // ` string
-// unused ascii symbols: \ #
+// unused ascii symbols: \
 
 +     +=    ++
 -     -=    --
@@ -223,6 +223,7 @@ _
 !
 $
 @
+#
 
 ```
 
