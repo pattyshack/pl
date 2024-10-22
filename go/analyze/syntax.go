@@ -2,6 +2,7 @@ package analyze
 
 import (
 	"github.com/pattyshack/pl/analyze/process"
+	"github.com/pattyshack/pl/analyze/semantic"
 	"github.com/pattyshack/pl/analyze/syntax"
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/errors"
@@ -19,6 +20,10 @@ func SourceSyntax(node ast.Node, emitter *errors.Emitter) {
 			syntax.ValidateImplicitStructs(emitter),
 			syntax.ValidateExplicitlyTypedDefs(emitter),
 			patternsAnalyzer.Validate(),
+
+			// NOTE: directive semantic is checked here since the compiler will make
+			// use of these directives.
+			semantic.ValidateDirectives(emitter),
 		},
 		{
 			patternsAnalyzer.Transform(),

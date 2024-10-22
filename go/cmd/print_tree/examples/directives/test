@@ -1,3 +1,4 @@
+#[build unix or bsd or osx]
 #[directive]
 #[name:subname]
 
@@ -8,3 +9,8 @@
   // non pkg level directives are invalid for now
   #[directive]
 }
+
+#[build]
+#[build:bad]
+#[build 1,2]
+#[build unix or bsd or osx]

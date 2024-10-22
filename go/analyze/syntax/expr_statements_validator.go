@@ -65,8 +65,7 @@ func (validator *ExprStatementsValidator) checkExprStmts(
 		invalidStmtType := ""
 		switch stmt := node.(type) {
 		case *ast.UnsafeStmt: // ok
-		case *ast.DirectivesDecl:
-			invalidStmtType = "directives declaration"
+		case *ast.DirectivesDecl: // ok
 		case *ast.BlockAddrDeclStmt: // ok
 		case *ast.ImportStmt:
 			invalidStmtType = "import statement"
