@@ -8,8 +8,10 @@ import (
 	"github.com/pattyshack/pl/errors"
 )
 
-func SourceSyntax(node ast.Node, emitter *errors.Emitter) {
+// TODO reintroduce syntax.ValidatePkgInitBlock
+func Source(node ast.Node, emitter *errors.Emitter) []*ast.ImportClause {
 	patternsAnalyzer := syntax.NewPatternsAnalyzer(emitter)
+	importsCollector := syntax.NewImportClausesCollector(emitter)
 
 	passes := [][]process.Pass{
 		{
@@ -20,9 +22,8 @@ func SourceSyntax(node ast.Node, emitter *errors.Emitter) {
 			syntax.ValidateImplicitStructs(emitter),
 			syntax.ValidateExplicitlyTypedDefs(emitter),
 			patternsAnalyzer.Validate(),
+			importsCollector,
 
-			// NOTE: directive semantic is checked here since the compiler will make
-			// use of these directives.
 			semantic.ValidateDirectives(emitter),
 		},
 		{
@@ -31,21 +32,6 @@ func SourceSyntax(node ast.Node, emitter *errors.Emitter) {
 	}
 
 	process.Process(node, passes, nil)
-}
 
-func TargetSyntax(
-	isLibrary bool,
-	node ast.Node,
-	emitter *errors.Emitter,
-) []*ast.ImportClause {
-	importsCollector := syntax.NewImportClausesCollector(emitter)
-	passes := [][]process.Pass{
-		{
-			importsCollector,
-			syntax.ValidatePkgInitBlock(isLibrary, emitter),
-		},
-	}
-
-	process.Process(node, passes, nil)
 	return importsCollector.Clauses()
 }

@@ -51,48 +51,6 @@ func (cmd *Command) Setup() {
 			NumExpected: 1,
 			VarArgs:     true,
 		})
-
-	exprCmd = cmd.AddSubcommand("package", "print package")
-	exprCmd.SetCommandFunc(
-		cmd.printPackage,
-		argparse.PositionalArgument{
-			Name:        "files",
-			Description: "list of file name paths",
-			NumExpected: 1,
-			VarArgs:     true,
-		})
-}
-
-func (cmd *Command) printPackage(
-	args []string,
-) error {
-	fmt.Println("Files:")
-	for _, filename := range args {
-		fmt.Println(" ", filename)
-	}
-	fmt.Println("==========================")
-
-	emitter := &errors.Emitter{}
-	pkg := parser.ParsePackage(args, nil, emitter, cmd.ParserOptions)
-
-	parseErrors := emitter.Errors()
-
-	fmt.Println("Tree:")
-	fmt.Println("-----")
-	buffer := &bytes.Buffer{}
-	util.PrintTree(buffer, pkg.Library, "")
-	fmt.Println(buffer.String())
-
-	if len(parseErrors) > 0 {
-		fmt.Println("---------------------")
-		fmt.Println("Parse errors:")
-		fmt.Println("---------------------")
-		for idx, err := range parseErrors {
-			fmt.Printf("error %d: %s\n", idx, err)
-		}
-	}
-
-	return nil
 }
 
 func (cmd *Command) printSource(
@@ -103,11 +61,11 @@ func (cmd *Command) printSource(
 		result := parser.ParseSource(fileName, emitter, cmd.ParserOptions)
 		parseErrors := emitter.Errors()
 
-		if result != nil {
+		if result.Definitions != nil {
 			fmt.Println("Parsed:")
 			fmt.Println("-----")
 			buffer := &bytes.Buffer{}
-			util.PrintTree(buffer, result, "")
+			util.PrintTree(buffer, result.Definitions, "")
 			fmt.Println(buffer.String())
 		}
 

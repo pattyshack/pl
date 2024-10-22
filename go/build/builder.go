@@ -146,24 +146,43 @@ func (pkg *Package) Load() {
 		testSrcs = nil
 	}
 
-	parsed := parser.ParsePackage(
-		libSrcs,
-		testSrcs,
+	allSrcs := make([]string, 0, len(libSrcs)+len(testSrcs))
+	allSrcs = append(allSrcs, libSrcs...)
+	allSrcs = append(allSrcs, testSrcs...)
+
+	parsedSrcs := parser.ParseSources(
+		allSrcs,
 		pkg.Emitter,
 		parseOptions)
-	pkg.LibraryDefinitions = parsed.Library
-	pkg.TestDefinitions = parsed.Test
 
-	for _, importPkg := range parsed.Dependencies {
-		loc := importPkg.Loc()
-		pkg.DirectDependencies[importPkg.PackageID] = pkgLoc{
-			Package: pkg.builder.build(
-				BuildLibrary,
-				importPkg.PackageID,
-				&pkgLoc{pkg, loc}),
-			Location: loc,
+	libDefs := ast.NewStatementList()
+	testDefs := ast.NewStatementList()
+
+	for idx, parsed := range parsedSrcs {
+		if idx < len(libSrcs) {
+			libDefs.Elements = append(
+				libDefs.Elements,
+				parsed.Definitions.Elements...)
+		} else {
+			testDefs.Elements = append(
+				testDefs.Elements,
+				parsed.Definitions.Elements...)
+		}
+
+		for _, importPkg := range parsed.Dependencies {
+			loc := importPkg.Loc()
+			pkg.DirectDependencies[importPkg.PackageID] = pkgLoc{
+				Package: pkg.builder.build(
+					BuildLibrary,
+					importPkg.PackageID,
+					&pkgLoc{pkg, loc}),
+				Location: loc,
+			}
 		}
 	}
+
+	pkg.LibraryDefinitions = libDefs
+	pkg.TestDefinitions = testDefs
 }
 
 func (pkg *Package) Build() {

@@ -2,6 +2,7 @@ package parser
 
 import (
 	"io"
+	"sync"
 
 	"github.com/pattyshack/gt/lexutil"
 
@@ -132,29 +133,65 @@ func (parser *sourceParser) _parseSource() (*ast.StatementList, error) {
 	}
 }
 
-func (parser *sourceParser) parseSource() *ast.StatementList {
+type ParsedSource struct {
+	Definitions  *ast.StatementList
+	Dependencies []*ast.ImportClause
+}
+
+func (parser *sourceParser) parseSource() ParsedSource {
 	source, err := parser._parseSource()
 	if err != nil {
 		parser.EmitErrors(err)
-		return nil
+		return ParsedSource{}
+	}
+
+	result := ParsedSource{
+		Definitions: source,
 	}
 
 	if !parser.DisableSyntaxAnalysis {
-		analyze.SourceSyntax(source, parser.Emitter)
+		result.Dependencies = analyze.Source(source, parser.Emitter)
 	}
-	return source
+
+	return result
 }
 
 func ParseSource(
 	fileName string,
 	emitter *errors.Emitter,
 	options ParserOptions,
-) *ast.StatementList {
+) ParsedSource {
 	parser, err := newSourceParser(fileName, emitter, options)
 	if err != nil {
 		emitter.EmitErrors(err)
-		return nil
+		return ParsedSource{}
 	}
 
 	return parser.parseSource()
+}
+
+func ParseSources(
+	sources []string,
+	emitter *errors.Emitter,
+	options ParserOptions,
+) []ParsedSource {
+	if len(sources) == 0 {
+		return nil
+	}
+
+	results := make([]ParsedSource, len(sources), len(sources))
+
+	wg := &sync.WaitGroup{}
+	wg.Add(len(sources))
+
+	for idx, src := range sources {
+		go func(idx int, fileName string) {
+			defer wg.Done()
+			results[idx] = ParseSource(fileName, emitter, options)
+		}(idx, src)
+	}
+
+	wg.Wait()
+
+	return results
 }
