@@ -20,8 +20,7 @@ type SourceType int
 const (
 	NotSource     = SourceType(0)
 	LibrarySource = SourceType(1)
-	BinarySource  = SourceType(2)
-	TestSource    = SourceType(3)
+	TestSource    = SourceType(2)
 )
 
 func IsSource(name string) bool {
@@ -34,9 +33,7 @@ func ClassifySource(fileName string) SourceType {
 	}
 
 	fileName = filepath.Base(fileName[:len(fileName)-len(sourceExtension)])
-	if fileName == "main" {
-		return BinarySource
-	} else if strings.HasSuffix(fileName, "_test") ||
+	if strings.HasSuffix(fileName, "_test") ||
 		strings.HasSuffix(fileName, "-test") ||
 		strings.HasSuffix(fileName, "Test") ||
 		strings.HasPrefix(fileName, "test") {
@@ -139,22 +136,19 @@ func (file *localFile) ClearCached() {
 
 type PackageContents map[string]File
 
-func (pkg PackageContents) Sources() ([]string, []string, []string) {
+func (pkg PackageContents) Sources() ([]string, []string) {
 	lib := []string{}
-	bin := []string{}
 	test := []string{}
 	for path, file := range pkg {
 		switch ClassifySource(file.Name()) {
 		case LibrarySource:
 			lib = append(lib, path)
-		case BinarySource:
-			bin = append(bin, path)
 		case TestSource:
 			test = append(test, path)
 		}
 	}
 
-	return lib, bin, test
+	return lib, test
 }
 
 func (pkg PackageContents) Open(path string) (io.Reader, error) {

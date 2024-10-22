@@ -15,7 +15,6 @@ type parsedSources struct {
 
 type ParsedPackage struct {
 	Library *ast.StatementList
-	Binary  *ast.StatementList
 	Test    *ast.StatementList
 
 	Dependencies []*ast.ImportClause
@@ -23,13 +22,11 @@ type ParsedPackage struct {
 
 func ParsePackage(
 	libSrcs []string,
-	binSrcs []string,
 	testSrcs []string,
 	emitter *errors.Emitter,
 	options ParserOptions,
 ) ParsedPackage {
 	var lib parsedSources
-	var bin parsedSources
 	var test parsedSources
 
 	wg := &sync.WaitGroup{}
@@ -41,22 +38,16 @@ func ParsePackage(
 	}()
 	go func() {
 		defer wg.Done()
-		bin = parseSources(false, binSrcs, emitter, options)
-	}()
-	go func() {
-		defer wg.Done()
 		test = parseSources(false, testSrcs, emitter, options)
 	}()
 
 	wg.Wait()
 
 	deps := lib.Dependencies
-	deps = append(deps, bin.Dependencies...)
 	deps = append(deps, test.Dependencies...)
 
 	return ParsedPackage{
 		Library:      lib.Definitions,
-		Binary:       bin.Definitions,
 		Test:         test.Definitions,
 		Dependencies: deps,
 	}

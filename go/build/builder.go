@@ -139,9 +139,8 @@ func (pkg *Package) Load() {
 		OpenFunc: contents.Open,
 	}
 
-	libSrcs, binSrcs, testSrcs := contents.Sources()
+	libSrcs, testSrcs := contents.Sources()
 	if pkg.BuildMode == BuildLibrary {
-		binSrcs = nil
 		testSrcs = nil
 	} else if pkg.BuildMode == BuildBinary {
 		testSrcs = nil
@@ -149,12 +148,10 @@ func (pkg *Package) Load() {
 
 	parsed := parser.ParsePackage(
 		libSrcs,
-		binSrcs,
 		testSrcs,
 		pkg.Emitter,
 		parseOptions)
 	pkg.LibraryDefinitions = parsed.Library
-	pkg.BinaryDefinitions = parsed.Binary
 	pkg.TestDefinitions = parsed.Test
 
 	for _, importPkg := range parsed.Dependencies {

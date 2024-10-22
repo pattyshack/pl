@@ -73,7 +73,7 @@ func (cmd *Command) printPackage(
 	fmt.Println("==========================")
 
 	emitter := &errors.Emitter{}
-	pkg := parser.ParsePackage(args, nil, nil, emitter, cmd.ParserOptions)
+	pkg := parser.ParsePackage(args, nil, emitter, cmd.ParserOptions)
 
 	parseErrors := emitter.Errors()
 
