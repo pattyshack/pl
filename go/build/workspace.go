@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/pattyshack/pl/build/cfg"
 	"github.com/pattyshack/pl/types"
 )
 
@@ -18,11 +19,12 @@ const (
 // TODO: support modularization.  Map all packages, including external modules
 // relative to // root (don't support bazel external repo style)
 type Workspace struct {
+	*cfg.Config
 	RootDirPath    string
 	WorkingDirPath string
 }
 
-func FindWorkspaceRoot() (*Workspace, error) {
+func FindWorkspaceRoot(config *cfg.Config) (*Workspace, error) {
 	dir, err := filepath.Abs(".")
 	if err != nil {
 		return nil, fmt.Errorf("unable to locate workspace directory: %w", err)
@@ -43,6 +45,7 @@ func FindWorkspaceRoot() (*Workspace, error) {
 
 			if entry.Name() == workspaceFile {
 				return &Workspace{
+					Config:         config,
 					RootDirPath:    dir,
 					WorkingDirPath: workingDir,
 				}, nil

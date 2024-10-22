@@ -9,6 +9,7 @@ import (
 	"github.com/pattyshack/gt/lexutil"
 
 	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/build/cfg"
 	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser"
 	"github.com/pattyshack/pl/types"
@@ -152,6 +153,7 @@ func (pkg *Package) Load() {
 
 	parsedSrcs := parser.ParseSources(
 		allSrcs,
+		pkg.builder.Config,
 		pkg.Emitter,
 		parseOptions)
 
@@ -159,6 +161,10 @@ func (pkg *Package) Load() {
 	testDefs := ast.NewStatementList()
 
 	for idx, parsed := range parsedSrcs {
+		if parsed.FailedBuildConstraints {
+			continue
+		}
+
 		if idx < len(libSrcs) {
 			libDefs.Elements = append(
 				libDefs.Elements,
@@ -250,6 +256,7 @@ type Builder struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 
+	*cfg.Config
 	*Workspace
 
 	*errors.Emitter
@@ -265,11 +272,15 @@ type Builder struct {
 	sortedPackages []*Package // guarded by mutex
 }
 
-func NewBuilder(workspace *Workspace) *Builder {
+func NewBuilder(
+	workspace *Workspace,
+	config *cfg.Config,
+) *Builder {
 	ctx, cancel := context.WithCancel(context.Background())
 	builder := &Builder{
 		ctx:       ctx,
 		cancel:    cancel,
+		Config:    config,
 		Workspace: workspace,
 		Emitter:   &errors.Emitter{},
 		packages:  map[types.PackageID]*Package{},

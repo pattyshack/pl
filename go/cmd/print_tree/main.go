@@ -58,7 +58,7 @@ func (cmd *Command) printSource(
 ) error {
 	for _, fileName := range args {
 		emitter := &errors.Emitter{}
-		result := parser.ParseSource(fileName, emitter, cmd.ParserOptions)
+		result := parser.ParseSource(fileName, nil, emitter, cmd.ParserOptions)
 		parseErrors := emitter.Errors()
 
 		if result.Definitions != nil {

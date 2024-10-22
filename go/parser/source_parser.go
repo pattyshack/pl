@@ -8,6 +8,7 @@ import (
 
 	"github.com/pattyshack/pl/analyze"
 	"github.com/pattyshack/pl/ast"
+	"github.com/pattyshack/pl/build/cfg"
 	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser/lr"
 	reducerImpl "github.com/pattyshack/pl/parser/reducer"
@@ -34,12 +35,14 @@ func (l bufferLexer) CurrentLocation() lexutil.Location {
 type sourceParser struct {
 	lexer lr.Lexer
 	*reducerImpl.Reducer
+	*cfg.Config
 	*errors.Emitter
 	ParserOptions
 }
 
 func newSourceParser(
 	fileName string,
+	config *cfg.Config,
 	emitter *errors.Emitter,
 	options ParserOptions,
 ) (
@@ -55,6 +58,7 @@ func newSourceParser(
 	return &sourceParser{
 		lexer:         lexer,
 		Reducer:       reducer,
+		Config:        config,
 		Emitter:       emitter,
 		ParserOptions: options,
 	}, nil
@@ -134,8 +138,9 @@ func (parser *sourceParser) _parseSource() (*ast.StatementList, error) {
 }
 
 type ParsedSource struct {
-	Definitions  *ast.StatementList
-	Dependencies []*ast.ImportClause
+	Definitions            *ast.StatementList
+	Dependencies           []*ast.ImportClause
+	FailedBuildConstraints bool
 }
 
 func (parser *sourceParser) parseSource() ParsedSource {
@@ -150,7 +155,9 @@ func (parser *sourceParser) parseSource() ParsedSource {
 	}
 
 	if !parser.DisableSyntaxAnalysis {
-		result.Dependencies = analyze.Source(source, parser.Emitter)
+		deps, satisfy := analyze.Source(parser.Config, source, parser.Emitter)
+		result.Dependencies = deps
+		result.FailedBuildConstraints = !satisfy
 	}
 
 	return result
@@ -158,10 +165,11 @@ func (parser *sourceParser) parseSource() ParsedSource {
 
 func ParseSource(
 	fileName string,
+	config *cfg.Config,
 	emitter *errors.Emitter,
 	options ParserOptions,
 ) ParsedSource {
-	parser, err := newSourceParser(fileName, emitter, options)
+	parser, err := newSourceParser(fileName, config, emitter, options)
 	if err != nil {
 		emitter.EmitErrors(err)
 		return ParsedSource{}
@@ -172,6 +180,7 @@ func ParseSource(
 
 func ParseSources(
 	sources []string,
+	config *cfg.Config,
 	emitter *errors.Emitter,
 	options ParserOptions,
 ) []ParsedSource {
@@ -187,7 +196,7 @@ func ParseSources(
 	for idx, src := range sources {
 		go func(idx int, fileName string) {
 			defer wg.Done()
-			results[idx] = ParseSource(fileName, emitter, options)
+			results[idx] = ParseSource(fileName, config, emitter, options)
 		}(idx, src)
 	}
 
