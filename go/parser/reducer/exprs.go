@@ -656,6 +656,150 @@ func (reducer *Reducer) ToAsExpr(
 }
 
 //
+// MakeExpr
+//
+
+func (Reducer) SizeProperToMakeExpr(
+	expr *ast.MakeExpr,
+	rparen *lr.TokenValue,
+) (
+	*ast.MakeExpr,
+	error,
+) {
+	end := expr.Size
+	if expr.Capacity != nil {
+		end = expr.Capacity
+	}
+	end.AppendToTrailing(rparen.TakeLeading())
+	expr.TrailingComment = rparen.TakeTrailing()
+	expr.EndPos = rparen.End()
+	return expr, nil
+}
+
+func (Reducer) SizeImproperToMakeExpr(
+	expr *ast.MakeExpr,
+	comma *lr.TokenValue,
+	rparen *lr.TokenValue,
+) (
+	*ast.MakeExpr,
+	error,
+) {
+	end := expr.Size
+	if expr.Capacity != nil {
+		end = expr.Capacity
+	}
+	end.AppendToTrailing(comma.TakeLeading())
+	end.AppendToTrailing(comma.TakeTrailing())
+	end.AppendToTrailing(rparen.TakeLeading())
+	expr.TrailingComment = rparen.TakeTrailing()
+	expr.EndPos = rparen.End()
+	return expr, nil
+}
+
+func (Reducer) ValueProperToMakeExpr(
+	expr *ast.MakeExpr,
+	comma *lr.TokenValue,
+	value ast.Expression,
+	rparen *lr.TokenValue,
+) (
+	*ast.MakeExpr,
+	error,
+) {
+	expr.Value = value
+
+	end := expr.Size
+	if expr.Capacity != nil {
+		end = expr.Capacity
+	}
+	end.AppendToTrailing(comma.TakeLeading())
+	end.AppendToTrailing(comma.TakeTrailing())
+
+	value.AppendToTrailing(rparen.TakeLeading())
+	expr.TrailingComment = rparen.TakeTrailing()
+	expr.EndPos = rparen.End()
+	return expr, nil
+}
+
+func (Reducer) ValueImproperToMakeExpr(
+	expr *ast.MakeExpr,
+	comma1 *lr.TokenValue,
+	value ast.Expression,
+	comma2 *lr.TokenValue,
+	rparen *lr.TokenValue,
+) (
+	*ast.MakeExpr,
+	error,
+) {
+	expr.Value = value
+
+	end := expr.Size
+	if expr.Capacity != nil {
+		end = expr.Capacity
+	}
+	end.AppendToTrailing(comma1.TakeLeading())
+	end.AppendToTrailing(comma1.TakeTrailing())
+
+	value.AppendToTrailing(comma2.TakeLeading())
+	value.AppendToTrailing(comma2.TakeTrailing())
+	value.AppendToTrailing(rparen.TakeLeading())
+	expr.TrailingComment = rparen.TakeTrailing()
+	expr.EndPos = rparen.End()
+	return expr, nil
+}
+
+func (Reducer) SizeToMakeExprSize(
+	expr *ast.MakeExpr,
+	size ast.Expression,
+) (
+	*ast.MakeExpr,
+	error,
+) {
+	expr.Size = size
+	return expr, nil
+}
+
+func (Reducer) SizeCapacityToMakeExprSize(
+	expr *ast.MakeExpr,
+	size ast.Expression,
+	colon *lr.TokenValue,
+	capacity ast.Expression,
+) (
+	*ast.MakeExpr,
+	error,
+) {
+	size.AppendToTrailing(colon.TakeLeading())
+	capacity.PrependToLeading(colon.TakeTrailing())
+	expr.Size = size
+	expr.Capacity = capacity
+	return expr, nil
+}
+
+func (Reducer) ToMakeExprHead(
+	makeKW *lr.TokenValue,
+	lparen *lr.TokenValue,
+	typeExpr ast.TypeExpression,
+	comma *lr.TokenValue,
+) (
+	*ast.MakeExpr,
+	error,
+) {
+	leading := makeKW.TakeLeading()
+	leading.Append(makeKW.TakeTrailing())
+	leading.Append(lparen.TakeLeading())
+	typeExpr.PrependToLeading(lparen.TakeTrailing())
+	typeExpr.AppendToTrailing(comma.TakeLeading())
+	typeExpr.AppendToTrailing(comma.TakeTrailing())
+
+	expr := &ast.MakeExpr{
+		VariableSizedType: typeExpr,
+	}
+	expr.StartPos = makeKW.Loc()
+	expr.LeadingComment = leading
+
+	return expr, nil
+}
+
+//
 // InitializeExpr
 //
 

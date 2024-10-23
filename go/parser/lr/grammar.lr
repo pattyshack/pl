@@ -27,7 +27,7 @@
 %token<Value> TYPE IMPLEMENTS ALIAS
 %token<Value> STRUCT ENUM TRAIT
 %token<Value> FUNC ASYNC DEFER
-%token<Value> VAR LET AS
+%token<Value> VAR LET AS MAKE
 
 %token<Value> NOT AND OR
 
@@ -365,7 +365,8 @@ accessible_expr<Expression> ->
   = access_expr |
   = call_expr |
   = index_expr |
-  = as_expr
+  = as_expr |
+  = make_expr
 
 access_expr<Expression> -> accessible_expr DOT IDENTIFIER
 
@@ -384,6 +385,22 @@ as_expr<Expression> -> accessible_expr DOT AS LPAREN type_expr RPAREN
 // need to resolve the name and convert call_expr to initialize_expr
 call_expr<Expression> ->
   accessible_expr generic_arguments LPAREN arguments RPAREN
+
+// NOTE: arguments is a list of either 1 or 2 positional elements.  The first
+// argument is either <size>, or <size>:<capacity>.  The second argument is an
+// optional initial value.  both capacity and initial value are only
+// applicable to slices.
+make_expr<MakeExpr> ->
+  size_proper: make_expr_size RPAREN |
+  size_improper: make_expr_size COMMA RPAREN |
+  value_proper: make_expr_size COMMA expr RPAREN |
+  value_improper: make_expr_size COMMA expr COMMA RPAREN
+
+make_expr_size<MakeExpr> ->
+  size: make_expr_head expr |
+  size_capacity: make_expr_head expr COLON expr
+
+make_expr_head<MakeExpr> -> MAKE LPAREN variable_sized_type_expr COMMA
 
 proper_arguments<ArgumentList> ->
   add: proper_arguments COMMA argument |
@@ -711,13 +728,16 @@ improper_expr_struct<ImplicitStructExpr> ->
 // Types ======================================================================
 //
 
+variable_sized_type_expr<TypeExpression> ->
+  = slice_type_expr |
+  = map_type_expr
+
 // Note: named type initializations are parsed as call_expr instead of
 // initialize_expr
 initializable_type_expr<TypeExpression> ->
   = properties_type_expr |
-  = slice_type_expr |
   = array_type_expr |
-  = map_type_expr
+  = variable_sized_type_expr
 
 // shorthand for Slice$[ <type_expr> ]
 slice_type_expr<TypeExpression> -> LBRACKET type_expr RBRACKET
@@ -947,6 +967,7 @@ go:
     IfExpr: "*github.com/pattyshack/pl/ast.IfExpr"
     ImplicitStructExpr: "*github.com/pattyshack/pl/ast.ImplicitStructExpr"
     StatementsExpr: "*github.com/pattyshack/pl/ast.StatementsExpr"
+    MakeExpr: "*github.com/pattyshack/pl/ast.MakeExpr"
     Parameter: "*github.com/pattyshack/pl/ast.Parameter"
     Parameters: "*github.com/pattyshack/pl/ast.ParameterList"
     Argument: "*github.com/pattyshack/pl/ast.Argument"

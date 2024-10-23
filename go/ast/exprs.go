@@ -438,6 +438,59 @@ func (expr *AsExpr) Walk(visitor Visitor) {
 }
 
 //
+// MakeExpr
+//
+
+type MakeExpr struct {
+	IsExpr
+	StartEndPos
+	LeadingTrailingComments
+
+	VariableSizedType TypeExpression
+	Size              Expression
+	Capacity          Expression // optional. only applicable to slice
+	Value             Expression // optional. only applicable to slice
+}
+
+var _ Expression = &MakeExpr{}
+var _ Validator = &MakeExpr{}
+
+func (expr *MakeExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.VariableSizedType.Walk(visitor)
+	expr.Size.Walk(visitor)
+	if expr.Capacity != nil {
+		expr.Capacity.Walk(visitor)
+	}
+	if expr.Value != nil {
+		expr.Value.Walk(visitor)
+	}
+	visitor.Exit(expr)
+}
+
+func (expr *MakeExpr) Validate(emitter *errors.Emitter) {
+	switch expr.VariableSizedType.(type) {
+	case *SliceTypeExpr: // ok
+	case *MapTypeExpr:
+		if expr.Capacity != nil {
+			emitter.Emit(
+				expr.Capacity.Loc(),
+				"unexpected capacity specified for map type")
+		}
+
+		if expr.Value != nil {
+			emitter.Emit(
+				expr.Value.Loc(),
+				"unexpected initial value specified for map type")
+		}
+	default:
+		emitter.Emit(
+			expr.VariableSizedType.Loc(),
+			"unexpected fixed size type, make only operate on slice or map types")
+	}
+}
+
+//
 // InitializeExpr
 //
 

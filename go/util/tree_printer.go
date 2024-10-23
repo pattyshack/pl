@@ -146,6 +146,16 @@ func (printer *treePrinter) Enter(n ast.Node) {
 	case *ast.AsExpr:
 		printer.write("[AsExpr:")
 		printer.push("Accessible=", "CastType=")
+	case *ast.MakeExpr:
+		printer.write("[MakeExpr:")
+		labels := []string{"VariableSizedType=", "Size="}
+		if node.Capacity != nil {
+			labels = append(labels, "Capacity=")
+		}
+		if node.Value != nil {
+			labels = append(labels, "Value=")
+		}
+		printer.push(labels...)
 	case *ast.InitializeExpr:
 		printer.list(
 			"[InitializeExpr:",
@@ -367,6 +377,8 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.IndexExpr:
 		printer.endNode()
 	case *ast.AsExpr:
+		printer.endNode()
+	case *ast.MakeExpr:
 		printer.endNode()
 	case *ast.InitializeExpr:
 		printer.endNode()

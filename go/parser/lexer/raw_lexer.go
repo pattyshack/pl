@@ -65,6 +65,7 @@ var (
 		"defer":       lr.DeferToken,
 		"var":         lr.VarToken,
 		"let":         lr.LetToken,
+		"make":        lr.MakeToken,
 		"as":          lr.AsToken,
 		"and":         lr.AndToken,
 		"or":          lr.OrToken,

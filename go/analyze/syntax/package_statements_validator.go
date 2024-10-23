@@ -82,6 +82,8 @@ func (validator *PackageStatementsValidator) checkExpr(node ast.Expression) {
 		invalid = "index"
 	case *ast.AsExpr:
 		invalid = "as"
+	case *ast.MakeExpr:
+		invalid = "make"
 	case *ast.InitializeExpr:
 		invalid = "initialize"
 	case *ast.IfExpr:

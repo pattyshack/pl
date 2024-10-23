@@ -113,7 +113,6 @@ type Package struct {
 	PackageContents
 
 	LibraryDefinitions *ast.StatementList
-	BinaryDefinitions  *ast.StatementList
 	TestDefinitions    *ast.StatementList
 
 	DirectDependencies map[types.PackageID]pkgLoc

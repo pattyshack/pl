@@ -1,0 +1,18 @@
+{
+  make([string], 10)
+  make([int], 10:20)
+  make([string], 10, "hello")
+  make([string], 10:50, "hello")
+  make([int:string], 10)
+  make([int:string], 10:20)
+  make([int:string], 10:20, 30)
+
+
+  make([string], 10,)
+  make([int], 10:20,)
+  make([string], 10, "hello",)
+  make([string], 10:50, "hello",)
+  make([int:string], 10,)
+  make([int:string], 10:20,)
+  make([int:string], 10:20, 30,)
+}
