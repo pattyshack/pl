@@ -323,6 +323,7 @@ type FuncSignature struct {
 	// Required for named named signature. Empty for anonymous signature.
 	Name string
 	// Required for named signature. nil for anonymous signature.
+	// NOTE: named method signature must be an empty list
 	GenericParameters *GenericParameterList
 
 	Parameters *ParameterList
@@ -350,6 +351,13 @@ func (sig *FuncSignature) Validate(emitter *errors.Emitter) {
 				sig.Loc(),
 				"invalid ast construction, generic parameters not set for "+
 					"named func signature")
+		} else if len(sig.Parameters.Elements) > 0 &&
+			sig.Parameters.Elements[0].Kind == ReceiverParameter &&
+			len(sig.GenericParameters.Elements) > 0 {
+
+			emitter.Emit(
+				sig.GenericParameters.Loc(),
+				"cannot specify generic parameters for method signature")
 		}
 	} else {
 		if sig.GenericParameters != nil {

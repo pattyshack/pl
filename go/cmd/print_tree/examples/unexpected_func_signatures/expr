@@ -15,3 +15,6 @@ func wrongOrderVararg(i int, j ...int, k int) {}
 func (i int, j int) {}  // unexpected anon func
 
 func ok(r >Recv, x int, y int, z ...float) {}
+
+func ok$[T](r R) {}
+func method$[T](r >R) {} // can't specify generic parameter for methods
