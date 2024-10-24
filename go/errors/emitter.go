@@ -39,9 +39,11 @@ func (emitter *Emitter) HasErrors() bool {
 func (emitter *Emitter) Emit(
 	loc lexutil.Location,
 	format string,
-	args ...interface{}) {
-
-	emitter.EmitErrors(lexutil.NewLocationError(loc, format, args...))
+	args ...interface{},
+) error {
+	err := lexutil.NewLocationError(loc, format, args...)
+	emitter.EmitErrors(err)
+	return err
 }
 
 func (emitter *Emitter) EmitErrors(errs ...error) {

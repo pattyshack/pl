@@ -363,6 +363,7 @@ implicit_struct_expr<Expression> -> LPAREN arguments RPAREN
 accessible_expr<Expression> ->
   = atom_expr |
   = access_expr |
+  = parameterized_expr |
   = call_expr |
   = index_expr |
   = as_expr |
@@ -381,10 +382,18 @@ index<Expression> ->
 // eqv to golang's "s, ok := expr.(SomeType)".
 as_expr<Expression> -> accessible_expr DOT AS LPAREN type_expr RPAREN
 
+// NOTE: parameterized_expr captures parameterized type as well.  The compiler
+// will need to resolve the name and convert parameterized_expr to
+// named_type_expr.
+//
+// NOTE: the compiler in reality only accept either "IDENTIFIER" or
+// "IDENTIFIER DOT IDENTIFIER" as accessible_expr.  The reducer will reject
+// all other forms.
+parameterized_expr<Expression> -> accessible_expr generic_arguments
+
 // NOTE: call_expr captures certain initialize_expr as well. The compiler will
 // need to resolve the name and convert call_expr to initialize_expr
-call_expr<Expression> ->
-  accessible_expr generic_arguments LPAREN arguments RPAREN
+call_expr<Expression> -> accessible_expr LPAREN arguments RPAREN
 
 // NOTE: arguments is a list of either 1 or 2 positional elements.  The first
 // argument is either <size>, or <size>:<capacity>.  The second argument is an
@@ -757,8 +766,8 @@ atom_type_expr<TypeExpression> ->
   = func_signature
 
 named_type_expr<TypeExpression> ->
-  local: IDENTIFIER generic_arguments |
-  external: IDENTIFIER DOT IDENTIFIER generic_arguments
+  local: IDENTIFIER optional_generic_arguments |
+  external: IDENTIFIER DOT IDENTIFIER optional_generic_arguments
 
 inferred_type_expr<TypeExpression> -> UNDERSCORE
 
@@ -825,7 +834,10 @@ generic_parameter_list<GenericParameterList> ->
   nil:
 
 generic_arguments<TypeExpressionList> ->
-  binding: DOLLAR LBRACKET generic_argument_list RBRACKET |
+  DOLLAR LBRACKET generic_argument_list RBRACKET
+
+optional_generic_arguments<TypeExpressionList> ->
+  = generic_arguments |
   nil:
 
 proper_generic_argument_list<TypeExpressionList> ->

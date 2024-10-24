@@ -122,16 +122,16 @@ func (reducer *Reducer) toNamedTypeExpr(
 	leading := name.TakeLeading()
 	var end ast.Node = name
 
+	var parameters []ast.TypeExpression
 	if genericArguments != nil {
 		end = genericArguments
-	} else {
-		genericArguments = ast.NewImplicitTypeExpressionList(name.End())
+		parameters = genericArguments.Elements
 	}
 
 	named := &ast.NamedTypeExpr{
-		StartEndPos:      ast.NewStartEndPos(name.Loc(), end.End()),
-		Name:             name.Value,
-		GenericArguments: genericArguments,
+		StartEndPos: ast.NewStartEndPos(name.Loc(), end.End()),
+		Name:        name.Value,
+		Parameters:  parameters,
 	}
 	named.LeadingComment = leading
 	named.TrailingComment = end.TakeTrailing()

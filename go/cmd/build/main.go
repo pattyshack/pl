@@ -59,10 +59,6 @@ func (cmd *Command) Build(
 			fmt.Println("Library definitions:")
 			fmt.Println(util.TreeString(pkg.LibraryDefinitions, "  "))
 		}
-		if pkg.BinaryDefinitions != nil {
-			fmt.Println("Binary definitions:")
-			fmt.Println(util.TreeString(pkg.BinaryDefinitions, "  "))
-		}
 		if pkg.TestDefinitions != nil {
 			fmt.Println("Test definitions:")
 			fmt.Println(util.TreeString(pkg.TestDefinitions, "  "))

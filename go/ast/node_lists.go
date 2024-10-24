@@ -84,23 +84,6 @@ func NewStatementList() *StatementList {
 }
 
 //
-// TypeExpressionList
-//
-
-type TypeExpressionList = NodeList[TypeExpression]
-
-func NewTypeExpressionList() *TypeExpressionList {
-	return &NodeList[TypeExpression]{}
-}
-
-func NewImplicitTypeExpressionList(pos lexutil.Location) *TypeExpressionList {
-	return &NodeList[TypeExpression]{
-		StartEndPos: NewStartEndPos(pos, pos),
-		IsImplicit:  true,
-	}
-}
-
-//
 // ParameterList
 //
 
@@ -159,6 +142,12 @@ type ExpressionList = NodeList[Expression]
 
 func NewExpressionList() *ExpressionList {
 	return &NodeList[Expression]{}
+}
+
+type TypeExpressionList = NodeList[TypeExpression]
+
+func NewTypeExpressionList() *TypeExpressionList {
+	return &NodeList[TypeExpression]{}
 }
 
 type DirectiveList = NodeList[*Directive]

@@ -529,12 +529,77 @@ func (reducer *Reducer) ColonExprExprTupleToColonExpr(
 }
 
 //
+// ParameterizedExpr
+//
+
+func (reducer *Reducer) ToParameterizedExpr(
+	operand ast.Expression,
+	parameters *ast.TypeExpressionList,
+) (
+	ast.Expression,
+	error,
+) {
+	leading := operand.TakeLeading()
+
+	pkg := ""
+	name := ""
+	invalid := false
+	switch expr := operand.(type) {
+	case *ast.AccessExpr:
+		name = expr.Field
+
+		pkgExpr, ok := expr.Operand.(*ast.NamedExpr)
+		if !ok {
+			invalid = true
+		} else {
+			leading.Append(pkgExpr.TakeLeading())
+			leading.Append(pkgExpr.TakeTrailing())
+			pkg = pkgExpr.Name
+		}
+	case *ast.NamedExpr:
+		name = expr.Name
+	default:
+		invalid = true
+	}
+
+	leading.Append(operand.TakeTrailing())
+	leading.Append(parameters.TakeLeading())
+	leading.Append(parameters.MiddleComment)
+
+	if invalid {
+		err := reducer.Emit(
+			parameters.Loc(),
+			"unexpected parameterization, can only parameterize names of the form "+
+				"<name> or <pkg>.<name>")
+
+		expr := &ast.ParseErrorExpr{
+			StartEndPos: ast.NewStartEndPos(operand.Loc(), parameters.End()),
+			Error:       err,
+		}
+		expr.LeadingComment = leading
+		expr.TrailingComment = parameters.TakeTrailing()
+
+		return expr, nil
+	}
+
+	expr := &ast.ParameterizedExpr{
+		StartEndPos: ast.NewStartEndPos(operand.Loc(), parameters.End()),
+		Pkg:         pkg,
+		Name:        name,
+		Parameters:  parameters.Elements,
+	}
+	expr.LeadingComment = leading
+	expr.TrailingComment = parameters.TakeTrailing()
+
+	return expr, nil
+}
+
+//
 // CallExpr
 //
 
 func (reducer *Reducer) ToCallExpr(
 	funcExpr ast.Expression,
-	genericArguments *ast.TypeExpressionList,
 	lparen *lr.TokenValue,
 	arguments *ast.ArgumentList,
 	rparen *lr.TokenValue,
@@ -544,26 +609,19 @@ func (reducer *Reducer) ToCallExpr(
 ) {
 	leading := funcExpr.TakeLeading()
 
-	var prev ast.Node = funcExpr
-	if genericArguments != nil {
-		prev = genericArguments
-	} else {
-		genericArguments = ast.NewImplicitTypeExpressionList(funcExpr.End())
-	}
-
 	if arguments == nil {
 		arguments = ast.NewArgumentList()
 	}
 	arguments.ReduceMarkers(lparen, rparen)
 
-	prev.AppendToTrailing(arguments.TakeLeading())
+	funcExpr.AppendToTrailing(arguments.TakeLeading())
+	funcExpr.AppendToTrailing(arguments.MiddleComment)
 	trailing := arguments.TakeTrailing()
 
 	expr := &ast.CallExpr{
-		StartEndPos:      ast.NewStartEndPos(funcExpr.Loc(), rparen.End()),
-		FuncExpr:         funcExpr,
-		GenericArguments: genericArguments,
-		Arguments:        arguments.Elements,
+		StartEndPos: ast.NewStartEndPos(funcExpr.Loc(), rparen.End()),
+		FuncExpr:    funcExpr,
+		Arguments:   arguments.Elements,
 	}
 	expr.LeadingComment = leading
 	expr.TrailingComment = trailing

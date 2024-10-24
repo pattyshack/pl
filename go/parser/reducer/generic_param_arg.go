@@ -124,7 +124,7 @@ func (Reducer) NilToGenericParameterList() (
 // GenericArgumentList
 //
 
-func (reducer *Reducer) BindingToGenericArguments(
+func (reducer *Reducer) ToGenericArguments(
 	dollar *lr.TokenValue,
 	lbracket *lr.TokenValue,
 	list *ast.TypeExpressionList,
@@ -143,7 +143,7 @@ func (reducer *Reducer) BindingToGenericArguments(
 	return list, nil
 }
 
-func (reducer *Reducer) NilToGenericArguments() (
+func (reducer *Reducer) NilToOptionalGenericArguments() (
 	*ast.TypeExpressionList,
 	error,
 ) {

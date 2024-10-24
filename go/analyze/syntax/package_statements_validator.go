@@ -76,6 +76,8 @@ func (validator *PackageStatementsValidator) checkExpr(node ast.Expression) {
 		invalid = "binary"
 	case *ast.ImplicitStructExpr:
 		invalid = "implicit struct"
+	case *ast.ParameterizedExpr:
+		invalid = "parameterized"
 	case *ast.CallExpr:
 		invalid = "call"
 	case *ast.IndexExpr:

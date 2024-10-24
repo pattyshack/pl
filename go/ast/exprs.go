@@ -348,6 +348,32 @@ func (expr *ImplicitStructExpr) Validate(emitter *errors.Emitter) {
 }
 
 //
+// ParameterizedExpr
+//
+
+// NOTE: ParameterizedExpr fields should be identical to NamedTypeExpr
+type ParameterizedExpr struct {
+	IsExpr
+	StartEndPos
+	LeadingTrailingComments
+
+	Pkg  string // optional.  "" = local
+	Name string
+
+	Parameters []TypeExpression
+}
+
+var _ Expression = &ParameterizedExpr{}
+
+func (expr *ParameterizedExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	for _, arg := range expr.Parameters {
+		arg.Walk(visitor)
+	}
+	visitor.Exit(expr)
+}
+
+//
 // CallExpr
 //
 
@@ -356,9 +382,8 @@ type CallExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	FuncExpr         Expression
-	GenericArguments *TypeExpressionList
-	Arguments        []*Argument
+	FuncExpr  Expression
+	Arguments []*Argument
 }
 
 var _ Expression = &CallExpr{}
@@ -367,7 +392,6 @@ var _ Validator = &CallExpr{}
 func (expr *CallExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.FuncExpr.Walk(visitor)
-	expr.GenericArguments.Walk(visitor)
 	for _, arg := range expr.Arguments {
 		arg.Walk(visitor)
 	}

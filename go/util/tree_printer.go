@@ -134,9 +134,18 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			nil,
 			"Argument",
 			len(node.Arguments))
+	case *ast.ParameterizedExpr:
+		printer.list(
+			fmt.Sprintf("[ParameterizedExpr: Pkg=%s Name=%s", node.Pkg, node.Name),
+			nil,
+			"Parameter",
+			len(node.Parameters))
 	case *ast.CallExpr:
-		argLabels := []string{"FuncExpr=", "GenericArguments="}
-		printer.list("[CallExpr", argLabels, "Argument", len(node.Arguments))
+		printer.list(
+			"[CallExpr",
+			[]string{"FuncExpr="},
+			"Argument",
+			len(node.Arguments))
 	case *ast.IndexExpr:
 		printer.list(
 			"[IndexExpr:",
@@ -226,8 +235,11 @@ func (printer *treePrinter) Enter(n ast.Node) {
 	case *ast.InferredTypeExpr:
 		printer.write("[InferredTypeExpr: IsImplicit=%v]", node.IsImplicit)
 	case *ast.NamedTypeExpr:
-		printer.write("[NamedTypeExpr: Pkg=%s Name=%s", node.Pkg, node.Name)
-		printer.push("GenericArguments=")
+		printer.list(
+			fmt.Sprintf("[NamedTypeExpr: Pkg=%s Name=%s", node.Pkg, node.Name),
+			nil,
+			"Parameter",
+			len(node.Parameters))
 	case *ast.UnaryTypeExpr:
 		printer.write("[UnaryTypeExpr: Op=(%s)", node.Op)
 		printer.push("Operand=")
@@ -343,12 +355,6 @@ func (printer *treePrinter) Enter(n ast.Node) {
 
 	case *ast.StatementList:
 		printer.list("[StatementList:", nil, "Statement", len(node.Elements))
-	case *ast.TypeExpressionList:
-		printer.list(
-			fmt.Sprintf("[TypeExpressionList: IsImplicit=%v", node.IsImplicit),
-			nil,
-			"TypeExpression",
-			len(node.Elements))
 	case *ast.ParameterList:
 		printer.list("[ParameterList:", nil, "Parameter", len(node.Elements))
 	case *ast.GenericParameterList:
@@ -372,6 +378,8 @@ func (printer *treePrinter) Exit(n ast.Node) {
 		printer.endNode()
 	case *ast.ImplicitStructExpr:
 		printer.endList(len(node.Arguments))
+	case *ast.ParameterizedExpr:
+		printer.endList(len(node.Parameters))
 	case *ast.CallExpr:
 		printer.endNode()
 	case *ast.IndexExpr:
@@ -409,7 +417,7 @@ func (printer *treePrinter) Exit(n ast.Node) {
 	case *ast.MapTypeExpr:
 		printer.endNode()
 	case *ast.NamedTypeExpr:
-		printer.endNode()
+		printer.endList(len(node.Parameters))
 	case *ast.UnaryTypeExpr:
 		printer.endNode()
 	case *ast.BinaryTypeExpr:
@@ -460,8 +468,6 @@ func (printer *treePrinter) Exit(n ast.Node) {
 		printer.endNode()
 
 	case *ast.StatementList:
-		printer.endList(len(node.Elements))
-	case *ast.TypeExpressionList:
 		printer.endList(len(node.Elements))
 	case *ast.ParameterList:
 		printer.endList(len(node.Elements))

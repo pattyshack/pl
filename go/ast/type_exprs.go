@@ -99,6 +99,7 @@ func (expr *InferredTypeExpr) Walk(visitor Visitor) {
 // NamedTypeExpr
 //
 
+// NOTE: NamedTypeExpr fields should be identical to ParameterizedExpr
 type NamedTypeExpr struct {
 	IsTypeExpr
 	StartEndPos
@@ -107,12 +108,14 @@ type NamedTypeExpr struct {
 	Pkg  string // optional.  "" = local
 	Name string
 
-	GenericArguments *TypeExpressionList
+	Parameters []TypeExpression
 }
 
 func (expr *NamedTypeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
-	expr.GenericArguments.Walk(visitor)
+	for _, arg := range expr.Parameters {
+		arg.Walk(visitor)
+	}
 	visitor.Exit(expr)
 }
 
