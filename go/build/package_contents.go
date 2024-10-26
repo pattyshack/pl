@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -148,6 +149,8 @@ func (pkg PackageContents) Sources() ([]string, []string) {
 		}
 	}
 
+	sort.Strings(lib)
+	sort.Strings(test)
 	return lib, test
 }
 
