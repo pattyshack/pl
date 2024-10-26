@@ -58,13 +58,8 @@ func NewBuildConstraintEvaluator(config *cfg.Config) *BuildConstraintEvaluator {
 	}
 }
 
-func (pass *BuildConstraintEvaluator) Process(node ast.Node) {
-	if pass.Config == nil {
-		return
-	}
-
-	list, ok := node.(*ast.StatementList)
-	if !ok || len(list.Elements) == 0 {
+func (pass *BuildConstraintEvaluator) Process(list *ast.StatementList) {
+	if pass.Config == nil || len(list.Elements) == 0 {
 		return
 	}
 

@@ -17,18 +17,15 @@ func ValidateDirectives(emitter *errors.Emitter) process.Pass {
 	}
 }
 
-func (validator *DirectivesValidator) Process(node ast.Node) {
-	list, ok := node.(*ast.StatementList)
-	if ok { // top-level definition
-		if len(list.Elements) > 0 {
-			decl, ok := list.Elements[0].(*ast.DirectivesDecl)
-			if ok && len(decl.Directives) > 0 && decl.Directives[0].Name == "build" {
-				validator.buildDirective = decl.Directives[0]
-			}
-		}
-	}
+func (validator *DirectivesValidator) Process(list *ast.StatementList) {
+  if len(list.Elements) > 0 {
+    decl, ok := list.Elements[0].(*ast.DirectivesDecl)
+    if ok && len(decl.Directives) > 0 && decl.Directives[0].Name == "build" {
+      validator.buildDirective = decl.Directives[0]
+    }
+  }
 
-	node.Walk(validator)
+	list.Walk(validator)
 }
 
 func (validator *DirectivesValidator) Enter(n ast.Node) {

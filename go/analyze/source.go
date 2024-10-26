@@ -9,10 +9,9 @@ import (
 	"github.com/pattyshack/pl/errors"
 )
 
-// TODO reintroduce syntax.ValidatePkgInitBlock
 func Source(
 	config *cfg.Config,
-	node ast.Node,
+	source *ast.StatementList,
 	emitter *errors.Emitter,
 ) (
 	[]*ast.ImportClause,
@@ -41,7 +40,7 @@ func Source(
 		},
 	}
 
-	process.Process(node, passes, nil)
+	process.Process(source, passes, nil)
 
 	return importsCollector.Clauses(), evaluator.SatisfyConstraints()
 }

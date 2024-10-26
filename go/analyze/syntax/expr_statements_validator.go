@@ -20,8 +20,10 @@ func ValidateExprStatements(emitter *errors.Emitter) process.Pass {
 	}
 }
 
-func (validator *ExprStatementsValidator) Process(node ast.Node) {
-	node.Walk(validator)
+func (validator *ExprStatementsValidator) Process(
+	list *ast.StatementList,
+) {
+	list.Walk(validator)
 }
 
 func (validator *ExprStatementsValidator) Enter(n ast.Node) {

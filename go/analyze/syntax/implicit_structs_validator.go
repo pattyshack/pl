@@ -27,8 +27,8 @@ func ValidateImplicitStructs(emitter *errors.Emitter) process.Pass {
 	}
 }
 
-func (validator *ImplicitStructsValidator) Process(node ast.Node) {
-	node.Walk(validator)
+func (validator *ImplicitStructsValidator) Process(list *ast.StatementList) {
+	list.Walk(validator)
 }
 
 func (validator *ImplicitStructsValidator) Enter(n ast.Node) {

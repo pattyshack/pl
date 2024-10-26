@@ -78,8 +78,8 @@ type patternsAnalyzePass struct {
 	*PatternsAnalyzer
 }
 
-func (analyzer *patternsAnalyzePass) Process(node ast.Node) {
-	node.Walk(analyzer)
+func (analyzer *patternsAnalyzePass) Process(list *ast.StatementList) {
+	list.Walk(analyzer)
 
 	for pattern, state := range analyzer.validAddrDeclPatterns {
 		if state != addrDeclPattern {
@@ -103,7 +103,7 @@ type patternsTransformPass struct {
 	*PatternsAnalyzer
 }
 
-func (analyzer *patternsTransformPass) Process(node ast.Node) {
+func (analyzer *patternsTransformPass) Process(list *ast.StatementList) {
 	for redundant, parent := range analyzer.redundantAssignToAddr {
 		switch expr := parent.(type) {
 		case *ast.ImplicitStructExpr:

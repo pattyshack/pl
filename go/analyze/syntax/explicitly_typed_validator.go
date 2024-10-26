@@ -19,8 +19,10 @@ func ValidateExplicitlyTypedDefs(emitter *errors.Emitter) process.Pass {
 	}
 }
 
-func (validator *ExplicitlyTypedDefsValidator) Process(node ast.Node) {
-	node.Walk(validator)
+func (validator *ExplicitlyTypedDefsValidator) Process(
+	list *ast.StatementList,
+) {
+	list.Walk(validator)
 }
 
 func (validator *ExplicitlyTypedDefsValidator) push(scope bool) {

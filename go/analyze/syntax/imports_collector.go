@@ -24,12 +24,7 @@ func (collector *ImportClausesCollector) Clauses() []*ast.ImportClause {
 	return collector.clauses
 }
 
-func (collector *ImportClausesCollector) Process(node ast.Node) {
-	list, ok := node.(*ast.StatementList)
-	if !ok {
-		return
-	}
-
+func (collector *ImportClausesCollector) Process(list *ast.StatementList) {
 	for _, stmt := range list.Elements {
 		importStmt, ok := stmt.(*ast.ImportStmt)
 		if !ok {

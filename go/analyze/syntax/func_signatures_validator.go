@@ -19,8 +19,8 @@ func ValidateFuncSignatures(emitter *errors.Emitter) process.Pass {
 	}
 }
 
-func (validator *FuncSignaturesValidator) Process(node ast.Node) {
-	node.Walk(validator)
+func (validator *FuncSignaturesValidator) Process(list *ast.StatementList) {
+	list.Walk(validator)
 }
 
 func (validator *FuncSignaturesValidator) Enter(node ast.Node) {

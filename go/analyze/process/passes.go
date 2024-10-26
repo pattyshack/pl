@@ -11,7 +11,7 @@ type ProcessPass[T any] interface {
 	Process(T)
 }
 
-type Pass = ProcessPass[ast.Node]
+type Pass = ProcessPass[*ast.StatementList]
 
 func Process[T any](
 	node T,

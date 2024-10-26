@@ -17,17 +17,8 @@ func ValidatePackageStatements(emitter *errors.Emitter) process.Pass {
 	}
 }
 
-func (validator *PackageStatementsValidator) Process(node ast.Node) {
-	if node == nil {
-		return
-	}
-
-	stmts, ok := node.(*ast.StatementList)
-	if !ok {
-		return
-	}
-
-	for _, stmt := range stmts.Elements {
+func (validator *PackageStatementsValidator) Process(list *ast.StatementList) {
+	for _, stmt := range list.Elements {
 		validator.checkStmt(stmt)
 	}
 }
