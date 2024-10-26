@@ -120,88 +120,144 @@ func (expr *NamedTypeExpr) Walk(visitor Visitor) {
 }
 
 //
-// UnaryTypeExpr
+// RefTypeExpr
 //
 
-type UnaryTypeOp string
-
-const (
-	ReturnOnDefaultTypeOp          = UnaryTypeOp("?")
-	PanicOnDefaultTypeOp           = UnaryTypeOp("!")
-	ReferenceTypeOp                = UnaryTypeOp("&")
-	AllPublicMethodsTraitTypeOp    = UnaryTypeOp("~")
-	AllPublicPropertiesTraitTypeOp = UnaryTypeOp("~~")
-)
-
-type UnaryTypeExpr struct {
+type RefTypeExpr struct {
 	IsTypeExpr
 	StartEndPos
 	LeadingTrailingComments
 
-	Op      UnaryTypeOp
-	Operand TypeExpression
+	Value TypeExpression
 }
 
-var _ TypeExpression = &UnaryTypeExpr{}
-var _ Validator = &UnaryTypeExpr{}
+var _ TypeExpression = &RefTypeExpr{}
 
-func (expr *UnaryTypeExpr) Walk(visitor Visitor) {
+func (expr *RefTypeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
-	expr.Operand.Walk(visitor)
+	expr.Value.Walk(visitor)
 	visitor.Exit(expr)
 }
 
-func (expr *UnaryTypeExpr) Validate(emitter *errors.Emitter) {
+//
+// EnumOpTypeExpr
+//
+
+type DefaultEnumOp string
+
+const (
+	ReturnOnDefaultEnumOp = DefaultEnumOp("?")
+	PanicOnDefaultEnumOp  = DefaultEnumOp("!")
+)
+
+type DefaultEnumOpTypeExpr struct {
+	IsTypeExpr
+	StartEndPos
+	LeadingTrailingComments
+
+	Op   DefaultEnumOp
+	Enum TypeExpression
+}
+
+var _ TypeExpression = &DefaultEnumOpTypeExpr{}
+var _ Validator = &DefaultEnumOpTypeExpr{}
+
+func (expr *DefaultEnumOpTypeExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Enum.Walk(visitor)
+	visitor.Exit(expr)
+}
+
+func (expr *DefaultEnumOpTypeExpr) Validate(emitter *errors.Emitter) {
 	switch expr.Op {
-	case ReturnOnDefaultTypeOp,
-		PanicOnDefaultTypeOp,
-		ReferenceTypeOp,
-		AllPublicMethodsTraitTypeOp,
-		AllPublicPropertiesTraitTypeOp:
+	case ReturnOnDefaultEnumOp,
+		PanicOnDefaultEnumOp:
 		// ok
 	default:
 		emitter.Emit(
 			expr.Loc(),
-			"invalid ast construction. unexpected unary type expr op (%s)",
+			"invalid ast construction. unexpected default enum op (%s)",
 			expr.Op)
 	}
 }
 
 //
-// BinaryTypeExpr
+// UnaryTraitOpTypeExpr
 //
 
-type BinaryTypeOp string
+type UnaryTraitOp string
 
 const (
-	TraitIntersectTypeOp  = BinaryTypeOp("*")
-	TraitUnionTypeOp      = BinaryTypeOp("+")
-	TraitDifferenceTypeOp = BinaryTypeOp("-")
+	AllPublicMethodsTraitTraitOp    = UnaryTraitOp("~")
+	AllPublicPropertiesTraitTraitOp = UnaryTraitOp("~~")
 )
 
-type BinaryTypeExpr struct {
+type UnaryTraitOpTypeExpr struct {
+	IsTypeExpr
+	StartEndPos
+	LeadingTrailingComments
+
+	Op      UnaryTraitOp
+	Base TypeExpression
+}
+
+var _ TypeExpression = &UnaryTraitOpTypeExpr{}
+var _ Validator = &UnaryTraitOpTypeExpr{}
+
+func (expr *UnaryTraitOpTypeExpr) Walk(visitor Visitor) {
+	visitor.Enter(expr)
+	expr.Base.Walk(visitor)
+	visitor.Exit(expr)
+}
+
+func (expr *UnaryTraitOpTypeExpr) Validate(emitter *errors.Emitter) {
+	switch expr.Op {
+	case AllPublicMethodsTraitTraitOp,
+		AllPublicPropertiesTraitTraitOp:
+		// ok
+	default:
+		emitter.Emit(
+			expr.Loc(),
+			"invalid ast construction. unexpected unary trait op (%s)",
+			expr.Op)
+	}
+}
+
+//
+// BinaryTraitOpTypeExpr
+//
+
+type BinaryTraitOp string
+
+const (
+	TraitIntersectTraitOp  = BinaryTraitOp("*")
+	TraitUnionTraitOp      = BinaryTraitOp("+")
+	TraitDifferenceTraitOp = BinaryTraitOp("-")
+)
+
+type BinaryTraitOpTypeExpr struct {
 	IsTypeExpr
 	StartEndPos
 	LeadingTrailingComments
 
 	Left  TypeExpression
-	Op    BinaryTypeOp
+	Op    BinaryTraitOp
 	Right TypeExpression
 }
 
-var _ TypeExpression = &BinaryTypeExpr{}
-var _ Validator = &BinaryTypeExpr{}
+var _ TypeExpression = &BinaryTraitOpTypeExpr{}
+var _ Validator = &BinaryTraitOpTypeExpr{}
 
-func (expr *BinaryTypeExpr) Walk(visitor Visitor) {
+func (expr *BinaryTraitOpTypeExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
 	expr.Left.Walk(visitor)
 	expr.Right.Walk(visitor)
 	visitor.Exit(expr)
 }
 
-func (expr *BinaryTypeExpr) Validate(emitter *errors.Emitter) {
+func (expr *BinaryTraitOpTypeExpr) Validate(emitter *errors.Emitter) {
 	switch expr.Op {
-	case TraitIntersectTypeOp, TraitUnionTypeOp, TraitDifferenceTypeOp: // ok
+	case TraitIntersectTraitOp, TraitUnionTraitOp, TraitDifferenceTraitOp: // ok
 	default:
 		emitter.Emit(
 			expr.Loc(),

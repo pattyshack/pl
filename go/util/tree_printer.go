@@ -240,11 +240,17 @@ func (printer *treePrinter) Enter(n ast.Node) {
 			nil,
 			"Parameter",
 			len(node.Parameters))
-	case *ast.UnaryTypeExpr:
-		printer.write("[UnaryTypeExpr: Op=(%s)", node.Op)
-		printer.push("Operand=")
-	case *ast.BinaryTypeExpr:
-		printer.write("[BinaryTypeExpr: Op=(%s)", node.Op)
+	case *ast.DefaultEnumOpTypeExpr:
+		printer.write("[DefaultEnumOpTypeExpr: Op=(%s)", node.Op)
+		printer.push("Enum=")
+	case *ast.RefTypeExpr:
+		printer.write("[RefTypeExpr:")
+		printer.push("Value=")
+	case *ast.UnaryTraitOpTypeExpr:
+		printer.write("[UnaryTraitOpTypeExpr: Op=(%s)", node.Op)
+		printer.push("Base=")
+	case *ast.BinaryTraitOpTypeExpr:
+		printer.write("[BinaryTraitOpTypeExpr: Op=(%s)", node.Op)
 		printer.push("Left=", "Right=")
 	case *ast.PropertiesTypeExpr:
 		printer.list(
@@ -418,9 +424,13 @@ func (printer *treePrinter) Exit(n ast.Node) {
 		printer.endNode()
 	case *ast.NamedTypeExpr:
 		printer.endList(len(node.Parameters))
-	case *ast.UnaryTypeExpr:
+	case *ast.DefaultEnumOpTypeExpr:
 		printer.endNode()
-	case *ast.BinaryTypeExpr:
+	case *ast.RefTypeExpr:
+		printer.endNode()
+	case *ast.UnaryTraitOpTypeExpr:
+		printer.endNode()
+	case *ast.BinaryTraitOpTypeExpr:
 		printer.endNode()
 	case *ast.PropertiesTypeExpr:
 		printer.endList(len(node.Properties))

@@ -172,20 +172,67 @@ func (reducer *Reducer) ExternalToNamedTypeExpr(
 }
 
 //
-// UnaryTypeExpr
+// RefTypeExpr
 //
 
-func (reducer *Reducer) ToPrefixUnaryTypeExpr(
+func (reducer *Reducer) ToRefTypeExpr(
+	and *lr.TokenValue,
+	value ast.TypeExpression,
+) (
+	ast.TypeExpression,
+	error,
+) {
+	expr := &ast.RefTypeExpr{
+		StartEndPos: ast.NewStartEndPos(and.Loc(), value.End()),
+		Value:       value,
+	}
+
+	expr.LeadingComment = and.TakeLeading()
+	value.PrependToLeading(and.TakeTrailing())
+	expr.TrailingComment = value.TakeTrailing()
+
+	return expr, nil
+}
+
+//
+// DefaultEnumOpTypeExpr
+//
+
+func (reducer *Reducer) ToDefaultEnumOpTypeExpr(
+	op *lr.TokenValue,
+	enum ast.TypeExpression,
+) (
+	ast.TypeExpression,
+	error,
+) {
+	expr := &ast.DefaultEnumOpTypeExpr{
+		StartEndPos: ast.NewStartEndPos(op.Loc(), enum.End()),
+		Op:          ast.DefaultEnumOp(op.Value),
+		Enum:        enum,
+	}
+
+	expr.LeadingComment = op.TakeLeading()
+	enum.PrependToLeading(op.TakeTrailing())
+	expr.TrailingComment = enum.TakeTrailing()
+
+	return expr, nil
+}
+
+//
+// UnaryTraitOpTypeExpr
+//
+
+func (reducer *Reducer) ToUnaryTraitOpTypeExpr(
 	op *lr.TokenValue,
 	operand ast.TypeExpression,
 ) (
 	ast.TypeExpression,
 	error,
 ) {
-	expr := &ast.UnaryTypeExpr{
+	expr := &ast.UnaryTraitOpTypeExpr{
 		StartEndPos: ast.NewStartEndPos(op.Loc(), operand.End()),
-		Op:          ast.UnaryTypeOp(op.Value),
-		Operand:     operand,
+		Op:          ast.UnaryTraitOp(op.Value),
+		Base:        operand,
 	}
 
 	expr.LeadingComment = op.TakeLeading()
@@ -196,10 +243,10 @@ func (reducer *Reducer) ToPrefixUnaryTypeExpr(
 }
 
 //
-// BinaryTypeExpr
+// BinaryTraitOpTypeExpr
 //
 
-func (reducer *Reducer) ToBinaryTypeExpr(
+func (reducer *Reducer) ToBinaryTraitOpTypeExpr(
 	left ast.TypeExpression,
 	op *lr.TokenValue,
 	right ast.TypeExpression,
@@ -207,10 +254,10 @@ func (reducer *Reducer) ToBinaryTypeExpr(
 	ast.TypeExpression,
 	error,
 ) {
-	expr := &ast.BinaryTypeExpr{
+	expr := &ast.BinaryTraitOpTypeExpr{
 		StartEndPos: ast.NewStartEndPos(left.Loc(), right.End()),
 		Left:        left,
-		Op:          ast.BinaryTypeOp(op.Value),
+		Op:          ast.BinaryTraitOp(op.Value),
 		Right:       right,
 	}
 

@@ -776,15 +776,23 @@ inferred_type_expr<TypeExpression> -> UNDERSCORE
 // "func() A + B" could mean func() returning "A + B" or "func() A" + "B"
 returnable_type_expr<TypeExpression> ->
   = atom_type_expr |
-  = prefix_unary_type_expr
+  = ref_type_expr |
+  = default_enum_op_type_expr |
+  = unary_trait_op_type_expr
 
-prefix_unary_type_expr<TypeExpression> ->
-  prefix_unary_type_op returnable_type_expr
+ref_type_expr<TypeExpression> -> BIT_AND returnable_type_expr
 
-prefix_unary_type_op<Value> ->
+default_enum_op_type_expr<TypeExpression> ->
+  default_enum_op returnable_type_expr
+
+default_enum_op<Value> ->
   = QUESTION | // shorthand for Optional$[ <atom_type_expr> ]
-  = EXCLAIM | // shorthand for Result$[ <atom_type_expr> ]
-  = BIT_AND | // reference type
+  = EXCLAIM // shorthand for Result$[ <atom_type_expr> ]
+
+unary_trait_op_type_expr<TypeExpression> ->
+  unary_trait_op returnable_type_expr
+
+unary_trait_op<Value> ->
   = TILDE | // type's public method signatures trait
   = TILDE_TILDE // type's public method signatures and fields trait
 
@@ -792,12 +800,12 @@ prefix_unary_type_op<Value> ->
 // trait( trait(A+B) * C)
 type_expr<TypeExpression> ->
   = returnable_type_expr |
-  = binary_type_expr
+  = binary_trait_op_type_expr
 
-binary_type_expr<TypeExpression> ->
-  type_expr binary_type_op returnable_type_expr
+binary_trait_op_type_expr<TypeExpression> ->
+  type_expr binary_trait_op returnable_type_expr
 
-binary_type_op<Value> ->
+binary_trait_op<Value> ->
   = MUL | // trait intersect
   = ADD | // trait union
   = SUB // trait difference
