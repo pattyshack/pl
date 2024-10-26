@@ -1,4 +1,4 @@
-package semantic
+package source_passes
 
 import (
 	"github.com/pattyshack/pl/analyze/process"

@@ -2,8 +2,7 @@ package analyze
 
 import (
 	"github.com/pattyshack/pl/analyze/process"
-	"github.com/pattyshack/pl/analyze/semantic"
-	"github.com/pattyshack/pl/analyze/syntax"
+	"github.com/pattyshack/pl/analyze/source_passes"
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/build/cfg"
 	"github.com/pattyshack/pl/errors"
@@ -17,22 +16,22 @@ func Source(
 	[]*ast.ImportClause,
 	bool,
 ) {
-	patternsAnalyzer := syntax.NewPatternsAnalyzer(emitter)
-	importsCollector := syntax.NewImportClausesCollector(emitter)
-	evaluator := semantic.NewBuildConstraintEvaluator(config)
+	patternsAnalyzer := source_passes.NewPatternsAnalyzer(emitter)
+	importsCollector := source_passes.NewImportClausesCollector(emitter)
+	evaluator := source_passes.NewBuildConstraintEvaluator(config)
 
 	passes := [][]process.Pass{
 		{
-			syntax.ValidateNodes(emitter),
-			syntax.ValidateFuncSignatures(emitter),
-			syntax.ValidatePackageStatements(emitter),
-			syntax.ValidateExprStatements(emitter),
-			syntax.ValidateImplicitStructs(emitter),
-			syntax.ValidateExplicitlyTypedDefs(emitter),
+			source_passes.ValidateNodes(emitter),
+			source_passes.ValidateFuncSignatures(emitter),
+			source_passes.ValidatePackageStatements(emitter),
+			source_passes.ValidateExprStatements(emitter),
+			source_passes.ValidateImplicitStructs(emitter),
+			source_passes.ValidateExplicitlyTypedDefs(emitter),
 			patternsAnalyzer.Validate(),
 			importsCollector,
 
-			semantic.ValidateDirectives(emitter),
+			source_passes.ValidateDirectives(emitter),
 			evaluator,
 		},
 		{

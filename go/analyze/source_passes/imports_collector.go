@@ -1,4 +1,4 @@
-package syntax
+package source_passes
 
 import (
 	"github.com/pattyshack/gt/lexutil"

@@ -1,4 +1,4 @@
-package syntax
+package source_passes
 
 import (
 	"fmt"
