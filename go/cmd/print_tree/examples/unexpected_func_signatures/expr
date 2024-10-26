@@ -18,3 +18,14 @@ func ok(r >Recv, x int, y int, z ...float) {}
 
 func ok$[T](r R) {}
 func method$[T](r >R) {} // can't specify generic parameter for methods
+
+func method(ok >_) {}
+func method(ok >&_) {}
+func method(ok >R) {}
+func method(ok >&R) {}
+
+// can't specify method for external package
+func method(bad >unexpected.R) {}
+func method(bad >&unexpected.R) {}
+
+func method(bad >A+B) {}

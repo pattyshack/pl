@@ -197,7 +197,7 @@ type UnaryTraitOpTypeExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	Op      UnaryTraitOp
+	Op   UnaryTraitOp
 	Base TypeExpression
 }
 
@@ -408,12 +408,31 @@ func (sig *FuncSignature) Validate(emitter *errors.Emitter) {
 				"invalid ast construction, generic parameters not set for "+
 					"named func signature")
 		} else if len(sig.Parameters.Elements) > 0 &&
-			sig.Parameters.Elements[0].Kind == ReceiverParameter &&
-			len(sig.GenericParameters.Elements) > 0 {
+			sig.Parameters.Elements[0].Kind == ReceiverParameter {
 
-			emitter.Emit(
-				sig.GenericParameters.Loc(),
-				"cannot specify generic parameters for method signature")
+			if len(sig.GenericParameters.Elements) > 0 {
+				emitter.Emit(
+					sig.GenericParameters.Loc(),
+					"cannot specify generic parameters for method signature")
+			}
+
+			receiverType := sig.Parameters.Elements[0].Type
+			ref, ok := receiverType.(*RefTypeExpr)
+			if ok {
+				receiverType = ref.Value
+			}
+
+			switch t := receiverType.(type) {
+			case *InferredTypeExpr: // ok
+			case *NamedTypeExpr:
+				if t.Pkg != "" {
+					emitter.Emit(
+						receiverType.Loc(),
+						"cannot define method for non-locally defined type")
+				}
+			default:
+				emitter.Emit(receiverType.Loc(), "receiver must be simple named type")
+			}
 		}
 	} else {
 		if sig.GenericParameters != nil {
