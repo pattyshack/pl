@@ -18,12 +18,12 @@ func ValidateDirectives(emitter *errors.Emitter) process.Pass {
 }
 
 func (validator *DirectivesValidator) Process(list *ast.StatementList) {
-  if len(list.Elements) > 0 {
-    decl, ok := list.Elements[0].(*ast.DirectivesDecl)
-    if ok && len(decl.Directives) > 0 && decl.Directives[0].Name == "build" {
-      validator.buildDirective = decl.Directives[0]
-    }
-  }
+	if len(list.Elements) > 0 {
+		decl, ok := list.Elements[0].(*ast.DirectivesDecl)
+		if ok && len(decl.Directives) > 0 && decl.Directives[0].Name == "build" {
+			validator.buildDirective = decl.Directives[0]
+		}
+	}
 
 	list.Walk(validator)
 }

@@ -80,19 +80,6 @@ type patternsAnalyzePass struct {
 
 func (analyzer *patternsAnalyzePass) Process(list *ast.StatementList) {
 	list.Walk(analyzer)
-
-	for pattern, state := range analyzer.validAddrDeclPatterns {
-		if state != addrDeclPattern {
-			continue
-		}
-
-		visitor := &ExplicitlyTypedDefsValidator{
-			scopeStack: []bool{true},
-			Emitter:    analyzer.Emitter,
-		}
-
-		pattern.Type.Walk(visitor)
-	}
 }
 
 func (analyzer *PatternsAnalyzer) Validate() process.Pass {
