@@ -29,3 +29,8 @@ func method(bad >unexpected.R) {}
 func method(bad >&unexpected.R) {}
 
 func method(bad >A+B, bad _) {}
+
+{
+  func function(ok R) {}
+  func method(bad >R) {}
+}

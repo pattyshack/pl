@@ -77,12 +77,19 @@ func (validator *ExprStatementsValidator) checkExprStmts(
 		case *ast.TypeDef:
 			// XXX: ok for now. should check to ensure the type is used.
 		case *ast.AliasDef:
-			// XXX: ok for now. should check to ensure the type is used.
+			invalidStmtType = "alias definition"
 		case *ast.ConditionBranchStmt:
 			invalidStmtType = "branch statement"
 		case *ast.JumpStmt:
 			if stmt.Op == ast.FallthroughOp && !allowFallthrough {
 				invalidStmtType = "fallthrough statement"
+			}
+		case *ast.FuncDefinition:
+			sig := stmt.Signature
+			if len(sig.Parameters.Elements) > 0 &&
+				sig.Parameters.Elements[0].Kind == ast.ReceiverParameter {
+
+				invalidStmtType = "method definition"
 			}
 		case ast.Expression: // ok
 		default:
