@@ -7,9 +7,9 @@ import (
 )
 
 type ExplicitlyTypedDefsValidator struct {
-	// push true when FieldDef / stand-alone AddrDeclPattern is entered.
-	// push false when PropertiesTypeExpr is entered
-	scopeStack []bool
+	// push "" when inferred type is allowed, push non-empty string when type
+	// must be explicit.
+	scopeStack []string
 	*errors.Emitter
 }
 
@@ -25,39 +25,56 @@ func (validator *ExplicitlyTypedDefsValidator) Process(
 	list.Walk(validator)
 }
 
-func (validator *ExplicitlyTypedDefsValidator) push(scope bool) {
-	validator.scopeStack = append(validator.scopeStack, scope)
+func (validator *ExplicitlyTypedDefsValidator) push(kind string) {
+	validator.scopeStack = append(validator.scopeStack, kind)
 }
 
 func (validator *ExplicitlyTypedDefsValidator) pop() {
 	validator.scopeStack = validator.scopeStack[:len(validator.scopeStack)-1]
 }
 
-func (validator *ExplicitlyTypedDefsValidator) isInDef() bool {
+func (validator *ExplicitlyTypedDefsValidator) current() string {
 	if len(validator.scopeStack) > 0 {
 		return validator.scopeStack[len(validator.scopeStack)-1]
 	}
-	return false
+	return ""
 }
 
-func (validator *ExplicitlyTypedDefsValidator) Enter(node ast.Node) {
-	switch node.(type) {
+func (validator *ExplicitlyTypedDefsValidator) Enter(n ast.Node) {
+	switch node := n.(type) {
 	case *ast.PropertiesTypeExpr:
-		validator.push(false)
+		validator.push("")
 	case *ast.FieldDef:
-		validator.push(true)
+		validator.push("field definition")
+	case *ast.FuncSignature:
+		if node.Name != "" {
+			validator.push("named function signature")
+		}
+	case *ast.Parameter:
+		if node.Kind == ast.ReceiverParameter {
+			validator.push("")
+		}
 	case *ast.InferredTypeExpr:
-		if validator.isInDef() {
-			validator.Emit(node.Loc(), "unexpected inferred type in definition")
+		kind := validator.current()
+		if kind != "" {
+			validator.Emit(node.Loc(), "unexpected inferred type in %s", kind)
 		}
 	}
 }
 
-func (validator *ExplicitlyTypedDefsValidator) Exit(node ast.Node) {
-	switch node.(type) {
+func (validator *ExplicitlyTypedDefsValidator) Exit(n ast.Node) {
+	switch node := n.(type) {
 	case *ast.PropertiesTypeExpr:
 		validator.pop()
 	case *ast.FieldDef:
 		validator.pop()
+	case *ast.FuncSignature:
+		if node.Name != "" {
+			validator.pop()
+		}
+	case *ast.Parameter:
+		if node.Kind == ast.ReceiverParameter {
+			validator.pop()
+		}
 	}
 }

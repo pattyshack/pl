@@ -28,4 +28,4 @@ func method(ok >&R) {}
 func method(bad >unexpected.R) {}
 func method(bad >&unexpected.R) {}
 
-func method(bad >A+B) {}
+func method(bad >A+B, bad _) {}
