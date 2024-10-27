@@ -13,7 +13,6 @@ import (
 	"github.com/pattyshack/pl/build/cfg"
 	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser"
-	"github.com/pattyshack/pl/types"
 )
 
 type BuildMode int
@@ -41,7 +40,7 @@ type locateState struct {
 	importedBy    []pkgLoc
 }
 
-func (state *locateState) Locate(ws *Workspace, id types.PackageID) (
+func (state *locateState) Locate(ws *Workspace, id ast.PackageID) (
 	PackageContents,
 	error,
 ) {
@@ -105,7 +104,7 @@ type Package struct {
 
 	BuildMode
 
-	types.PackageID
+	ast.PackageID
 
 	*errors.Emitter
 	locateState
@@ -116,7 +115,7 @@ type Package struct {
 	LibraryDefinitions *ast.StatementList
 	TestDefinitions    *ast.StatementList
 
-	DirectDependencies map[types.PackageID]pkgLoc
+	DirectDependencies map[ast.PackageID]pkgLoc
 
 	// Only used by detectCycles, after loadWaitGroup is ready, and
 	// sortedPackages is available.
@@ -214,7 +213,7 @@ func (pkg *Package) Build() {
 	analyze.Semantic(pkg.LibraryDefinitions, pkg.Emitter)
 }
 
-func (pkg *Package) detectCycle(visited []types.PackageID) error {
+func (pkg *Package) detectCycle(visited []ast.PackageID) error {
 	for idx, visitedID := range visited {
 		if visitedID == pkg.PackageID {
 			cycle := visited[idx:]
@@ -270,7 +269,7 @@ type Builder struct {
 
 	mutex sync.Mutex
 
-	packages map[types.PackageID]*Package // guarded by mutex.
+	packages map[ast.PackageID]*Package // guarded by mutex.
 
 	// Computed only after loadWaitGroup is ready.
 	sortedPackages []*Package // guarded by mutex
@@ -287,7 +286,7 @@ func NewBuilder(
 		Config:    config,
 		Workspace: workspace,
 		Emitter:   &errors.Emitter{},
-		packages:  map[types.PackageID]*Package{},
+		packages:  map[ast.PackageID]*Package{},
 	}
 
 	return builder
@@ -305,7 +304,7 @@ func (builder *Builder) pkgs() []*Package {
 	return pkgs
 }
 
-func (builder *Builder) get(id types.PackageID) *Package {
+func (builder *Builder) get(id ast.PackageID) *Package {
 	builder.mutex.Lock()
 	defer builder.mutex.Unlock()
 
@@ -314,7 +313,7 @@ func (builder *Builder) get(id types.PackageID) *Package {
 
 func (builder *Builder) build(
 	mode BuildMode,
-	id types.PackageID,
+	id ast.PackageID,
 	by *pkgLoc,
 ) *Package {
 	builder.mutex.Lock()
@@ -331,7 +330,7 @@ func (builder *Builder) build(
 			locateState: locateState{
 				Emitter: emitter,
 			},
-			DirectDependencies:      map[types.PackageID]pkgLoc{},
+			DirectDependencies:      map[ast.PackageID]pkgLoc{},
 			PublicInterfaceAnalyzed: make(chan struct{}),
 		}
 		builder.packages[id] = pkg
@@ -359,7 +358,7 @@ func (builder *Builder) Packages() []*Package {
 	return builder.sortedPackages
 }
 
-func (builder *Builder) Build(mode BuildMode, ids ...types.PackageID) []error {
+func (builder *Builder) Build(mode BuildMode, ids ...ast.PackageID) []error {
 	for _, id := range ids {
 		builder.build(mode, id, nil)
 	}

@@ -2,7 +2,6 @@ package ast
 
 import (
 	"github.com/pattyshack/pl/errors"
-	"github.com/pattyshack/pl/types"
 )
 
 //
@@ -14,7 +13,7 @@ type ImportClause struct {
 	LeadingTrailingComments
 
 	Alias string // Identifier or underscore or dot or ""
-	types.PackageID
+	PackageID
 }
 
 var _ Node = &ImportClause{}

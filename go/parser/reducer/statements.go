@@ -5,7 +5,6 @@ import (
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
-	"github.com/pattyshack/pl/types"
 )
 
 //
@@ -101,7 +100,7 @@ func (reducer *Reducer) ToStatements(
 
 func (reducer *Reducer) stringLiteralToPackageID(
 	pkg *lr.TokenValue,
-) types.PackageID {
+) ast.PackageID {
 	if strings.HasPrefix(pkg.Value, "```") ||
 		strings.HasPrefix(pkg.Value, `"""`) {
 
@@ -109,10 +108,10 @@ func (reducer *Reducer) stringLiteralToPackageID(
 			pkg.Loc(),
 			"cannot specify package id using multi-line string literal")
 
-		return types.NewPackageID(pkg.Value[3 : len(pkg.Value)-3])
+		return ast.NewPackageID(pkg.Value[3 : len(pkg.Value)-3])
 	}
 
-	return types.NewPackageID(pkg.Value[1 : len(pkg.Value)-1])
+	return ast.NewPackageID(pkg.Value[1 : len(pkg.Value)-1])
 }
 
 func (reducer *Reducer) StringLiteralToImportClause(

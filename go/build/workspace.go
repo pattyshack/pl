@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/build/cfg"
-	"github.com/pattyshack/pl/types"
 )
 
 const (
@@ -62,7 +62,7 @@ func FindWorkspaceRoot(config *cfg.Config) (*Workspace, error) {
 	}
 }
 
-func (workspace *Workspace) Locate(id types.PackageID) (PackageContents, error) {
+func (workspace *Workspace) Locate(id ast.PackageID) (PackageContents, error) {
 	pkgDirPath := filepath.Join(
 		workspace.RootDirPath,
 		filepath.FromSlash(id.String()))
@@ -132,7 +132,7 @@ func (workspace *Workspace) Locate(id types.PackageID) (PackageContents, error) 
 func (workspace *Workspace) MatchTargetPattern(
 	originalPattern string,
 ) (
-	[]types.PackageID,
+	[]ast.PackageID,
 	error,
 ) {
 	pattern := originalPattern
@@ -229,14 +229,14 @@ func (workspace *Workspace) MatchTargetPattern(
 		}
 	}
 
-	targets := []types.PackageID{}
+	targets := []ast.PackageID{}
 	for dir, _ := range dirs {
 		relDir, err := filepath.Rel(workspace.RootDirPath, dir)
 		if err != nil {
 			return nil, fmt.Errorf("invalid pattern (%s): %w", originalPattern, err)
 		}
 
-		id := types.NewPackageID(filepath.ToSlash(relDir))
+		id := ast.NewPackageID(filepath.ToSlash(relDir))
 		err = id.Validate()
 		if err != nil {
 			return nil, fmt.Errorf("found invalid package %s: %w", dir, err)
@@ -251,10 +251,10 @@ func (workspace *Workspace) MatchTargetPattern(
 func (workspace *Workspace) MatchTargetPatterns(
 	patterns ...string,
 ) (
-	[]types.PackageID,
+	[]ast.PackageID,
 	error,
 ) {
-	pkgIds := []types.PackageID{}
+	pkgIds := []ast.PackageID{}
 	for _, pattern := range patterns {
 		ids, err := workspace.MatchTargetPattern(pattern)
 		if err != nil {
