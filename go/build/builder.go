@@ -8,6 +8,7 @@ import (
 
 	"github.com/pattyshack/gt/lexutil"
 
+	"github.com/pattyshack/pl/analyze"
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/build/cfg"
 	"github.com/pattyshack/pl/errors"
@@ -124,14 +125,14 @@ type Package struct {
 	PublicInterfaceAnalyzed chan struct{}
 }
 
-func (pkg *Package) Load() {
+func (pkg *Package) Load() error {
 	defer pkg.builder.loadWaitGroup.Done()
 
 	// TODO load cached entry
 
 	contents, err := pkg.locateState.Locate(pkg.builder.Workspace, pkg.PackageID)
 	if err != nil {
-		return
+		return err
 	}
 	pkg.PackageContents = contents
 
@@ -188,14 +189,18 @@ func (pkg *Package) Load() {
 
 	pkg.LibraryDefinitions = libDefs
 	pkg.TestDefinitions = testDefs
+	return nil
 }
 
 func (pkg *Package) Build() {
 	defer pkg.builder.buildWaitGroup.Done()
 	defer close(pkg.PublicInterfaceAnalyzed)
 
-	pkg.Load()
-	// TODO need to check for error / early exit
+	loadErr := pkg.Load()
+	if loadErr != nil || pkg.HasErrors() {
+		// TODO populate stub empty public interface
+		return
+	}
 
 	for _, dep := range pkg.DirectDependencies {
 		select {
@@ -206,7 +211,7 @@ func (pkg *Package) Build() {
 		}
 	}
 
-	// can begin semantic analysis
+	analyze.Semantic(pkg.LibraryDefinitions, pkg.Emitter)
 }
 
 func (pkg *Package) detectCycle(visited []types.PackageID) error {

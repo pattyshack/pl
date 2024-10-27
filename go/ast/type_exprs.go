@@ -400,6 +400,12 @@ func (sig *FuncSignature) Walk(visitor Visitor) {
 	visitor.Exit(sig)
 }
 
+func (sig *FuncSignature) IsMethod() bool {
+	return sig.Name != "" &&
+		len(sig.Parameters.Elements) > 0 &&
+		sig.Parameters.Elements[0].Kind == ReceiverParameter
+}
+
 func (sig *FuncSignature) Validate(emitter *errors.Emitter) {
 	if sig.Name != "" {
 		if sig.GenericParameters == nil {
@@ -407,9 +413,7 @@ func (sig *FuncSignature) Validate(emitter *errors.Emitter) {
 				sig.Loc(),
 				"invalid ast construction, generic parameters not set for "+
 					"named func signature")
-		} else if len(sig.Parameters.Elements) > 0 &&
-			sig.Parameters.Elements[0].Kind == ReceiverParameter {
-
+		} else if sig.IsMethod() {
 			if len(sig.GenericParameters.Elements) > 0 {
 				emitter.Emit(
 					sig.GenericParameters.Loc(),
