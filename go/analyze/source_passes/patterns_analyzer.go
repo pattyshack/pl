@@ -61,24 +61,26 @@ type patternsAnalyzePass struct {
 }
 
 func (analyzer *patternsAnalyzePass) Process(list *ast.StatementList) {
-	visitors := process.ParallelWalk(
-		list,
-		func() ast.Visitor {
-			return &patternsAnalyzer{
-				isRoot:                    true,
-				stateStack:                []patternState{},
-				validAssignPatterns:       map[*ast.AssignPattern]bool{},
-				validCasePatterns:         map[*ast.CasePatterns]struct{}{},
-				validEnumPatterns:         map[*ast.EnumPattern]struct{}{},
-				validAddrDeclPatterns:     map[*ast.AddrDeclPattern]patternState{},
-				validAssignToAddrPatterns: map[*ast.AssignToAddrPattern]struct{}{},
-				redundantAssignToAddr:     map[*ast.AssignToAddrPattern]ast.Expression{},
-				Emitter:                   analyzer.Emitter,
-			}
-		})
+	visitors := make(map[ast.Statement]*patternsAnalyzer, len(list.Elements))
+	for _, stmt := range list.Elements {
+		visitors[stmt] = &patternsAnalyzer{
+			root:                      stmt,
+			stateStack:                []patternState{},
+			validAssignPatterns:       map[*ast.AssignPattern]bool{},
+			validCasePatterns:         map[*ast.CasePatterns]struct{}{},
+			validEnumPatterns:         map[*ast.EnumPattern]struct{}{},
+			validAddrDeclPatterns:     map[*ast.AddrDeclPattern]patternState{},
+			validAssignToAddrPatterns: map[*ast.AssignToAddrPattern]struct{}{},
+			redundantAssignToAddr:     map[*ast.AssignToAddrPattern]ast.Expression{},
+			Emitter:                   analyzer.Emitter,
+		}
+	}
 
-	for _, v := range visitors {
-		visitor := v.(*patternsAnalyzer)
+	process.ParallelWalk(
+		list,
+		func(stmt ast.Statement) ast.Visitor { return visitors[stmt] })
+
+	for _, visitor := range visitors {
 		for pattern, parent := range visitor.redundantAssignToAddr {
 			analyzer.redundantAssignToAddr[pattern] = parent
 		}
@@ -115,7 +117,7 @@ func (analyzer *PatternsAnalyzer) Transform() process.Pass {
 }
 
 type patternsAnalyzer struct {
-	isRoot bool
+	root ast.Node
 
 	stateStack []patternState
 
@@ -285,6 +287,10 @@ func (analyzer *patternsAnalyzer) Exit(n ast.Node) {
 func (analyzer *patternsAnalyzer) collectPatternEntryPoints(
 	n ast.Node,
 ) {
+	if n == analyzer.root {
+		analyzer.processStatement(n.(ast.Statement))
+	}
+
 	switch node := n.(type) {
 	case *ast.StatementsExpr:
 		for _, stmt := range node.Statements {
@@ -353,13 +359,7 @@ func (analyzer *patternsAnalyzer) collectPatternEntryPoints(
 					"unexpected expression, expecting send/recv expression")
 			}
 		}
-	default:
-		if analyzer.isRoot {
-			analyzer.processStatement(n.(ast.Statement))
-		}
 	}
-
-	analyzer.isRoot = false
 }
 
 func (analyzer *patternsAnalyzer) processStatement(
@@ -375,6 +375,7 @@ func (analyzer *patternsAnalyzer) processStatement(
 				analyzer.validAddrDeclPatterns[pattern] = addrDeclPattern
 			}
 		}
+		return
 	}
 
 	assign, ok := s.(*ast.AssignPattern)

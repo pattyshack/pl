@@ -25,7 +25,9 @@ func (validator *DirectivesValidator) Process(list *ast.StatementList) {
 		}
 	}
 
-	process.ParallelWalk(list, func() ast.Visitor { return validator })
+	process.ParallelWalk(
+		list,
+		func(ast.Statement) ast.Visitor { return validator })
 }
 
 func (validator *DirectivesValidator) Enter(n ast.Node) {

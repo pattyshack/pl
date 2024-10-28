@@ -19,9 +19,9 @@ func ValidateFuncSignatures(emitter *errors.Emitter) process.Pass {
 func (validator *FuncSignaturesValidator) Process(list *ast.StatementList) {
 	process.ParallelWalk(
 		list,
-		func() ast.Visitor {
+		func(stmt ast.Statement) ast.Visitor {
 			return &funcSignaturesValidator{
-				isRoot:    true,
+				root:      stmt,
 				processed: map[*ast.FuncSignature]struct{}{},
 				Emitter:   validator.Emitter,
 			}
@@ -29,17 +29,15 @@ func (validator *FuncSignaturesValidator) Process(list *ast.StatementList) {
 }
 
 type funcSignaturesValidator struct {
-	isRoot    bool
+	root      ast.Node
 	processed map[*ast.FuncSignature]struct{}
 
 	*errors.Emitter
 }
 
 func (validator *funcSignaturesValidator) Enter(node ast.Node) {
-	if validator.isRoot {
+	if node == validator.root {
 		validator.processStatements(node.(ast.Statement))
-		validator.isRoot = false
-		return
 	}
 
 	switch expr := node.(type) {

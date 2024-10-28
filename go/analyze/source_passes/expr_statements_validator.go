@@ -22,7 +22,7 @@ func (validator *ExprStatementsValidator) Process(
 ) {
 	process.ParallelWalk(
 		list,
-		func() ast.Visitor {
+		func(ast.Statement) ast.Visitor {
 			return &exprStatementsValidator{
 				processed: map[*ast.StatementsExpr]struct{}{},
 				Emitter:   validator.Emitter,

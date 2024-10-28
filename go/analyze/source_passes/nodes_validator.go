@@ -17,7 +17,9 @@ func ValidateNodes(emitter *errors.Emitter) process.Pass {
 }
 
 func (validator *NodeValidator) Process(list *ast.StatementList) {
-	process.ParallelWalk(list, func() ast.Visitor { return validator })
+	process.ParallelWalk(
+		list,
+		func(ast.Statement) ast.Visitor { return validator })
 }
 
 func (validator *NodeValidator) Enter(node ast.Node) {

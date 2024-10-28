@@ -25,7 +25,9 @@ func PreSemanticAnalysisTransformation(emitter *errors.Emitter) process.Pass {
 func (transformer *PreSemanticAnalysisTransformer) Process(
 	list *ast.StatementList,
 ) {
-	process.ParallelWalk(list, func() ast.Visitor { return transformer })
+	process.ParallelWalk(
+		list,
+		func(ast.Statement) ast.Visitor { return transformer })
 
 	typeDefs := map[string]*ast.PropertiesTypeExpr{}
 	for _, stmt := range list.Elements {

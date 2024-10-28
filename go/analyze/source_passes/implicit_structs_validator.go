@@ -28,8 +28,9 @@ func ValidateImplicitStructs(emitter *errors.Emitter) process.Pass {
 func (validator *ImplicitStructsValidator) Process(list *ast.StatementList) {
 	process.ParallelWalk(
 		list,
-		func() ast.Visitor {
+		func(stmt ast.Statement) ast.Visitor {
 			return &implicitStructsValidator{
+				root:               stmt,
 				validImproperColon: map[*ast.ImplicitStructExpr]struct{}{},
 				Emitter:            validator.Emitter,
 			}
@@ -37,16 +38,14 @@ func (validator *ImplicitStructsValidator) Process(list *ast.StatementList) {
 }
 
 type implicitStructsValidator struct {
-	isRoot             bool
+	root               ast.Node
 	validImproperColon map[*ast.ImplicitStructExpr]struct{}
 	*errors.Emitter
 }
 
 func (validator *implicitStructsValidator) Enter(n ast.Node) {
-	if validator.isRoot {
+	if n == validator.root {
 		validator.allowImproperStruct(n.(ast.Statement))
-		validator.isRoot = false
-		return
 	}
 
 	switch node := n.(type) {

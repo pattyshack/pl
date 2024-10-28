@@ -21,7 +21,7 @@ func (validator *ExplicitlyTypedDefsValidator) Process(
 ) {
 	process.ParallelWalk(
 		list,
-		func() ast.Visitor {
+		func(ast.Statement) ast.Visitor {
 			return &explicitlyTypedDefsValidator{
 				Emitter: validator.Emitter,
 			}

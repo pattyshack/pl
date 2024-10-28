@@ -38,15 +38,13 @@ func Process[T any](
 
 func ParallelWalk(
 	list *ast.StatementList,
-	newVisitor func() ast.Visitor,
-) []ast.Visitor {
+	newVisitor func(ast.Statement) ast.Visitor,
+) {
 	wg := sync.WaitGroup{}
 	wg.Add(len(list.Elements))
 
-	visitors := make([]ast.Visitor, 0, len(list.Elements))
 	for _, s := range list.Elements {
-		v := newVisitor()
-		visitors = append(visitors, v)
+		v := newVisitor(s)
 
 		go func(stmt ast.Statement, visitor ast.Visitor) {
 			stmt.Walk(visitor)
@@ -55,5 +53,4 @@ func ParallelWalk(
 	}
 
 	wg.Wait()
-	return visitors
 }
