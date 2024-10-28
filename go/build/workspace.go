@@ -24,14 +24,23 @@ type Workspace struct {
 	WorkingDirPath string
 }
 
-func FindWorkspaceRoot(config *cfg.Config) (*Workspace, error) {
-	dir, err := filepath.Abs(".")
+func FindWorkspaceRoot(
+	workingDir string,
+	config *cfg.Config,
+) (
+	*Workspace,
+	error,
+) {
+	if workingDir == "" {
+		workingDir = "."
+	}
+
+	workingDir, err := filepath.Abs(workingDir)
 	if err != nil {
 		return nil, fmt.Errorf("unable to locate workspace directory: %w", err)
 	}
 
-	workingDir := dir
-
+	dir := workingDir
 	for {
 		entries, err := os.ReadDir(dir)
 		if err != nil {

@@ -36,7 +36,7 @@ func (cmd *Command) Build(
 ) error {
 	config := cfg.NewConfig(strings.Split(cmd.Tags, ","))
 
-	workspace, err := build.FindWorkspaceRoot(config)
+	workspace, err := build.FindWorkspaceRoot(".", config)
 	if err != nil {
 		return err
 	}
