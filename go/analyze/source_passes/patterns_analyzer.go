@@ -43,18 +43,6 @@ const (
 )
 
 type PatternsAnalyzer struct {
-	stateStack []patternState
-
-	// true for conditional assignment (must be paired with CasePatterns).
-	// false for unconditional assignment.
-	validAssignPatterns map[*ast.AssignPattern]bool
-
-	validCasePatterns         map[*ast.CasePatterns]struct{}
-	validEnumPatterns         map[*ast.EnumPattern]struct{}
-	validAssignToAddrPatterns map[*ast.AssignToAddrPattern]struct{}
-	// state is either addrDeclPattern or assignToNewAddrPattern
-	validAddrDeclPatterns map[*ast.AddrDeclPattern]patternState
-
 	// pattern -> parent (either implicit struct expr or assign expr)
 	redundantAssignToAddr map[*ast.AssignToAddrPattern]ast.Expression
 
@@ -63,14 +51,8 @@ type PatternsAnalyzer struct {
 
 func NewPatternsAnalyzer(emitter *errors.Emitter) *PatternsAnalyzer {
 	return &PatternsAnalyzer{
-		stateStack:                []patternState{},
-		validAssignPatterns:       map[*ast.AssignPattern]bool{},
-		validCasePatterns:         map[*ast.CasePatterns]struct{}{},
-		validEnumPatterns:         map[*ast.EnumPattern]struct{}{},
-		validAddrDeclPatterns:     map[*ast.AddrDeclPattern]patternState{},
-		validAssignToAddrPatterns: map[*ast.AssignToAddrPattern]struct{}{},
-		redundantAssignToAddr:     map[*ast.AssignToAddrPattern]ast.Expression{},
-		Emitter:                   emitter,
+		redundantAssignToAddr: map[*ast.AssignToAddrPattern]ast.Expression{},
+		Emitter:               emitter,
 	}
 }
 
@@ -79,7 +61,28 @@ type patternsAnalyzePass struct {
 }
 
 func (analyzer *patternsAnalyzePass) Process(list *ast.StatementList) {
-	list.Walk(analyzer)
+	visitors := process.ParallelWalk(
+		list,
+		func() ast.Visitor {
+			return &patternsAnalyzer{
+				isRoot:                    true,
+				stateStack:                []patternState{},
+				validAssignPatterns:       map[*ast.AssignPattern]bool{},
+				validCasePatterns:         map[*ast.CasePatterns]struct{}{},
+				validEnumPatterns:         map[*ast.EnumPattern]struct{}{},
+				validAddrDeclPatterns:     map[*ast.AddrDeclPattern]patternState{},
+				validAssignToAddrPatterns: map[*ast.AssignToAddrPattern]struct{}{},
+				redundantAssignToAddr:     map[*ast.AssignToAddrPattern]ast.Expression{},
+				Emitter:                   analyzer.Emitter,
+			}
+		})
+
+	for _, v := range visitors {
+		visitor := v.(*patternsAnalyzer)
+		for pattern, parent := range visitor.redundantAssignToAddr {
+			analyzer.redundantAssignToAddr[pattern] = parent
+		}
+	}
 }
 
 func (analyzer *PatternsAnalyzer) Validate() process.Pass {
@@ -111,15 +114,36 @@ func (analyzer *PatternsAnalyzer) Transform() process.Pass {
 	return &patternsTransformPass{analyzer}
 }
 
-func (analyzer *PatternsAnalyzer) push(state patternState) {
+type patternsAnalyzer struct {
+	isRoot bool
+
+	stateStack []patternState
+
+	// true for conditional assignment (must be paired with CasePatterns).
+	// false for unconditional assignment.
+	validAssignPatterns map[*ast.AssignPattern]bool
+
+	validCasePatterns         map[*ast.CasePatterns]struct{}
+	validEnumPatterns         map[*ast.EnumPattern]struct{}
+	validAssignToAddrPatterns map[*ast.AssignToAddrPattern]struct{}
+	// state is either addrDeclPattern or assignToNewAddrPattern
+	validAddrDeclPatterns map[*ast.AddrDeclPattern]patternState
+
+	// pattern -> parent (either implicit struct expr or assign expr)
+	redundantAssignToAddr map[*ast.AssignToAddrPattern]ast.Expression
+
+	*errors.Emitter
+}
+
+func (analyzer *patternsAnalyzer) push(state patternState) {
 	analyzer.stateStack = append(analyzer.stateStack, state)
 }
 
-func (analyzer *PatternsAnalyzer) pop() {
+func (analyzer *patternsAnalyzer) pop() {
 	analyzer.stateStack = analyzer.stateStack[:len(analyzer.stateStack)-1]
 }
 
-func (analyzer *PatternsAnalyzer) current() patternState {
+func (analyzer *patternsAnalyzer) current() patternState {
 	state := nonPattern
 	if len(analyzer.stateStack) > 0 {
 		state = analyzer.stateStack[len(analyzer.stateStack)-1]
@@ -128,7 +152,7 @@ func (analyzer *PatternsAnalyzer) current() patternState {
 	return state
 }
 
-func (analyzer *PatternsAnalyzer) Enter(n ast.Node) {
+func (analyzer *patternsAnalyzer) Enter(n ast.Node) {
 	analyzer.collectPatternEntryPoints(n)
 
 	e, ok := n.(ast.Expression)
@@ -251,21 +275,17 @@ func (analyzer *PatternsAnalyzer) Enter(n ast.Node) {
 	}
 }
 
-func (analyzer *PatternsAnalyzer) Exit(n ast.Node) {
+func (analyzer *patternsAnalyzer) Exit(n ast.Node) {
 	_, ok := n.(ast.Expression)
 	if ok {
 		analyzer.pop()
 	}
 }
 
-func (analyzer *PatternsAnalyzer) collectPatternEntryPoints(
+func (analyzer *patternsAnalyzer) collectPatternEntryPoints(
 	n ast.Node,
 ) {
 	switch node := n.(type) {
-	case *ast.StatementList:
-		for _, stmt := range node.Elements {
-			analyzer.processStatement(stmt)
-		}
 	case *ast.StatementsExpr:
 		for _, stmt := range node.Statements {
 			analyzer.processStatement(stmt)
@@ -333,10 +353,16 @@ func (analyzer *PatternsAnalyzer) collectPatternEntryPoints(
 					"unexpected expression, expecting send/recv expression")
 			}
 		}
+	default:
+		if analyzer.isRoot {
+			analyzer.processStatement(n.(ast.Statement))
+		}
 	}
+
+	analyzer.isRoot = false
 }
 
-func (analyzer *PatternsAnalyzer) processStatement(
+func (analyzer *patternsAnalyzer) processStatement(
 	s ast.Statement,
 ) {
 	block, ok := s.(*ast.BlockAddrDeclStmt)

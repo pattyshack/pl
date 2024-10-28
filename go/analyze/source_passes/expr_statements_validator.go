@@ -8,25 +8,35 @@ import (
 )
 
 type ExprStatementsValidator struct {
-	processed map[*ast.StatementsExpr]struct{}
-
 	*errors.Emitter
 }
 
 func ValidateExprStatements(emitter *errors.Emitter) process.Pass {
 	return &ExprStatementsValidator{
-		processed: map[*ast.StatementsExpr]struct{}{},
-		Emitter:   emitter,
+		Emitter: emitter,
 	}
 }
 
 func (validator *ExprStatementsValidator) Process(
 	list *ast.StatementList,
 ) {
-	list.Walk(validator)
+	process.ParallelWalk(
+		list,
+		func() ast.Visitor {
+			return &exprStatementsValidator{
+				processed: map[*ast.StatementsExpr]struct{}{},
+				Emitter:   validator.Emitter,
+			}
+		})
 }
 
-func (validator *ExprStatementsValidator) Enter(n ast.Node) {
+type exprStatementsValidator struct {
+	processed map[*ast.StatementsExpr]struct{}
+
+	*errors.Emitter
+}
+
+func (validator *exprStatementsValidator) Enter(n ast.Node) {
 	switch node := n.(type) {
 	case *ast.SwitchExpr:
 		validator.checkSwitchSelectExpr(node.ConditionBranches)
@@ -37,7 +47,7 @@ func (validator *ExprStatementsValidator) Enter(n ast.Node) {
 		if ok {
 			return
 		}
-		validator.checkExprStmts(node.Statements, false)
+		validator.checkexprStmts(node.Statements, false)
 	case *ast.LoopExpr:
 		stmts := []ast.Statement{}
 		if node.Init != nil {
@@ -46,20 +56,20 @@ func (validator *ExprStatementsValidator) Enter(n ast.Node) {
 		if node.Post != nil {
 			stmts = append(stmts, node.Post)
 		}
-		validator.checkExprStmts(stmts, false)
+		validator.checkexprStmts(stmts, false)
 	}
 }
 
-func (validator *ExprStatementsValidator) checkSwitchSelectExpr(
+func (validator *exprStatementsValidator) checkSwitchSelectExpr(
 	conditionBranches []*ast.ConditionBranchStmt,
 ) {
 	for _, stmt := range conditionBranches {
-		validator.checkExprStmts(stmt.Branch.Statements, true)
+		validator.checkexprStmts(stmt.Branch.Statements, true)
 		validator.processed[stmt.Branch] = struct{}{}
 	}
 }
 
-func (validator *ExprStatementsValidator) checkExprStmts(
+func (validator *exprStatementsValidator) checkexprStmts(
 	stmts []ast.Statement,
 	allowFallthrough bool,
 ) {
@@ -105,5 +115,5 @@ func (validator *ExprStatementsValidator) checkExprStmts(
 	}
 }
 
-func (validator *ExprStatementsValidator) Exit(node ast.Node) {
+func (validator *exprStatementsValidator) Exit(node ast.Node) {
 }

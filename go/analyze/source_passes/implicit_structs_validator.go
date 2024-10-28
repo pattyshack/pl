@@ -16,27 +16,40 @@ import (
 //
 // Colon implicit structs are only allowed in callable expr.
 type ImplicitStructsValidator struct {
-	validImproperColon map[*ast.ImplicitStructExpr]struct{}
 	*errors.Emitter
 }
 
 func ValidateImplicitStructs(emitter *errors.Emitter) process.Pass {
 	return &ImplicitStructsValidator{
-		validImproperColon: map[*ast.ImplicitStructExpr]struct{}{},
-		Emitter:            emitter,
+		Emitter: emitter,
 	}
 }
 
 func (validator *ImplicitStructsValidator) Process(list *ast.StatementList) {
-	list.Walk(validator)
+	process.ParallelWalk(
+		list,
+		func() ast.Visitor {
+			return &implicitStructsValidator{
+				validImproperColon: map[*ast.ImplicitStructExpr]struct{}{},
+				Emitter:            validator.Emitter,
+			}
+		})
 }
 
-func (validator *ImplicitStructsValidator) Enter(n ast.Node) {
+type implicitStructsValidator struct {
+	isRoot             bool
+	validImproperColon map[*ast.ImplicitStructExpr]struct{}
+	*errors.Emitter
+}
+
+func (validator *implicitStructsValidator) Enter(n ast.Node) {
+	if validator.isRoot {
+		validator.allowImproperStruct(n.(ast.Statement))
+		validator.isRoot = false
+		return
+	}
+
 	switch node := n.(type) {
-	case *ast.StatementList:
-		for _, stmt := range node.Elements {
-			validator.allowImproperStruct(stmt)
-		}
 	case *ast.StatementsExpr:
 		for _, stmt := range node.Statements {
 			validator.allowImproperStruct(stmt)
@@ -87,7 +100,7 @@ func (validator *ImplicitStructsValidator) Enter(n ast.Node) {
 	}
 }
 
-func (validator *ImplicitStructsValidator) allowColonStructArguments(
+func (validator *implicitStructsValidator) allowColonStructArguments(
 	args []*ast.Argument,
 ) {
 	for _, arg := range args {
@@ -100,7 +113,7 @@ func (validator *ImplicitStructsValidator) allowColonStructArguments(
 	}
 }
 
-func (validator *ImplicitStructsValidator) allowUnitImproperStruct(
+func (validator *implicitStructsValidator) allowUnitImproperStruct(
 	expr ast.Expression,
 ) {
 	exprStruct, ok := expr.(*ast.ImplicitStructExpr)
@@ -112,7 +125,7 @@ func (validator *ImplicitStructsValidator) allowUnitImproperStruct(
 	}
 }
 
-func (validator *ImplicitStructsValidator) allowImproperStruct(
+func (validator *implicitStructsValidator) allowImproperStruct(
 	node ast.Node,
 ) {
 	exprStruct, ok := node.(*ast.ImplicitStructExpr)
@@ -121,5 +134,5 @@ func (validator *ImplicitStructsValidator) allowImproperStruct(
 	}
 }
 
-func (validator *ImplicitStructsValidator) Exit(node ast.Node) {
+func (validator *implicitStructsValidator) Exit(node ast.Node) {
 }

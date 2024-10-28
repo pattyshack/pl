@@ -7,9 +7,6 @@ import (
 )
 
 type ExplicitlyTypedDefsValidator struct {
-	// push "" when inferred type is allowed, push non-empty string when type
-	// must be explicit.
-	scopeStack []string
 	*errors.Emitter
 }
 
@@ -22,25 +19,38 @@ func ValidateExplicitlyTypedDefs(emitter *errors.Emitter) process.Pass {
 func (validator *ExplicitlyTypedDefsValidator) Process(
 	list *ast.StatementList,
 ) {
-	list.Walk(validator)
+	process.ParallelWalk(
+		list,
+		func() ast.Visitor {
+			return &explicitlyTypedDefsValidator{
+				Emitter: validator.Emitter,
+			}
+		})
 }
 
-func (validator *ExplicitlyTypedDefsValidator) push(kind string) {
+type explicitlyTypedDefsValidator struct {
+	// push "" when inferred type is allowed, push non-empty string when type
+	// must be explicit.
+	scopeStack []string
+	*errors.Emitter
+}
+
+func (validator *explicitlyTypedDefsValidator) push(kind string) {
 	validator.scopeStack = append(validator.scopeStack, kind)
 }
 
-func (validator *ExplicitlyTypedDefsValidator) pop() {
+func (validator *explicitlyTypedDefsValidator) pop() {
 	validator.scopeStack = validator.scopeStack[:len(validator.scopeStack)-1]
 }
 
-func (validator *ExplicitlyTypedDefsValidator) current() string {
+func (validator *explicitlyTypedDefsValidator) current() string {
 	if len(validator.scopeStack) > 0 {
 		return validator.scopeStack[len(validator.scopeStack)-1]
 	}
 	return ""
 }
 
-func (validator *ExplicitlyTypedDefsValidator) Enter(n ast.Node) {
+func (validator *explicitlyTypedDefsValidator) Enter(n ast.Node) {
 	switch node := n.(type) {
 	case *ast.PropertiesTypeExpr:
 		validator.push("")
@@ -62,7 +72,7 @@ func (validator *ExplicitlyTypedDefsValidator) Enter(n ast.Node) {
 	}
 }
 
-func (validator *ExplicitlyTypedDefsValidator) Exit(n ast.Node) {
+func (validator *explicitlyTypedDefsValidator) Exit(n ast.Node) {
 	switch node := n.(type) {
 	case *ast.PropertiesTypeExpr:
 		validator.pop()

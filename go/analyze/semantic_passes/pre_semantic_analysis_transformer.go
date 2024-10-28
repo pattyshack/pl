@@ -1,8 +1,6 @@
 package semantic_passes
 
 import (
-	"sync"
-
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/errors"
@@ -27,17 +25,7 @@ func PreSemanticAnalysisTransformation(emitter *errors.Emitter) process.Pass {
 func (transformer *PreSemanticAnalysisTransformer) Process(
 	list *ast.StatementList,
 ) {
-	wg := sync.WaitGroup{}
-	wg.Add(len(list.Elements))
-
-	for _, s := range list.Elements {
-		go func(stmt ast.Statement) {
-			stmt.Walk(transformer)
-			wg.Done()
-		}(s)
-	}
-
-	wg.Wait()
+	process.ParallelWalk(list, func() ast.Visitor { return transformer })
 
 	typeDefs := map[string]*ast.PropertiesTypeExpr{}
 	for _, stmt := range list.Elements {

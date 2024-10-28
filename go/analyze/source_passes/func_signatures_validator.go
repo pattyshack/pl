@@ -7,28 +7,44 @@ import (
 )
 
 type FuncSignaturesValidator struct {
-	processed map[*ast.FuncSignature]struct{}
-
 	*errors.Emitter
 }
 
 func ValidateFuncSignatures(emitter *errors.Emitter) process.Pass {
 	return &FuncSignaturesValidator{
-		processed: map[*ast.FuncSignature]struct{}{},
-		Emitter:   emitter,
+		Emitter: emitter,
 	}
 }
 
 func (validator *FuncSignaturesValidator) Process(list *ast.StatementList) {
-	list.Walk(validator)
+	process.ParallelWalk(
+		list,
+		func() ast.Visitor {
+			return &funcSignaturesValidator{
+				isRoot:    true,
+				processed: map[*ast.FuncSignature]struct{}{},
+				Emitter:   validator.Emitter,
+			}
+		})
 }
 
-func (validator *FuncSignaturesValidator) Enter(node ast.Node) {
+type funcSignaturesValidator struct {
+	isRoot    bool
+	processed map[*ast.FuncSignature]struct{}
+
+	*errors.Emitter
+}
+
+func (validator *funcSignaturesValidator) Enter(node ast.Node) {
+	if validator.isRoot {
+		validator.processStatements(node.(ast.Statement))
+		validator.isRoot = false
+		return
+	}
+
 	switch expr := node.(type) {
-	case *ast.StatementList:
-		validator.processStatements(expr.Elements)
 	case *ast.StatementsExpr:
-		validator.processStatements(expr.Statements)
+		validator.processStatements(expr.Statements...)
 	case *ast.PropertiesTypeExpr:
 		validator.processPropertiesTypeExpr(expr)
 	case *ast.FuncSignature:
@@ -41,8 +57,8 @@ func (validator *FuncSignaturesValidator) Enter(node ast.Node) {
 	}
 }
 
-func (validator *FuncSignaturesValidator) processStatements(
-	stmts []ast.Statement,
+func (validator *funcSignaturesValidator) processStatements(
+	stmts ...ast.Statement,
 ) {
 	for _, stmt := range stmts {
 		def, ok := stmt.(*ast.FuncDefinition)
@@ -59,7 +75,7 @@ func (validator *FuncSignaturesValidator) processStatements(
 	}
 }
 
-func (validator *FuncSignaturesValidator) processPropertiesTypeExpr(
+func (validator *funcSignaturesValidator) processPropertiesTypeExpr(
 	typeExpr *ast.PropertiesTypeExpr,
 ) {
 	for _, property := range typeExpr.Properties {
@@ -75,7 +91,7 @@ func (validator *FuncSignaturesValidator) processPropertiesTypeExpr(
 	}
 }
 
-func (validator *FuncSignaturesValidator) processNamedSignature(
+func (validator *funcSignaturesValidator) processNamedSignature(
 	sig *ast.FuncSignature,
 	allowReceiver bool,
 ) {
@@ -86,7 +102,7 @@ func (validator *FuncSignaturesValidator) processNamedSignature(
 	validator.processParameters(sig, allowReceiver)
 }
 
-func (validator *FuncSignaturesValidator) processAnonymousSignature(
+func (validator *funcSignaturesValidator) processAnonymousSignature(
 	sig *ast.FuncSignature,
 ) {
 	if sig.Name != "" {
@@ -101,7 +117,7 @@ func (validator *FuncSignaturesValidator) processAnonymousSignature(
 	validator.processParameters(sig, false)
 }
 
-func (validator *FuncSignaturesValidator) processParameters(
+func (validator *funcSignaturesValidator) processParameters(
 	sig *ast.FuncSignature,
 	allowReceiver bool,
 ) {
@@ -126,5 +142,5 @@ func (validator *FuncSignaturesValidator) processParameters(
 	}
 }
 
-func (validator *FuncSignaturesValidator) Exit(node ast.Node) {
+func (validator *funcSignaturesValidator) Exit(node ast.Node) {
 }
