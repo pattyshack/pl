@@ -243,6 +243,8 @@ func (def *AliasDef) Walk(visitor Visitor) {
 // BlockAddrDeclStmt
 //
 
+// Note: BlockAddrDeclStmt is purely syntactic sugar, and are replaced prior to
+// semantic analysis.
 type BlockAddrDeclStmt struct {
 	IsStmt
 	StartEndPos

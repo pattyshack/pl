@@ -15,7 +15,7 @@ func Semantic(
 ) types.PackageInterface {
 	passes := [][]process.Pass{
 		{
-			semantic_passes.TransformTypeDefBaseType(emitter),
+			semantic_passes.PreSemanticAnalysisTransformation(emitter),
 		},
 	}
 
