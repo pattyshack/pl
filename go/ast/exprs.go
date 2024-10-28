@@ -357,6 +357,9 @@ type ParameterizedExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
+	// NOTE: Pkg is an identifier or empty string for normal ast construction.
+	// But for the purpose of type cataloging / checking, Pkg is the fully
+	// qualified package path (even for local names)
 	Pkg  string // optional.  "" = local
 	Name string
 

@@ -5,9 +5,14 @@ import (
 	"github.com/pattyshack/pl/analyze/semantic_passes"
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/errors"
+	"github.com/pattyshack/pl/types"
 )
 
-func Semantic(pkg *ast.StatementList, emitter *errors.Emitter) {
+func Semantic(
+	catalog *types.Catalog,
+	pkg *ast.StatementList,
+	emitter *errors.Emitter,
+) types.PackageInterface {
 	passes := [][]process.Pass{
 		{
 			semantic_passes.TransformTypeDefBaseType(emitter),
@@ -15,4 +20,6 @@ func Semantic(pkg *ast.StatementList, emitter *errors.Emitter) {
 	}
 
 	process.Process(pkg, passes, nil)
+
+	return types.PackageInterface{}
 }

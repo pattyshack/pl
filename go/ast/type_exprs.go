@@ -105,7 +105,10 @@ type NamedTypeExpr struct {
 	StartEndPos
 	LeadingTrailingComments
 
-	Pkg  string // optional.  "" = local
+	// NOTE: Pkg is an identifier or empty string for normal ast construction.
+	// But for the purpose of type cataloging / checking, Pkg is the fully
+	// qualified package path (even for local names)
+	Pkg  string // optional.  "" = local.
 	Name string
 
 	Parameters []TypeExpression

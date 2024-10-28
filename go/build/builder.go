@@ -13,6 +13,7 @@ import (
 	"github.com/pattyshack/pl/build/cfg"
 	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser"
+	"github.com/pattyshack/pl/types"
 )
 
 type BuildMode int
@@ -193,11 +194,16 @@ func (pkg *Package) Load() error {
 
 func (pkg *Package) Build() {
 	defer pkg.builder.buildWaitGroup.Done()
-	defer close(pkg.PublicInterfaceAnalyzed)
+	defer func() {
+		select {
+		case <-pkg.PublicInterfaceAnalyzed:
+		default:
+			close(pkg.PublicInterfaceAnalyzed)
+		}
+	}()
 
 	loadErr := pkg.Load()
 	if loadErr != nil || pkg.HasErrors() {
-		// TODO populate stub empty public interface
 		return
 	}
 
@@ -210,7 +216,18 @@ func (pkg *Package) Build() {
 		}
 	}
 
-	analyze.Semantic(pkg.LibraryDefinitions, pkg.Emitter)
+	pkgInterface := analyze.Semantic(
+		pkg.builder.Catalog,
+		pkg.LibraryDefinitions,
+		pkg.Emitter)
+	pkg.builder.SetPackageInterface(pkg.PackageID, pkgInterface)
+	close(pkg.PublicInterfaceAnalyzed)
+
+	if pkg.HasErrors() {
+		return
+	}
+
+	// TODO gen lib / build test ...
 }
 
 func (pkg *Package) detectCycle(visited []ast.PackageID) error {
@@ -267,6 +284,8 @@ type Builder struct {
 	loadWaitGroup  sync.WaitGroup
 	buildWaitGroup sync.WaitGroup
 
+	*types.Catalog
+
 	mutex sync.Mutex
 
 	packages map[ast.PackageID]*Package // guarded by mutex.
@@ -286,6 +305,7 @@ func NewBuilder(
 		Config:    config,
 		Workspace: workspace,
 		Emitter:   &errors.Emitter{},
+		Catalog:   types.NewCatalog(),
 		packages:  map[ast.PackageID]*Package{},
 	}
 
