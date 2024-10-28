@@ -1,6 +1,8 @@
 package semantic_passes
 
 import (
+	"sync"
+
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/errors"
@@ -25,7 +27,17 @@ func PreSemanticAnalysisTransformation(emitter *errors.Emitter) process.Pass {
 func (transformer *PreSemanticAnalysisTransformer) Process(
 	list *ast.StatementList,
 ) {
-	list.Walk(transformer)
+	wg := sync.WaitGroup{}
+	wg.Add(len(list.Elements))
+
+	for _, s := range list.Elements {
+		go func(stmt ast.Statement) {
+			stmt.Walk(transformer)
+			wg.Done()
+		}(s)
+	}
+
+	wg.Wait()
 
 	typeDefs := map[string]*ast.PropertiesTypeExpr{}
 	for _, stmt := range list.Elements {
@@ -38,6 +50,10 @@ func (transformer *PreSemanticAnalysisTransformer) Process(
 	stmts := []ast.Statement{}
 	for _, stmt := range list.Elements {
 		switch def := stmt.(type) {
+		case *ast.BlockAddrDeclStmt:
+			for _, pattern := range def.Patterns {
+				stmts = append(stmts, pattern)
+			}
 		case *ast.FuncDefinition:
 			if !def.Signature.IsMethod() {
 				stmts = append(stmts, stmt)
@@ -73,8 +89,6 @@ func (transformer *PreSemanticAnalysisTransformer) Process(
 
 func (transformer *PreSemanticAnalysisTransformer) Enter(n ast.Node) {
 	switch node := n.(type) {
-	case *ast.StatementList:
-		node.Elements = transformer.replaceBlockAddrDeclStmt(node.Elements)
 	case *ast.StatementsExpr:
 		node.Statements = transformer.replaceBlockAddrDeclStmt(node.Statements)
 	case *ast.TypeDef:
