@@ -12,7 +12,7 @@
 // "_" is a keyword that has different meanings in different context:
 //  1. As an expression, it's an assignable, but inaccessible, variable
 //     placeholder that can be used anywhere without val/let declaration.
-//  2. As an type expression, it is an inferred mutable reference type.
+//  2. As an type expression, it is an inferred type.
 %token<Value> UNDERSCORE
 
 %token<Value> TRUE FALSE
@@ -53,7 +53,7 @@
 
 %token<ParseError> PARSE_ERROR
 
-%start source statement statements directives_declaration
+%start source statement statements
 
 // NOTE: the package name is taken from the directory name.  The compiler must
 // ensure the directory name is a valid IDENTIFIER.  The name cannot be

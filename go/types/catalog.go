@@ -9,10 +9,15 @@ import (
 
 // TODO: improve data structure
 type PropertiesType struct {
+	ast.PropertiesKind
 	GenericParameters []*ast.GenericParameter
 
+	// All named/unnamed fields/methods
 	Fields  []*ast.FieldDef
 	Methods []*ast.FuncSignature
+
+	// Unambiguously named fields / methods.  Does not include unnamed fields
+	Named map[string]ast.TypeProperty
 }
 
 type PackageInterface struct {

@@ -32,7 +32,8 @@ const (
 	// may either be a real expression, or AddrDeclPattern, or
 	// AssignToAddrPattern, or a implicit struct pattern (i.e., (nested) tuples
 	// of	real-expr/AddrDeclPattern/AssignToAddrPattern with skip patterns).
-	// Note that AssignToAddrPattern is redundant.
+	// Note that AssignToAddrPattern is redundant; all real expr and
+	// AssignToAddrPattern are existing variable addresses.
 	addressPattern = patternState(4)
 
 	// Pattern associated with AssignPattern or CasePatterns.  Pattern body
