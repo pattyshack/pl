@@ -28,6 +28,7 @@ func Source(
 			source_passes.ValidateExprStatements(emitter),
 			source_passes.ValidateImplicitStructs(emitter),
 			source_passes.ValidateExplicitlyTypedDefs(emitter),
+			source_passes.RejectUnexpectedAnonymousMethodTypes(emitter),
 			patternsAnalyzer.Validate(),
 			importsCollector,
 

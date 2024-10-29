@@ -16,3 +16,21 @@ var $(
     a Int
   )
 }
+
+type X struct (
+  field struct(
+    x Int
+    func method1(>_) {}
+    func method2(>_) {}
+  )
+)
+
+func function(
+  bad struct(
+    x Int
+    y Int
+    func method1(>_) {}
+    func method2(>_) {}
+  ),
+) {
+}
