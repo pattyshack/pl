@@ -789,9 +789,8 @@ type LoopExpr struct {
 
 	Label
 
-	Init      Statement  // optional. only applicable to traditional-for loop
-	Condition Expression // optional. not applicable to infinite loop
-	Post      Statement  // optional. only applicable to traditional-for loop
+	Condition Expression // nil for infinite loop. Required otherwise
+	Post      Expression // required for semi-traditional for loop. nil otherwise
 
 	Body *StatementsExpr
 }
@@ -801,9 +800,6 @@ var _ Validator = &LoopExpr{}
 
 func (expr *LoopExpr) Walk(visitor Visitor) {
 	visitor.Enter(expr)
-	if expr.Init != nil {
-		expr.Init.Walk(visitor)
-	}
 	if expr.Condition != nil {
 		expr.Condition.Walk(visitor)
 	}
@@ -816,12 +812,20 @@ func (expr *LoopExpr) Walk(visitor Visitor) {
 
 func (expr *LoopExpr) Validate(emitter *errors.Emitter) {
 	switch expr.Kind {
-	case InfiniteLoop,
-		DoWhileLoop,
-		WhileLoop,
-		IteratorLoop,
-		ForLoop:
-		// ok
+	case InfiniteLoop:
+		if expr.Condition != nil {
+			emitter.Emit(
+				expr.Condition.Loc(),
+				"invalid ast construction. condition expression set in %s loop",
+				expr.Kind)
+		}
+	case DoWhileLoop, WhileLoop, IteratorLoop, ForLoop:
+		if expr.Condition == nil {
+			emitter.Emit(
+				expr.Condition.Loc(),
+				"invalid ast construction. nil condition expression in %s loop",
+				expr.Kind)
+		}
 	default:
 		emitter.Emit(
 			expr.Loc(),
@@ -829,37 +833,24 @@ func (expr *LoopExpr) Validate(emitter *errors.Emitter) {
 			expr.Kind)
 	}
 
-	if expr.Kind != ForLoop {
-		if expr.Init != nil {
-			emitter.Emit(
-				expr.Init.Loc(),
-				"invalid ast construction. init statement set in %s loop",
-				expr.Kind)
-		}
-
+	switch expr.Kind {
+	case InfiniteLoop, DoWhileLoop, WhileLoop, IteratorLoop:
 		if expr.Post != nil {
 			emitter.Emit(
 				expr.Post.Loc(),
-				"invalid ast construction. post statement set in %s loop",
+				"invalid ast construction. post expression set in %s loop",
+				expr.Kind)
+		}
+	case ForLoop:
+		if expr.Post == nil {
+			emitter.Emit(
+				expr.Post.Loc(),
+				"invalid ast construction. nil post expression in %s loop",
 				expr.Kind)
 		}
 	}
 
 	if expr.Kind == InfiniteLoop {
-		if expr.Condition != nil {
-			emitter.Emit(
-				expr.Condition.Loc(),
-				"invalid ast construction. condition expression set in %s loop",
-				expr.Kind)
-		}
-		return
-	}
-
-	if expr.Condition == nil {
-		emitter.Emit(
-			expr.Loc(),
-			"invalid ast construction. nil condition expression in %s loop",
-			expr.Kind)
 		return
 	}
 

@@ -180,7 +180,7 @@ let
 not
 or
 package
-repeat   return
+return
 struct   switch
 trait    true         type
 unsafe

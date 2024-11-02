@@ -54,9 +54,6 @@ func (validator *implicitStructsValidator) Enter(n ast.Node) {
 			validator.allowImproperStruct(stmt)
 		}
 	case *ast.LoopExpr:
-		if node.Init != nil {
-			validator.allowImproperStruct(node.Init)
-		}
 		if node.Post != nil {
 			validator.allowImproperStruct(node.Post)
 		}

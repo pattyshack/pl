@@ -3,7 +3,7 @@ var k string
 
 (x, ..., >y+z, (nested, >(a(), {b}, c[i]), ...)) = blah
 
-for var (i, j) pair$[int, double]; i < j; var k string, var (l, (m, n)) blah do {}
+for i < j; i++, j-- do {}
 
 for i in iter do {}
 

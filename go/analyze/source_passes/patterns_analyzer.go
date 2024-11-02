@@ -298,12 +298,6 @@ func (analyzer *patternsAnalyzer) collectPatternEntryPoints(
 			analyzer.processStatement(stmt)
 		}
 	case *ast.LoopExpr:
-		if node.Init != nil {
-			analyzer.processStatement(node.Init)
-		}
-		if node.Post != nil {
-			analyzer.processStatement(node.Post)
-		}
 		if node.Condition != nil {
 			assign, ok := node.Condition.(*ast.AssignPattern)
 			if ok {

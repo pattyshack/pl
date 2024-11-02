@@ -47,16 +47,7 @@ func (validator *exprStatementsValidator) Enter(n ast.Node) {
 		if ok {
 			return
 		}
-		validator.checkexprStmts(node.Statements, false)
-	case *ast.LoopExpr:
-		stmts := []ast.Statement{}
-		if node.Init != nil {
-			stmts = append(stmts, node.Init)
-		}
-		if node.Post != nil {
-			stmts = append(stmts, node.Post)
-		}
-		validator.checkexprStmts(stmts, false)
+		validator.checkExprStmts(node.Statements, false)
 	}
 }
 
@@ -64,12 +55,12 @@ func (validator *exprStatementsValidator) checkSwitchSelectExpr(
 	conditionBranches []*ast.ConditionBranchStmt,
 ) {
 	for _, stmt := range conditionBranches {
-		validator.checkexprStmts(stmt.Branch.Statements, true)
+		validator.checkExprStmts(stmt.Branch.Statements, true)
 		validator.processed[stmt.Branch] = struct{}{}
 	}
 }
 
-func (validator *exprStatementsValidator) checkexprStmts(
+func (validator *exprStatementsValidator) checkExprStmts(
 	stmts []ast.Statement,
 	allowFallthrough bool,
 ) {

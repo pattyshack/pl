@@ -1,4 +1,0 @@
-// invalid init / post statement
-for import "asdf" ; i < 10; fallthrough do {
-  fmt.Println(i)
-}

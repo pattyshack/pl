@@ -17,7 +17,7 @@
 
 %token<Value> TRUE FALSE
 
-%token<Value> IF ELSE SWITCH CASE DEFAULT REPEAT FOR DO IN SELECT
+%token<Value> IF ELSE SWITCH CASE DEFAULT FOR DO IN SELECT
 %token<Value> RETURN BREAK CONTINUE FALLTHROUGH
 
 %token<Value> IMPORT
@@ -169,6 +169,10 @@ branch_stmt<Statement> ->
   // non-case statements into case's data structure).
   case_branch: CASE case_patterns COLON optional_statement |
   default_branch: DEFAULT COLON optional_statement
+
+optional_statement<Statement> ->
+  = statement |
+  nil:
 
 //
 // Unsafe statement
@@ -702,23 +706,17 @@ switch_expr_body<ControlFlowExpr> -> SWITCH expr statements
 select_expr_body<ControlFlowExpr> -> SELECT statements
 
 loop_expr_body<ControlFlowExpr> ->
-  infinite: repeat_loop_body |
-  do_while: repeat_loop_body FOR expr |
-  while: FOR expr for_loop_body |
-  iterator: FOR returnable_expr IN expr for_loop_body |
-  for: FOR optional_statement SEMICOLON optional_expr SEMICOLON optional_statement for_loop_body
+  infinite: loop_body |
+  do_while: loop_body FOR expr |
+  while: FOR expr loop_body |
+  iterator: FOR returnable_expr IN expr loop_body |
+  // NOTE: This deviate from traditional c-style for loop since we want to
+  // make it clear to the programmer that the variable is declared once
+  // and reused for all iteration (whereas the iterator loop declares a new
+  // variable on each iteration)
+  for: FOR expr SEMICOLON returnable_expr loop_body
 
-optional_statement<Statement> ->
-  = statement |
-  nil:
-
-optional_expr<Expression> ->
-  = expr |
-  nil:
-
-repeat_loop_body<StatementsExpr> -> REPEAT statements
-
-for_loop_body<StatementsExpr> -> DO statements
+loop_body<StatementsExpr> -> DO statements
 
 //
 // Returnable expressions (This is purely syntactic sugar)

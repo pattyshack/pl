@@ -1187,45 +1187,25 @@ func (reducer *Reducer) IteratorToLoopExprBody(
 
 func (reducer *Reducer) ForToLoopExprBody(
 	forKW *lr.TokenValue,
-	init ast.Statement,
-	semicolon1 *lr.TokenValue,
 	condition ast.Expression,
-	semicolon2 *lr.TokenValue,
-	post ast.Statement,
+	semicolon *lr.TokenValue,
+	post ast.Expression,
 	body *ast.StatementsExpr,
 ) (
 	ast.ControlFlowExpr,
 	error,
 ) {
-	var last ast.Node = body
-	if post != nil {
-		last = post
-	}
-
-	last.PrependToLeading(semicolon2.TakeTrailing())
-	if condition == nil {
-		last.PrependToLeading(semicolon2.TakeLeading())
-	} else {
-		condition.AppendToTrailing(semicolon2.TakeLeading())
-		last = condition
-	}
-
-	last.PrependToLeading(semicolon1.TakeTrailing())
-	if init == nil {
-		last.PrependToLeading(semicolon1.TakeLeading())
-	} else {
-		init.AppendToTrailing(semicolon1.TakeLeading())
-		last = init
-	}
-
 	leading := forKW.TakeLeading()
-	last.PrependToLeading(forKW.TakeTrailing())
+
+	condition.PrependToLeading(forKW.TakeTrailing())
+	condition.AppendToTrailing(semicolon.TakeLeading())
+	post.PrependToLeading(semicolon.TakeTrailing())
+
 	trailing := body.TakeTrailing()
 
 	loop := &ast.LoopExpr{
 		StartEndPos: ast.NewStartEndPos(body.Loc(), body.End()),
 		Kind:        ast.ForLoop,
-		Init:        init,
 		Condition:   condition,
 		Post:        post,
 		Body:        body,
@@ -1250,34 +1230,17 @@ func (reducer *Reducer) NilToOptionalExpr() (
 	return nil, nil
 }
 
-func (reducer *Reducer) toLoopBody(
-	kw *lr.TokenValue,
-	body *ast.StatementsExpr,
-) *ast.StatementsExpr {
-	body.StartPos = kw.Loc()
-	body.PrependToLeading(kw.TakeTrailing())
-	body.PrependToLeading(kw.TakeLeading())
-	return body
-}
-
-func (reducer *Reducer) ToRepeatLoopBody(
-	repeat *lr.TokenValue,
-	expr *ast.StatementsExpr,
-) (
-	*ast.StatementsExpr,
-	error,
-) {
-	return reducer.toLoopBody(repeat, expr), nil
-}
-
-func (reducer *Reducer) ToForLoopBody(
+func (reducer *Reducer) ToLoopBody(
 	do *lr.TokenValue,
-	expr *ast.StatementsExpr,
+	body *ast.StatementsExpr,
 ) (
 	*ast.StatementsExpr,
 	error,
 ) {
-	return reducer.toLoopBody(do, expr), nil
+	body.StartPos = do.Loc()
+	body.PrependToLeading(do.TakeTrailing())
+	body.PrependToLeading(do.TakeLeading())
+	return body, nil
 }
 
 //

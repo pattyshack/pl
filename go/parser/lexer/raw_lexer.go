@@ -44,7 +44,6 @@ var (
 		"select":      lr.SelectToken,
 		"case":        lr.CaseToken,
 		"default":     lr.DefaultToken,
-		"repeat":      lr.RepeatToken,
 		"for":         lr.ForToken,
 		"do":          lr.DoToken,
 		"in":          lr.InToken,
