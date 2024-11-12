@@ -533,24 +533,6 @@ func (lexer *RawLexer) peekDigits(
 	return numBytes, nil
 }
 
-func IsBinaryDigit(char rune) bool {
-	return char == '0' || char == '1'
-}
-
-func IsOctalDigit(char rune) bool {
-	return '0' <= char && char <= '7'
-}
-
-func IsDecimalDigit(char rune) bool {
-	return '0' <= char && char <= '9'
-}
-
-func IsHexadecimalDigit(char rune) bool {
-	return '0' <= char && char <= '9' ||
-		'A' <= char && char <= 'F' ||
-		'a' <= char && char <= 'f'
-}
-
 func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
 	peeked, err := lexer.Peek(2)
 	if len(peeked) > 0 && err == io.EOF {
@@ -561,7 +543,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
 	}
 
 	char := peeked[0]
-	if !IsDecimalDigit(rune(char)) {
+	if !lexutil.IsDecimalDigit(rune(char)) {
 		panic("should never happen")
 	}
 
@@ -571,7 +553,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
 	totalBytes := 1
 
 	if char != '0' {
-		numBytes, err := lexer.peekDigits(1, IsDecimalDigit, false)
+		numBytes, err := lexer.peekDigits(1, lexutil.IsDecimalDigit, false)
 		if err != nil {
 			return nil, err
 		}
@@ -580,7 +562,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
 	} else if len(peeked) > 1 {
 		switch peeked[1] {
 		case 'b', 'B':
-			numBytes, err := lexer.peekDigits(2, IsBinaryDigit, false)
+			numBytes, err := lexer.peekDigits(2, lexutil.IsBinaryDigit, false)
 			if err != nil {
 				return nil, err
 			}
@@ -589,7 +571,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
 			hasDigits = numBytes != 0
 			totalBytes = numBytes + 2
 		case 'o', 'O':
-			numBytes, err := lexer.peekDigits(2, IsOctalDigit, false)
+			numBytes, err := lexer.peekDigits(2, lexutil.IsOctalDigit, false)
 			if err != nil {
 				return nil, err
 			}
@@ -598,7 +580,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
 			hasDigits = numBytes != 0
 			totalBytes = numBytes + 2
 		case 'x', 'X':
-			numBytes, err := lexer.peekDigits(2, IsHexadecimalDigit, false)
+			numBytes, err := lexer.peekDigits(2, lexutil.IsHexadecimalDigit, false)
 			if err != nil {
 				return nil, err
 			}
@@ -607,7 +589,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
 			hasDigits = numBytes != 0
 			totalBytes = numBytes + 2
 		default:
-			numBytes, err := lexer.peekDigits(1, IsOctalDigit, false)
+			numBytes, err := lexer.peekDigits(1, lexutil.IsOctalDigit, false)
 			if err != nil {
 				return nil, err
 			}
@@ -673,12 +655,12 @@ func (lexer *RawLexer) maybePeekFloat(
 	int,
 	error,
 ) {
-	isDigit := IsDecimalDigit
+	isDigit := lexutil.IsDecimalDigit
 	intPrefixLen := 0 // no prefix
 	lowerExp := byte('e')
 	upperExp := byte('E')
 	if isHex {
-		isDigit = IsHexadecimalDigit
+		isDigit = lexutil.IsHexadecimalDigit
 		intPrefixLen = 2 // "0x" or "0X"
 		lowerExp = 'p'
 		upperExp = 'P'
@@ -839,201 +821,8 @@ func (lexer *RawLexer) lexDotDecimalFloatLiteralToken() (lr.Token, error) {
 	}, nil
 }
 
-type PeekStringResult struct {
-	FoundStartMarker bool
-	NumBytes         int
-	ContentLength    int
-	ErrorMsg         string
-}
-
-func PeekString(
-	reader lexutil.BufferedByteLocationReader,
-	initialPeekWindowSize int,
-	typeName string,
-	skipLeadingBytes int,
-	marker byte,
-	markerLength int,
-	allowMultiline bool,
-	allowEscaped bool,
-) (
-	PeekStringResult,
-	error,
-) {
-	peekSize := initialPeekWindowSize
-	hasMore := true
-
-	result := PeekStringResult{}
-
-	checkStartMarker := true
-	leadingBytes := skipLeadingBytes + markerLength
-	for hasMore {
-		peeked, err := reader.Peek(leadingBytes + peekSize)
-		if len(peeked) > 0 && err == io.EOF {
-			hasMore = false
-			err = nil
-		}
-		if err != nil {
-			return result, err
-		}
-
-		if checkStartMarker {
-			if len(peeked) < leadingBytes {
-				return result, nil
-			}
-
-			for _, b := range peeked[skipLeadingBytes:leadingBytes] {
-				if b != marker {
-					return result, nil
-				}
-			}
-
-			result.FoundStartMarker = true
-			result.NumBytes = leadingBytes
-			checkStartMarker = false
-		}
-
-		remaining := peeked[result.NumBytes:]
-
-		for len(remaining) > 0 {
-			// Ensure we can process the longest rune content: \U[0-9a-fA-F]{8}
-			if len(remaining) < 10 && hasMore {
-				// read more bytes
-				break
-			}
-
-			char := remaining[0]
-			if char == marker {
-				result.NumBytes++
-				remaining = remaining[1:]
-
-				count := 1
-				for ; count < markerLength && len(remaining) > 0; count++ {
-					if remaining[0] == marker {
-						result.NumBytes++
-						remaining = remaining[1:]
-					} else {
-						break
-					}
-				}
-
-				if count == markerLength {
-					return result, nil
-				} else {
-					result.ContentLength += count
-				}
-			} else if char == '\n' {
-				if allowMultiline {
-					result.NumBytes++
-					remaining = remaining[1:]
-				} else { // don't include the newline
-					result.ErrorMsg = typeName + " not terminated"
-					return result, nil
-				}
-			} else if allowEscaped && char == '\\' { // escape sequence
-				result.NumBytes++
-				remaining = remaining[1:]
-
-				if len(remaining) == 0 {
-					result.ErrorMsg = "invalid escaped character in " + typeName
-					return result, nil
-				}
-
-				char := remaining[0]
-				switch char {
-				case 'a', 'b', 'f', 'n', 'r', 't', 'v', '\\', '\'', '"', '`':
-					// valid escape
-					// Note: if we replace '\'', '"', and '`' with marker, then this
-					// would behave like golang's escape.
-					result.NumBytes++
-					result.ContentLength++
-					remaining = remaining[1:]
-				case '\n':
-					if allowMultiline { // valid escape (line continuation)
-						result.NumBytes++
-						result.ContentLength++
-						remaining = remaining[1:]
-					} else { // don't include the newline as part of this token.
-						result.ErrorMsg = "invalid escaped character in " + typeName
-						return result, nil
-					}
-				default:
-					result.NumBytes++
-					remaining = remaining[1:]
-
-					value := int(char - '0')
-					verifyOctal := false
-					isDigit := IsOctalDigit
-					length := 2
-					if IsOctalDigit(rune(char)) { // \[0-7]{3}
-						// need to check the remaining 2 octal bytes, and
-						verifyOctal = true
-					} else if char == 'x' { // \x[0-9a-fA-F]{2}
-						isDigit = IsHexadecimalDigit
-					} else if char == 'u' { // \u[0-9a-fA-F]{4}
-						isDigit = IsHexadecimalDigit
-						length = 4
-					} else if char == 'U' { // \U[0-9a-fA-F]{8}
-						isDigit = IsHexadecimalDigit
-						length = 8
-					} else { // invalid escape
-						result.ErrorMsg = "invalid escaped character in " + typeName
-						return result, nil
-					}
-
-					count := 0
-					for ; count < length && len(remaining) > 0; count++ {
-						if isDigit(rune(remaining[0])) {
-							if verifyOctal {
-								value <<= 3
-								value |= int(remaining[0] - '0')
-							}
-
-							result.NumBytes++
-							remaining = remaining[1:]
-						} else {
-							break
-						}
-					}
-
-					if count == length {
-						result.ContentLength++
-					} else {
-						result.ErrorMsg = "invalid escaped unicode value in " + typeName
-						return result, nil
-					}
-
-					if verifyOctal && value > 255 {
-						result.ErrorMsg = fmt.Sprintf(
-							"invalid escaped octal value (%d > 255)  in %s",
-							value,
-							typeName)
-						return result, nil
-					}
-				}
-			} else {
-				utf8Char, size := utf8.DecodeRune(remaining)
-
-				result.NumBytes += size
-				remaining = remaining[size:]
-
-				if utf8Char == utf8.RuneError {
-					result.ErrorMsg = "invalid unicode rune in " + typeName
-					return result, nil
-				} else {
-					result.ContentLength++
-				}
-			}
-		}
-
-		peekSize *= 2
-	}
-
-	result.ErrorMsg = typeName + " not terminated"
-	return result, nil
-}
-
 func (lexer *RawLexer) lexRuneLiteralToken() (lr.Token, error) {
-	result, err := PeekString(
+	result, err := lexutil.PeekString(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize,
 		"rune literal",
@@ -1096,7 +885,7 @@ func (lexer *RawLexer) lexStringLiteralToken(
 	lr.Token,
 	error,
 ) {
-	result, err := PeekString(
+	result, err := lexutil.PeekString(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize,
 		subType,
