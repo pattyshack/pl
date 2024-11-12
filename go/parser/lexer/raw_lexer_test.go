@@ -428,20 +428,20 @@ func (s *RawLexerSuite) TestBinaryIntegerLiteral(t *testing.T) {
 	expect.Equal(t, lr.BinaryInteger, literal.SubType)
 
 	tokens = s.lex(t, "+0b", lr.AddToken, lr.ParseErrorToken)
-	expectError(t, tokens[1], "binary integer literal has no digits")
+	expectError(t, tokens[1], "binary integer has no digits")
 
 	tokens = s.lex(t, "+0b-", lr.AddToken, lr.ParseErrorToken, lr.SubToken)
-	expectError(t, tokens[1], "binary integer literal has no digits")
+	expectError(t, tokens[1], "binary integer has no digits")
 
 	tokens = s.lex(
 		t, "+0B_-",
 		lr.AddToken, lr.ParseErrorToken, lr.UnderscoreToken, lr.SubToken)
-	expectError(t, tokens[1], "binary integer literal has no digits")
+	expectError(t, tokens[1], "binary integer has no digits")
 
 	tokens = s.lex(
 		t, "+0B2-",
 		lr.AddToken, lr.ParseErrorToken, lr.IntegerLiteralToken, lr.SubToken)
-	expectError(t, tokens[1], "binary integer literal has no digits")
+	expectError(t, tokens[1], "binary integer has no digits")
 
 	expectValue(t, "2", tokens[2])
 
@@ -478,20 +478,20 @@ func (s *RawLexerSuite) TestZeroOPrefixedOctalIntegerLiteral(t *testing.T) {
 	expect.Equal(t, lr.ZeroOPrefixedOctalInteger, literal.SubType)
 
 	tokens = s.lex(t, "+0o", lr.AddToken, lr.ParseErrorToken)
-	expectError(t, tokens[1], "0o-prefixed octal integer literal has no digits")
+	expectError(t, tokens[1], "0o-prefixed octal integer has no digits")
 
 	tokens = s.lex(t, "+0o-", lr.AddToken, lr.ParseErrorToken, lr.SubToken)
-	expectError(t, tokens[1], "0o-prefixed octal integer literal has no digits")
+	expectError(t, tokens[1], "0o-prefixed octal integer has no digits")
 
 	tokens = s.lex(
 		t, "+0O_-",
 		lr.AddToken, lr.ParseErrorToken, lr.UnderscoreToken, lr.SubToken)
-	expectError(t, tokens[1], "0o-prefixed octal integer literal has no digits")
+	expectError(t, tokens[1], "0o-prefixed octal integer has no digits")
 
 	tokens = s.lex(
 		t, "+0O8-",
 		lr.AddToken, lr.ParseErrorToken, lr.IntegerLiteralToken, lr.SubToken)
-	expectError(t, tokens[1], "0o-prefixed octal integer literal has no digits")
+	expectError(t, tokens[1], "0o-prefixed octal integer has no digits")
 
 	expectValue(t, "8", tokens[2])
 
@@ -615,21 +615,21 @@ func (s *RawLexerSuite) TestHexadecimalIntegerLiteral(t *testing.T) {
 	expect.Equal(t, lr.HexadecimalInteger, literal.SubType)
 
 	tokens = s.lex(t, "+0x", lr.AddToken, lr.ParseErrorToken)
-	expectError(t, tokens[1], "hexadecimal integer literal has no digits")
+	expectError(t, tokens[1], "hexadecimal integer has no digits")
 
 	tokens = s.lex(t, "+0x-", lr.AddToken, lr.ParseErrorToken, lr.SubToken)
-	expectError(t, tokens[1], "hexadecimal integer literal has no digits")
+	expectError(t, tokens[1], "hexadecimal integer has no digits")
 
 	tokens = s.lex(
 		t, "+0X_-",
 		lr.AddToken, lr.ParseErrorToken, lr.UnderscoreToken, lr.SubToken)
-	expectError(t, tokens[1], "hexadecimal integer literal has no digits")
+	expectError(t, tokens[1], "hexadecimal integer has no digits")
 	expectValue(t, "_", tokens[2])
 
 	tokens = s.lex(
 		t, "+0Xg-",
 		lr.AddToken, lr.ParseErrorToken, lr.IdentifierToken, lr.SubToken)
-	expectError(t, tokens[1], "hexadecimal integer literal has no digits")
+	expectError(t, tokens[1], "hexadecimal integer has no digits")
 	expectValue(t, "g", tokens[2])
 
 	tokens = s.lex(t, "+0x0123456789", lr.AddToken, lr.IntegerLiteralToken)
@@ -659,7 +659,7 @@ func (s *RawLexerSuite) TestRuneLiteral(t *testing.T) {
 	}
 
 	expectNotTerminated := func(token lr.Token) {
-		expectError(t, token, "rune literal not terminated")
+		expectError(t, token, "rune not terminated")
 	}
 
 	// Various errors
@@ -862,23 +862,23 @@ func (s *RawLexerSuite) TestRuneLiteral(t *testing.T) {
 
 func (s *RawLexerSuite) TestSingleLineString(t *testing.T) {
 	tokens := s.lex(t, `"abc`, lr.ParseErrorToken)
-	expectError(t, tokens[0], "string literal not terminated")
+	expectError(t, tokens[0], "string not terminated")
 
 	tokens = s.lex(
 		t, `"foo\400bar"`,
 		lr.ParseErrorToken, lr.IdentifierToken, lr.ParseErrorToken)
 	expectError(t, tokens[0], "invalid escaped")
 	expectValue(t, "bar", tokens[1])
-	expectError(t, tokens[2], "string literal not terminated")
+	expectError(t, tokens[2], "string not terminated")
 
 	tokens = s.lex(
 		t, "`abc\n`",
 		lr.ParseErrorToken, lr.NewlinesToken, lr.ParseErrorToken)
-	expectError(t, tokens[0], "string literal not terminated")
-	expectError(t, tokens[2], "string literal not terminated")
+	expectError(t, tokens[0], "string not terminated")
+	expectError(t, tokens[2], "string not terminated")
 
 	tokens = s.lex(t, "`mismatch\"", lr.ParseErrorToken)
-	expectError(t, tokens[0], "string literal not terminated")
+	expectError(t, tokens[0], "string not terminated")
 
 	content := "a世\\`\\\"\\n\\000\\xaf\\u09AF\\U01234567"
 
@@ -899,13 +899,13 @@ func (s *RawLexerSuite) TestSingleLineString(t *testing.T) {
 
 func (s *RawLexerSuite) TestRawSingleLineString(t *testing.T) {
 	tokens := s.lex(t, `r"abc`, lr.ParseErrorToken)
-	expectError(t, tokens[0], "string literal not terminated")
+	expectError(t, tokens[0], "string not terminated")
 
 	tokens = s.lex(
 		t, "r`abc\n`",
 		lr.ParseErrorToken, lr.NewlinesToken, lr.ParseErrorToken)
-	expectError(t, tokens[0], "string literal not terminated")
-	expectError(t, tokens[2], "string literal not terminated")
+	expectError(t, tokens[0], "string not terminated")
+	expectError(t, tokens[2], "string not terminated")
 
 	tokens = s.lex(t, `r"abc"`, lr.StringLiteralToken)
 	str := expectValue(t, `r"abc"`, tokens[0])
@@ -921,17 +921,17 @@ func (s *RawLexerSuite) TestRawSingleLineString(t *testing.T) {
 
 func (s *RawLexerSuite) TestMultiLineString(t *testing.T) {
 	tokens := s.lex(t, `"""abc" ""`, lr.ParseErrorToken)
-	expectError(t, tokens[0], "string literal not terminated")
+	expectError(t, tokens[0], "string not terminated")
 
 	tokens = s.lex(
 		t, `"""foo\400bar"""`,
 		lr.ParseErrorToken, lr.IdentifierToken, lr.ParseErrorToken)
 	expectError(t, tokens[0], "invalid escaped")
 	expectValue(t, "bar", tokens[1])
-	expectError(t, tokens[2], "string literal not terminated")
+	expectError(t, tokens[2], "string not terminated")
 
 	tokens = s.lex(t, "```mismatch\"\"\"", lr.ParseErrorToken)
-	expectError(t, tokens[0], "string literal not terminated")
+	expectError(t, tokens[0], "string not terminated")
 
 	tokens = s.lex(
 		t, "```\"\"\" \"\" \" ` ``\\\n abc\ndef```",
@@ -947,10 +947,10 @@ func (s *RawLexerSuite) TestMultiLineString(t *testing.T) {
 
 func (s *RawLexerSuite) TestRawMultiLineString(t *testing.T) {
 	tokens := s.lex(t, `r"""abc" ""`, lr.ParseErrorToken)
-	expectError(t, tokens[0], "string literal not terminated")
+	expectError(t, tokens[0], "string not terminated")
 
 	tokens = s.lex(t, "r```mismatch\"\"\"", lr.ParseErrorToken)
-	expectError(t, tokens[0], "string literal not terminated")
+	expectError(t, tokens[0], "string not terminated")
 
 	tokens = s.lex(t, `r"""foo\400bar"""`, lr.StringLiteralToken)
 	str := expectValue(t, `r"""foo\400bar"""`, tokens[0])

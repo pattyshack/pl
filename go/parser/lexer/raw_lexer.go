@@ -474,7 +474,9 @@ func (lexer *RawLexer) lexBlockCommentToken() (lr.Token, error) {
 	}, nil
 }
 
-func (lexer *RawLexer) peekDigits(
+func peekDigits(
+	reader lexutil.BufferedByteLocationReader,
+	initialPeekWindowSize int,
 	offset int,
 	isDigit func(rune) bool,
 	requireLeadingDigit bool,
@@ -483,11 +485,11 @@ func (lexer *RawLexer) peekDigits(
 	error,
 ) {
 	hasMore := true
-	peekSize := lexer.initialPeekWindowSize
+	peekSize := initialPeekWindowSize
 	numBytes := 0
 
 	for hasMore {
-		peeked, err := lexer.Peek(offset + peekSize)
+		peeked, err := reader.Peek(offset + peekSize)
 		if len(peeked) >= offset && err == io.EOF {
 			hasMore = false
 			err = nil
@@ -533,91 +535,200 @@ func (lexer *RawLexer) peekDigits(
 	return numBytes, nil
 }
 
-func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
-	peeked, err := lexer.Peek(2)
+type PeekIntegerOrFloatResult struct {
+	NumBytes   int
+	IsNegative bool
+	IsFloat    bool
+	SubType    lr.LiteralSubType
+	HasDigits  bool
+}
+
+func PeekIntegerOrFloat(
+	reader lexutil.BufferedByteLocationReader,
+	initialPeekWindowSize int,
+) (
+	PeekIntegerOrFloatResult,
+	error,
+) {
+	peeked, err := reader.Peek(3)
 	if len(peeked) > 0 && err == io.EOF {
 		err = nil
 	}
 	if err != nil {
-		return nil, err
+		return PeekIntegerOrFloatResult{}, err
+	}
+
+	isNegative := false
+	totalBytes := 0
+
+	if peeked[0] == '-' {
+		isNegative = true
+		totalBytes = 1
+		peeked = peeked[1:]
+	}
+
+	if len(peeked) == 0 {
+		return PeekIntegerOrFloatResult{}, err
 	}
 
 	char := peeked[0]
+	if char == '.' {
+		totalFloatBytes, err := peekFloat(
+			reader,
+			initialPeekWindowSize,
+			totalBytes,
+			false)
+		if err != nil {
+			return PeekIntegerOrFloatResult{}, err
+		}
+
+		if totalFloatBytes == 0 {
+			return PeekIntegerOrFloatResult{}, nil
+		} else {
+			return PeekIntegerOrFloatResult{
+				NumBytes:   totalFloatBytes,
+				IsNegative: isNegative,
+				IsFloat:    true,
+				SubType:    lr.DecimalFloat,
+				HasDigits:  true,
+			}, nil
+		}
+	}
+
 	if !lexutil.IsDecimalDigit(rune(char)) {
+		return PeekIntegerOrFloatResult{}, nil
+	}
+
+	subType := lr.DecimalInteger
+	hasDigits := true
+	totalBytes++
+
+	if char != '0' {
+		numDigits, err := peekDigits(
+			reader,
+			initialPeekWindowSize,
+			totalBytes,
+			lexutil.IsDecimalDigit,
+			false)
+		if err != nil {
+			return PeekIntegerOrFloatResult{}, err
+		}
+
+		totalBytes += numDigits
+	} else if len(peeked) > 1 {
+		switch peeked[1] {
+		case 'b', 'B':
+			totalBytes++
+			numDigits, err := peekDigits(
+				reader,
+				initialPeekWindowSize,
+				totalBytes,
+				lexutil.IsBinaryDigit,
+				false)
+			if err != nil {
+				return PeekIntegerOrFloatResult{}, err
+			}
+
+			subType = lr.BinaryInteger
+			hasDigits = numDigits != 0
+			totalBytes += numDigits
+		case 'o', 'O':
+			totalBytes++
+			numDigits, err := peekDigits(
+				reader,
+				initialPeekWindowSize,
+				totalBytes,
+				lexutil.IsOctalDigit,
+				false)
+			if err != nil {
+				return PeekIntegerOrFloatResult{}, err
+			}
+
+			subType = lr.ZeroOPrefixedOctalInteger
+			hasDigits = numDigits != 0
+			totalBytes += numDigits
+		case 'x', 'X':
+			totalBytes++
+			numDigits, err := peekDigits(
+				reader,
+				initialPeekWindowSize,
+				totalBytes,
+				lexutil.IsHexadecimalDigit,
+				false)
+			if err != nil {
+				return PeekIntegerOrFloatResult{}, err
+			}
+
+			subType = lr.HexadecimalInteger
+			hasDigits = numDigits != 0
+			totalBytes += numDigits
+		default:
+			numDigits, err := peekDigits(
+				reader,
+				initialPeekWindowSize,
+				totalBytes,
+				lexutil.IsOctalDigit,
+				false)
+			if err != nil {
+				return PeekIntegerOrFloatResult{}, err
+			}
+
+			if numDigits > 0 { // otherwise is a decimal "0"
+				subType = lr.ZeroPrefixedOctalInteger
+				totalBytes += numDigits
+			}
+		}
+	}
+
+	result := PeekIntegerOrFloatResult{
+		NumBytes:   totalBytes,
+		IsNegative: isNegative,
+		SubType:    subType,
+		HasDigits:  hasDigits,
+	}
+
+	if subType == lr.DecimalInteger || subType == lr.HexadecimalInteger {
+		isHex := subType == lr.HexadecimalInteger
+		totalFloatBytes, err := peekFloat(
+			reader,
+			initialPeekWindowSize,
+			totalBytes,
+			isHex)
+		if err != nil {
+			return result, nil // we still have a valid integer
+		}
+
+		if totalFloatBytes > 0 {
+			result.NumBytes = totalFloatBytes
+			result.IsFloat = true
+			result.HasDigits = true
+			result.SubType = lr.DecimalFloat
+			if isHex {
+				result.SubType = lr.HexadecimalFloat
+			}
+		}
+	}
+
+	return result, nil
+}
+
+func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
+	result, err := PeekIntegerOrFloat(
+		lexer.BufferedByteLocationReader,
+		lexer.initialPeekWindowSize)
+	if err != nil {
+		return nil, err
+	}
+
+	if result.NumBytes == 0 {
 		panic("should never happen")
 	}
 
 	loc := lexer.Location
-	subType := lr.DecimalInteger
-	hasDigits := true
-	totalBytes := 1
-
-	if char != '0' {
-		numBytes, err := lexer.peekDigits(1, lexutil.IsDecimalDigit, false)
-		if err != nil {
-			return nil, err
-		}
-
-		totalBytes = numBytes + 1
-	} else if len(peeked) > 1 {
-		switch peeked[1] {
-		case 'b', 'B':
-			numBytes, err := lexer.peekDigits(2, lexutil.IsBinaryDigit, false)
-			if err != nil {
-				return nil, err
-			}
-
-			subType = lr.BinaryInteger
-			hasDigits = numBytes != 0
-			totalBytes = numBytes + 2
-		case 'o', 'O':
-			numBytes, err := lexer.peekDigits(2, lexutil.IsOctalDigit, false)
-			if err != nil {
-				return nil, err
-			}
-
-			subType = lr.ZeroOPrefixedOctalInteger
-			hasDigits = numBytes != 0
-			totalBytes = numBytes + 2
-		case 'x', 'X':
-			numBytes, err := lexer.peekDigits(2, lexutil.IsHexadecimalDigit, false)
-			if err != nil {
-				return nil, err
-			}
-
-			subType = lr.HexadecimalInteger
-			hasDigits = numBytes != 0
-			totalBytes = numBytes + 2
-		default:
-			numBytes, err := lexer.peekDigits(1, lexutil.IsOctalDigit, false)
-			if err != nil {
-				return nil, err
-			}
-
-			if numBytes > 0 { // otherwise is a decimal "0"
-				subType = lr.ZeroPrefixedOctalInteger
-				hasDigits = true
-				totalBytes = numBytes + 1
-			}
-		}
-	}
-
-	if subType == lr.DecimalInteger || subType == lr.HexadecimalInteger {
-		token, err := lexer.maybeLexIntPrefixedFloat(
-			totalBytes,
-			subType == lr.HexadecimalInteger)
-		if err != nil {
-			return nil, err
-		}
-
-		if token != nil {
-			return token, nil
-		}
-	}
 
 	value := ""
-	if hasDigits {
-		peeked, err = lexer.Peek(totalBytes)
+	if result.HasDigits {
+		peeked, err := lexer.Peek(result.NumBytes)
 		if err != nil {
 			panic("should never happen")
 		}
@@ -629,26 +740,33 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
 		}
 	}
 
-	_, err = lexer.Discard(totalBytes)
+	_, err = lexer.Discard(result.NumBytes)
 	if err != nil {
 		panic("should never happen")
 	}
 
-	if !hasDigits {
+	if !result.HasDigits {
 		return lr.NewParseErrorSymbol(
 			loc, lexer.Location,
-			"%s has no digits", subType), nil
+			"%s has no digits", result.SubType), nil
+	}
+
+	symbolId := lr.IntegerLiteralToken
+	if result.IsFloat {
+		symbolId = lr.FloatLiteralToken
 	}
 
 	return &lr.TokenValue{
-		SymbolId:    lr.IntegerLiteralToken,
+		SymbolId:    symbolId,
 		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
 		Value:       value,
-		SubType:     subType,
+		SubType:     result.SubType,
 	}, nil
 }
 
-func (lexer *RawLexer) maybePeekFloat(
+func peekFloat(
+	reader lexutil.BufferedByteLocationReader,
+	initialPeekWindowSize int,
 	leadingIntBytes int,
 	isHex bool, // false = decimal
 ) (
@@ -669,7 +787,7 @@ func (lexer *RawLexer) maybePeekFloat(
 	// peek for (hexa)decimal points of the form DOT digits
 
 	floatBytes := leadingIntBytes
-	peeked, err := lexer.Peek(floatBytes + 1)
+	peeked, err := reader.Peek(floatBytes + 1)
 	if len(peeked) > 0 && err == io.EOF {
 		err = nil
 	}
@@ -685,7 +803,12 @@ func (lexer *RawLexer) maybePeekFloat(
 	if peeked[floatBytes] == '.' {
 		floatBytes++
 
-		digitBytes, err := lexer.peekDigits(floatBytes, isDigit, true)
+		digitBytes, err := peekDigits(
+			reader,
+			initialPeekWindowSize,
+			floatBytes,
+			isDigit,
+			true)
 		if err != nil {
 			return 0, err
 		}
@@ -700,7 +823,7 @@ func (lexer *RawLexer) maybePeekFloat(
 
 	// peek for exponent of the form [eEpP][+-]?digits
 
-	peeked, err = lexer.Peek(floatBytes + 2)
+	peeked, err = reader.Peek(floatBytes + 2)
 	if len(peeked) > 0 && err == io.EOF {
 		err = nil
 	}
@@ -727,7 +850,12 @@ func (lexer *RawLexer) maybePeekFloat(
 			}
 		}
 
-		exponentDigits, err := lexer.peekDigits(floatBytes+prefix, isDigit, true)
+		exponentDigits, err := peekDigits(
+			reader,
+			initialPeekWindowSize,
+			floatBytes+prefix,
+			isDigit,
+			true)
 		if err != nil {
 			return 0, err
 		}
@@ -748,84 +876,11 @@ func (lexer *RawLexer) maybePeekFloat(
 	return 0, nil
 }
 
-func (lexer *RawLexer) maybeLexIntPrefixedFloat(
-	leadingIntBytes int,
-	isHex bool, // false is decimal
-) (
-	lr.Token,
-	error,
-) {
-	numBytes, err := lexer.maybePeekFloat(leadingIntBytes, isHex)
-	if err != nil {
-		return nil, err
-	}
-
-	if numBytes == 0 {
-		return nil, nil
-	}
-
-	peeked, err := lexer.Peek(numBytes)
-	if err != nil {
-		panic("should never happen")
-	}
-
-	loc := lexer.Location
-	value := string(peeked)
-
-	_, err = lexer.Discard(numBytes)
-	if err != nil {
-		panic("should never happen")
-	}
-
-	subType := lr.DecimalFloat
-	if isHex {
-		subType = lr.HexadecimalFloat
-	}
-
-	return &lr.TokenValue{
-		SymbolId:    lr.FloatLiteralToken,
-		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
-		Value:       value,
-		SubType:     subType,
-	}, nil
-}
-
-func (lexer *RawLexer) lexDotDecimalFloatLiteralToken() (lr.Token, error) {
-	numBytes, err := lexer.maybePeekFloat(0, false)
-	if err != nil {
-		return nil, err
-	}
-
-	if numBytes == 0 {
-		panic("should never happen")
-	}
-
-	peeked, err := lexer.Peek(numBytes)
-	if err != nil {
-		panic("should never happen")
-	}
-
-	loc := lexer.Location
-	value := string(peeked)
-
-	_, err = lexer.Discard(numBytes)
-	if err != nil {
-		panic("should never happen")
-	}
-
-	return &lr.TokenValue{
-		SymbolId:    lr.FloatLiteralToken,
-		StartEndPos: ast.NewStartEndPos(loc, lexer.Location),
-		Value:       value,
-		SubType:     lr.DecimalFloat,
-	}, nil
-}
-
 func (lexer *RawLexer) lexRuneLiteralToken() (lr.Token, error) {
 	result, err := lexutil.PeekString(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize,
-		"rune literal",
+		"rune",
 		0, // skip leading bytes
 		'\'',
 		1,     // marker length
@@ -875,7 +930,7 @@ func (lexer *RawLexer) lexRuneLiteralToken() (lr.Token, error) {
 }
 
 func (lexer *RawLexer) lexStringLiteralToken(
-	subType string,
+	subType lr.LiteralSubType,
 	skipLeadingBytes int,
 	marker byte,
 	markerLength int,
@@ -888,7 +943,7 @@ func (lexer *RawLexer) lexStringLiteralToken(
 	result, err := lexutil.PeekString(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize,
-		subType,
+		string(subType),
 		skipLeadingBytes,
 		marker,
 		markerLength,
@@ -1020,7 +1075,7 @@ func (lexer *RawLexer) Next() (lr.Token, error) {
 	case lr.IntegerLiteralToken:
 		return lexer.lexIntegerOrFloatLiteralToken()
 	case lr.FloatLiteralToken:
-		return lexer.lexDotDecimalFloatLiteralToken()
+		return lexer.lexIntegerOrFloatLiteralToken()
 	case lr.RuneLiteralToken:
 		return lexer.lexRuneLiteralToken()
 	case sibStringToken:

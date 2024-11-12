@@ -8,20 +8,24 @@ import (
 	"github.com/pattyshack/pl/ast"
 )
 
+type LiteralSubType string
+
+func (t LiteralSubType) String() string { return string(t) }
+
 const (
-	DecimalInteger            = "decimal integer literal"
-	HexadecimalInteger        = "hexadecimal integer literal"
-	ZeroOPrefixedOctalInteger = "0o-prefixed octal integer literal"
-	ZeroPrefixedOctalInteger  = "0-prefixed octal integer literal"
-	BinaryInteger             = "binary integer literal"
+	DecimalInteger            = LiteralSubType("decimal integer")
+	HexadecimalInteger        = LiteralSubType("hexadecimal integer")
+	ZeroOPrefixedOctalInteger = LiteralSubType("0o-prefixed octal integer")
+	ZeroPrefixedOctalInteger  = LiteralSubType("0-prefixed octal integer")
+	BinaryInteger             = LiteralSubType("binary integer")
 
-	SingleLineString    = "single line string literal"
-	MultiLineString     = "mutli line string literal"
-	RawSingleLineString = "raw single line string literal"
-	RawMultiLineString  = "raw mutli line string literal"
+	DecimalFloat     = LiteralSubType("decimal float")
+	HexadecimalFloat = LiteralSubType("hexadecimal float")
 
-	DecimalFloat     = "decimal float literal"
-	HexadecimalFloat = "hexadecimal float literal"
+	SingleLineString    = LiteralSubType("single line string")
+	MultiLineString     = LiteralSubType("mutli line string")
+	RawSingleLineString = LiteralSubType("raw single line string")
+	RawMultiLineString  = LiteralSubType("raw mutli line string")
 
 	CommentGroupTokenId = SymbolId(-4)
 )
@@ -60,7 +64,7 @@ type TokenValue struct {
 	// The value string is optional if the value is fully determined by SymbolId.
 	Value string
 	// Used for classifying literal subtypes.
-	SubType string
+	SubType LiteralSubType
 }
 
 func (s TokenValue) Id() SymbolId {
