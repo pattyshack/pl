@@ -485,118 +485,56 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
 }
 
 func (lexer *RawLexer) lexRuneLiteralToken() (lr.Token, error) {
-	result, err := lexutil.PeekString(
+	token, errMsg, err := lexutil.MaybeTokenizeRuneLiteral(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize,
-		"rune",
-		0, // skip leading bytes
-		'\'',
-		1,     // marker length
-		false, // allow multiline
-		true)  // allow escaped
+		lexer.InternPool,
+		lr.RuneLiteralToken)
 	if err != nil {
 		return nil, err
 	}
 
-	loc := lexer.Location
-
-	value := ""
-	if result.ErrorMsg == "" {
-		if result.ContentLength > 1 {
-			result.ErrorMsg = "more than one character in rune literal"
-		} else if result.ContentLength < 1 {
-			result.ErrorMsg = "empty rune literal or unescaped '"
-		} else {
-			peeked, err := lexer.Peek(result.NumBytes)
-			if err != nil {
-				panic("should never happen")
-			}
-
-			if len(peeked) == 3 ||
-				(len(peeked) == 4 && peeked[1] == '/') { // intern ascii
-				value = lexer.InternBytes(peeked)
-			} else {
-				value = string(peeked)
-			}
-		}
-	}
-
-	_, err = lexer.Discard(result.NumBytes)
-	if err != nil {
+	if token == nil {
 		panic("should never happen")
 	}
 
-	pos := lexutil.NewStartEndPos(loc, lexer.Location)
-	if result.ErrorMsg != "" {
-		return lr.NewParseErrorSymbol(pos, result.ErrorMsg), nil
+	if errMsg != "" {
+		return lr.NewParseErrorSymbol(token.StartEndPos, errMsg), nil
 	}
 
 	return &lr.TokenValue{
-		TokenValue: lexutil.TokenValue[lr.SymbolId]{
-			SymbolId:    lr.RuneLiteralToken,
-			StartEndPos: pos,
-			Value:       value,
-		},
+		TokenValue: *token,
 	}, nil
 }
 
 func (lexer *RawLexer) lexStringLiteralToken(
 	subType lexutil.LiteralSubType,
-	skipLeadingBytes int,
-	marker byte,
-	markerLength int,
-	allowMultiline bool,
-	allowEscaped bool,
+	useBacktickMarker bool,
 ) (
 	lr.Token,
 	error,
 ) {
-	result, err := lexutil.PeekString(
+	token, errMsg, err := lexutil.MaybeTokenizeStringLiteral(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize,
-		string(subType),
-		skipLeadingBytes,
-		marker,
-		markerLength,
-		allowMultiline,
-		allowEscaped)
+		lexer.InternPool,
+		lr.StringLiteralToken,
+		subType,
+		useBacktickMarker)
 	if err != nil {
 		return nil, err
 	}
 
-	loc := lexer.Location
-
-	value := ""
-	if result.ErrorMsg == "" {
-		peeked, err := lexer.Peek(result.NumBytes)
-		if err != nil {
-			panic("should never happen")
-		}
-
-		if len(peeked) == skipLeadingBytes+2*markerLength { // intern empty string
-			value = lexer.InternBytes(peeked)
-		} else {
-			value = string(peeked)
-		}
-	}
-
-	_, err = lexer.Discard(result.NumBytes)
-	if err != nil {
+	if token == nil {
 		panic("should never happen")
 	}
 
-	pos := lexutil.NewStartEndPos(loc, lexer.Location)
-	if result.ErrorMsg != "" {
-		return lr.NewParseErrorSymbol(pos, result.ErrorMsg), nil
+	if errMsg != "" {
+		return lr.NewParseErrorSymbol(token.StartEndPos, errMsg), nil
 	}
 
 	return &lr.TokenValue{
-		TokenValue: lexutil.TokenValue[lr.SymbolId]{
-			SymbolId:    lr.StringLiteralToken,
-			StartEndPos: pos,
-			Value:       value,
-			SubType:     subType,
-		},
+		TokenValue: *token,
 	}, nil
 }
 
@@ -684,67 +622,35 @@ func (lexer *RawLexer) Next() (lr.Token, error) {
 	case sibStringToken:
 		return lexer.lexStringLiteralToken(
 			lexutil.SingleLineString,
-			0, // skip leading bytes
-			'`',
-			1,     // marker length
-			false, // allow multiline
-			true)  // allow escaped
+			true)
 	case sidStringToken:
 		return lexer.lexStringLiteralToken(
 			lexutil.SingleLineString,
-			0, // skip leading bytes
-			'"',
-			1,     // marker length
-			false, // allow multiline
-			true)  // allow escaped
+			false)
 	case srbStringToken:
 		return lexer.lexStringLiteralToken(
 			lexutil.RawSingleLineString,
-			1, // skip leading bytes
-			'`',
-			1,     // marker length
-			false, // allow multiline
-			false) // allow escaped
+			true)
 	case srdStringToken:
 		return lexer.lexStringLiteralToken(
 			lexutil.RawSingleLineString,
-			1, // skip leading bytes
-			'"',
-			1,     // marker length
-			false, // allow multiline
-			false) // allow escaped
+			false)
 	case mibStringToken:
 		return lexer.lexStringLiteralToken(
 			lexutil.MultiLineString,
-			0, // skip leading bytes
-			'`',
-			3,    // marker length
-			true, // allow multiline
-			true) // allow escaped
+			true)
 	case midStringToken:
 		return lexer.lexStringLiteralToken(
 			lexutil.MultiLineString,
-			0, // skip leading bytes
-			'"',
-			3,    // marker length
-			true, // allow multiline
-			true) // allow escaped
+			false)
 	case mrbStringToken:
 		return lexer.lexStringLiteralToken(
 			lexutil.RawMultiLineString,
-			1, // skip leading bytes
-			'`',
-			3,     // marker length
-			true,  // allow multiline
-			false) // allow escaped
+			true)
 	case mrdStringToken:
 		return lexer.lexStringLiteralToken(
 			lexutil.RawMultiLineString,
-			1, // skip leading bytes
-			'"',
-			3,     // marker length
-			true,  // allow multiline
-			false) // allow escaped
+			false)
 	case lr.IdentifierToken:
 		return lexer.lexIdentifierOrKeywords()
 	}
