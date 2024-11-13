@@ -15,7 +15,7 @@ type Visitor interface {
 }
 
 type Locatable interface {
-	StartEnd() StartEndPos
+	StartEnd() lexutil.StartEndPos
 	Loc() lexutil.Location
 	End() lexutil.Location
 }
@@ -114,13 +114,13 @@ func (IsDirectiveExpr) IsDirectiveExpression() {}
 // A comment group is a single block comment, or a group of line comments
 // separated by single newlines (ignoring spaces).
 type CommentGroup struct {
-	StartEndPos
+	lexutil.StartEndPos
 	Comments []string
 }
 
 func NewCommentGroup(value TokenValue) *CommentGroup {
 	return &CommentGroup{
-		StartEndPos: NewStartEndPos(value.Loc(), value.End()),
+		StartEndPos: lexutil.NewStartEndPos(value.Loc(), value.End()),
 		Comments:    []string{value.Val()},
 	}
 }
@@ -207,30 +207,6 @@ func (s *LeadingTrailingComments) TakeTrailing() CommentGroups {
 	tmp := s.TrailingComment
 	s.TrailingComment = CommentGroups{}
 	return tmp
-}
-
-type StartEndPos struct {
-	StartPos lexutil.Location
-	EndPos   lexutil.Location
-}
-
-func NewStartEndPos(start lexutil.Location, end lexutil.Location) StartEndPos {
-	return StartEndPos{
-		StartPos: start,
-		EndPos:   end,
-	}
-}
-
-func (sep StartEndPos) StartEnd() StartEndPos {
-	return sep
-}
-
-func (sep StartEndPos) Loc() lexutil.Location {
-	return sep.StartPos
-}
-
-func (sep StartEndPos) End() lexutil.Location {
-	return sep.EndPos
 }
 
 // Control flow label

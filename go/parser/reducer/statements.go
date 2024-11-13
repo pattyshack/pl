@@ -3,6 +3,8 @@ package reducer
 import (
 	"strings"
 
+	"github.com/pattyshack/gt/lexutil"
+
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
@@ -134,7 +136,7 @@ func (reducer *Reducer) aliasImport(
 	pkg *lr.TokenValue,
 ) *ast.ImportClause {
 	clause := &ast.ImportClause{
-		StartEndPos: ast.NewStartEndPos(alias.Loc(), pkg.End()),
+		StartEndPos: lexutil.NewStartEndPos(alias.Loc(), pkg.End()),
 		Alias:       alias.Value,
 		PackageID:   reducer.stringLiteralToPackageID(pkg),
 	}
@@ -198,7 +200,7 @@ func (reducer *Reducer) SingleToImportStmt(
 	list.Add(importClause)
 
 	stmt := &ast.ImportStmt{
-		StartEndPos:   ast.NewStartEndPos(importKW.Loc(), importClause.End()),
+		StartEndPos:   lexutil.NewStartEndPos(importKW.Loc(), importClause.End()),
 		ImportClauses: []*ast.ImportClause{importClause},
 	}
 	stmt.LeadingComment = leading
@@ -224,7 +226,7 @@ func (reducer *Reducer) MultipleToImportStmt(
 	trailing := clauses.TakeTrailing()
 
 	stmt := &ast.ImportStmt{
-		StartEndPos:   ast.NewStartEndPos(importKW.Loc(), clauses.End()),
+		StartEndPos:   lexutil.NewStartEndPos(importKW.Loc(), clauses.End()),
 		ImportClauses: clauses.Elements,
 	}
 	stmt.LeadingComment = leading
@@ -371,7 +373,7 @@ func (reducer *Reducer) ToUnsafeStmt(
 	leading.Append(greater.TakeTrailing())
 	leading.Append(verbatimSource.TakeLeading())
 	stmt := &ast.UnsafeStmt{
-		StartEndPos:    ast.NewStartEndPos(unsafe.Loc(), verbatimSource.End()),
+		StartEndPos:    lexutil.NewStartEndPos(unsafe.Loc(), verbatimSource.End()),
 		Language:       language.Value,
 		VerbatimSource: verbatimSource.Value,
 	}
@@ -415,7 +417,7 @@ func (reducer *Reducer) CaseBranchToBranchStmt(
 	}
 
 	stmt := &ast.ConditionBranchStmt{
-		StartEndPos: ast.NewStartEndPos(caseKW.Loc(), body.End()),
+		StartEndPos: lexutil.NewStartEndPos(caseKW.Loc(), body.End()),
 		Condition:   cond,
 		Branch:      body,
 	}
@@ -448,7 +450,7 @@ func (reducer *Reducer) DefaultBranchToBranchStmt(
 	body.LeadingComment.Append(colon.TakeTrailing())
 
 	stmt := &ast.ConditionBranchStmt{
-		StartEndPos:     ast.NewStartEndPos(defaultKW.Loc(), body.End()),
+		StartEndPos:     lexutil.NewStartEndPos(defaultKW.Loc(), body.End()),
 		IsDefaultBranch: true,
 		Condition:       nil,
 		Branch:          body,
@@ -497,7 +499,7 @@ func (Reducer) ToBlockAddrDeclStmt(
 	}
 
 	block := &ast.BlockAddrDeclStmt{
-		StartEndPos: ast.NewStartEndPos(varType.Loc(), rparen.End()),
+		StartEndPos: lexutil.NewStartEndPos(varType.Loc(), rparen.End()),
 		IsVar:       isVar,
 		Patterns:    list.Elements,
 	}

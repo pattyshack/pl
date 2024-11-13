@@ -1,6 +1,8 @@
 package reducer
 
 import (
+	"github.com/pattyshack/gt/lexutil"
+
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
@@ -17,7 +19,7 @@ func (reducer *Reducer) NamedArgToParameter(
 	error,
 ) {
 	param := &ast.Parameter{
-		StartEndPos: ast.NewStartEndPos(name.Loc(), typeExpr.End()),
+		StartEndPos: lexutil.NewStartEndPos(name.Loc(), typeExpr.End()),
 		Kind:        ast.SingularParameter,
 		Name:        name.Value,
 		Type:        typeExpr,
@@ -37,7 +39,7 @@ func (reducer *Reducer) NamedReceiverToParameter(
 	error,
 ) {
 	param := &ast.Parameter{
-		StartEndPos: ast.NewStartEndPos(name.Loc(), typeExpr.End()),
+		StartEndPos: lexutil.NewStartEndPos(name.Loc(), typeExpr.End()),
 		Kind:        ast.ReceiverParameter,
 		Name:        name.Value,
 		Type:        typeExpr,
@@ -61,7 +63,7 @@ func (reducer *Reducer) NamedVarargToParameter(
 	error,
 ) {
 	param := &ast.Parameter{
-		StartEndPos: ast.NewStartEndPos(name.Loc(), typeExpr.End()),
+		StartEndPos: lexutil.NewStartEndPos(name.Loc(), typeExpr.End()),
 		Kind:        ast.VariadicParameter,
 		Name:        name.Value,
 		Type:        typeExpr,
@@ -84,7 +86,7 @@ func (reducer *Reducer) IgnoreArgToParameter(
 	error,
 ) {
 	param := &ast.Parameter{
-		StartEndPos: ast.NewStartEndPos(underscore.Loc(), typeExpr.End()),
+		StartEndPos: lexutil.NewStartEndPos(underscore.Loc(), typeExpr.End()),
 		Kind:        ast.SingularParameter,
 		Type:        typeExpr,
 	}
@@ -103,7 +105,7 @@ func (reducer *Reducer) IgnoreReceiverToParameter(
 	error,
 ) {
 	param := &ast.Parameter{
-		StartEndPos: ast.NewStartEndPos(underscore.Loc(), typeExpr.End()),
+		StartEndPos: lexutil.NewStartEndPos(underscore.Loc(), typeExpr.End()),
 		Kind:        ast.ReceiverParameter,
 		Type:        typeExpr,
 	}
@@ -126,7 +128,7 @@ func (reducer *Reducer) IgnoreVarargToParameter(
 	error,
 ) {
 	param := &ast.Parameter{
-		StartEndPos: ast.NewStartEndPos(underscore.Loc(), typeExpr.End()),
+		StartEndPos: lexutil.NewStartEndPos(underscore.Loc(), typeExpr.End()),
 		Kind:        ast.VariadicParameter,
 		Type:        typeExpr,
 	}
@@ -163,7 +165,7 @@ func (reducer *Reducer) UnnamedReceiverToParameter(
 	error,
 ) {
 	param := &ast.Parameter{
-		StartEndPos: ast.NewStartEndPos(greater.Loc(), typeExpr.End()),
+		StartEndPos: lexutil.NewStartEndPos(greater.Loc(), typeExpr.End()),
 		Kind:        ast.ReceiverParameter,
 		Type:        typeExpr,
 	}
@@ -181,7 +183,7 @@ func (reducer *Reducer) UnnamedVarargToParameter(
 	error,
 ) {
 	param := &ast.Parameter{
-		StartEndPos: ast.NewStartEndPos(ellipsis.Loc(), typeExpr.End()),
+		StartEndPos: lexutil.NewStartEndPos(ellipsis.Loc(), typeExpr.End()),
 		Kind:        ast.VariadicParameter,
 		Type:        typeExpr,
 	}

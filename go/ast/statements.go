@@ -1,6 +1,8 @@
 package ast
 
 import (
+	"github.com/pattyshack/gt/lexutil"
+
 	"github.com/pattyshack/pl/errors"
 )
 
@@ -9,7 +11,7 @@ import (
 //
 
 type ImportClause struct {
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Alias string // Identifier or underscore or dot or ""
@@ -29,7 +31,7 @@ func (clause *ImportClause) Walk(visitor Visitor) {
 
 type ImportStmt struct {
 	IsStmt
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	ImportClauses []*ImportClause
@@ -60,7 +62,7 @@ const (
 
 type JumpStmt struct {
 	IsStmt
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Op    JumpOp
@@ -116,7 +118,7 @@ func NewJumpStmt(
 	}
 
 	stmt := &JumpStmt{
-		StartEndPos: NewStartEndPos(start, end),
+		StartEndPos: lexutil.NewStartEndPos(start, end),
 		Op:          JumpOp(op.Val()),
 		Label:       label,
 		Value:       value,
@@ -133,7 +135,7 @@ func NewJumpStmt(
 
 type UnsafeStmt struct {
 	IsStmt
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Language       string
@@ -153,7 +155,7 @@ func (stmt *UnsafeStmt) Walk(visitor Visitor) {
 
 type ConditionBranchStmt struct {
 	IsStmt
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	// either default branch in SwitchExpr/SelectExpr, or else branch in IfExpr
@@ -180,7 +182,7 @@ func (cb *ConditionBranchStmt) Walk(visitor Visitor) {
 
 type FloatingComment struct {
 	IsStmt
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 }
 
@@ -197,7 +199,7 @@ func (def *FloatingComment) Walk(visitor Visitor) {
 
 type TypeDef struct {
 	IsStmt
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Name              string
@@ -222,7 +224,7 @@ func (def *TypeDef) Walk(visitor Visitor) {
 
 type AliasDef struct {
 	IsStmt
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Alias             string
@@ -247,7 +249,7 @@ func (def *AliasDef) Walk(visitor Visitor) {
 // semantic analysis.
 type BlockAddrDeclStmt struct {
 	IsStmt
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	IsVar bool // true = var, false = let

@@ -5,7 +5,7 @@ import (
 )
 
 type NodeList[T Node] struct {
-	StartEndPos
+	lexutil.StartEndPos
 
 	// The leading / trailing comments from the list's start/end marker tokens.
 	LeadingTrailingComments
@@ -105,7 +105,7 @@ func NewGenericParameterList() *GenericParameterList {
 
 func NewImplicitGenericParameterList(pos lexutil.Location) *GenericParameterList {
 	return &NodeList[*GenericParameter]{
-		StartEndPos: NewStartEndPos(pos, pos),
+		StartEndPos: lexutil.NewStartEndPos(pos, pos),
 		IsImplicit:  true,
 	}
 }

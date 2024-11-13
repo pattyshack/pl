@@ -1,6 +1,8 @@
 package reducer
 
 import (
+	"github.com/pattyshack/gt/lexutil"
+
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
@@ -31,7 +33,7 @@ func (reducer *Reducer) AnonymousToFuncSignature(
 	}
 
 	sig := &ast.FuncSignature{
-		StartEndPos: ast.NewStartEndPos(funcKW.Loc(), end.End()),
+		StartEndPos: lexutil.NewStartEndPos(funcKW.Loc(), end.End()),
 		Parameters:  parameters,
 		ReturnType:  returnType,
 	}
@@ -71,7 +73,7 @@ func (reducer *Reducer) NamedToFuncSignature(
 	}
 
 	sig := &ast.FuncSignature{
-		StartEndPos:       ast.NewStartEndPos(funcKW.Loc(), end.End()),
+		StartEndPos:       lexutil.NewStartEndPos(funcKW.Loc(), end.End()),
 		Name:              name.Value,
 		GenericParameters: genericParameters,
 		Parameters:        parameters,
@@ -91,7 +93,7 @@ func (reducer *Reducer) ToFuncDef(
 	error,
 ) {
 	return &ast.FuncDefinition{
-		StartEndPos: ast.NewStartEndPos(sig.Loc(), body.End()),
+		StartEndPos: lexutil.NewStartEndPos(sig.Loc(), body.End()),
 		LeadingTrailingComments: ast.LeadingTrailingComments{
 			LeadingComment:  sig.TakeLeading(),
 			TrailingComment: body.TakeTrailing(),

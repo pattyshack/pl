@@ -1,8 +1,6 @@
 package lr
 
 import (
-	"fmt"
-
 	"github.com/pattyshack/gt/lexutil"
 
 	"github.com/pattyshack/pl/ast"
@@ -24,37 +22,12 @@ type CommentGroupsTok struct {
 
 func (CommentGroupsTok) Id() SymbolId { return CommentGroupsToken }
 
-type TokenCount struct {
-	SymbolId
-	ast.StartEndPos
-	Count int
-}
-
-func (s TokenCount) Id() SymbolId {
-	return s.SymbolId
-}
-
-func (s TokenCount) String() string {
-	return fmt.Sprintf("[Symbol:%s Count=%d]", s.SymbolId, s.Count)
-}
+type TokenCount = lexutil.TokenCount[SymbolId]
 
 type TokenValue struct {
-	SymbolId
-	ast.StartEndPos
+	lexutil.TokenValue[SymbolId]
+
 	ast.LeadingTrailingComments
-
-	// The value string is optional if the value is fully determined by SymbolId.
-	Value string
-	// Used for classifying literal subtypes.
-	SubType lexutil.LiteralSubType
-}
-
-func (s TokenValue) Id() SymbolId {
-	return s.SymbolId
-}
-
-func (s TokenValue) Val() string {
-	return s.Value
 }
 
 func (s TokenValue) Walk(visitor ast.Visitor) {
@@ -64,14 +37,13 @@ func (s TokenValue) Walk(visitor ast.Visitor) {
 type ParseErrorSymbol ast.ParseErrorExpr
 
 func NewParseErrorSymbol(
-	start lexutil.Location,
-	end lexutil.Location,
+	pos lexutil.StartEndPos,
 	format string,
 	args ...interface{},
 ) *ParseErrorSymbol {
 	return &ParseErrorSymbol{
-		StartEndPos: ast.NewStartEndPos(start, end),
-		Error:       lexutil.NewLocationError(start, format, args...),
+		StartEndPos: pos,
+		Error:       lexutil.NewLocationError(pos.StartPos, format, args...),
 	}
 }
 

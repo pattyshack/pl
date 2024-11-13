@@ -1,6 +1,8 @@
 package ast
 
 import (
+	"github.com/pattyshack/gt/lexutil"
+
 	"github.com/pattyshack/pl/errors"
 )
 
@@ -19,7 +21,7 @@ const (
 
 type FieldDef struct {
 	IsTypeProp
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Qualifier FieldDefQualifier
@@ -49,7 +51,7 @@ func (def *FieldDef) Walk(visitor Visitor) {
 //
 
 type GenericParameter struct {
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Name string
@@ -78,7 +80,7 @@ const (
 )
 
 type Parameter struct {
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Kind ParameterKind
@@ -122,7 +124,7 @@ const (
 )
 
 type Argument struct {
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Kind ArgumentKind
@@ -179,7 +181,7 @@ func (arg *Argument) Validate(emitter *errors.Emitter) {
 
 func NewPositionalArgument(expr Expression) *Argument {
 	return &Argument{
-		StartEndPos: NewStartEndPos(expr.Loc(), expr.End()),
+		StartEndPos: lexutil.NewStartEndPos(expr.Loc(), expr.End()),
 		LeadingTrailingComments: LeadingTrailingComments{
 			LeadingComment:  expr.TakeLeading(),
 			TrailingComment: expr.TakeTrailing(),
@@ -195,7 +197,7 @@ func NewNamedArgument(
 	expr Expression,
 ) *Argument {
 	arg := &Argument{
-		StartEndPos: NewStartEndPos(name.Loc(), expr.End()),
+		StartEndPos: lexutil.NewStartEndPos(name.Loc(), expr.End()),
 		Kind:        SingularArgument,
 		Name:        name.Val(),
 		Expr:        expr,
@@ -216,7 +218,7 @@ func NewVariadicArgument(
 	ellipsis TokenValue,
 ) *Argument {
 	arg := &Argument{
-		StartEndPos: NewStartEndPos(expr.Loc(), ellipsis.End()),
+		StartEndPos: lexutil.NewStartEndPos(expr.Loc(), ellipsis.End()),
 		Kind:        VariadicArgument,
 		Expr:        expr,
 	}
@@ -232,7 +234,7 @@ func NewSkipPatternArgument(
 	ellipsis TokenValue,
 ) *Argument {
 	arg := &Argument{
-		StartEndPos: NewStartEndPos(ellipsis.Loc(), ellipsis.End()),
+		StartEndPos: lexutil.NewStartEndPos(ellipsis.Loc(), ellipsis.End()),
 		Kind:        SkipPatternArgument,
 		Expr:        nil,
 	}

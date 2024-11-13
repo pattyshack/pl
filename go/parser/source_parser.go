@@ -119,7 +119,7 @@ func (parser *sourceParser) _parseSource() (*ast.StatementList, error) {
 			if err != nil {
 				parser.EmitErrors(err)
 				stmt = &ast.ParseErrorExpr{
-					StartEndPos: ast.NewStartEndPos(start, end),
+					StartEndPos: lexutil.NewStartEndPos(start, end),
 					Error:       err,
 				}
 			}

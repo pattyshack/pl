@@ -14,7 +14,7 @@ import (
 
 type SliceTypeExpr struct {
 	IsTypeExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Value TypeExpression
@@ -34,7 +34,7 @@ func (expr *SliceTypeExpr) Walk(visitor Visitor) {
 
 type ArrayTypeExpr struct {
 	IsTypeExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Value TypeExpression
@@ -55,7 +55,7 @@ func (expr *ArrayTypeExpr) Walk(visitor Visitor) {
 
 type MapTypeExpr struct {
 	IsTypeExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Key   TypeExpression
@@ -77,7 +77,7 @@ func (expr *MapTypeExpr) Walk(visitor Visitor) {
 
 type InferredTypeExpr struct {
 	IsTypeExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	IsImplicit bool
@@ -85,7 +85,7 @@ type InferredTypeExpr struct {
 
 func NewImplicitInferredTypeExpr(pos lexutil.Location) TypeExpression {
 	return &InferredTypeExpr{
-		StartEndPos: NewStartEndPos(pos, pos),
+		StartEndPos: lexutil.NewStartEndPos(pos, pos),
 		IsImplicit:  true,
 	}
 }
@@ -102,7 +102,7 @@ func (expr *InferredTypeExpr) Walk(visitor Visitor) {
 // NOTE: NamedTypeExpr fields should be identical to ParameterizedExpr
 type NamedTypeExpr struct {
 	IsTypeExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	// NOTE: Pkg is an identifier or empty string for normal ast construction.
@@ -128,7 +128,7 @@ func (expr *NamedTypeExpr) Walk(visitor Visitor) {
 
 type RefTypeExpr struct {
 	IsTypeExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Value TypeExpression
@@ -155,7 +155,7 @@ const (
 
 type DefaultEnumOpTypeExpr struct {
 	IsTypeExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Op   DefaultEnumOp
@@ -197,7 +197,7 @@ const (
 
 type UnaryTraitOpTypeExpr struct {
 	IsTypeExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Op   UnaryTraitOp
@@ -240,7 +240,7 @@ const (
 
 type BinaryTraitOpTypeExpr struct {
 	IsTypeExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Left  TypeExpression
@@ -283,7 +283,7 @@ const (
 
 type PropertiesTypeExpr struct {
 	IsTypeExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Kind PropertiesKind
@@ -298,7 +298,7 @@ var _ Validator = &PropertiesTypeExpr{}
 
 func NewAnyTrait(pos lexutil.Location) *PropertiesTypeExpr {
 	return &PropertiesTypeExpr{
-		StartEndPos: NewStartEndPos(pos, pos),
+		StartEndPos: lexutil.NewStartEndPos(pos, pos),
 		Kind:        TraitKind,
 		IsImplicit:  true,
 	}
@@ -376,7 +376,7 @@ func (expr *PropertiesTypeExpr) Validate(emitter *errors.Emitter) {
 type FuncSignature struct {
 	IsTypeExpr
 	IsTypeProp
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	// Required for named named signature. Empty for anonymous signature.

@@ -1,6 +1,8 @@
 package ast
 
 import (
+	"github.com/pattyshack/gt/lexutil"
+
 	"github.com/pattyshack/pl/errors"
 )
 
@@ -17,7 +19,7 @@ const (
 
 type AssignPattern struct {
 	IsExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Kind AssignKind
@@ -53,7 +55,7 @@ func (assign *AssignPattern) Validate(emitter *errors.Emitter) {
 
 type CasePatterns struct {
 	IsExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Patterns []Expression
@@ -75,7 +77,7 @@ func (cond *CasePatterns) Walk(visitor Visitor) {
 
 type AddrDeclPattern struct {
 	IsExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	IsVar   bool // true = var, false = let
@@ -106,7 +108,7 @@ func NewAddrDeclPattern(
 	}
 
 	expr := &AddrDeclPattern{
-		StartEndPos: NewStartEndPos(start.Loc(), end.End()),
+		StartEndPos: lexutil.NewStartEndPos(start.Loc(), end.End()),
 		IsVar:       isVar,
 		Pattern:     pattern,
 		Type:        typeExpr,
@@ -131,7 +133,7 @@ func (pattern *AddrDeclPattern) Walk(visitor Visitor) {
 
 type AssignToAddrPattern struct {
 	IsExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Pattern Expression
@@ -144,7 +146,7 @@ func NewAssignToAddrPattern(
 	pattern Expression,
 ) *AssignToAddrPattern {
 	addrPattern := &AssignToAddrPattern{
-		StartEndPos: NewStartEndPos(greater.Loc(), pattern.End()),
+		StartEndPos: lexutil.NewStartEndPos(greater.Loc(), pattern.End()),
 		Pattern:     pattern,
 	}
 	addrPattern.LeadingComment = greater.TakeLeading()
@@ -166,7 +168,7 @@ func (pattern *AssignToAddrPattern) Walk(visitor Visitor) {
 
 type EnumPattern struct {
 	IsExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	// - identifier string matches only only that named enum value

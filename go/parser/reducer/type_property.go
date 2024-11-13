@@ -1,6 +1,8 @@
 package reducer
 
 import (
+	"github.com/pattyshack/gt/lexutil"
+
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
@@ -13,7 +15,7 @@ func (Reducer) unnamedField(
 	typeExpr ast.TypeExpression,
 ) *ast.FieldDef {
 	def := &ast.FieldDef{
-		StartEndPos: ast.NewStartEndPos(typeExpr.Loc(), typeExpr.End()),
+		StartEndPos: lexutil.NewStartEndPos(typeExpr.Loc(), typeExpr.End()),
 		Type:        typeExpr,
 	}
 
@@ -28,7 +30,7 @@ func (Reducer) namedField(
 	typeExpr ast.TypeExpression,
 ) *ast.FieldDef {
 	def := &ast.FieldDef{
-		StartEndPos: ast.NewStartEndPos(name.Loc(), typeExpr.End()),
+		StartEndPos: lexutil.NewStartEndPos(name.Loc(), typeExpr.End()),
 		Name:        name.Value,
 		Type:        typeExpr,
 	}

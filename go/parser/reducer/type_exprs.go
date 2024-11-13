@@ -1,6 +1,8 @@
 package reducer
 
 import (
+	"github.com/pattyshack/gt/lexutil"
+
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
 )
@@ -18,7 +20,7 @@ func (reducer *Reducer) ToSliceTypeExpr(
 	error,
 ) {
 	slice := &ast.SliceTypeExpr{
-		StartEndPos: ast.NewStartEndPos(lbracket.Loc(), rbracket.End()),
+		StartEndPos: lexutil.NewStartEndPos(lbracket.Loc(), rbracket.End()),
 		Value:       value,
 	}
 
@@ -45,7 +47,7 @@ func (reducer *Reducer) ToArrayTypeExpr(
 	error,
 ) {
 	array := &ast.ArrayTypeExpr{
-		StartEndPos: ast.NewStartEndPos(lbracket.Loc(), rbracket.End()),
+		StartEndPos: lexutil.NewStartEndPos(lbracket.Loc(), rbracket.End()),
 		Value:       value,
 		Size:        size.Value,
 	}
@@ -80,7 +82,7 @@ func (reducer *Reducer) ToMapTypeExpr(
 	error,
 ) {
 	dict := &ast.MapTypeExpr{
-		StartEndPos: ast.NewStartEndPos(lbracket.Loc(), rbracket.End()),
+		StartEndPos: lexutil.NewStartEndPos(lbracket.Loc(), rbracket.End()),
 		Key:         key,
 		Value:       value,
 	}
@@ -129,7 +131,7 @@ func (reducer *Reducer) toNamedTypeExpr(
 	}
 
 	named := &ast.NamedTypeExpr{
-		StartEndPos: ast.NewStartEndPos(name.Loc(), end.End()),
+		StartEndPos: lexutil.NewStartEndPos(name.Loc(), end.End()),
 		Name:        name.Value,
 		Parameters:  parameters,
 	}
@@ -183,7 +185,7 @@ func (reducer *Reducer) ToRefTypeExpr(
 	error,
 ) {
 	expr := &ast.RefTypeExpr{
-		StartEndPos: ast.NewStartEndPos(and.Loc(), value.End()),
+		StartEndPos: lexutil.NewStartEndPos(and.Loc(), value.End()),
 		Value:       value,
 	}
 
@@ -206,7 +208,7 @@ func (reducer *Reducer) ToDefaultEnumOpTypeExpr(
 	error,
 ) {
 	expr := &ast.DefaultEnumOpTypeExpr{
-		StartEndPos: ast.NewStartEndPos(op.Loc(), enum.End()),
+		StartEndPos: lexutil.NewStartEndPos(op.Loc(), enum.End()),
 		Op:          ast.DefaultEnumOp(op.Value),
 		Enum:        enum,
 	}
@@ -230,7 +232,7 @@ func (reducer *Reducer) ToUnaryTraitOpTypeExpr(
 	error,
 ) {
 	expr := &ast.UnaryTraitOpTypeExpr{
-		StartEndPos: ast.NewStartEndPos(op.Loc(), operand.End()),
+		StartEndPos: lexutil.NewStartEndPos(op.Loc(), operand.End()),
 		Op:          ast.UnaryTraitOp(op.Value),
 		Base:        operand,
 	}
@@ -255,7 +257,7 @@ func (reducer *Reducer) ToBinaryTraitOpTypeExpr(
 	error,
 ) {
 	expr := &ast.BinaryTraitOpTypeExpr{
-		StartEndPos: ast.NewStartEndPos(left.Loc(), right.End()),
+		StartEndPos: lexutil.NewStartEndPos(left.Loc(), right.End()),
 		Left:        left,
 		Op:          ast.BinaryTraitOp(op.Value),
 		Right:       right,
@@ -343,7 +345,7 @@ func (reducer *Reducer) ToPropertiesTypeExpr(
 	properties.PrependToLeading(kw.TakeLeading())
 
 	return &ast.PropertiesTypeExpr{
-		StartEndPos:             ast.NewStartEndPos(kw.Loc(), rparen.End()),
+		StartEndPos:             lexutil.NewStartEndPos(kw.Loc(), rparen.End()),
 		LeadingTrailingComments: properties.TakeComments(),
 		Kind:                    ast.PropertiesKind(kw.Value),
 		IsImplicit:              false,

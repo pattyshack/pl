@@ -1,12 +1,16 @@
 package ast
 
+import (
+	"github.com/pattyshack/gt/lexutil"
+)
+
 //
 // DirectivesDecl
 //
 
 type DirectivesDecl struct {
 	IsStmt
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Directives []*Directive
@@ -27,7 +31,7 @@ func (decl *DirectivesDecl) Walk(visitor Visitor) {
 //
 
 type Directive struct {
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Name    string
@@ -52,7 +56,7 @@ func (dir *Directive) Walk(visitor Visitor) {
 
 type DirectiveValueExpr struct {
 	IsDirectiveExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Value string
@@ -67,7 +71,7 @@ func (expr *DirectiveValueExpr) Walk(visitor Visitor) {
 
 type DirectiveGroupExpr struct {
 	IsDirectiveExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Expr DirectiveExpression
@@ -83,7 +87,7 @@ func (expr *DirectiveGroupExpr) Walk(visitor Visitor) {
 
 type DirectiveNotExpr struct {
 	IsDirectiveExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Operand DirectiveExpression
@@ -99,7 +103,7 @@ func (expr *DirectiveNotExpr) Walk(visitor Visitor) {
 
 type DirectiveAndExpr struct {
 	IsDirectiveExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Left  DirectiveExpression
@@ -117,7 +121,7 @@ func (expr *DirectiveAndExpr) Walk(visitor Visitor) {
 
 type DirectiveOrExpr struct {
 	IsDirectiveExpr
-	StartEndPos
+	lexutil.StartEndPos
 	LeadingTrailingComments
 
 	Left  DirectiveExpression

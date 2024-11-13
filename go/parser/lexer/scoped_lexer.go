@@ -131,7 +131,7 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 		}
 
 		lexer.EmitErrors(parseErr)
-		startEnd := ast.NewStartEndPos(pos, lexer.CurrentLocation())
+		startEnd := lexutil.NewStartEndPos(pos, lexer.CurrentLocation())
 		stmts := &ast.StatementsExpr{
 			StartEndPos: startEnd,
 			Statements: []ast.Statement{
@@ -163,7 +163,7 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 					stmts.Statements = append(
 						stmts.Statements,
 						&ast.ParseErrorExpr{
-							StartEndPos: ast.NewStartEndPos(curr, lexer.CurrentLocation()),
+							StartEndPos: lexutil.NewStartEndPos(curr, lexer.CurrentLocation()),
 							Error:       parseErr,
 						})
 				}
