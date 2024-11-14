@@ -432,55 +432,29 @@ func (lexer *RawLexer) lexBlockCommentToken() (lr.Token, error) {
 }
 
 func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
-	result, err := lexutil.PeekIntegerOrFloat(
+	token, hasNoDigits, err := lexutil.MaybeTokenizeIntegerOrFloatLiteral(
 		lexer.BufferedByteLocationReader,
-		lexer.initialPeekWindowSize)
+		lexer.initialPeekWindowSize,
+		lexer.InternPool,
+		lr.IntegerLiteralToken,
+		lr.FloatLiteralToken)
 	if err != nil {
 		return nil, err
 	}
 
-	if result.NumBytes == 0 {
+	if token == nil {
 		panic("should never happen")
 	}
 
-	loc := lexer.Location
-
-	value := ""
-	if result.HasDigits {
-		peeked, err := lexer.Peek(result.NumBytes)
-		if err != nil {
-			panic("should never happen")
-		}
-
-		if len(peeked) < 3 { // intern short ints
-			value = lexer.InternBytes(peeked)
-		} else {
-			value = string(peeked)
-		}
-	}
-
-	_, err = lexer.Discard(result.NumBytes)
-	if err != nil {
-		panic("should never happen")
-	}
-
-	pos := lexutil.NewStartEndPos(loc, lexer.Location)
-	if !result.HasDigits {
-		return lr.NewParseErrorSymbol(pos, "%s has no digits", result.SubType), nil
-	}
-
-	symbolId := lr.IntegerLiteralToken
-	if result.IsFloat {
-		symbolId = lr.FloatLiteralToken
+	if hasNoDigits {
+		return lr.NewParseErrorSymbol(
+			token.StartEndPos,
+			"%s has no digits",
+			token.SubType), nil
 	}
 
 	return &lr.TokenValue{
-		TokenValue: lexutil.TokenValue[lr.SymbolId]{
-			SymbolId:    symbolId,
-			StartEndPos: pos,
-			Value:       value,
-			SubType:     result.SubType,
-		},
+		TokenValue: *token,
 	}, nil
 }
 
