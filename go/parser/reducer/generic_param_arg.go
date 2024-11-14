@@ -96,7 +96,7 @@ func (Reducer) GenericParameterToProperGenericParameterList(
 
 func (Reducer) ImproperImplicitToGenericParameterList(
 	list *ast.GenericParameterList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 ) (
 	*ast.GenericParameterList,
 	error,
@@ -177,7 +177,7 @@ func (reducer *Reducer) TypeExprToProperGenericArgumentList(
 
 func (reducer *Reducer) ImproperImplicitToGenericArgumentList(
 	list *ast.TypeExpressionList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 ) (
 	*ast.TypeExpressionList,
 	error,

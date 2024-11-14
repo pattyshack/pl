@@ -15,7 +15,7 @@ import (
 
 func (reducer *Reducer) AddImplicitToProperStatementList(
 	statements *ast.StatementList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 	statement ast.Statement,
 ) (
 	*ast.StatementList,
@@ -50,7 +50,7 @@ func (reducer *Reducer) StatementToProperStatementList(
 
 func (reducer *Reducer) ImproperImplicitToStatementList(
 	statements *ast.StatementList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 ) (
 	*ast.StatementList,
 	error,
@@ -237,7 +237,7 @@ func (reducer *Reducer) MultipleToImportStmt(
 
 func (reducer *Reducer) AddImplicitToProperImportClauses(
 	clauses *ast.ImportClauseList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 	importClause *ast.ImportClause,
 ) (
 	*ast.ImportClauseList,
@@ -272,7 +272,7 @@ func (reducer *Reducer) ImportClauseToProperImportClauses(
 
 func (reducer *Reducer) ImplicitToImportClauses(
 	clauses *ast.ImportClauseList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 ) (
 	*ast.ImportClauseList,
 	error,
@@ -511,7 +511,7 @@ func (Reducer) ToBlockAddrDeclStmt(
 
 func (Reducer) ImproperImplicitToBlockAddrDeclList(
 	list *ast.ExpressionList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 ) (
 	*ast.ExpressionList,
 	error,
@@ -547,7 +547,7 @@ func (Reducer) BlockAddrDeclItemToProperBlockAddrDeclList(
 
 func (Reducer) AddImplicitToProperBlockAddrDeclList(
 	list *ast.ExpressionList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 	item ast.Expression,
 ) (
 	*ast.ExpressionList,

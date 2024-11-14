@@ -33,7 +33,7 @@ func expectCount(
 	expectedCount int,
 	token lr.Token,
 ) {
-	count, ok := token.(lr.TokenCount)
+	count, ok := token.(*lr.TokenCount)
 	expect.True(t, ok)
 	expect.Equal(t, expectedCount, count.Count)
 }

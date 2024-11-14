@@ -10,78 +10,17 @@ import (
 	"github.com/pattyshack/pl/parser/lr"
 )
 
-// Discard spacesToken and merge adjacent NewlinesTokens
-type TrimSpacesLexer struct {
-	buffered *lexutil.BufferedReader[lr.Token]
-	base     lr.Lexer
-}
-
 func NewTrimSpacesLexer(
-	sourceFileName string,
-	sourceContent io.Reader,
-	emitter *errors.Emitter,
-	options LexerOptions,
+  sourceFileName string,
+  sourceContent io.Reader,
+  emitter *errors.Emitter,
+  options LexerOptions,
 ) lr.Lexer {
-	base := NewRawLexer(sourceFileName, sourceContent, emitter, options)
-	return &TrimSpacesLexer{
-		buffered: lexutil.NewBufferedReader(
-			lexutil.NewLexerReader[lr.Token](base),
-			10),
-		base: base,
-	}
-}
-
-func (lexer *TrimSpacesLexer) CurrentLocation() lexutil.Location {
-	peeked, err := lexer.buffered.Peek(1)
-	if err != nil || len(peeked) == 0 {
-		return (lexer.base.CurrentLocation())
-	}
-
-	return peeked[0].Loc()
-}
-
-func (lexer *TrimSpacesLexer) Next() (lr.Token, error) {
-	token, err := lexer.buffered.Next()
-	if err != nil {
-		return nil, err
-	}
-
-	if token.Id() == spacesToken {
-		token, err = lexer.buffered.Next()
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if token.Id() != lr.NewlinesToken {
-		return token, nil
-	}
-
-	newlines := token.(lr.TokenCount)
-	for {
-		peeked, err := lexer.buffered.Peek(2)
-		if err != nil {
-			break
-		}
-
-		if len(peeked) == 2 &&
-			peeked[0].Id() == spacesToken &&
-			peeked[1].Id() == lr.NewlinesToken {
-
-			other := peeked[1].(lr.TokenCount)
-			newlines.Count += other.Count
-			newlines.EndPos = other.EndPos
-
-			_, err = lexer.buffered.Discard(2)
-			if err != nil {
-				panic("should never happen")
-			}
-		} else {
-			break
-		}
-	}
-
-	return newlines, nil
+  return lexutil.NewMergeTokenCountLexer(
+    lexutil.NewTrimTokenLexer(
+      NewRawLexer(sourceFileName, sourceContent, emitter, options),
+      spacesToken),
+    lr.NewlinesToken)
 }
 
 // Convert "adjacent" comments into comment groups.  blockComment is never
@@ -141,7 +80,7 @@ func (lexer *CommentGroupLexer) Next() (lr.Token, error) {
 			peeked[0].Id() == lr.NewlinesToken &&
 			peeked[1].Id() == lineCommentToken {
 
-			newlines := peeked[0].(lr.TokenCount)
+			newlines := peeked[0].(*lr.TokenCount)
 			if newlines.Count > 1 {
 				break
 			}

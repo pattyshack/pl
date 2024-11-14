@@ -361,7 +361,7 @@ func (lexer *RawLexer) lexSpacesToken() (lr.Token, error) {
 		panic("This should never happen")
 	}
 
-	return *token, nil
+	return token, nil
 }
 
 func (lexer *RawLexer) lexNewlinesToken() (lr.Token, error) {
@@ -383,7 +383,7 @@ func (lexer *RawLexer) lexNewlinesToken() (lr.Token, error) {
 			"unexpected utf8 rune"), nil
 	}
 
-	return *token, nil
+	return token, nil
 }
 
 func (lexer *RawLexer) lexLineCommentToken() (lr.Token, error) {

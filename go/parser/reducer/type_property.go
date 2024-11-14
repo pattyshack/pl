@@ -171,7 +171,7 @@ func (Reducer) TypePropertyToProperImplicitTypeProperties(
 
 func (Reducer) ImproperImplicitToImplicitTypeProperties(
 	list *ast.TypePropertyList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 ) (
 	*ast.TypePropertyList,
 	error,
@@ -199,7 +199,7 @@ func (Reducer) NilToImplicitTypeProperties() (
 
 func (Reducer) AddImplicitToProperExplicitTypeProperties(
 	list *ast.TypePropertyList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 	property ast.TypeProperty,
 ) (
 	*ast.TypePropertyList,
@@ -234,7 +234,7 @@ func (Reducer) TypePropertyToProperExplicitTypeProperties(
 
 func (Reducer) ImproperImplicitToExplicitTypeProperties(
 	list *ast.TypePropertyList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 ) (
 	*ast.TypePropertyList,
 	error,
@@ -288,7 +288,7 @@ func (Reducer) AddToProperImplicitEnumTypeProperties(
 
 func (Reducer) ImproperToImplicitEnumTypeProperties(
 	list *ast.TypePropertyList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 ) (
 	*ast.TypePropertyList,
 	error,

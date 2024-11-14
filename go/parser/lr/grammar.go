@@ -224,7 +224,7 @@ type ImportStmtReducer interface {
 
 type ProperImportClausesReducer interface {
 	// 223:2: proper_import_clauses -> add_implicit: ...
-	AddImplicitToProperImportClauses(ProperImportClauses_ *ast.ImportClauseList, Newlines_ TokenCount, ImportClause_ *ast.ImportClause) (*ast.ImportClauseList, error)
+	AddImplicitToProperImportClauses(ProperImportClauses_ *ast.ImportClauseList, Newlines_ *TokenCount, ImportClause_ *ast.ImportClause) (*ast.ImportClauseList, error)
 
 	// 224:2: proper_import_clauses -> add_explicit: ...
 	AddExplicitToProperImportClauses(ProperImportClauses_ *ast.ImportClauseList, Comma_ *TokenValue, ImportClause_ *ast.ImportClause) (*ast.ImportClauseList, error)
@@ -236,7 +236,7 @@ type ProperImportClausesReducer interface {
 type ImportClausesReducer interface {
 
 	// 229:2: import_clauses -> implicit: ...
-	ImplicitToImportClauses(ProperImportClauses_ *ast.ImportClauseList, Newlines_ TokenCount) (*ast.ImportClauseList, error)
+	ImplicitToImportClauses(ProperImportClauses_ *ast.ImportClauseList, Newlines_ *TokenCount) (*ast.ImportClauseList, error)
 
 	// 230:2: import_clauses -> explicit: ...
 	ExplicitToImportClauses(ProperImportClauses_ *ast.ImportClauseList, Comma_ *TokenValue) (*ast.ImportClauseList, error)
@@ -264,7 +264,7 @@ type BlockAddrDeclStmtReducer interface {
 type BlockAddrDeclListReducer interface {
 
 	// 247:2: block_addr_decl_list -> improper_implicit: ...
-	ImproperImplicitToBlockAddrDeclList(ProperBlockAddrDeclList_ *ast.ExpressionList, Newlines_ TokenCount) (*ast.ExpressionList, error)
+	ImproperImplicitToBlockAddrDeclList(ProperBlockAddrDeclList_ *ast.ExpressionList, Newlines_ *TokenCount) (*ast.ExpressionList, error)
 
 	// 248:2: block_addr_decl_list -> improper_explicit: ...
 	ImproperExplicitToBlockAddrDeclList(ProperBlockAddrDeclList_ *ast.ExpressionList, Comma_ *TokenValue) (*ast.ExpressionList, error)
@@ -278,7 +278,7 @@ type ProperBlockAddrDeclListReducer interface {
 	BlockAddrDeclItemToProperBlockAddrDeclList(BlockAddrDeclItem_ ast.Expression) (*ast.ExpressionList, error)
 
 	// 253:2: proper_block_addr_decl_list -> add_implicit: ...
-	AddImplicitToProperBlockAddrDeclList(ProperBlockAddrDeclList_ *ast.ExpressionList, Newlines_ TokenCount, BlockAddrDeclItem_ ast.Expression) (*ast.ExpressionList, error)
+	AddImplicitToProperBlockAddrDeclList(ProperBlockAddrDeclList_ *ast.ExpressionList, Newlines_ *TokenCount, BlockAddrDeclItem_ ast.Expression) (*ast.ExpressionList, error)
 
 	// 254:2: proper_block_addr_decl_list -> add_explicit: ...
 	AddExplicitToProperBlockAddrDeclList(ProperBlockAddrDeclList_ *ast.ExpressionList, Comma_ *TokenValue, BlockAddrDeclItem_ ast.Expression) (*ast.ExpressionList, error)
@@ -450,7 +450,7 @@ type ProperArgumentsReducer interface {
 type ArgumentsReducer interface {
 
 	// 424:2: arguments -> improper_implicit: ...
-	ImproperImplicitToArguments(ProperArguments_ *ast.ArgumentList, Newlines_ TokenCount) (*ast.ArgumentList, error)
+	ImproperImplicitToArguments(ProperArguments_ *ast.ArgumentList, Newlines_ *TokenCount) (*ast.ArgumentList, error)
 
 	// 425:2: arguments -> improper_explicit: ...
 	ImproperExplicitToArguments(ProperArguments_ *ast.ArgumentList, Comma_ *TokenValue) (*ast.ArgumentList, error)
@@ -559,7 +559,7 @@ type StatementsReducer interface {
 
 type ProperStatementListReducer interface {
 	// 660:2: proper_statement_list -> add_implicit: ...
-	AddImplicitToProperStatementList(ProperStatementList_ *ast.StatementList, Newlines_ TokenCount, Statement_ ast.Statement) (*ast.StatementList, error)
+	AddImplicitToProperStatementList(ProperStatementList_ *ast.StatementList, Newlines_ *TokenCount, Statement_ ast.Statement) (*ast.StatementList, error)
 
 	// 661:2: proper_statement_list -> add_explicit: ...
 	AddExplicitToProperStatementList(ProperStatementList_ *ast.StatementList, Semicolon_ *TokenValue, Statement_ ast.Statement) (*ast.StatementList, error)
@@ -571,7 +571,7 @@ type ProperStatementListReducer interface {
 type StatementListReducer interface {
 
 	// 666:2: statement_list -> improper_implicit: ...
-	ImproperImplicitToStatementList(ProperStatementList_ *ast.StatementList, Newlines_ TokenCount) (*ast.StatementList, error)
+	ImproperImplicitToStatementList(ProperStatementList_ *ast.StatementList, Newlines_ *TokenCount) (*ast.StatementList, error)
 
 	// 667:2: statement_list -> improper_explicit: ...
 	ImproperExplicitToStatementList(ProperStatementList_ *ast.StatementList, Semicolon_ *TokenValue) (*ast.StatementList, error)
@@ -730,7 +730,7 @@ type ProperGenericParameterListReducer interface {
 type GenericParameterListReducer interface {
 
 	// 838:2: generic_parameter_list -> improper_implicit: ...
-	ImproperImplicitToGenericParameterList(ProperGenericParameterList_ *ast.GenericParameterList, Newlines_ TokenCount) (*ast.GenericParameterList, error)
+	ImproperImplicitToGenericParameterList(ProperGenericParameterList_ *ast.GenericParameterList, Newlines_ *TokenCount) (*ast.GenericParameterList, error)
 
 	// 839:2: generic_parameter_list -> improper_explicit: ...
 	ImproperExplicitToGenericParameterList(ProperGenericParameterList_ *ast.GenericParameterList, Comma_ *TokenValue) (*ast.GenericParameterList, error)
@@ -761,7 +761,7 @@ type ProperGenericArgumentListReducer interface {
 type GenericArgumentListReducer interface {
 
 	// 855:2: generic_argument_list -> improper_implicit: ...
-	ImproperImplicitToGenericArgumentList(ProperGenericArgumentList_ *ast.TypeExpressionList, Newlines_ TokenCount) (*ast.TypeExpressionList, error)
+	ImproperImplicitToGenericArgumentList(ProperGenericArgumentList_ *ast.TypeExpressionList, Newlines_ *TokenCount) (*ast.TypeExpressionList, error)
 
 	// 856:2: generic_argument_list -> improper_explicit: ...
 	ImproperExplicitToGenericArgumentList(ProperGenericArgumentList_ *ast.TypeExpressionList, Comma_ *TokenValue) (*ast.TypeExpressionList, error)
@@ -804,7 +804,7 @@ type ProperImplicitTypePropertiesReducer interface {
 type ImplicitTypePropertiesReducer interface {
 
 	// 885:2: implicit_type_properties -> improper_implicit: ...
-	ImproperImplicitToImplicitTypeProperties(ProperImplicitTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount) (*ast.TypePropertyList, error)
+	ImproperImplicitToImplicitTypeProperties(ProperImplicitTypeProperties_ *ast.TypePropertyList, Newlines_ *TokenCount) (*ast.TypePropertyList, error)
 
 	// 886:2: implicit_type_properties -> improper_explicit: ...
 	ImproperExplicitToImplicitTypeProperties(ProperImplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue) (*ast.TypePropertyList, error)
@@ -829,7 +829,7 @@ type ProperImplicitEnumTypePropertiesReducer interface {
 type ImplicitEnumTypePropertiesReducer interface {
 
 	// 907:2: implicit_enum_type_properties -> improper: ...
-	ImproperToImplicitEnumTypeProperties(ProperImplicitEnumTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount) (*ast.TypePropertyList, error)
+	ImproperToImplicitEnumTypeProperties(ProperImplicitEnumTypeProperties_ *ast.TypePropertyList, Newlines_ *TokenCount) (*ast.TypePropertyList, error)
 }
 
 type ImplicitEnumTypeExprReducer interface {
@@ -839,7 +839,7 @@ type ImplicitEnumTypeExprReducer interface {
 
 type ProperExplicitTypePropertiesReducer interface {
 	// 913:2: proper_explicit_type_properties -> add_implicit: ...
-	AddImplicitToProperExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
+	AddImplicitToProperExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Newlines_ *TokenCount, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
 
 	// 914:2: proper_explicit_type_properties -> add_explicit: ...
 	AddExplicitToProperExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue, TypeProperty_ ast.TypeProperty) (*ast.TypePropertyList, error)
@@ -851,7 +851,7 @@ type ProperExplicitTypePropertiesReducer interface {
 type ExplicitTypePropertiesReducer interface {
 
 	// 919:2: explicit_type_properties -> improper_implicit: ...
-	ImproperImplicitToExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Newlines_ TokenCount) (*ast.TypePropertyList, error)
+	ImproperImplicitToExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Newlines_ *TokenCount) (*ast.TypePropertyList, error)
 
 	// 920:2: explicit_type_properties -> improper_explicit: ...
 	ImproperExplicitToExplicitTypeProperties(ProperExplicitTypeProperties_ *ast.TypePropertyList, Comma_ *TokenValue) (*ast.TypePropertyList, error)
@@ -911,7 +911,7 @@ type ProperParameterListReducer interface {
 type ParameterListReducer interface {
 
 	// 959:2: parameter_list -> improper_implicit: ...
-	ImproperImplicitToParameterList(ProperParameterList_ *ast.ParameterList, Newlines_ TokenCount) (*ast.ParameterList, error)
+	ImproperImplicitToParameterList(ProperParameterList_ *ast.ParameterList, Newlines_ *TokenCount) (*ast.ParameterList, error)
 
 	// 960:2: parameter_list -> improper_explicit: ...
 	ImproperExplicitToParameterList(ProperParameterList_ *ast.ParameterList, Comma_ *TokenValue) (*ast.ParameterList, error)
@@ -3518,7 +3518,7 @@ type Symbol struct {
 	ArgumentList         *ast.ArgumentList
 	CommentGroups        CommentGroupsTok
 	ControlFlowExpr      ast.ControlFlowExpr
-	Count                TokenCount
+	Count                *TokenCount
 	Directive            *ast.Directive
 	DirectiveExpr        ast.DirectiveExpression
 	DirectiveExprList    *ast.DirectiveExpressionList
@@ -3568,12 +3568,12 @@ func NewSymbol(token lexutil.Token[SymbolId]) (*Symbol, error) {
 		}
 		symbol.CommentGroups = val
 	case NewlinesToken:
-		val, ok := token.(TokenCount)
+		val, ok := token.(*TokenCount)
 		if !ok {
 			return nil, lexutil.NewLocationError(
 				token.Loc(),
 				"invalid value type for token %s. "+
-					"expecting TokenCount",
+					"expecting *TokenCount",
 				token.Id())
 		}
 		symbol.Count = val

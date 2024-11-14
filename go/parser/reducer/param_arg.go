@@ -222,7 +222,7 @@ func (reducer *Reducer) ParameterToProperParameterList(
 
 func (reducer *Reducer) ImproperImplicitToParameterList(
 	list *ast.ParameterList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 ) (
 	*ast.ParameterList,
 	error,
@@ -344,7 +344,7 @@ func (reducer *Reducer) ArgumentToProperArguments(
 
 func (reducer *Reducer) ImproperImplicitToArguments(
 	list *ast.ArgumentList,
-	newlines lr.TokenCount,
+	newlines *lr.TokenCount,
 ) (
 	*ast.ArgumentList,
 	error,

@@ -977,7 +977,7 @@ go:
   package: lr
   value_types:
     ParseError: "*ParseErrorSymbol"
-    Count: "TokenCount"
+    Count: "*TokenCount"
     Value: "*TokenValue"
     Expression: "github.com/pattyshack/pl/ast.Expression"
     ExpressionList: "*github.com/pattyshack/pl/ast.ExpressionList"
