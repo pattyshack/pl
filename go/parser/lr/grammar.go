@@ -104,34 +104,6 @@ const (
 	ParseErrorToken      = SymbolId(345)
 )
 
-type Location = lexutil.Location
-
-type Token interface {
-	Id() SymbolId
-	Loc() Location
-	End() Location
-}
-
-type GenericSymbol struct {
-	SymbolId
-	StartPos Location
-	EndPos   Location
-}
-
-func (t GenericSymbol) Id() SymbolId { return t.SymbolId }
-
-func (t GenericSymbol) Loc() Location { return t.StartPos }
-
-func (t GenericSymbol) End() Location { return t.EndPos }
-
-type Lexer interface {
-	// Note: Return io.EOF to indicate end of stream
-	// Token with unspecified value type should return GenericSymbol
-	Next() (Token, error)
-
-	CurrentLocation() Location
-}
-
 type DirectivesDeclarationReducer interface {
 	// 79:42: directives_declaration -> ...
 	ToDirectivesDeclaration(Pound_ *TokenValue, Lbracket_ *TokenValue, Directives_ *ast.DirectiveList, Rbracket_ *TokenValue) (*ast.DirectivesDecl, error)
@@ -1076,12 +1048,12 @@ type Reducer interface {
 }
 
 type ParseErrorHandler interface {
-	Error(nextToken Token, parseStack _Stack) error
+	Error(nextToken lexutil.Token[SymbolId], parseStack _Stack) error
 }
 
 type DefaultParseErrorHandler struct{}
 
-func (DefaultParseErrorHandler) Error(nextToken Token, stack _Stack) error {
+func (DefaultParseErrorHandler) Error(nextToken lexutil.Token[SymbolId], stack _Stack) error {
 	return lexutil.NewLocationError(
 		nextToken.Loc(),
 		"syntax error: unexpected symbol %s. expecting %v",
@@ -1364,7 +1336,7 @@ func ExpectedTerminals(id _StateId) []SymbolId {
 	return nil
 }
 
-func ParseSource(lexer Lexer, reducer Reducer) (*ast.StatementList, error) {
+func ParseSource(lexer lexutil.Lexer[lexutil.Token[SymbolId]], reducer Reducer) (*ast.StatementList, error) {
 
 	return ParseSourceWithCustomErrorHandler(
 		lexer,
@@ -1373,7 +1345,7 @@ func ParseSource(lexer Lexer, reducer Reducer) (*ast.StatementList, error) {
 }
 
 func ParseSourceWithCustomErrorHandler(
-	lexer Lexer,
+	lexer lexutil.Lexer[lexutil.Token[SymbolId]],
 	reducer Reducer,
 	errHandler ParseErrorHandler,
 ) (
@@ -1388,7 +1360,7 @@ func ParseSourceWithCustomErrorHandler(
 	return item.StatementList, nil
 }
 
-func ParseStatement(lexer Lexer, reducer Reducer) (ast.Statement, error) {
+func ParseStatement(lexer lexutil.Lexer[lexutil.Token[SymbolId]], reducer Reducer) (ast.Statement, error) {
 
 	return ParseStatementWithCustomErrorHandler(
 		lexer,
@@ -1397,7 +1369,7 @@ func ParseStatement(lexer Lexer, reducer Reducer) (ast.Statement, error) {
 }
 
 func ParseStatementWithCustomErrorHandler(
-	lexer Lexer,
+	lexer lexutil.Lexer[lexutil.Token[SymbolId]],
 	reducer Reducer,
 	errHandler ParseErrorHandler,
 ) (
@@ -1412,7 +1384,7 @@ func ParseStatementWithCustomErrorHandler(
 	return item.Statement, nil
 }
 
-func ParseStatements(lexer Lexer, reducer Reducer) (*ast.StatementsExpr, error) {
+func ParseStatements(lexer lexutil.Lexer[lexutil.Token[SymbolId]], reducer Reducer) (*ast.StatementsExpr, error) {
 
 	return ParseStatementsWithCustomErrorHandler(
 		lexer,
@@ -1421,7 +1393,7 @@ func ParseStatements(lexer Lexer, reducer Reducer) (*ast.StatementsExpr, error) 
 }
 
 func ParseStatementsWithCustomErrorHandler(
-	lexer Lexer,
+	lexer lexutil.Lexer[lexutil.Token[SymbolId]],
 	reducer Reducer,
 	errHandler ParseErrorHandler,
 ) (
@@ -1442,7 +1414,7 @@ func ParseStatementsWithCustomErrorHandler(
 // ================================================================
 
 func _Parse(
-	lexer Lexer,
+	lexer lexutil.Lexer[lexutil.Token[SymbolId]],
 	reducer Reducer,
 	errHandler ParseErrorHandler,
 	startState _StateId,
@@ -3540,7 +3512,7 @@ const (
 type Symbol struct {
 	SymbolId_ SymbolId
 
-	Generic_ GenericSymbol
+	Generic_ lexutil.TokenValue[SymbolId]
 
 	Argument             *ast.Argument
 	ArgumentList         *ast.ArgumentList
@@ -3577,7 +3549,7 @@ type Symbol struct {
 	Value                *TokenValue
 }
 
-func NewSymbol(token Token) (*Symbol, error) {
+func NewSymbol(token lexutil.Token[SymbolId]) (*Symbol, error) {
 	symbol, ok := token.(*Symbol)
 	if ok {
 		return symbol, nil
@@ -3606,12 +3578,12 @@ func NewSymbol(token Token) (*Symbol, error) {
 		}
 		symbol.Count = val
 	case _EndMarker:
-		val, ok := token.(GenericSymbol)
+		val, ok := token.(lexutil.TokenValue[SymbolId])
 		if !ok {
 			return nil, lexutil.NewLocationError(
 				token.Loc(),
 				"invalid value type for token %s. "+
-					"expecting GenericSymbol",
+					"expecting lexutil.TokenValue[SymbolId]",
 				token.Id())
 		}
 		symbol.Generic_ = val
@@ -3648,8 +3620,8 @@ func (s *Symbol) Id() SymbolId {
 	return s.SymbolId_
 }
 
-func (s *Symbol) Loc() Location {
-	type locator interface{ Loc() Location }
+func (s *Symbol) Loc() lexutil.Location {
+	type locator interface{ Loc() lexutil.Location }
 	switch s.SymbolId_ {
 	case ArgumentType:
 		loc, ok := interface{}(s.Argument).(locator)
@@ -3820,8 +3792,8 @@ func (s *Symbol) Loc() Location {
 	return s.Generic_.Loc()
 }
 
-func (s *Symbol) End() Location {
-	type locator interface{ End() Location }
+func (s *Symbol) End() lexutil.Location {
+	type locator interface{ End() lexutil.Location }
 	switch s.SymbolId_ {
 	case ArgumentType:
 		loc, ok := interface{}(s.Argument).(locator)
@@ -3993,7 +3965,7 @@ func (s *Symbol) End() Location {
 }
 
 type _PseudoSymbolStack struct {
-	lexer Lexer
+	lexer lexutil.Lexer[lexutil.Token[SymbolId]]
 	top   []*Symbol
 }
 
@@ -4007,9 +3979,12 @@ func (stack *_PseudoSymbolStack) Top() (*Symbol, error) {
 					"unexpected lex error: %w",
 					err)
 			}
-			token = GenericSymbol{
+			token = lexutil.TokenValue[SymbolId]{
 				SymbolId: _EndMarker,
-				StartPos: stack.lexer.CurrentLocation(),
+				StartEndPos: lexutil.StartEndPos{
+					StartPos: stack.lexer.CurrentLocation(),
+					EndPos:   stack.lexer.CurrentLocation(),
+				},
 			}
 		}
 		item, err := NewSymbol(token)

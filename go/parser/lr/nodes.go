@@ -50,3 +50,6 @@ func NewParseErrorSymbol(
 func (ParseErrorSymbol) Id() SymbolId {
 	return ParseErrorToken
 }
+
+type Token = lexutil.Token[SymbolId]
+type Lexer = lexutil.Lexer[Token]
