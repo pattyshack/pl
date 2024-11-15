@@ -14,12 +14,6 @@ type Visitor interface {
 	Exit(Node)
 }
 
-type Locatable interface {
-	StartEnd() lexutil.StartEndPos
-	Loc() lexutil.Location
-	End() lexutil.Location
-}
-
 type Commentable interface {
 	PrependToLeading(CommentGroups)
 	AppendToLeading(CommentGroups)
@@ -45,7 +39,7 @@ type TokenValue interface {
 }
 
 type Node interface {
-	Locatable
+	lexutil.Locatable
 	Commentable
 
 	Walk(Visitor)
