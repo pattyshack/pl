@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 )
 
 //
@@ -10,7 +10,7 @@ import (
 
 type DirectivesDecl struct {
 	IsStmt
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Directives []*Directive
@@ -31,7 +31,7 @@ func (decl *DirectivesDecl) Walk(visitor Visitor) {
 //
 
 type Directive struct {
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Name    string
@@ -56,7 +56,7 @@ func (dir *Directive) Walk(visitor Visitor) {
 
 type DirectiveValueExpr struct {
 	IsDirectiveExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Value string
@@ -71,7 +71,7 @@ func (expr *DirectiveValueExpr) Walk(visitor Visitor) {
 
 type DirectiveGroupExpr struct {
 	IsDirectiveExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Expr DirectiveExpression
@@ -87,7 +87,7 @@ func (expr *DirectiveGroupExpr) Walk(visitor Visitor) {
 
 type DirectiveNotExpr struct {
 	IsDirectiveExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Operand DirectiveExpression
@@ -103,7 +103,7 @@ func (expr *DirectiveNotExpr) Walk(visitor Visitor) {
 
 type DirectiveAndExpr struct {
 	IsDirectiveExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Left  DirectiveExpression
@@ -121,7 +121,7 @@ func (expr *DirectiveAndExpr) Walk(visitor Visitor) {
 
 type DirectiveOrExpr struct {
 	IsDirectiveExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Left  DirectiveExpression

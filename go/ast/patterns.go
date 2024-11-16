@@ -1,9 +1,7 @@
 package ast
 
 import (
-	"github.com/pattyshack/gt/lexutil"
-
-	"github.com/pattyshack/pl/errors"
+	"github.com/pattyshack/gt/parseutil"
 )
 
 //
@@ -19,7 +17,7 @@ const (
 
 type AssignPattern struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Kind AssignKind
@@ -38,7 +36,7 @@ func (assign *AssignPattern) Walk(visitor Visitor) {
 	visitor.Exit(assign)
 }
 
-func (assign *AssignPattern) Validate(emitter *errors.Emitter) {
+func (assign *AssignPattern) Validate(emitter *parseutil.Emitter) {
 	switch assign.Kind {
 	case EqualAssign, InAssign:
 	default:
@@ -55,7 +53,7 @@ func (assign *AssignPattern) Validate(emitter *errors.Emitter) {
 
 type CasePatterns struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Patterns []Expression
@@ -77,7 +75,7 @@ func (cond *CasePatterns) Walk(visitor Visitor) {
 
 type AddrDeclPattern struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	IsVar   bool // true = var, false = let
@@ -108,7 +106,7 @@ func NewAddrDeclPattern(
 	}
 
 	expr := &AddrDeclPattern{
-		StartEndPos: lexutil.NewStartEndPos(start.Loc(), end.End()),
+		StartEndPos: parseutil.NewStartEndPos(start.Loc(), end.End()),
 		IsVar:       isVar,
 		Pattern:     pattern,
 		Type:        typeExpr,
@@ -133,7 +131,7 @@ func (pattern *AddrDeclPattern) Walk(visitor Visitor) {
 
 type AssignToAddrPattern struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Pattern Expression
@@ -146,7 +144,7 @@ func NewAssignToAddrPattern(
 	pattern Expression,
 ) *AssignToAddrPattern {
 	addrPattern := &AssignToAddrPattern{
-		StartEndPos: lexutil.NewStartEndPos(greater.Loc(), pattern.End()),
+		StartEndPos: parseutil.NewStartEndPos(greater.Loc(), pattern.End()),
 		Pattern:     pattern,
 	}
 	addrPattern.LeadingComment = greater.TakeLeading()
@@ -168,7 +166,7 @@ func (pattern *AssignToAddrPattern) Walk(visitor Visitor) {
 
 type EnumPattern struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	// - identifier string matches only only that named enum value

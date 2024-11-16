@@ -1,9 +1,7 @@
 package ast
 
 import (
-	"github.com/pattyshack/gt/lexutil"
-
-	"github.com/pattyshack/pl/errors"
+	"github.com/pattyshack/gt/parseutil"
 )
 
 //
@@ -11,7 +9,7 @@ import (
 //
 
 type ImportClause struct {
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Alias string // Identifier or underscore or dot or ""
@@ -31,7 +29,7 @@ func (clause *ImportClause) Walk(visitor Visitor) {
 
 type ImportStmt struct {
 	IsStmt
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	ImportClauses []*ImportClause
@@ -62,7 +60,7 @@ const (
 
 type JumpStmt struct {
 	IsStmt
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Op    JumpOp
@@ -79,7 +77,7 @@ func (stmt *JumpStmt) Walk(visitor Visitor) {
 	visitor.Exit(stmt)
 }
 
-func (stmt *JumpStmt) Validate(emitter *errors.Emitter) {
+func (stmt *JumpStmt) Validate(emitter *parseutil.Emitter) {
 	switch stmt.Op {
 	case FallthroughOp, ReturnOp, ContinueOp, BreakOp: // ok
 	default:
@@ -118,7 +116,7 @@ func NewJumpStmt(
 	}
 
 	stmt := &JumpStmt{
-		StartEndPos: lexutil.NewStartEndPos(start, end),
+		StartEndPos: parseutil.NewStartEndPos(start, end),
 		Op:          JumpOp(op.Val()),
 		Label:       label,
 		Value:       value,
@@ -135,7 +133,7 @@ func NewJumpStmt(
 
 type UnsafeStmt struct {
 	IsStmt
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Language       string
@@ -155,7 +153,7 @@ func (stmt *UnsafeStmt) Walk(visitor Visitor) {
 
 type ConditionBranchStmt struct {
 	IsStmt
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	// either default branch in SwitchExpr/SelectExpr, or else branch in IfExpr
@@ -182,7 +180,7 @@ func (cb *ConditionBranchStmt) Walk(visitor Visitor) {
 
 type FloatingComment struct {
 	IsStmt
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 }
 
@@ -199,7 +197,7 @@ func (def *FloatingComment) Walk(visitor Visitor) {
 
 type TypeDef struct {
 	IsStmt
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Name              string
@@ -224,7 +222,7 @@ func (def *TypeDef) Walk(visitor Visitor) {
 
 type AliasDef struct {
 	IsStmt
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Alias             string
@@ -249,7 +247,7 @@ func (def *AliasDef) Walk(visitor Visitor) {
 // semantic analysis.
 type BlockAddrDeclStmt struct {
 	IsStmt
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	IsVar bool // true = var, false = let
@@ -268,7 +266,7 @@ func (block *BlockAddrDeclStmt) Walk(visitor Visitor) {
 	visitor.Exit(block)
 }
 
-func (block *BlockAddrDeclStmt) Validate(emitter *errors.Emitter) {
+func (block *BlockAddrDeclStmt) Validate(emitter *parseutil.Emitter) {
 	for _, expr := range block.Patterns {
 		switch pattern := expr.(type) {
 		case *AssignPattern:

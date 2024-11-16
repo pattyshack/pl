@@ -1,17 +1,18 @@
 package source_passes
 
 import (
+	"github.com/pattyshack/gt/parseutil"
+
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/util"
 )
 
 type ExprStatementsValidator struct {
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
-func ValidateExprStatements(emitter *errors.Emitter) process.Pass {
+func ValidateExprStatements(emitter *parseutil.Emitter) process.Pass {
 	return &ExprStatementsValidator{
 		Emitter: emitter,
 	}
@@ -33,7 +34,7 @@ func (validator *ExprStatementsValidator) Process(
 type exprStatementsValidator struct {
 	processed map[*ast.StatementsExpr]struct{}
 
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
 func (validator *exprStatementsValidator) Enter(n ast.Node) {

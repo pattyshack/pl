@@ -1,17 +1,18 @@
 package source_passes
 
 import (
+	"github.com/pattyshack/gt/parseutil"
+
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/errors"
 )
 
 type AnonymousMethodTypesRejector struct {
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
 func RejectUnexpectedAnonymousMethodTypes(
-	emitter *errors.Emitter,
+	emitter *parseutil.Emitter,
 ) process.Pass {
 	return &AnonymousMethodTypesRejector{
 		Emitter: emitter,
@@ -30,7 +31,7 @@ func (rejector *AnonymousMethodTypesRejector) Process(
 
 type anonymousMethodTypesRejector struct {
 	scope int // increment on func signature / field def
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
 func (rejector *anonymousMethodTypesRejector) Enter(n ast.Node) {

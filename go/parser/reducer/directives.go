@@ -1,7 +1,7 @@
 package reducer
 
 import (
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
@@ -27,7 +27,7 @@ func (Reducer) ToDirectivesDeclaration(
 	leading.Append(list.TakeLeading())
 
 	decl := &ast.DirectivesDecl{
-		StartEndPos: lexutil.NewStartEndPos(pound.Loc(), list.End()),
+		StartEndPos: parseutil.NewStartEndPos(pound.Loc(), list.End()),
 		Directives:  list.Elements,
 	}
 	decl.LeadingComment = leading
@@ -90,7 +90,7 @@ func (Reducer) NamedToDirective(
 	}
 
 	directive := &ast.Directive{
-		StartEndPos: lexutil.NewStartEndPos(name.Loc(), end),
+		StartEndPos: parseutil.NewStartEndPos(name.Loc(), end),
 		Name:        name.Value,
 		Arguments:   args,
 	}
@@ -124,7 +124,7 @@ func (Reducer) CompoundNamedToDirective(
 	}
 
 	directive := &ast.Directive{
-		StartEndPos: lexutil.NewStartEndPos(name.Loc(), end),
+		StartEndPos: parseutil.NewStartEndPos(name.Loc(), end),
 		Name:        name.Value,
 		SubName:     subName.Value,
 		Arguments:   args,
@@ -187,7 +187,7 @@ func (Reducer) GroupToDirectiveAtomExpr(
 	error,
 ) {
 	expr := &ast.DirectiveGroupExpr{
-		StartEndPos: lexutil.NewStartEndPos(lparen.Loc(), rparen.End()),
+		StartEndPos: parseutil.NewStartEndPos(lparen.Loc(), rparen.End()),
 		Expr:        sub,
 	}
 	expr.LeadingComment = lparen.TakeLeading()
@@ -206,7 +206,7 @@ func (Reducer) NotToDirectiveNotExpr(
 	error,
 ) {
 	expr := &ast.DirectiveNotExpr{
-		StartEndPos: lexutil.NewStartEndPos(not.Loc(), operand.End()),
+		StartEndPos: parseutil.NewStartEndPos(not.Loc(), operand.End()),
 		Operand:     operand,
 	}
 	expr.LeadingComment = not.TakeLeading()
@@ -225,7 +225,7 @@ func (Reducer) AndToDirectiveAndExpr(
 	error,
 ) {
 	expr := &ast.DirectiveAndExpr{
-		StartEndPos: lexutil.NewStartEndPos(left.Loc(), right.End()),
+		StartEndPos: parseutil.NewStartEndPos(left.Loc(), right.End()),
 		Left:        left,
 		Right:       right,
 	}
@@ -246,7 +246,7 @@ func (Reducer) OrToDirectiveExpr(
 	error,
 ) {
 	expr := &ast.DirectiveOrExpr{
-		StartEndPos: lexutil.NewStartEndPos(left.Loc(), right.End()),
+		StartEndPos: parseutil.NewStartEndPos(left.Loc(), right.End()),
 		Left:        left,
 		Right:       right,
 	}

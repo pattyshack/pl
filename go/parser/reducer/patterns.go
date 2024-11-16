@@ -1,7 +1,7 @@
 package reducer
 
 import (
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
@@ -17,7 +17,7 @@ func (reducer *Reducer) toAssignPattern(
 	value ast.Expression,
 ) *ast.AssignPattern {
 	expr := &ast.AssignPattern{
-		StartEndPos: lexutil.NewStartEndPos(pattern.Loc(), value.End()),
+		StartEndPos: parseutil.NewStartEndPos(pattern.Loc(), value.End()),
 		Kind:        ast.AssignKind(op.Value),
 		Pattern:     pattern,
 		Value:       value,
@@ -187,7 +187,7 @@ func (Reducer) namedToEnumPattern(
 	trailing := pattern.TakeTrailing()
 
 	enum := &ast.EnumPattern{
-		StartEndPos: lexutil.NewStartEndPos(dot.Loc(), pattern.End()),
+		StartEndPos: parseutil.NewStartEndPos(dot.Loc(), pattern.End()),
 		EnumValue:   enumValue.Value,
 		Pattern:     pattern,
 	}
@@ -228,7 +228,7 @@ func (Reducer) namedUnitToEnumPattern(
 	trailing := enumValue.TakeTrailing()
 
 	enum := &ast.EnumPattern{
-		StartEndPos: lexutil.NewStartEndPos(dot.Loc(), enumValue.End()),
+		StartEndPos: parseutil.NewStartEndPos(dot.Loc(), enumValue.End()),
 		EnumValue:   enumValue.Value,
 		Pattern:     ast.NewImproperUnit(enumValue.End()),
 	}
@@ -269,7 +269,7 @@ func (Reducer) UnnamedStructToEnumPattern(
 	trailing := pattern.TakeTrailing()
 
 	enum := &ast.EnumPattern{
-		StartEndPos: lexutil.NewStartEndPos(dot.Loc(), pattern.End()),
+		StartEndPos: parseutil.NewStartEndPos(dot.Loc(), pattern.End()),
 		Pattern:     pattern,
 	}
 	enum.LeadingComment = leading

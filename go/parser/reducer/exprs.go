@@ -1,7 +1,7 @@
 package reducer
 
 import (
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
@@ -160,7 +160,7 @@ func (reducer *Reducer) ToAccessExpr(
 	error,
 ) {
 	expr := &ast.AccessExpr{
-		StartEndPos: lexutil.NewStartEndPos(operand.Loc(), field.End()),
+		StartEndPos: parseutil.NewStartEndPos(operand.Loc(), field.End()),
 		Operand:     operand,
 		Field:       field.Value,
 	}
@@ -183,7 +183,7 @@ func (reducer *Reducer) toPostfixUnaryExpr(
 	op *lr.TokenValue,
 ) *ast.UnaryExpr {
 	expr := &ast.UnaryExpr{
-		StartEndPos: lexutil.NewStartEndPos(operand.Loc(), op.End()),
+		StartEndPos: parseutil.NewStartEndPos(operand.Loc(), op.End()),
 		IsPrefix:    false,
 		Op:          ast.UnaryOp(op.Value),
 		Operand:     operand,
@@ -211,7 +211,7 @@ func (reducer *Reducer) toPrefixUnaryExpr(
 	operand ast.Expression,
 ) ast.Expression {
 	expr := &ast.UnaryExpr{
-		StartEndPos: lexutil.NewStartEndPos(op.Loc(), operand.End()),
+		StartEndPos: parseutil.NewStartEndPos(op.Loc(), operand.End()),
 		IsPrefix:    true,
 		Op:          ast.UnaryOp(op.Value),
 		Operand:     operand,
@@ -254,7 +254,7 @@ func (reducer *Reducer) toBinaryExpr(
 	right ast.Expression,
 ) *ast.BinaryExpr {
 	expr := &ast.BinaryExpr{
-		StartEndPos: lexutil.NewStartEndPos(left.Loc(), right.End()),
+		StartEndPos: parseutil.NewStartEndPos(left.Loc(), right.End()),
 		Left:        left,
 		Op:          ast.BinaryOp(op.Value),
 		Right:       right,
@@ -392,7 +392,7 @@ func (reducer *Reducer) PairToImproperExprStruct(
 	list = ast.ReduceAdd(list, comma, ast.NewPositionalArgument(expr2))
 
 	expr := &ast.ImplicitStructExpr{
-		StartEndPos: lexutil.NewStartEndPos(expr1.Loc(), expr2.End()),
+		StartEndPos: parseutil.NewStartEndPos(expr1.Loc(), expr2.End()),
 		Kind:        ast.ImproperImplicitStruct,
 		Arguments:   list,
 	}
@@ -453,7 +453,7 @@ func (Reducer) ExprUnitPairToColonExpr(
 		ast.NewPositionalArgument(ast.NewImproperUnit(colon.End())))
 
 	return &ast.ImplicitStructExpr{
-		StartEndPos: lexutil.NewStartEndPos(leftExpr.Loc(), colon.End()),
+		StartEndPos: parseutil.NewStartEndPos(leftExpr.Loc(), colon.End()),
 		Kind:        ast.ColonImplicitStruct,
 		Arguments:   args,
 	}, nil
@@ -474,7 +474,7 @@ func (reducer *Reducer) UnitExprPairToColonExpr(
 		ast.NewPositionalArgument(rightExpr))
 
 	return &ast.ImplicitStructExpr{
-		StartEndPos: lexutil.NewStartEndPos(colon.Loc(), rightExpr.End()),
+		StartEndPos: parseutil.NewStartEndPos(colon.Loc(), rightExpr.End()),
 		Kind:        ast.ColonImplicitStruct,
 		Arguments:   args,
 	}, nil
@@ -494,7 +494,7 @@ func (reducer *Reducer) ExprExprPairToColonExpr(
 		ast.NewPositionalArgument(rightExpr))
 
 	return &ast.ImplicitStructExpr{
-		StartEndPos: lexutil.NewStartEndPos(leftExpr.Loc(), rightExpr.End()),
+		StartEndPos: parseutil.NewStartEndPos(leftExpr.Loc(), rightExpr.End()),
 		Kind:        ast.ColonImplicitStruct,
 		Arguments:   args,
 	}, nil
@@ -575,7 +575,7 @@ func (reducer *Reducer) ToParameterizedExpr(
 				"<name> or <pkg>.<name>")
 
 		expr := &ast.ParseErrorExpr{
-			StartEndPos: lexutil.NewStartEndPos(operand.Loc(), parameters.End()),
+			StartEndPos: parseutil.NewStartEndPos(operand.Loc(), parameters.End()),
 			Error:       err,
 		}
 		expr.LeadingComment = leading
@@ -585,7 +585,7 @@ func (reducer *Reducer) ToParameterizedExpr(
 	}
 
 	expr := &ast.ParameterizedExpr{
-		StartEndPos: lexutil.NewStartEndPos(operand.Loc(), parameters.End()),
+		StartEndPos: parseutil.NewStartEndPos(operand.Loc(), parameters.End()),
 		Pkg:         pkg,
 		Name:        name,
 		Parameters:  parameters.Elements,
@@ -621,7 +621,7 @@ func (reducer *Reducer) ToCallExpr(
 	trailing := arguments.TakeTrailing()
 
 	expr := &ast.CallExpr{
-		StartEndPos: lexutil.NewStartEndPos(funcExpr.Loc(), rparen.End()),
+		StartEndPos: parseutil.NewStartEndPos(funcExpr.Loc(), rparen.End()),
 		FuncExpr:    funcExpr,
 		Arguments:   arguments.Elements,
 	}
@@ -667,7 +667,7 @@ func (reducer *Reducer) ToIndexExpr(
 	index.AppendToTrailing(rbracket.TakeLeading())
 
 	expr := &ast.IndexExpr{
-		StartEndPos: lexutil.NewStartEndPos(accessible.Loc(), rbracket.End()),
+		StartEndPos: parseutil.NewStartEndPos(accessible.Loc(), rbracket.End()),
 		Accessible:  accessible,
 		IndexArgs:   args,
 	}
@@ -705,7 +705,7 @@ func (reducer *Reducer) ToAsExpr(
 	trailing := rparen.TakeTrailing()
 
 	expr := &ast.AsExpr{
-		StartEndPos: lexutil.NewStartEndPos(accessible.Loc(), rparen.End()),
+		StartEndPos: parseutil.NewStartEndPos(accessible.Loc(), rparen.End()),
 		Accessible:  accessible,
 		CastType:    castType,
 	}
@@ -875,7 +875,7 @@ func (reducer *Reducer) ToInitializeExpr(
 	arguments.ReduceMarkers(lparen, rparen)
 
 	expr := &ast.InitializeExpr{
-		StartEndPos:   lexutil.NewStartEndPos(initializable.Loc(), rparen.End()),
+		StartEndPos:   parseutil.NewStartEndPos(initializable.Loc(), rparen.End()),
 		Initializable: initializable,
 		Arguments:     arguments.Elements,
 	}
@@ -904,7 +904,7 @@ func (reducer *Reducer) ElseToIfElseExpr(
 	last.AppendToTrailing(elseKW.TakeLeading())
 
 	cb := &ast.ConditionBranchStmt{
-		StartEndPos:     lexutil.NewStartEndPos(elseKW.Loc(), branch.End()),
+		StartEndPos:     parseutil.NewStartEndPos(elseKW.Loc(), branch.End()),
 		IsDefaultBranch: true,
 		Branch:          branch,
 	}
@@ -931,7 +931,7 @@ func (reducer *Reducer) ElifToIfElifExpr(
 	last.AppendToTrailing(elseKW.TakeLeading())
 
 	cb := &ast.ConditionBranchStmt{
-		StartEndPos: lexutil.NewStartEndPos(elseKW.Loc(), branch.End()),
+		StartEndPos: parseutil.NewStartEndPos(elseKW.Loc(), branch.End()),
 		Condition:   condition,
 		Branch:      branch,
 	}
@@ -957,7 +957,7 @@ func (reducer *Reducer) ToIfOnlyExpr(
 	leading := ifKW.TakeLeading()
 
 	cb := &ast.ConditionBranchStmt{
-		StartEndPos: lexutil.NewStartEndPos(ifKW.Loc(), branch.End()),
+		StartEndPos: parseutil.NewStartEndPos(ifKW.Loc(), branch.End()),
 		Condition:   condition,
 		Branch:      branch,
 	}
@@ -966,7 +966,7 @@ func (reducer *Reducer) ToIfOnlyExpr(
 	cb.TrailingComment = branch.TakeTrailing()
 
 	expr := &ast.IfExpr{
-		StartEndPos:       lexutil.NewStartEndPos(ifKW.Loc(), branch.End()),
+		StartEndPos:       parseutil.NewStartEndPos(ifKW.Loc(), branch.End()),
 		ConditionBranches: []*ast.ConditionBranchStmt{cb},
 	}
 	expr.LeadingComment = leading
@@ -1039,7 +1039,7 @@ func (reducer *Reducer) ToSwitchExprBody(
 	branches := reducer.groupBranches(stmts)
 
 	switchExpr := &ast.SwitchExpr{
-		StartEndPos:       lexutil.NewStartEndPos(switchKW.Loc(), stmts.End()),
+		StartEndPos:       parseutil.NewStartEndPos(switchKW.Loc(), stmts.End()),
 		Operand:           operand,
 		ConditionBranches: branches,
 	}
@@ -1077,7 +1077,7 @@ func (reducer *Reducer) ToSelectExprBody(
 	}
 
 	selectExpr := &ast.SelectExpr{
-		StartEndPos:       lexutil.NewStartEndPos(selectKW.Loc(), stmts.End()),
+		StartEndPos:       parseutil.NewStartEndPos(selectKW.Loc(), stmts.End()),
 		ConditionBranches: branches,
 	}
 
@@ -1103,7 +1103,7 @@ func (reducer *Reducer) InfiniteToLoopExprBody(
 	trailing := body.TakeTrailing()
 
 	loop := &ast.LoopExpr{
-		StartEndPos: lexutil.NewStartEndPos(body.Loc(), body.End()),
+		StartEndPos: parseutil.NewStartEndPos(body.Loc(), body.End()),
 		Kind:        ast.InfiniteLoop,
 		Body:        body,
 	}
@@ -1127,7 +1127,7 @@ func (reducer *Reducer) DoWhileToLoopExprBody(
 	trailing := condition.TakeTrailing()
 
 	loop := &ast.LoopExpr{
-		StartEndPos: lexutil.NewStartEndPos(body.Loc(), body.End()),
+		StartEndPos: parseutil.NewStartEndPos(body.Loc(), body.End()),
 		Kind:        ast.DoWhileLoop,
 		Condition:   condition,
 		Body:        body,
@@ -1151,7 +1151,7 @@ func (reducer *Reducer) WhileToLoopExprBody(
 	trailing := body.TakeTrailing()
 
 	loop := &ast.LoopExpr{
-		StartEndPos: lexutil.NewStartEndPos(body.Loc(), body.End()),
+		StartEndPos: parseutil.NewStartEndPos(body.Loc(), body.End()),
 		Kind:        ast.WhileLoop,
 		Condition:   condition,
 		Body:        body,
@@ -1176,7 +1176,7 @@ func (reducer *Reducer) IteratorToLoopExprBody(
 	trailing := body.TakeTrailing()
 
 	loop := &ast.LoopExpr{
-		StartEndPos: lexutil.NewStartEndPos(body.Loc(), body.End()),
+		StartEndPos: parseutil.NewStartEndPos(body.Loc(), body.End()),
 		Kind:        ast.IteratorLoop,
 		Condition:   reducer.toAssignPattern(assignPattern, in, iterator),
 		Body:        body,
@@ -1206,7 +1206,7 @@ func (reducer *Reducer) ForToLoopExprBody(
 	trailing := body.TakeTrailing()
 
 	loop := &ast.LoopExpr{
-		StartEndPos: lexutil.NewStartEndPos(body.Loc(), body.End()),
+		StartEndPos: parseutil.NewStartEndPos(body.Loc(), body.End()),
 		Kind:        ast.ForLoop,
 		Condition:   condition,
 		Post:        post,

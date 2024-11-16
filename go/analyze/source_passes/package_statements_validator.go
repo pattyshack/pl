@@ -1,17 +1,18 @@
 package source_passes
 
 import (
+	"github.com/pattyshack/gt/parseutil"
+
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/util"
 )
 
 type PackageStatementsValidator struct {
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
-func ValidatePackageStatements(emitter *errors.Emitter) process.Pass {
+func ValidatePackageStatements(emitter *parseutil.Emitter) process.Pass {
 	return &PackageStatementsValidator{
 		Emitter: emitter,
 	}

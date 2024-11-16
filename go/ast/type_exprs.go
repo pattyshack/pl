@@ -3,9 +3,7 @@ package ast
 import (
 	"fmt"
 
-	"github.com/pattyshack/gt/lexutil"
-
-	"github.com/pattyshack/pl/errors"
+	"github.com/pattyshack/gt/parseutil"
 )
 
 //
@@ -14,7 +12,7 @@ import (
 
 type SliceTypeExpr struct {
 	IsTypeExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Value TypeExpression
@@ -34,7 +32,7 @@ func (expr *SliceTypeExpr) Walk(visitor Visitor) {
 
 type ArrayTypeExpr struct {
 	IsTypeExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Value TypeExpression
@@ -55,7 +53,7 @@ func (expr *ArrayTypeExpr) Walk(visitor Visitor) {
 
 type MapTypeExpr struct {
 	IsTypeExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Key   TypeExpression
@@ -77,15 +75,15 @@ func (expr *MapTypeExpr) Walk(visitor Visitor) {
 
 type InferredTypeExpr struct {
 	IsTypeExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	IsImplicit bool
 }
 
-func NewImplicitInferredTypeExpr(pos lexutil.Location) TypeExpression {
+func NewImplicitInferredTypeExpr(pos parseutil.Location) TypeExpression {
 	return &InferredTypeExpr{
-		StartEndPos: lexutil.NewStartEndPos(pos, pos),
+		StartEndPos: parseutil.NewStartEndPos(pos, pos),
 		IsImplicit:  true,
 	}
 }
@@ -102,7 +100,7 @@ func (expr *InferredTypeExpr) Walk(visitor Visitor) {
 // NOTE: NamedTypeExpr fields should be identical to ParameterizedExpr
 type NamedTypeExpr struct {
 	IsTypeExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	// NOTE: Pkg is an identifier or empty string for normal ast construction.
@@ -128,7 +126,7 @@ func (expr *NamedTypeExpr) Walk(visitor Visitor) {
 
 type RefTypeExpr struct {
 	IsTypeExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Value TypeExpression
@@ -155,7 +153,7 @@ const (
 
 type DefaultEnumOpTypeExpr struct {
 	IsTypeExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Op   DefaultEnumOp
@@ -171,7 +169,7 @@ func (expr *DefaultEnumOpTypeExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *DefaultEnumOpTypeExpr) Validate(emitter *errors.Emitter) {
+func (expr *DefaultEnumOpTypeExpr) Validate(emitter *parseutil.Emitter) {
 	switch expr.Op {
 	case ReturnOnDefaultEnumOp,
 		PanicOnDefaultEnumOp:
@@ -197,7 +195,7 @@ const (
 
 type UnaryTraitOpTypeExpr struct {
 	IsTypeExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Op   UnaryTraitOp
@@ -213,7 +211,7 @@ func (expr *UnaryTraitOpTypeExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *UnaryTraitOpTypeExpr) Validate(emitter *errors.Emitter) {
+func (expr *UnaryTraitOpTypeExpr) Validate(emitter *parseutil.Emitter) {
 	switch expr.Op {
 	case AllPublicMethodsTraitTraitOp,
 		AllPublicPropertiesTraitTraitOp:
@@ -240,7 +238,7 @@ const (
 
 type BinaryTraitOpTypeExpr struct {
 	IsTypeExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Left  TypeExpression
@@ -258,7 +256,7 @@ func (expr *BinaryTraitOpTypeExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *BinaryTraitOpTypeExpr) Validate(emitter *errors.Emitter) {
+func (expr *BinaryTraitOpTypeExpr) Validate(emitter *parseutil.Emitter) {
 	switch expr.Op {
 	case TraitIntersectTraitOp, TraitUnionTraitOp, TraitDifferenceTraitOp: // ok
 	default:
@@ -283,7 +281,7 @@ const (
 
 type PropertiesTypeExpr struct {
 	IsTypeExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Kind PropertiesKind
@@ -296,9 +294,9 @@ type PropertiesTypeExpr struct {
 var _ TypeExpression = &PropertiesTypeExpr{}
 var _ Validator = &PropertiesTypeExpr{}
 
-func NewAnyTrait(pos lexutil.Location) *PropertiesTypeExpr {
+func NewAnyTrait(pos parseutil.Location) *PropertiesTypeExpr {
 	return &PropertiesTypeExpr{
-		StartEndPos: lexutil.NewStartEndPos(pos, pos),
+		StartEndPos: parseutil.NewStartEndPos(pos, pos),
 		Kind:        TraitKind,
 		IsImplicit:  true,
 	}
@@ -312,7 +310,7 @@ func (expr *PropertiesTypeExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *PropertiesTypeExpr) Validate(emitter *errors.Emitter) {
+func (expr *PropertiesTypeExpr) Validate(emitter *parseutil.Emitter) {
 	switch expr.Kind {
 	case StructKind, EnumKind, TraitKind: // ok
 	default:
@@ -376,7 +374,7 @@ func (expr *PropertiesTypeExpr) Validate(emitter *errors.Emitter) {
 type FuncSignature struct {
 	IsTypeExpr
 	IsTypeProp
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	// Required for named named signature. Empty for anonymous signature.
@@ -409,7 +407,7 @@ func (sig *FuncSignature) IsMethod() bool {
 		sig.Parameters.Elements[0].Kind == ReceiverParameter
 }
 
-func (sig *FuncSignature) Validate(emitter *errors.Emitter) {
+func (sig *FuncSignature) Validate(emitter *parseutil.Emitter) {
 	if sig.Name != "" {
 		if sig.GenericParameters == nil {
 			emitter.Emit(

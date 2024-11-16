@@ -5,7 +5,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 )
 
 type PackageID struct {
@@ -47,7 +47,7 @@ func (id PackageID) Validate() error {
 	}
 
 	pkgName := id.Name()
-	if !lexutil.IsValidIdentifier(pkgName) || pkgName == "_" {
+	if !parseutil.IsValidIdentifier(pkgName) || pkgName == "_" {
 		return fmt.Errorf(
 			"invalid package name (%v), package name must be a valid identifier",
 			pkgName)

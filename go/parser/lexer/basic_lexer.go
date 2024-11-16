@@ -3,50 +3,49 @@ package lexer
 import (
 	"io"
 
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser/lr"
 )
 
 func NewTrimSpacesLexer(
-  sourceFileName string,
-  sourceContent io.Reader,
-  emitter *errors.Emitter,
-  options LexerOptions,
+	sourceFileName string,
+	sourceContent io.Reader,
+	emitter *parseutil.Emitter,
+	options LexerOptions,
 ) lr.Lexer {
-  return lexutil.NewMergeTokenCountLexer(
-    lexutil.NewTrimTokenLexer(
-      NewRawLexer(sourceFileName, sourceContent, emitter, options),
-      spacesToken),
-    lr.NewlinesToken)
+	return parseutil.NewMergeTokenCountLexer(
+		parseutil.NewTrimTokenLexer(
+			NewRawLexer(sourceFileName, sourceContent, emitter, options),
+			spacesToken),
+		lr.NewlinesToken)
 }
 
 // Convert "adjacent" comments into comment groups.  blockComment is never
 // adjacent to any other comment.  lineComment is adjacent to other
 // lineComments if they are separated by a single newline.
 type CommentGroupLexer struct {
-	buffered *lexutil.BufferedReader[lr.Token]
+	buffered *parseutil.BufferedReader[lr.Token]
 	base     lr.Lexer
 }
 
 func NewCommentGroupLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
-	emitter *errors.Emitter,
+	emitter *parseutil.Emitter,
 	options LexerOptions,
 ) lr.Lexer {
 	base := NewTrimSpacesLexer(sourceFileName, sourceContent, emitter, options)
 	return &CommentGroupLexer{
-		buffered: lexutil.NewBufferedReader(
-			lexutil.NewLexerReader[lr.Token](base),
+		buffered: parseutil.NewBufferedReader(
+			parseutil.NewLexerReader[lr.Token](base),
 			10),
 		base: base,
 	}
 }
 
-func (lexer *CommentGroupLexer) CurrentLocation() lexutil.Location {
+func (lexer *CommentGroupLexer) CurrentLocation() parseutil.Location {
 	peeked, err := lexer.buffered.Peek(1)
 	if err != nil || len(peeked) == 0 {
 		return lexer.base.CurrentLocation()
@@ -101,26 +100,26 @@ func (lexer *CommentGroupLexer) Next() (lr.Token, error) {
 
 // Associate comment groups to real tokens whenever possible.
 type AssociateCommentGroupsLexer struct {
-	buffered *lexutil.BufferedReader[lr.Token]
+	buffered *parseutil.BufferedReader[lr.Token]
 	base     lr.Lexer
 }
 
 func NewAssociateCommentGroupsLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
-	emitter *errors.Emitter,
+	emitter *parseutil.Emitter,
 	options LexerOptions,
 ) lr.Lexer {
 	base := NewCommentGroupLexer(sourceFileName, sourceContent, emitter, options)
 	return &AssociateCommentGroupsLexer{
-		buffered: lexutil.NewBufferedReader(
-			lexutil.NewLexerReader[lr.Token](base),
+		buffered: parseutil.NewBufferedReader(
+			parseutil.NewLexerReader[lr.Token](base),
 			10),
 		base: base,
 	}
 }
 
-func (lexer *AssociateCommentGroupsLexer) CurrentLocation() lexutil.Location {
+func (lexer *AssociateCommentGroupsLexer) CurrentLocation() parseutil.Location {
 	peeked, err := lexer.buffered.Peek(1)
 	if err != nil || len(peeked) == 0 {
 		return lexer.base.CurrentLocation()
@@ -211,7 +210,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (lr.Token, error) {
 //     `true`, or `false`
 //  5. one of: `++`, `--`, `)`, `}`, or `]`
 type TerminalNewlinesLexer struct {
-	buffered *lexutil.BufferedReader[lr.Token]
+	buffered *parseutil.BufferedReader[lr.Token]
 	base     lr.Lexer
 
 	previousId lr.SymbolId
@@ -220,7 +219,7 @@ type TerminalNewlinesLexer struct {
 func NewBasicLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
-	emitter *errors.Emitter,
+	emitter *parseutil.Emitter,
 	options LexerOptions,
 ) lr.Lexer {
 	base := NewAssociateCommentGroupsLexer(
@@ -229,14 +228,14 @@ func NewBasicLexer(
 		emitter,
 		options)
 	return &TerminalNewlinesLexer{
-		buffered: lexutil.NewBufferedReader(
-			lexutil.NewLexerReader[lr.Token](base),
+		buffered: parseutil.NewBufferedReader(
+			parseutil.NewLexerReader[lr.Token](base),
 			10),
 		base: base,
 	}
 }
 
-func (lexer *TerminalNewlinesLexer) CurrentLocation() lexutil.Location {
+func (lexer *TerminalNewlinesLexer) CurrentLocation() parseutil.Location {
 	peeked, err := lexer.buffered.Peek(1)
 	if err != nil || len(peeked) == 0 {
 		return lexer.base.CurrentLocation()

@@ -1,7 +1,7 @@
 package reducer
 
 import (
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
@@ -33,7 +33,7 @@ func (Reducer) ConstrainedToGenericParameter(
 	error,
 ) {
 	param := &ast.GenericParameter{
-		StartEndPos: lexutil.NewStartEndPos(name.Loc(), constraint.End()),
+		StartEndPos: parseutil.NewStartEndPos(name.Loc(), constraint.End()),
 		Name:        name.Value,
 		Constraint:  constraint,
 	}

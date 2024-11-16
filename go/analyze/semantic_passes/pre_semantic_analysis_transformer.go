@@ -1,9 +1,10 @@
 package semantic_passes
 
 import (
+	"github.com/pattyshack/gt/parseutil"
+
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/errors"
 )
 
 // The following transformations are applied:
@@ -13,10 +14,10 @@ import (
 //     type def.
 //   - BlockAddrDeclStmt are flattened/replaced by list of pattern expressions.
 type PreSemanticAnalysisTransformer struct {
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
-func PreSemanticAnalysisTransformation(emitter *errors.Emitter) process.Pass {
+func PreSemanticAnalysisTransformation(emitter *parseutil.Emitter) process.Pass {
 	return &PreSemanticAnalysisTransformer{
 		Emitter: emitter,
 	}

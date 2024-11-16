@@ -3,9 +3,10 @@ package source_passes
 import (
 	"fmt"
 
+	"github.com/pattyshack/gt/parseutil"
+
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/errors"
 )
 
 type patternState int
@@ -47,10 +48,10 @@ type PatternsAnalyzer struct {
 	// pattern -> parent (either implicit struct expr or assign expr)
 	redundantAssignToAddr map[*ast.AssignToAddrPattern]ast.Expression
 
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
-func NewPatternsAnalyzer(emitter *errors.Emitter) *PatternsAnalyzer {
+func NewPatternsAnalyzer(emitter *parseutil.Emitter) *PatternsAnalyzer {
 	return &PatternsAnalyzer{
 		redundantAssignToAddr: map[*ast.AssignToAddrPattern]ast.Expression{},
 		Emitter:               emitter,
@@ -135,7 +136,7 @@ type patternsAnalyzer struct {
 	// pattern -> parent (either implicit struct expr or assign expr)
 	redundantAssignToAddr map[*ast.AssignToAddrPattern]ast.Expression
 
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
 func (analyzer *patternsAnalyzer) push(state patternState) {

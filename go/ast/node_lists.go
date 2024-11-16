@@ -1,11 +1,11 @@
 package ast
 
 import (
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 )
 
 type NodeList[T Node] struct {
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 
 	// The leading / trailing comments from the list's start/end marker tokens.
 	LeadingTrailingComments
@@ -103,9 +103,9 @@ func NewGenericParameterList() *GenericParameterList {
 	return &NodeList[*GenericParameter]{}
 }
 
-func NewImplicitGenericParameterList(pos lexutil.Location) *GenericParameterList {
+func NewImplicitGenericParameterList(pos parseutil.Location) *GenericParameterList {
 	return &NodeList[*GenericParameter]{
-		StartEndPos: lexutil.NewStartEndPos(pos, pos),
+		StartEndPos: parseutil.NewStartEndPos(pos, pos),
 		IsImplicit:  true,
 	}
 }

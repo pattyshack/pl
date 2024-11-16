@@ -6,12 +6,11 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 
 	"github.com/pattyshack/pl/analyze"
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/build/cfg"
-	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser"
 	"github.com/pattyshack/pl/types"
 )
@@ -26,11 +25,11 @@ const (
 
 type pkgLoc struct {
 	*Package
-	lexutil.Location
+	parseutil.Location
 }
 
 type locateState struct {
-	*errors.Emitter
+	*parseutil.Emitter
 
 	mutex sync.Mutex
 
@@ -62,7 +61,7 @@ func (state *locateState) Locate(ws *Workspace, id ast.PackageID) (
 		}
 
 		for _, by := range state.importedBy {
-			by.Package.EmitErrors(lexutil.LocationError{Loc: by.Location, Err: err})
+			by.Package.EmitErrors(parseutil.LocationError{Loc: by.Location, Err: err})
 		}
 	}
 
@@ -93,7 +92,7 @@ func (state *locateState) ImportedBy(by *pkgLoc) {
 		}
 	} else if state.err != nil {
 		by.Package.EmitErrors(
-			lexutil.LocationError{
+			parseutil.LocationError{
 				Loc: by.Location,
 				Err: state.err,
 			})
@@ -107,7 +106,7 @@ type Package struct {
 
 	ast.PackageID
 
-	*errors.Emitter
+	*parseutil.Emitter
 	locateState
 
 	// Populated by Load().  Safe to access once loadWaitGroup is ready
@@ -279,7 +278,7 @@ type Builder struct {
 	*cfg.Config
 	*Workspace
 
-	*errors.Emitter
+	*parseutil.Emitter
 
 	loadWaitGroup  sync.WaitGroup
 	buildWaitGroup sync.WaitGroup
@@ -304,7 +303,7 @@ func NewBuilder(
 		cancel:    cancel,
 		Config:    config,
 		Workspace: workspace,
-		Emitter:   &errors.Emitter{},
+		Emitter:   &parseutil.Emitter{},
 		Catalog:   types.NewCatalog(),
 		packages:  map[ast.PackageID]*Package{},
 	}
@@ -341,7 +340,7 @@ func (builder *Builder) build(
 
 	pkg := builder.packages[id]
 	if pkg == nil {
-		emitter := &errors.Emitter{}
+		emitter := &parseutil.Emitter{}
 		pkg = &Package{
 			builder:   builder,
 			BuildMode: mode,

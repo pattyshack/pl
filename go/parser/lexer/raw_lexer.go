@@ -5,10 +5,9 @@ import (
 	"io"
 	"unicode/utf8"
 
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 	"github.com/pattyshack/gt/stringutil"
 
-	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser/lr"
 )
 
@@ -83,17 +82,17 @@ type LexerOptions struct {
 }
 
 type RawLexer struct {
-	*errors.Emitter
+	*parseutil.Emitter
 	LexerOptions
 
-	lexutil.BufferedByteLocationReader
+	parseutil.BufferedByteLocationReader
 	*stringutil.InternPool
 }
 
 func NewRawLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
-	emitter *errors.Emitter,
+	emitter *parseutil.Emitter,
 	options LexerOptions,
 ) lr.Lexer {
 	if options.initialPeekWindowSize <= 0 {
@@ -108,7 +107,7 @@ func NewRawLexer(
 	return &RawLexer{
 		Emitter:      emitter,
 		LexerOptions: options,
-		BufferedByteLocationReader: lexutil.NewBufferedByteLocationReader(
+		BufferedByteLocationReader: parseutil.NewBufferedByteLocationReader(
 			sourceFileName,
 			sourceContent,
 			options.InitialLookAheadBufferSize),
@@ -116,7 +115,7 @@ func NewRawLexer(
 	}
 }
 
-func (lexer *RawLexer) CurrentLocation() lexutil.Location {
+func (lexer *RawLexer) CurrentLocation() parseutil.Location {
 	return lexer.Location
 }
 
@@ -349,7 +348,7 @@ func (lexer *RawLexer) peekNextToken() (lr.SymbolId, string, error) {
 }
 
 func (lexer *RawLexer) lexSpacesToken() (lr.Token, error) {
-	token, err := lexutil.MaybeTokenizeSpaces(
+	token, err := parseutil.MaybeTokenizeSpaces(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize,
 		spacesToken)
@@ -365,7 +364,7 @@ func (lexer *RawLexer) lexSpacesToken() (lr.Token, error) {
 }
 
 func (lexer *RawLexer) lexNewlinesToken() (lr.Token, error) {
-	token, foundInvalidNewline, err := lexutil.MaybeTokenizeNewlines(
+	token, foundInvalidNewline, err := parseutil.MaybeTokenizeNewlines(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize,
 		lr.NewlinesToken)
@@ -387,7 +386,7 @@ func (lexer *RawLexer) lexNewlinesToken() (lr.Token, error) {
 }
 
 func (lexer *RawLexer) lexLineCommentToken() (lr.Token, error) {
-	token, err := lexutil.MaybeTokenizeLineComment(
+	token, err := parseutil.MaybeTokenizeLineComment(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize,
 		lineCommentToken,
@@ -406,7 +405,7 @@ func (lexer *RawLexer) lexLineCommentToken() (lr.Token, error) {
 }
 
 func (lexer *RawLexer) lexBlockCommentToken() (lr.Token, error) {
-	token, notTerminated, err := lexutil.MaybeTokenizeBlockComment(
+	token, notTerminated, err := parseutil.MaybeTokenizeBlockComment(
 		lexer.BufferedByteLocationReader,
 		true,
 		lexer.initialPeekWindowSize,
@@ -432,7 +431,7 @@ func (lexer *RawLexer) lexBlockCommentToken() (lr.Token, error) {
 }
 
 func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
-	token, hasNoDigits, err := lexutil.MaybeTokenizeIntegerOrFloatLiteral(
+	token, hasNoDigits, err := parseutil.MaybeTokenizeIntegerOrFloatLiteral(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize,
 		lexer.InternPool,
@@ -459,7 +458,7 @@ func (lexer *RawLexer) lexIntegerOrFloatLiteralToken() (lr.Token, error) {
 }
 
 func (lexer *RawLexer) lexRuneLiteralToken() (lr.Token, error) {
-	token, errMsg, err := lexutil.MaybeTokenizeRuneLiteral(
+	token, errMsg, err := parseutil.MaybeTokenizeRuneLiteral(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize,
 		lexer.InternPool,
@@ -482,13 +481,13 @@ func (lexer *RawLexer) lexRuneLiteralToken() (lr.Token, error) {
 }
 
 func (lexer *RawLexer) lexStringLiteralToken(
-	subType lexutil.LiteralSubType,
+	subType parseutil.LiteralSubType,
 	useBacktickMarker bool,
 ) (
 	lr.Token,
 	error,
 ) {
-	token, errMsg, err := lexutil.MaybeTokenizeStringLiteral(
+	token, errMsg, err := parseutil.MaybeTokenizeStringLiteral(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize,
 		lexer.InternPool,
@@ -516,7 +515,7 @@ func (lexer *RawLexer) lexIdentifierOrKeywords() (
 	*lr.TokenValue,
 	error,
 ) {
-	token, err := lexutil.MaybeTokenizeIdentifier(
+	token, err := parseutil.MaybeTokenizeIdentifier(
 		lexer.BufferedByteLocationReader,
 		lexer.initialPeekWindowSize,
 		lexer.InternPool,
@@ -556,7 +555,7 @@ func (lexer *RawLexer) Next() (lr.Token, error) {
 		}
 
 		return lr.NewParseErrorSymbol(
-			lexutil.NewStartEndPos(loc, lexer.Location),
+			parseutil.NewStartEndPos(loc, lexer.Location),
 			"unexpected utf8 rune"), nil
 	}
 
@@ -569,9 +568,9 @@ func (lexer *RawLexer) Next() (lr.Token, error) {
 		}
 
 		return &lr.TokenValue{
-			TokenValue: lexutil.TokenValue[lr.SymbolId]{
+			TokenValue: parseutil.TokenValue[lr.SymbolId]{
 				SymbolId:    symbolId,
-				StartEndPos: lexutil.NewStartEndPos(loc, lexer.Location),
+				StartEndPos: parseutil.NewStartEndPos(loc, lexer.Location),
 				Value:       value,
 			},
 		}, nil
@@ -595,35 +594,35 @@ func (lexer *RawLexer) Next() (lr.Token, error) {
 		return lexer.lexRuneLiteralToken()
 	case sibStringToken:
 		return lexer.lexStringLiteralToken(
-			lexutil.SingleLineString,
+			parseutil.SingleLineString,
 			true)
 	case sidStringToken:
 		return lexer.lexStringLiteralToken(
-			lexutil.SingleLineString,
+			parseutil.SingleLineString,
 			false)
 	case srbStringToken:
 		return lexer.lexStringLiteralToken(
-			lexutil.RawSingleLineString,
+			parseutil.RawSingleLineString,
 			true)
 	case srdStringToken:
 		return lexer.lexStringLiteralToken(
-			lexutil.RawSingleLineString,
+			parseutil.RawSingleLineString,
 			false)
 	case mibStringToken:
 		return lexer.lexStringLiteralToken(
-			lexutil.MultiLineString,
+			parseutil.MultiLineString,
 			true)
 	case midStringToken:
 		return lexer.lexStringLiteralToken(
-			lexutil.MultiLineString,
+			parseutil.MultiLineString,
 			false)
 	case mrbStringToken:
 		return lexer.lexStringLiteralToken(
-			lexutil.RawMultiLineString,
+			parseutil.RawMultiLineString,
 			true)
 	case mrdStringToken:
 		return lexer.lexStringLiteralToken(
-			lexutil.RawMultiLineString,
+			parseutil.RawMultiLineString,
 			false)
 	case lr.IdentifierToken:
 		return lexer.lexIdentifierOrKeywords()

@@ -1,17 +1,18 @@
 package analyze
 
 import (
+	"github.com/pattyshack/gt/parseutil"
+
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/analyze/source_passes"
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/build/cfg"
-	"github.com/pattyshack/pl/errors"
 )
 
 func Source(
 	config *cfg.Config,
 	source *ast.StatementList,
-	emitter *errors.Emitter,
+	emitter *parseutil.Emitter,
 ) (
 	[]*ast.ImportClause,
 	bool,

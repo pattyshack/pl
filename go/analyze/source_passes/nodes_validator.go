@@ -1,16 +1,17 @@
 package source_passes
 
 import (
+	"github.com/pattyshack/gt/parseutil"
+
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/errors"
 )
 
 type NodeValidator struct {
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
-func ValidateNodes(emitter *errors.Emitter) process.Pass {
+func ValidateNodes(emitter *parseutil.Emitter) process.Pass {
 	return &NodeValidator{
 		Emitter: emitter,
 	}

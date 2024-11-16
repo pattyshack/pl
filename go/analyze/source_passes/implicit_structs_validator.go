@@ -1,13 +1,14 @@
 package source_passes
 
 import (
+	"github.com/pattyshack/gt/parseutil"
+
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/errors"
 )
 
 // All errors detected by this pass can only occur due to manual ast
-// construction.  lr parsed tree should be free of these errors.
+// construction.  lr parsed tree should be free of these parseutil.
 //
 // Improper implicit structs are valid in jump statements, statements
 // expr, assign patterns, loop's init/post statements (and iterator condition),
@@ -16,10 +17,10 @@ import (
 //
 // Colon implicit structs are only allowed in callable expr.
 type ImplicitStructsValidator struct {
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
-func ValidateImplicitStructs(emitter *errors.Emitter) process.Pass {
+func ValidateImplicitStructs(emitter *parseutil.Emitter) process.Pass {
 	return &ImplicitStructsValidator{
 		Emitter: emitter,
 	}
@@ -40,7 +41,7 @@ func (validator *ImplicitStructsValidator) Process(list *ast.StatementList) {
 type implicitStructsValidator struct {
 	root               ast.Node
 	validImproperColon map[*ast.ImplicitStructExpr]struct{}
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
 func (validator *implicitStructsValidator) Enter(n ast.Node) {

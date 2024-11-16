@@ -1,16 +1,17 @@
 package source_passes
 
 import (
+	"github.com/pattyshack/gt/parseutil"
+
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/errors"
 )
 
 type ExplicitlyTypedDefsValidator struct {
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
-func ValidateExplicitlyTypedDefs(emitter *errors.Emitter) process.Pass {
+func ValidateExplicitlyTypedDefs(emitter *parseutil.Emitter) process.Pass {
 	return &ExplicitlyTypedDefsValidator{
 		Emitter: emitter,
 	}
@@ -32,7 +33,7 @@ type explicitlyTypedDefsValidator struct {
 	// push "" when inferred type is allowed, push non-empty string when type
 	// must be explicit.
 	scopeStack []string
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
 func (validator *explicitlyTypedDefsValidator) push(kind string) {

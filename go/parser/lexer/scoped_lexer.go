@@ -3,10 +3,9 @@ package lexer
 import (
 	"io"
 
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser/lr"
 )
 
@@ -16,9 +15,9 @@ type scope struct {
 }
 
 type ScopedLexer struct {
-	*errors.Emitter
+	*parseutil.Emitter
 
-	buffered *lexutil.BufferedReader[lr.Token]
+	buffered *parseutil.BufferedReader[lr.Token]
 	base     lr.Lexer
 	reducer  lr.Reducer
 
@@ -28,22 +27,22 @@ type ScopedLexer struct {
 func NewLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
-	emitter *errors.Emitter,
+	emitter *parseutil.Emitter,
 	reducer lr.Reducer,
 	options LexerOptions,
 ) *ScopedLexer {
 	base := NewBasicLexer(sourceFileName, sourceContent, emitter, options)
 	return &ScopedLexer{
 		Emitter: emitter,
-		buffered: lexutil.NewBufferedReader(
-			lexutil.NewLexerReader[lr.Token](base),
+		buffered: parseutil.NewBufferedReader(
+			parseutil.NewLexerReader[lr.Token](base),
 			10),
 		base:    base,
 		reducer: reducer,
 	}
 }
 
-func (lexer *ScopedLexer) CurrentLocation() lexutil.Location {
+func (lexer *ScopedLexer) CurrentLocation() parseutil.Location {
 	peeked, err := lexer.buffered.Peek(1)
 	if err != nil || len(peeked) == 0 {
 		return lexer.base.CurrentLocation()
@@ -131,7 +130,7 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 		}
 
 		lexer.EmitErrors(parseErr)
-		startEnd := lexutil.NewStartEndPos(pos, lexer.CurrentLocation())
+		startEnd := parseutil.NewStartEndPos(pos, lexer.CurrentLocation())
 		stmts := &ast.StatementsExpr{
 			StartEndPos: startEnd,
 			Statements: []ast.Statement{
@@ -163,7 +162,7 @@ func (lexer *ScopedLexer) Next() (lr.Token, error) {
 					stmts.Statements = append(
 						stmts.Statements,
 						&ast.ParseErrorExpr{
-							StartEndPos: lexutil.NewStartEndPos(curr, lexer.CurrentLocation()),
+							StartEndPos: parseutil.NewStartEndPos(curr, lexer.CurrentLocation()),
 							Error:       parseErr,
 						})
 				}

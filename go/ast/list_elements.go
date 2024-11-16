@@ -1,9 +1,7 @@
 package ast
 
 import (
-	"github.com/pattyshack/gt/lexutil"
-
-	"github.com/pattyshack/pl/errors"
+	"github.com/pattyshack/gt/parseutil"
 )
 
 //
@@ -21,7 +19,7 @@ const (
 
 type FieldDef struct {
 	IsTypeProp
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Qualifier FieldDefQualifier
@@ -51,7 +49,7 @@ func (def *FieldDef) Walk(visitor Visitor) {
 //
 
 type GenericParameter struct {
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Name string
@@ -80,7 +78,7 @@ const (
 )
 
 type Parameter struct {
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Kind ParameterKind
@@ -98,7 +96,7 @@ func (param *Parameter) Walk(visitor Visitor) {
 	visitor.Exit(param)
 }
 
-func (param *Parameter) Validate(emitter *errors.Emitter) {
+func (param *Parameter) Validate(emitter *parseutil.Emitter) {
 	switch param.Kind {
 	case SingularParameter, ReceiverParameter, VariadicParameter:
 		// ok
@@ -124,7 +122,7 @@ const (
 )
 
 type Argument struct {
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Kind ArgumentKind
@@ -146,7 +144,7 @@ func (arg *Argument) Walk(visitor Visitor) {
 	visitor.Exit(arg)
 }
 
-func (arg *Argument) Validate(emitter *errors.Emitter) {
+func (arg *Argument) Validate(emitter *parseutil.Emitter) {
 	switch arg.Kind {
 	case SingularArgument, VariadicArgument, SkipPatternArgument:
 		// ok
@@ -181,7 +179,7 @@ func (arg *Argument) Validate(emitter *errors.Emitter) {
 
 func NewPositionalArgument(expr Expression) *Argument {
 	return &Argument{
-		StartEndPos: lexutil.NewStartEndPos(expr.Loc(), expr.End()),
+		StartEndPos: parseutil.NewStartEndPos(expr.Loc(), expr.End()),
 		LeadingTrailingComments: LeadingTrailingComments{
 			LeadingComment:  expr.TakeLeading(),
 			TrailingComment: expr.TakeTrailing(),
@@ -197,7 +195,7 @@ func NewNamedArgument(
 	expr Expression,
 ) *Argument {
 	arg := &Argument{
-		StartEndPos: lexutil.NewStartEndPos(name.Loc(), expr.End()),
+		StartEndPos: parseutil.NewStartEndPos(name.Loc(), expr.End()),
 		Kind:        SingularArgument,
 		Name:        name.Val(),
 		Expr:        expr,
@@ -218,7 +216,7 @@ func NewVariadicArgument(
 	ellipsis TokenValue,
 ) *Argument {
 	arg := &Argument{
-		StartEndPos: lexutil.NewStartEndPos(expr.Loc(), ellipsis.End()),
+		StartEndPos: parseutil.NewStartEndPos(expr.Loc(), ellipsis.End()),
 		Kind:        VariadicArgument,
 		Expr:        expr,
 	}
@@ -234,7 +232,7 @@ func NewSkipPatternArgument(
 	ellipsis TokenValue,
 ) *Argument {
 	arg := &Argument{
-		StartEndPos: lexutil.NewStartEndPos(ellipsis.Loc(), ellipsis.End()),
+		StartEndPos: parseutil.NewStartEndPos(ellipsis.Loc(), ellipsis.End()),
 		Kind:        SkipPatternArgument,
 		Expr:        nil,
 	}

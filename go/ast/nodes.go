@@ -1,9 +1,7 @@
 package ast
 
 import (
-	"github.com/pattyshack/gt/lexutil"
-
-	"github.com/pattyshack/pl/errors"
+	"github.com/pattyshack/gt/parseutil"
 )
 
 type Visitor interface {
@@ -39,7 +37,7 @@ type TokenValue interface {
 }
 
 type Node interface {
-	lexutil.Locatable
+	parseutil.Locatable
 	Commentable
 
 	Walk(Visitor)
@@ -48,7 +46,7 @@ type Node interface {
 // A Node may optionally implement Validator, which non-recursively validate
 // the node's basic syntactic structure (without parent node information).
 type Validator interface {
-	Validate(*errors.Emitter)
+	Validate(*parseutil.Emitter)
 }
 
 type Expression interface {
@@ -108,13 +106,13 @@ func (IsDirectiveExpr) IsDirectiveExpression() {}
 // A comment group is a single block comment, or a group of line comments
 // separated by single newlines (ignoring spaces).
 type CommentGroup struct {
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	Comments []string
 }
 
 func NewCommentGroup(value TokenValue) *CommentGroup {
 	return &CommentGroup{
-		StartEndPos: lexutil.NewStartEndPos(value.Loc(), value.End()),
+		StartEndPos: parseutil.NewStartEndPos(value.Loc(), value.End()),
 		Comments:    []string{value.Val()},
 	}
 }
@@ -148,11 +146,11 @@ type CommentGroups struct {
 	Groups []CommentGroup
 }
 
-func (cgs CommentGroups) Loc() lexutil.Location {
+func (cgs CommentGroups) Loc() parseutil.Location {
 	return cgs.Groups[0].Loc()
 }
 
-func (cgs CommentGroups) End() lexutil.Location {
+func (cgs CommentGroups) End() parseutil.Location {
 	return cgs.Groups[len(cgs.Groups)-1].End()
 }
 

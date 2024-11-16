@@ -1,7 +1,7 @@
 package lr
 
 import (
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 
 	"github.com/pattyshack/pl/ast"
 )
@@ -22,10 +22,10 @@ type CommentGroupsTok struct {
 
 func (CommentGroupsTok) Id() SymbolId { return CommentGroupsToken }
 
-type TokenCount = lexutil.TokenCount[SymbolId]
+type TokenCount = parseutil.TokenCount[SymbolId]
 
 type TokenValue struct {
-	lexutil.TokenValue[SymbolId]
+	parseutil.TokenValue[SymbolId]
 
 	ast.LeadingTrailingComments
 }
@@ -37,13 +37,13 @@ func (s TokenValue) Walk(visitor ast.Visitor) {
 type ParseErrorSymbol ast.ParseErrorExpr
 
 func NewParseErrorSymbol(
-	pos lexutil.StartEndPos,
+	pos parseutil.StartEndPos,
 	format string,
 	args ...interface{},
 ) *ParseErrorSymbol {
 	return &ParseErrorSymbol{
 		StartEndPos: pos,
-		Error:       lexutil.NewLocationError(pos.StartPos, format, args...),
+		Error:       parseutil.NewLocationError(pos.StartPos, format, args...),
 	}
 }
 
@@ -51,5 +51,5 @@ func (ParseErrorSymbol) Id() SymbolId {
 	return ParseErrorToken
 }
 
-type Token = lexutil.Token[SymbolId]
-type Lexer = lexutil.Lexer[Token]
+type Token = parseutil.Token[SymbolId]
+type Lexer = parseutil.Lexer[Token]

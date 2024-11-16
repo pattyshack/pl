@@ -1,9 +1,7 @@
 package ast
 
 import (
-	"github.com/pattyshack/gt/lexutil"
-
-	"github.com/pattyshack/pl/errors"
+	"github.com/pattyshack/gt/parseutil"
 )
 
 //
@@ -13,7 +11,7 @@ import (
 type ParseErrorExpr struct {
 	IsExpr
 
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Error error
@@ -40,7 +38,7 @@ const (
 
 type LiteralExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Kind LiteralKind
@@ -56,7 +54,7 @@ func (expr *LiteralExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *LiteralExpr) Validate(emitter *errors.Emitter) {
+func (expr *LiteralExpr) Validate(emitter *parseutil.Emitter) {
 	switch expr.Kind {
 	case BoolLiteral, IntLiteral, FloatLiteral, RuneLiteral, StringLiteral: // ok
 	default:
@@ -73,7 +71,7 @@ func (expr *LiteralExpr) Validate(emitter *errors.Emitter) {
 
 type NamedExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Name string
@@ -96,7 +94,7 @@ func (expr *NamedExpr) Walk(visitor Visitor) {
 
 type AccessExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Operand Expression
@@ -137,7 +135,7 @@ const (
 type UnaryExpr struct {
 	IsExpr
 
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	IsPrefix bool
@@ -155,7 +153,7 @@ func (expr *UnaryExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *UnaryExpr) Validate(emitter *errors.Emitter) {
+func (expr *UnaryExpr) Validate(emitter *parseutil.Emitter) {
 	switch expr.Op {
 	case UnaryReturnDefaultEnumOp,
 		UnaryPanicOnDefaultEnumOp,
@@ -220,7 +218,7 @@ const (
 
 type BinaryExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Left  Expression
@@ -238,7 +236,7 @@ func (expr *BinaryExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *BinaryExpr) Validate(emitter *errors.Emitter) {
+func (expr *BinaryExpr) Validate(emitter *parseutil.Emitter) {
 	switch expr.Op {
 	case BinaryAddOp,
 		BinarySubOp,
@@ -297,7 +295,7 @@ const (
 
 type ImplicitStructExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Kind ImplicitStructKind
@@ -308,9 +306,9 @@ type ImplicitStructExpr struct {
 var _ Expression = &ImplicitStructExpr{}
 var _ Validator = &ImplicitStructExpr{}
 
-func NewImproperUnit(pos lexutil.Location) *ImplicitStructExpr {
+func NewImproperUnit(pos parseutil.Location) *ImplicitStructExpr {
 	return &ImplicitStructExpr{
-		StartEndPos: lexutil.NewStartEndPos(pos, pos),
+		StartEndPos: parseutil.NewStartEndPos(pos, pos),
 		Kind:        ImproperImplicitStruct,
 	}
 }
@@ -323,7 +321,7 @@ func (expr *ImplicitStructExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *ImplicitStructExpr) Validate(emitter *errors.Emitter) {
+func (expr *ImplicitStructExpr) Validate(emitter *parseutil.Emitter) {
 	// NOTE: additional argument validation are handled by
 	// unexpectedPatternsDetector
 	switch expr.Kind {
@@ -354,7 +352,7 @@ func (expr *ImplicitStructExpr) Validate(emitter *errors.Emitter) {
 // NOTE: ParameterizedExpr fields should be identical to NamedTypeExpr
 type ParameterizedExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	// NOTE: Pkg is an identifier or empty string for normal ast construction.
@@ -382,7 +380,7 @@ func (expr *ParameterizedExpr) Walk(visitor Visitor) {
 
 type CallExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	FuncExpr  Expression
@@ -401,7 +399,7 @@ func (expr *CallExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *CallExpr) Validate(emitter *errors.Emitter) {
+func (expr *CallExpr) Validate(emitter *parseutil.Emitter) {
 	for idx, arg := range expr.Arguments {
 		if arg.Kind == SkipPatternArgument {
 			emitter.Emit(arg.Loc(), "unexpected %s argument", arg.Kind)
@@ -422,7 +420,7 @@ func (expr *CallExpr) Validate(emitter *errors.Emitter) {
 
 type IndexExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Accessible Expression
@@ -448,7 +446,7 @@ func (expr *IndexExpr) Walk(visitor Visitor) {
 
 type AsExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Accessible Expression
@@ -470,7 +468,7 @@ func (expr *AsExpr) Walk(visitor Visitor) {
 
 type MakeExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	VariableSizedType TypeExpression
@@ -495,7 +493,7 @@ func (expr *MakeExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *MakeExpr) Validate(emitter *errors.Emitter) {
+func (expr *MakeExpr) Validate(emitter *parseutil.Emitter) {
 	switch expr.VariableSizedType.(type) {
 	case *SliceTypeExpr: // ok
 	case *MapTypeExpr:
@@ -523,7 +521,7 @@ func (expr *MakeExpr) Validate(emitter *errors.Emitter) {
 
 type InitializeExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Initializable TypeExpression
@@ -542,7 +540,7 @@ func (expr *InitializeExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *InitializeExpr) Validate(emitter *errors.Emitter) {
+func (expr *InitializeExpr) Validate(emitter *parseutil.Emitter) {
 	for _, arg := range expr.Arguments {
 		if arg.Kind == SkipPatternArgument || arg.Kind == VariadicArgument {
 			emitter.Emit(arg.Loc(), "unexpected %s argument", arg.Kind)
@@ -556,7 +554,7 @@ func (expr *InitializeExpr) Validate(emitter *errors.Emitter) {
 
 type StatementsExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Label
@@ -574,7 +572,7 @@ func (expr *StatementsExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *StatementsExpr) Validate(emitter *errors.Emitter) {
+func (expr *StatementsExpr) Validate(emitter *parseutil.Emitter) {
 	for idx, stmt := range expr.Statements {
 		_, ok := stmt.(*JumpStmt)
 		if !ok {
@@ -593,7 +591,7 @@ func (expr *StatementsExpr) Validate(emitter *errors.Emitter) {
 //
 
 func validateDefaultBranch(
-	emitter *errors.Emitter,
+	emitter *parseutil.Emitter,
 	parent Expression,
 	branches []*ConditionBranchStmt,
 	checkCondition func(Expression),
@@ -625,7 +623,7 @@ func validateDefaultBranch(
 
 type IfExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Label
@@ -643,7 +641,7 @@ func (expr *IfExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *IfExpr) Validate(emitter *errors.Emitter) {
+func (expr *IfExpr) Validate(emitter *parseutil.Emitter) {
 	validateDefaultBranch(
 		emitter,
 		expr,
@@ -669,7 +667,7 @@ func (expr *IfExpr) Validate(emitter *errors.Emitter) {
 
 type SwitchExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Label
@@ -689,7 +687,7 @@ func (expr *SwitchExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *SwitchExpr) Validate(emitter *errors.Emitter) {
+func (expr *SwitchExpr) Validate(emitter *parseutil.Emitter) {
 	validateDefaultBranch(
 		emitter,
 		expr,
@@ -710,7 +708,7 @@ func (expr *SwitchExpr) Validate(emitter *errors.Emitter) {
 
 type SelectExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Label
@@ -728,7 +726,7 @@ func (expr *SelectExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *SelectExpr) Validate(emitter *errors.Emitter) {
+func (expr *SelectExpr) Validate(emitter *parseutil.Emitter) {
 	validateDefaultBranch(
 		emitter,
 		expr,
@@ -782,7 +780,7 @@ const (
 
 type LoopExpr struct {
 	IsExpr
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Kind LoopKind
@@ -810,7 +808,7 @@ func (expr *LoopExpr) Walk(visitor Visitor) {
 	visitor.Exit(expr)
 }
 
-func (expr *LoopExpr) Validate(emitter *errors.Emitter) {
+func (expr *LoopExpr) Validate(emitter *parseutil.Emitter) {
 	switch expr.Kind {
 	case InfiniteLoop:
 		if expr.Condition != nil {
@@ -879,7 +877,7 @@ func (expr *LoopExpr) Validate(emitter *errors.Emitter) {
 type FuncDefinition struct {
 	IsExpr
 	IsTypeProp
-	lexutil.StartEndPos
+	parseutil.StartEndPos
 	LeadingTrailingComments
 
 	Signature *FuncSignature

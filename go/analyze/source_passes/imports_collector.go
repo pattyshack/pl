@@ -1,19 +1,18 @@
 package source_passes
 
 import (
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/errors"
 )
 
 type ImportClausesCollector struct {
 	clauses []*ast.ImportClause
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
 func NewImportClausesCollector(
-	emitter *errors.Emitter,
+	emitter *parseutil.Emitter,
 ) *ImportClausesCollector {
 	return &ImportClausesCollector{
 		Emitter: emitter,
@@ -34,7 +33,7 @@ func (collector *ImportClausesCollector) Process(list *ast.StatementList) {
 		for _, clause := range importStmt.ImportClauses {
 			err := clause.PackageID.Validate()
 			if err != nil {
-				collector.EmitErrors(lexutil.LocationError{Loc: clause.Loc(), Err: err})
+				collector.EmitErrors(parseutil.LocationError{Loc: clause.Loc(), Err: err})
 				continue
 			}
 

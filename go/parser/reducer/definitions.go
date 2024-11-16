@@ -1,7 +1,7 @@
 package reducer
 
 import (
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/parser/lr"
@@ -18,7 +18,7 @@ func (reducer *Reducer) ToFloatingComment(
 	error,
 ) {
 	floating := &ast.FloatingComment{
-		StartEndPos: lexutil.NewStartEndPos(comments.Loc(), comments.End()),
+		StartEndPos: parseutil.NewStartEndPos(comments.Loc(), comments.End()),
 	}
 	floating.LeadingComment = comments.CommentGroups
 	return floating, nil
@@ -47,7 +47,7 @@ func (reducer *Reducer) toTypeDef(
 	}
 
 	def := &ast.TypeDef{
-		StartEndPos:       lexutil.NewStartEndPos(typeKW.Loc(), baseType.End()),
+		StartEndPos:       parseutil.NewStartEndPos(typeKW.Loc(), baseType.End()),
 		Name:              name.Value,
 		GenericParameters: genericParameters,
 		BaseType:          baseType,
@@ -125,7 +125,7 @@ func (reducer *Reducer) ToAliasDef(
 	}
 
 	def := &ast.AliasDef{
-		StartEndPos:       lexutil.NewStartEndPos(aliasKW.Loc(), value.End()),
+		StartEndPos:       parseutil.NewStartEndPos(aliasKW.Loc(), value.End()),
 		Alias:             alias.Value,
 		GenericParameters: genericParameters,
 		Value:             value,

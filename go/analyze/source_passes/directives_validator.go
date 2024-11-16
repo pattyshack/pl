@@ -1,17 +1,18 @@
 package source_passes
 
 import (
+	"github.com/pattyshack/gt/parseutil"
+
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/errors"
 )
 
 type DirectivesValidator struct {
 	buildDirective *ast.Directive
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
-func ValidateDirectives(emitter *errors.Emitter) process.Pass {
+func ValidateDirectives(emitter *parseutil.Emitter) process.Pass {
 	return &DirectivesValidator{
 		Emitter: emitter,
 	}

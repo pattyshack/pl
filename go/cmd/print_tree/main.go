@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/pattyshack/gt/argparse"
+	"github.com/pattyshack/gt/parseutil"
 
-	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser"
 	"github.com/pattyshack/pl/util"
 )
@@ -57,7 +57,7 @@ func (cmd *Command) printSource(
 	args []string,
 ) error {
 	for _, fileName := range args {
-		emitter := &errors.Emitter{}
+		emitter := &parseutil.Emitter{}
 		result := parser.ParseSource(fileName, nil, emitter, cmd.ParserOptions)
 		parseErrors := emitter.Errors()
 
@@ -85,7 +85,7 @@ func (cmd *Command) printSource(
 func (cmd *Command) printTokens(args []string) error {
 	cmd.UseBasicLexer = true
 	for _, fileName := range args {
-		lexer, err := cmd.NewLexer(fileName, &errors.Emitter{}, nil)
+		lexer, err := cmd.NewLexer(fileName, &parseutil.Emitter{}, nil)
 		if err != nil {
 			continue
 		}

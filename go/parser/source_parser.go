@@ -4,22 +4,21 @@ import (
 	"io"
 	"sync"
 
-	"github.com/pattyshack/gt/lexutil"
+	"github.com/pattyshack/gt/parseutil"
 
 	"github.com/pattyshack/pl/analyze"
 	"github.com/pattyshack/pl/ast"
 	"github.com/pattyshack/pl/build/cfg"
-	"github.com/pattyshack/pl/errors"
 	"github.com/pattyshack/pl/parser/lr"
 	reducerImpl "github.com/pattyshack/pl/parser/reducer"
 )
 
 type bufferLexer struct {
-	*lexutil.BufferedReader[lr.Token]
-	end lexutil.Location
+	*parseutil.BufferedReader[lr.Token]
+	end parseutil.Location
 }
 
-func (l bufferLexer) CurrentLocation() lexutil.Location {
+func (l bufferLexer) CurrentLocation() parseutil.Location {
 	peeked, err := l.Peek(1)
 	if err != nil || len(peeked) == 0 {
 		return l.end
@@ -36,14 +35,14 @@ type sourceParser struct {
 	lexer lr.Lexer
 	*reducerImpl.Reducer
 	*cfg.Config
-	*errors.Emitter
+	*parseutil.Emitter
 	ParserOptions
 }
 
 func newSourceParser(
 	fileName string,
 	config *cfg.Config,
-	emitter *errors.Emitter,
+	emitter *parseutil.Emitter,
 	options ParserOptions,
 ) (
 	*sourceParser,
@@ -112,14 +111,14 @@ func (parser *sourceParser) _parseSource() (*ast.StatementList, error) {
 		if len(segment) > 0 {
 			stmt, err := lr.ParseStatement(
 				&bufferLexer{
-					BufferedReader: lexutil.NewBufferedReaderFromSlice(segment),
+					BufferedReader: parseutil.NewBufferedReaderFromSlice(segment),
 					end:            end,
 				},
 				parser)
 			if err != nil {
 				parser.EmitErrors(err)
 				stmt = &ast.ParseErrorExpr{
-					StartEndPos: lexutil.NewStartEndPos(start, end),
+					StartEndPos: parseutil.NewStartEndPos(start, end),
 					Error:       err,
 				}
 			}
@@ -166,7 +165,7 @@ func (parser *sourceParser) parseSource() ParsedSource {
 func ParseSource(
 	fileName string,
 	config *cfg.Config,
-	emitter *errors.Emitter,
+	emitter *parseutil.Emitter,
 	options ParserOptions,
 ) ParsedSource {
 	parser, err := newSourceParser(fileName, config, emitter, options)
@@ -181,7 +180,7 @@ func ParseSource(
 func ParseSources(
 	sources []string,
 	config *cfg.Config,
-	emitter *errors.Emitter,
+	emitter *parseutil.Emitter,
 	options ParserOptions,
 ) []ParsedSource {
 	if len(sources) == 0 {

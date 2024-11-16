@@ -1,16 +1,17 @@
 package source_passes
 
 import (
+	"github.com/pattyshack/gt/parseutil"
+
 	"github.com/pattyshack/pl/analyze/process"
 	"github.com/pattyshack/pl/ast"
-	"github.com/pattyshack/pl/errors"
 )
 
 type FuncSignaturesValidator struct {
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
-func ValidateFuncSignatures(emitter *errors.Emitter) process.Pass {
+func ValidateFuncSignatures(emitter *parseutil.Emitter) process.Pass {
 	return &FuncSignaturesValidator{
 		Emitter: emitter,
 	}
@@ -32,7 +33,7 @@ type funcSignaturesValidator struct {
 	root      ast.Node
 	processed map[*ast.FuncSignature]struct{}
 
-	*errors.Emitter
+	*parseutil.Emitter
 }
 
 func (validator *funcSignaturesValidator) Enter(node ast.Node) {
