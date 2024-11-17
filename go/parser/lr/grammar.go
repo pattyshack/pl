@@ -3620,6 +3620,178 @@ func (s *Symbol) Id() SymbolId {
 	return s.SymbolId_
 }
 
+func (s *Symbol) StartEnd() parseutil.StartEndPos {
+	type locator interface{ StartEnd() parseutil.StartEndPos }
+	switch s.SymbolId_ {
+	case ArgumentType:
+		loc, ok := interface{}(s.Argument).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case ProperArgumentsType, ArgumentsType:
+		loc, ok := interface{}(s.ArgumentList).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case CommentGroupsToken:
+		loc, ok := interface{}(s.CommentGroups).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case UnlabelledControlFlowExprType, ControlFlowExprType, SwitchExprBodyType, SelectExprBodyType, LoopExprBodyType:
+		loc, ok := interface{}(s.ControlFlowExpr).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case NewlinesToken:
+		loc, ok := interface{}(s.Count).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case DirectiveType:
+		loc, ok := interface{}(s.Directive).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case DirectiveExprType, DirectiveAndExprType, DirectiveNotExprType, DirectiveAtomExprType, DirectiveValueExprType:
+		loc, ok := interface{}(s.DirectiveExpr).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case DirectiveExprsType, ProperDirectiveExprsType:
+		loc, ok := interface{}(s.DirectiveExprList).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case DirectivesType:
+		loc, ok := interface{}(s.DirectiveList).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case DirectivesDeclarationType:
+		loc, ok := interface{}(s.DirectivesDecl).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case BlockAddrDeclItemType, AddrDeclPatternType, AssignToAddrPatternType, NewAddressableType, AssignSelectablePatternType, SwitchableCasePatternType, EnumPatternType, AtomExprType, ParseErrorExprType, LiteralExprType, NamedExprType, InitializeExprType, ImplicitStructExprType, AccessibleExprType, AccessExprType, IndexExprType, IndexType, AsExprType, ParameterizedExprType, CallExprType, PostfixableExprType, PostfixUnaryExprType, PrefixableExprType, PrefixUnaryExprType, MulExprType, BinaryMulExprType, AddExprType, BinaryAddExprType, CmpExprType, BinaryCmpExprType, AndExprType, BinaryAndExprType, OrExprType, BinaryOrExprType, SendRecvExprType, SendExprType, RecvExprType, AssignOpExprType, BinaryAssignOpExprType, ExprType, ConditionType, CasePatternExprType, ReturnableExprType:
+		loc, ok := interface{}(s.Expression).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case BlockAddrDeclListType, ProperBlockAddrDeclListType, CasePatternsType, SwitchableCasePatternsType:
+		loc, ok := interface{}(s.ExpressionList).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case FuncDefType:
+		loc, ok := interface{}(s.FuncDefinition).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case FuncSignatureType:
+		loc, ok := interface{}(s.FuncSignature).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case GenericParameterType:
+		loc, ok := interface{}(s.GenericParameter).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case GenericParametersType, ProperGenericParameterListType, GenericParameterListType:
+		loc, ok := interface{}(s.GenericParameterList).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case IfElseExprType, IfElifExprType, IfOnlyExprType:
+		loc, ok := interface{}(s.IfExpr).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case ColonExprType, ImproperExprStructType:
+		loc, ok := interface{}(s.ImplicitStructExpr).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case ImportClauseType:
+		loc, ok := interface{}(s.ImportClause).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case ProperImportClausesType, ImportClausesType:
+		loc, ok := interface{}(s.ImportClauseList).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case MakeExprType, MakeExprSizeType, MakeExprHeadType:
+		loc, ok := interface{}(s.MakeExpr).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case ParameterType:
+		loc, ok := interface{}(s.Parameter).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case ProperParameterListType, ParameterListType, ParametersType:
+		loc, ok := interface{}(s.Parameters).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case ParseErrorToken:
+		loc, ok := interface{}(s.ParseError).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case StatementType, FloatingCommentType, BranchStmtType, OptionalStatementType, JumpStmtType, AssignStmtType, ImportStmtType, BlockAddrDeclStmtType, TypeDefType, AliasDefType:
+		loc, ok := interface{}(s.Statement).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case SourceType, ProperStatementListType, StatementListType:
+		loc, ok := interface{}(s.StatementList).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case StatementsType, LoopBodyType:
+		loc, ok := interface{}(s.StatementsExpr).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case VariableSizedTypeExprType, InitializableTypeExprType, SliceTypeExprType, ArrayTypeExprType, MapTypeExprType, AtomTypeExprType, NamedTypeExprType, InferredTypeExprType, ReturnableTypeExprType, RefTypeExprType, DefaultEnumOpTypeExprType, UnaryTraitOpTypeExprType, TypeExprType, BinaryTraitOpTypeExprType, ImplicitStructTypeExprType, ImplicitEnumTypeExprType, PropertiesTypeExprType, ReturnTypeType:
+		loc, ok := interface{}(s.TypeExpression).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case GenericArgumentsType, OptionalGenericArgumentsType, ProperGenericArgumentListType, GenericArgumentListType:
+		loc, ok := interface{}(s.TypeExpressionList).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case ProperImplicitTypePropertiesType, ImplicitTypePropertiesType, ProperImplicitEnumTypePropertiesType, ImplicitEnumTypePropertiesType, ProperExplicitTypePropertiesType, ExplicitTypePropertiesType:
+		loc, ok := interface{}(s.TypeProperties).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case TypePropertyType:
+		loc, ok := interface{}(s.TypeProperty).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case UnsafeStmtType:
+		loc, ok := interface{}(s.UnsafeStmt).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	case IntegerLiteralToken, FloatLiteralToken, RuneLiteralToken, StringLiteralToken, IdentifierToken, UnderscoreToken, TrueToken, FalseToken, IfToken, ElseToken, SwitchToken, CaseToken, DefaultToken, ForToken, DoToken, InToken, SelectToken, ReturnToken, BreakToken, ContinueToken, FallthroughToken, ImportToken, UnsafeToken, TypeToken, ImplementsToken, AliasToken, StructToken, EnumToken, TraitToken, FuncToken, AsyncToken, DeferToken, VarToken, LetToken, AsToken, MakeToken, NotToken, AndToken, OrToken, PoundToken, AtToken, LbraceToken, RbraceToken, LparenToken, RparenToken, LbracketToken, RbracketToken, DotToken, CommaToken, QuestionToken, SemicolonToken, ColonToken, ExclaimToken, DollarToken, EllipsisToken, TildeToken, TildeTildeToken, AssignToken, ArrowToken, AddAssignToken, SubAssignToken, MulAssignToken, DivAssignToken, ModAssignToken, AddOneAssignToken, SubOneAssignToken, BitAndAssignToken, BitOrAssignToken, BitXorAssignToken, BitLshiftAssignToken, BitRshiftAssignToken, AddToken, SubToken, MulToken, DivToken, ModToken, BitAndToken, BitXorToken, BitOrToken, BitLshiftToken, BitRshiftToken, EqualToken, NotEqualToken, LessToken, LessOrEqualToken, GreaterToken, GreaterOrEqualToken, DirectiveValueType, JumpOpType, VarTypeType, PostfixUnaryOpType, PrefixUnaryOpType, MulOpType, AddOpType, CmpOpType, BinaryAssignOpType, DefaultEnumOpType, UnaryTraitOpType, BinaryTraitOpType, PropertiesKindType:
+		loc, ok := interface{}(s.Value).(locator)
+		if ok {
+			return loc.StartEnd()
+		}
+	}
+	return s.Generic_.StartEnd()
+}
+
 func (s *Symbol) Loc() parseutil.Location {
 	type locator interface{ Loc() parseutil.Location }
 	switch s.SymbolId_ {

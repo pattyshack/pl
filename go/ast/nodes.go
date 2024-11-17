@@ -146,6 +146,10 @@ type CommentGroups struct {
 	Groups []CommentGroup
 }
 
+func (cgs CommentGroups) StartEnd() parseutil.StartEndPos {
+	return parseutil.NewStartEndPos(cgs.Loc(), cgs.End())
+}
+
 func (cgs CommentGroups) Loc() parseutil.Location {
 	return cgs.Groups[0].Loc()
 }

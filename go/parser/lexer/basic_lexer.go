@@ -200,7 +200,7 @@ func (lexer *AssociateCommentGroupsLexer) Next() (lr.Token, error) {
 	return value, nil
 }
 
-// TerminalNewlinesLexer conditionally emit newline from the underlying lexer to
+// The basic Lexer conditionally emit newline from the underlying lexer to
 // the parser to denote statement termination.  Newline is emitted if the line's
 // final token token is
 //  1. an identifier
@@ -209,64 +209,26 @@ func (lexer *AssociateCommentGroupsLexer) Next() (lr.Token, error) {
 //  4. one of the keywords: `break`, `continue`, `fallthrough`, `return`,
 //     `true`, or `false`
 //  5. one of: `++`, `--`, `)`, `}`, or `]`
-type TerminalNewlinesLexer struct {
-	buffered *parseutil.BufferedReader[lr.Token]
-	base     lr.Lexer
-
-	previousId lr.SymbolId
-}
-
 func NewBasicLexer(
 	sourceFileName string,
 	sourceContent io.Reader,
 	emitter *parseutil.Emitter,
 	options LexerOptions,
 ) lr.Lexer {
-	base := NewAssociateCommentGroupsLexer(
-		sourceFileName,
-		sourceContent,
-		emitter,
-		options)
-	return &TerminalNewlinesLexer{
-		buffered: parseutil.NewBufferedReader(
-			parseutil.NewLexerReader[lr.Token](base),
-			10),
-		base: base,
-	}
-}
-
-func (lexer *TerminalNewlinesLexer) CurrentLocation() parseutil.Location {
-	peeked, err := lexer.buffered.Peek(1)
-	if err != nil || len(peeked) == 0 {
-		return lexer.base.CurrentLocation()
-	}
-
-	return peeked[0].Loc()
-}
-
-func (lexer *TerminalNewlinesLexer) Next() (lr.Token, error) {
-	for {
-		token, err := lexer.buffered.Next()
-		if err != nil {
-			return nil, err
-		}
-
-		if token.Id() != lr.NewlinesToken {
-			lexer.previousId = token.Id()
-			return token, nil
-		}
-
-		switch lexer.previousId {
-		case lr.IdentifierToken, lr.UnderscoreToken,
+	return parseutil.NewImplicitTerminalLexer(
+		NewAssociateCommentGroupsLexer(
+			sourceFileName,
+			sourceContent,
+			emitter,
+			options),
+		lr.NewlinesToken,
+		[]lr.SymbolId{
+			lr.IdentifierToken, lr.UnderscoreToken,
 			lr.IntegerLiteralToken, lr.StringLiteralToken,
 			lr.RuneLiteralToken, lr.FloatLiteralToken,
 			lr.ReturnToken, lr.BreakToken, lr.ContinueToken, lr.FallthroughToken,
 			lr.TrueToken, lr.FalseToken,
 			lr.AddOneAssignToken, lr.SubOneAssignToken,
-			lr.RparenToken, lr.RbraceToken, lr.RbracketToken:
-
-			lexer.previousId = lr.NewlinesToken
-			return token, nil
-		}
-	}
+			lr.RparenToken, lr.RbraceToken, lr.RbracketToken,
+		})
 }
